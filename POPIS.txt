@@ -3,7 +3,7 @@ Je urcena pro spravce a pak pro vedouci smeny ve F-M/Ostrave
 
 Je rozdelena do ctyr bloku:
 - uzivatele - seznam pracovniku na pobockach, muzu nastavit aktivni / neaktivni
-- navrhy smeny - planovac smen
+- navrhy smeny - planovac smen, s moznosti stahnuti planu do pdf souboru
 - smeny - seznam odpracovanych smen pro jednotlive pracovniky
 - sklad - tady se budou zapisovat polozky jako jsou krabice na pizzu dle velikosti a napoje a jejich stav (pocet kusu) na konci dne
 
