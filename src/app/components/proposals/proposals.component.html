@@ -1,0 +1,132 @@
+<div class="shift-assignment-container" [style]="`--margin-top: ${loggedUser.role === 'Master' ? '4rem' : '2rem'}`">
+    @if(!proposalsLoading()) {
+
+    @if (isUnsavedPassedCard() && proposalCard().id === 0 && filteredUsers().length > 0) {
+    <h4>{{ unsavedProposalCardErrorText }}</h4>
+    } @else {
+    @if(filteredUsers().length > 0) {
+    @if (!isUnsavedPassedCard()) {
+    <div class="shift-pool" hide>
+        <div cdkDropList id="shift-pool" [cdkDropListData]="wShifts()" [cdkDropListConnectedTo]="dropListIds()"
+            class="shift-list" (cdkDropListDropped)="onDrop($event, '')">
+            @for(shift of wShifts(); track $index) {
+            <div cdkDrag class="shift-block whole">X</div>
+            }
+        </div>
+        <div cdkDropList id="shift-pool" [cdkDropListData]="mShifts()" [cdkDropListConnectedTo]="dropListIds()"
+            class="shift-list" (cdkDropListDropped)="onDrop($event, '')">
+            @for(shift of mShifts(); track $index) {
+            <div cdkDrag class="shift-block morning">
+                <proposal-button timeFrom="11" timeTo="17" />
+            </div>
+            }
+        </div>
+        <div cdkDropList id="shift-pool" [cdkDropListData]="aShifts()" [cdkDropListConnectedTo]="dropListIds()"
+            class="shift-list" (cdkDropListDropped)="onDrop($event, '')">
+            @for(shift of aShifts(); track $index) {
+            <div cdkDrag class="shift-block afternoon">
+                <proposal-button timeFrom="17" timeTo="22" />
+            </div>
+            }
+        </div>
+        <div cdkDropList id="shift-pool" [cdkDropListData]="destShifts()" [cdkDropListConnectedTo]="dropListIds()"
+            class="shift-list" (cdkDropListDropped)="onDrop($event, '')">
+            @for(shift of destShifts(); track $index) {
+            <div cdkDrag class="shift-block dest">{{ destShifts()[0].from }}</div>
+            }
+        </div>
+    </div>
+    }
+
+    <div class="user-days-table">
+        <table
+            [style]="`--min-width-table: ${proposalCard().proposalDays.length * 40 + 'px'} --margin-top-table: ${isUnsavedPassedCard() ? '30px' : ''}`">
+            <thead>
+                <tr>
+                    <th class="user-name"></th>
+                    @for(day of proposalCard().proposalDays; track $index) {
+                    <th [style]="`--background-color-head: ${isFridayOrSaturday(day.date) ? '#f9f9f9' : '#fff'}`">
+                        <div class="head-cell">
+                            <div class="head-cell-date">
+                                {{ day.date.split('.')[0] }}
+                            </div>
+                            <div class="head-cell-week-day">
+                                {{dayOfWeek(day.date)}}
+                            </div>
+                        </div>
+                    </th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @for(user of users(); track $index) {
+                <tr>
+                    <td class="user-name-cell"
+                        [style]="`--background-color-user: ${user.position === 'Cook' ? '#f9f9f9' : '#fff' }`">{{
+                        user.name }}
+                    </td>
+
+                    <!-- [cdkDropListDisabled]="assignments()[user.id][i].length > 0" -->
+
+                    @for(day of proposalCard().proposalDays; track $index; let i = $index) {
+                    <td cdkDropList [id]="'cell-' + user.id + '-' + i" [cdkDropListData]="assignments()[user.id][i]"
+                        (cdkDropListDropped)="onDrop($event, 'cell-' + user.id + '-' + i)" class="drop-zone"
+                        [cdkDropListConnectedTo]="dropListIds()" [class.disabled]="assignments()[user.id][i].length > 0"
+                        [style]="`--background-color-dropzone: ${isFridayOrSaturday(day.date) ? '#f9f9f9' : '#fff' }`">
+                        @for(shift of assignments()[user.id][i]; track $index; let j = $index) {
+                        <div cdkDrag [cdkDragData]="assignments()[user.id][i]" class="assigned-shift"
+                            (click)="onUpdateProposal(user.id, i, day.date, user.name)">
+                            @if(shift.from === '11:00' && (shift.to === '22:00' || shift.to === '23:00')) {
+                            @if (isFridayOrSaturday(day.date) && (shift.to !== '23:00')) {
+                            <div cdkDrag class="shift-block custom">
+                                <custom-proposal-button [timeFrom]="shift.from" [timeTo]="shift.to" />
+                            </div>
+                            } @else {
+                            <div class="shift-block whole">X</div>
+                            }
+                            }
+                            @else if(shift.from === '11:00' && shift.to === '17:00') {
+                            <div class="shift-block morning">
+                                <proposal-button timeFrom="11" timeTo="17" />
+                            </div>
+                            }
+                            @else if(shift.from === '17:00' && (shift.to === '22:00' || shift.to === '23:00')) {
+                            @if (isFridayOrSaturday(day.date) && (shift.to !== '23:00')) {
+                            <div cdkDrag class="shift-block custom">
+                                <custom-proposal-button [timeFrom]="shift.from" [timeTo]="shift.to" />
+                            </div>
+                            } @else {
+                            <div cdkDrag class="shift-block afternoon">
+                                <proposal-button timeFrom="17" [timeTo]="shift.to.split(':')[0]" />
+                            </div>
+                            }
+                            }
+                            @else if(shift.from === 'F-M' || shift.from === 'OVA') {
+                            <div cdkDrag class="shift-block dest">
+                                <div class="shift-block dest">{{ destShifts()[0].from }}</div>
+                            </div>
+                            }
+                            @else {
+                            <div cdkDrag class="shift-block custom">
+                                <custom-proposal-button [timeFrom]="shift.from" [timeTo]="shift.to" />
+                            </div>
+                            }
+                        </div>
+                        }
+                    </td>
+                    }
+                </tr>
+                }
+            </tbody>
+        </table>
+        <app-update-proposal [(updateVisible)]="updateVisible" />
+    </div>
+    }
+    @else {
+    <h4>Chybí evidovaní pracovníci na pobočce - {{destination()}}</h4>
+    }
+    }
+    } @else {
+    <app-spinner [nullWidthHeight]="true" [marginTop]="10" />
+    }
+</div>

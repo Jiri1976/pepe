@@ -1,0 +1,238 @@
+.card-wrapper {
+    margin: 20px;
+
+    .user-card-table {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
+        .head {
+            border: 1px solid #24355A;
+            border-radius: 5px;
+            padding: 5px;
+            margin-bottom: 10px;
+            background: #f8f8f4;
+            color: #24355A;
+            justify-content: space-between;
+            display: flex;
+            min-width: 700px;
+
+            .right,
+            .left {
+                width: 20%;
+            }
+
+            .left {
+                text-align: right;
+            }
+
+            .center {
+                text-align: center !important;
+            }
+        }
+
+        .table {
+            margin-bottom: 20px;
+
+            .table-dark {
+                --bs-table-bg: #24355A !important;
+                --bs-table-border-color: none;
+            }
+
+            thead {
+                tr {
+                    th {
+                        height: 20px !important;
+                        font-size: 0.8rem;
+                        padding: 0 !important;
+                        vertical-align: middle !important;
+                    }
+                }
+            }
+
+            tbody {
+
+                th,
+                td {
+                    font-size: 0.8rem;
+                    color: #24355A;
+                    height: 15px !important;
+                    padding: 0 !important;
+                    vertical-align: middle !important;
+                }
+
+                tr {
+
+
+                    td {
+                        transition: 0.2s ease-in-out;
+
+                        .bi {
+                            font-size: 12px;
+                            // 
+                        }
+
+                        button {
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                            align-items: center;
+                            width: 15px;
+                            //height: 15px;
+                            border-radius: 5px;
+
+                            i {
+                                font-size: 0.5rem;
+                            }
+
+                        }
+
+                        // button.delete {
+                        //     background: #F53B57;
+                        //     color: #fff;
+                        // }
+
+                        button.edit {
+                            background: #05C46B;
+                            color: #fff;
+                        }
+                    }
+
+                    td.edit:hover {
+                        cursor: pointer;
+
+                        .bi {
+                            font-size: 10px;
+                            color: #F53B57 !important;
+                            //font-weight: bold;
+                        }
+                    }
+
+                    td.perso {
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        max-width: 245px;
+                        //max-width: 25% !important;
+                    }
+                }
+            }
+        }
+
+        h4 {
+            margin-top: 60px;
+            margin-bottom: 30px;
+            color: #24355A;
+            font-weight: bold;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            // position: absolute;
+            // bottom: 10px;
+            // right: 20px;
+
+            .addBtn {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                border-radius: 50%;
+                height: 30px;
+                width: 30px;
+                background: #05C46B;
+                color: #fff;
+                border: none;
+                position: absolute;
+                bottom: 10px;
+                right: 20px;
+
+                i {
+                    font-size: 1.5rem;
+                }
+            }
+
+            .addBtn:hover {
+                animation: shadow-pulse 1s infinite;
+
+                i {
+                    animation: icon-pulse 1s infinite;
+                }
+            }
+
+            .deleteCardBtn {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                border-radius: 50%;
+                height: 30px;
+                width: 30px;
+                background: #F53B57;
+                // box-shadow: 0 0 10px 3px #F53B57;
+                color: #fff;
+                border: none;
+                transition: ease 0.3s all;
+                position: absolute;
+                bottom: 10px;
+                left: 20px;
+
+                i {
+                    font-size: 1.5rem;
+                    font-weight: bold;
+                    transition: .5s ease-in-out;
+                }
+            }
+
+            .deleteCardBtn:hover {
+                //box-shadow: none;
+                box-shadow: 0 0 10px 3px #F53B57;
+                transform: scale(1.2);
+
+                i {
+                    rotate: 2turn;
+                }
+            }
+        }
+
+        .action-buttons.alone {
+            //margin-top: 15%;
+            justify-content: center;
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+
+        }
+    }
+
+    // .empty-shifts {
+    //     margin-top: 15%;
+    //     margin-left: auto;
+    //     margin-right: auto;       
+    // }
+}
+
+@keyframes shadow-pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0px rgba(40, 139, 70, 0.2);
+    }
+
+    100% {
+        transform: scale(1.2);
+        box-shadow: 0 0 0 35px rgba(40, 139, 70, 0);
+    }
+}
+
+
+@keyframes icon-pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    100% {
+        transform: scale(1.2);
+    }
+}

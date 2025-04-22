@@ -1,0 +1,28 @@
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+        <a class="navbar-brand" routerLink="main">
+            <img src="/pizza.ico" alt="Pizza icon" width="50" height="50"> PEPE PIZZA
+        </a>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                {{user().name }} - {{ user().role }}
+            </button>
+            <ul class="dropdown-menu text-center">
+                @if(user().role === 'Admin') {
+                <li><a class="dropdown-item" routerLink="/users">Uživatelé</a></li>
+                }
+                @if (user().role === 'Admin' || user().role === 'Master') {
+                <li><a class="dropdown-item" routerLink="/plans">Plán směn</a></li>
+                }
+                @if (user().role === 'Admin' || user().role === 'Master') {
+                <li><a class="dropdown-item" routerLink="/shifts">Směny</a></li>
+                }
+                @if (user().role === 'Admin' || user().role === 'Master') {
+                <li><a class="dropdown-item" routerLink="/warehouse">Sklad</a></li>
+                }
+                <li><a class="dropdown-item" (click)="onLogout()">Odhlásit se</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>

@@ -1,0 +1,69 @@
+<div class="wrapper">
+    @if(isLoading) {
+    <app-spinner [nullWidthHeight]="true" [marginTop]="30" />
+    } @else {
+    @if (items() === null || items() === undefined || items().length === 0) {
+    <div class="empty-shifts">
+        <h4>Chybí položky k evidenci.</h4>
+    </div>
+    }
+    <div class="navigation" class="navigation" [ngStyle]="{'width': _width}">
+        <ul>
+            @for (item of items(); track $index) {
+            <li class="list" [class.active]="selectedList === $index" (click)="onSelectList($index)">
+                <span class="icon">
+                    <div style="font-size: 1.2rem; position: relative; top: 3px;">{{ item.shortName }}</div>
+                </span>
+                <span class="text">{{ item.name }}</span>
+            </li>
+            }
+        </ul>
+    </div>
+    }
+    @if (!cardIsLoading) {
+    @if (warehouseCard !== null && warehouseCard().units.length > 0) {
+    <div class="row mt-5 w-100 unitList">
+        <div class="row mb-3 justify-content-between">
+            <div class="col text-left">
+                {{warehouseCard().warehouseItemName}}
+            </div>
+            <div class="col center">
+                {{warehouseCard().destination === 'F-M' ? 'Frýdek-Místek' : 'Ostrava'}}
+            </div>
+            <div class="col text-right">
+                {{ warehouseCard().monthYearName}}
+            </div>
+        </div>
+        <div class="col-4">
+            @for(unit of warehouseCard().units | slice:0:11; track $index) {
+            <div class="row w-100 mt-1" (click)="checkDate(unit.date) ? onSelectUnit(unit) : null"
+                [ngClass]="checkDate(unit.date) ? 'dateValid' : ''">
+                <div class="col first">{{unit.date}}</div>
+                <div class="col second">{{unit.amount !== null ? unit.amount : '-'}}</div>
+            </div>
+            }
+        </div>
+        <div class="col-4">
+            @for(unit of warehouseCard().units | slice:11:22; track $index) {
+            <div class="row w-100 mt-1" (click)="checkDate(unit.date) ? onSelectUnit(unit) : null"
+                [ngClass]="checkDate(unit.date) ? 'dateValid' : ''">
+                <div class="col first">{{unit.date}}</div>
+                <div class="col second">{{unit.amount !== null ? unit.amount : '-'}}</div>
+            </div>
+            }
+        </div>
+        <div class="col-4">
+            @for(unit of warehouseCard().units | slice:22:warehouseCard().units.length; track $index) {
+            <div class="row w-100 mt-1" (click)="checkDate(unit.date) ? onSelectUnit(unit) : null"
+                [ngClass]="checkDate(unit.date) ? 'dateValid' : ''">
+                <div class="col first">{{unit.date}}</div>
+                <div class="col second">{{unit.amount !== null ? unit.amount : '-'}}</div>
+            </div>
+            }
+        </div>
+    </div>
+    }
+    } @else {
+    <app-spinner [nullWidthHeight]="true" [marginTop]="30" />
+    }
+</div>

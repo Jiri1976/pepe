@@ -1,0 +1,85 @@
+<div class="card-wrapper">
+    @if(!formVisible()) {
+    <div class="user-card-table">
+        <div class="head">
+            <div class="right">
+                <b>{{convertMonthYear(shiftCard()!.monthYear)}}</b>
+            </div>
+            <div class="center">
+                <b>{{shiftCard()!.user}}</b>
+            </div>
+
+            <div class="left">
+                <i class="bi bi-watch"></i>&nbsp;
+                <b>{{shiftCard()!.totalHours ? shiftCard()!.totalHours : '00:00'}}</b>
+            </div>
+        </div>
+        @if(shiftCard()!.shifts.length > 0) {
+        <table class="table table-striped mt-1">
+            <thead class="table-dark">
+                <tr>
+                    <th class="user-name" style="width: 5% !important; text-align: right;">#</th>
+                    <th class="user-name" style="width: 15% !important; text-align: center;">Datum</th>
+                    <th class="user-name" style="width: 15% !important; text-align: center;">Začátek</th>
+                    <th class="user-name" style="width: 15% !important; text-align: center;">Konec</th>
+                    <th class="user-name" style="width: 10% !important; text-align: center;">Hodiny</th>
+                    <th class="user-name" style="width: 35% !important; text-align: center;">Perso</th>
+                    @if((isPastCard() === false && loggedUser.role === 'Master') || (loggedUser.role === 'Admin')) {
+                    <th class="user-name" style="width: 5% !important; text-align: center !important;"></th>
+                    <!-- <th class="user-name"></th> -->
+                    }
+                </tr>
+            </thead>
+            <tbody class="table-group-divider">
+                @for(shift of shiftCard()!.shifts; track $index) {
+                <tr>
+                    <th scope="row" style="width: 5% !important; text-align: right !important;">{{$index + 1}}.</th>
+                    <td style="width: 15% !important; text-align: center !important;">{{shift.date}}</td>
+                    <td style="width: 15% !important; text-align: center !important;">{{shift.from}}</td>
+                    <td style="width: 15% !important; text-align: center !important;">{{shift.to}}</td>
+                    <td style="width: 10% !important; text-align: center !important;">{{shift.hours}}</td>
+                    <td class="perso" style="width: 35% !important;">{{shift.perso}}</td>
+                    @if((isPastCard() === false && loggedUser.role === 'Master') || (loggedUser.role === 'Admin')) {
+                    <td class="edit" style="width: 5% !important; text-align: center !important;"
+                        (click)="onUpdate(shift)">
+                        <!-- <button class="btn edit" (click)="onUpdateShift(shift)"><i class="bi bi-trash"></i></button> -->
+                        <i class="bi bi-arrow-right-circle"></i>
+                    </td>
+                    <!-- <td class="buttons">
+                        <button class="btn delete"><i class="bi bi-pencil-square"
+                                (click)="onDeleteShift(shift.date, shift.id, shift.userId)"></i></button>
+                    </td> -->
+                    }
+                </tr>
+                }
+            </tbody>
+        </table>
+        <div class="action-buttons" [class.alone]="loggedUser.role !== 'Admin'">
+            @if (loggedUser.role === 'Admin') {
+            <button class="deleteCardBtn" (click)="onDeleteCard()"><i class="bi bi-x"></i></button>
+            }
+
+            <button class="addBtn" (click)="onAddShift()"><i class="bi bi-plus"></i></button>
+        </div>
+        }
+        @if(shiftCard()!.shifts.length === 0) {
+        <!-- <div class="empty-shifts">
+            <h4>Žádné uložené směny.</h4>           
+        </div> -->
+        <div class="action-buttons alone">
+            <button class="addBtn" (click)="onAddShift()"><i class="bi bi-plus"></i></button>
+        </div>
+        }
+
+    </div>
+    }
+    @if (formVisible()) {
+    <app-shift-form (closeShiftForm)="onCloseShiftForm()" (shiftForSave)="onSave($event)" />
+    }
+    <!-- } @else {
+    <div style="margin-top: 150px;">
+        <app-spinner [nullWidthHeight]="true" />
+    </div>
+
+    } -->
+</div>

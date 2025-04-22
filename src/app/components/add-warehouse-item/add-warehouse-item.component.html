@@ -1,0 +1,119 @@
+<div class="wrapper">
+    <div class="title-nav"
+        [ngClass]="title === 'Seznam skladových položek' ? 'animate__animated animate__fadeInLeft' : 'animate__animated animate__fadeInRight'">
+        <span class="icon">
+            <img src="spinner.png" width="70" height="70" />
+        </span>
+        <span class="text">{{title}}</span>
+    </div>
+    @if (!editingEnabled) {
+    @if (items() && items()!.length > 0) {
+    @if (!isLoading) {
+    <div class="itemList" [ngClass]="!changingPositions ? 'animate__animated animate__fadeInLeft' : ''" cdkDropList
+        (cdkDropListDropped)="drop($event)" cdkDropListAutoScrollDisabled="true">
+        @for (item of items(); track $index) {
+        <div cdkDrag class="row mt-1" (click)="onSelectUpdate($index)" cdkDragBoundary=".itemList" cdkDragLockAxis="y">
+            <div class="col-8">
+                {{item.name}}
+            </div>
+            <div class="col-4">
+                {{item.shortName}}
+            </div>
+        </div>
+        }
+    </div>
+    <div class="row buttonRow mt-5" [ngClass]="!changingPositions ? 'animate__animated animate__fadeInLeft' : ''">
+        <div class="col left">
+            <button class="back" (click)="onSelectBack()"><i class="bi bi-arrow-left"></i></button>
+        </div>
+        <div class="col right">
+            <button class="add" (click)="addItem()"><i class="bi bi-plus"></i></button>
+        </div>
+    </div>
+    } @else {
+    <div class="row">
+        <div class="col"></div>
+        <div class="col d-flex justify-content-center w-100">
+            <div id="spinner">
+                <img class="rotating" src="spinner.png" alt="spinner" />
+            </div>
+        </div>
+        <div class="col"></div>
+    </div>
+    }
+    }
+    @else {
+    <div class="row buttonRow mt-5 animate__animated animate__fadeInLeft">
+        <div class="col left">
+            <button class="back" (click)="onSelectBack()"><i class="bi bi-arrow-left"></i></button>
+        </div>
+        <div class="col right">
+            <button class="add" (click)="addItem()"><i class="bi bi-plus"></i></button>
+        </div>
+    </div>
+    }
+    }
+    @else {
+    @if (!isLoading) {
+    <form [formGroup]="itemForm" class="animate__animated animate__fadeInRight">
+        <input type="hidden" formControlName="id" [value]="selectedItem.id" />
+        <div class="row mt-5">
+            <div class="col-6">
+                <label for="name" class="form-label"
+                    [class.error]="itemForm.get('name')?.touched && itemForm.get('name')?.hasError('required') || itemForm.get('name')?.untouched &&itemForm.get('name')?.dirty &&itemForm.get('name')?.hasError('required') ||itemForm.get('name')?.hasError('maxlength')">Název</label>
+                <input type="text" class="form-control"
+                    [class.shake]="itemForm.get('name')?.touched &&itemForm.get('name')?.hasError('required') ||itemForm.get('name')?.untouched &&itemForm.get('name')?.dirty &&itemForm.get('name')?.hasError('required') ||itemForm.get('name')?.hasError('maxlength')"
+                    id="name" [value]="selectedItem.name" formControlName="name" (input)="checkValues()">
+                <div class="error"
+                    [style.display]="(itemForm.get('name')?.touched &&itemForm.get('name')?.hasError('required') ||itemForm.get('name')?.untouched &&itemForm.get('name')?.dirty &&itemForm.get('name')?.hasError('required')) ? 'block' : 'none'">
+                    * Název je povinný údaj</div>
+                <div class="error" [style.display]="itemForm.get('name')?.hasError('maxlength') ? 'block' : 'none'">
+                    * Prosím pouze 7 znaků</div>
+            </div>
+            <div class="col-6">
+                <label for="shortName" class="form-label"
+                    [class.error]="itemForm.get('shortName')?.touched &&itemForm.get('shortName')?.hasError('required') ||itemForm.get('shortName')?.untouched &&itemForm.get('shortName')?.dirty &&itemForm.get('shortName')?.hasError('required') ||itemForm.get('shortName')?.hasError('maxlength')">Zkratka</label>
+                <input type="text" class="form-control" id="usershortName" [value]="selectedItem.shortName"
+                    formControlName="shortName"
+                    [class.shake]="itemForm.get('shortName')?.touched 
+                            &&itemForm.get('shortName')?.hasError('required') ||itemForm.get('shortName')?.untouched 
+                            &&itemForm.get('shortName')?.dirty &&itemForm.get('shortName')?.hasError('required') ||itemForm.get('shortName')?.hasError('maxlength')"
+                    (input)="checkValues()">
+                <div class="error"
+                    [style.display]="(itemForm.get('shortName')?.touched &&itemForm.get('shortName')?.hasError('required') ||itemForm.get('shortName')?.untouched &&itemForm.get('shortName')?.dirty &&itemForm.get('shortName')?.hasError('required')) ? 'block' : 'none'">
+                    * Zkratka je povinný údaj</div>
+                <div class="error"
+                    [style.display]="itemForm.get('shortName')?.hasError('maxlength') ? 'block' : 'none'">
+                    * Prosím pouze 3 znaky</div>
+            </div>
+        </div>
+
+        <div class="row buttonRow mt-5">
+            <div class="col left">
+                <button class="back" (click)="onBack()"><i class="bi bi-arrow-left"></i></button>
+            </div>
+            @if (selectedItem.id > 0) {
+            <div class="col center">
+                <button type="button" class="btn delete" (click)="onDelete(selectedItem.id)"><i
+                        class="bi bi-x"></i></button>
+            </div>
+            }
+            <div class="col right">
+                <button type="submit" class="btn submit" (click)="onSumbit()"
+                    [disabled]="itemForm.invalid || nothingChanged"><i class="bi bi-check"></i></button>
+            </div>
+        </div>
+    </form>
+    } @else {
+    <div class="row">
+        <div class="col"></div>
+        <div class="col d-flex justify-content-center w-100">
+            <div id="spinner">
+                <img class="rotating" src="spinner.png" alt="spinner" />
+            </div>
+        </div>
+        <div class="col"></div>
+    </div>
+    }
+    }
+</div>

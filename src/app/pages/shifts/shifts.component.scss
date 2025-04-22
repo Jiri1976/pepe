@@ -1,0 +1,53 @@
+.sidenav {
+    display: flex;
+    flex-direction: column;
+    transition: all .5s ease;
+    align-items: center !important;
+    width: 10rem;
+    float: left;
+
+    ul {
+        margin: 2rem 0 0 0;
+        padding: 0;
+
+        .proposal-calendar {
+            width: 190px;
+            height: 50px;
+            position: absolute;
+            left: -90px;
+            top: 15px;
+        }
+    }
+}
+
+.box {
+    width: calc(100% - 10rem) !important;
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Poppins', sans-serif;
+    position: relative;
+
+    .shift-card {
+        min-width: 750px;
+        margin: 1.5rem 0 0 0;
+        height: 750px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        swiper-container {
+            margin: auto !important;
+            width: 740px;
+            height: 740px;
+
+            swiper-slide {
+                background: #fff !important;
+                box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+            }
+        }
+    }
+}

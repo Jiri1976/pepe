@@ -1,0 +1,109 @@
+@if(!isLoading) {
+<div class="form-div">
+    <form [formGroup]="shiftForm">
+        <div id="focus" (click)="onHideForm()"><i class="bi bi-x"></i></div>
+        <div class="row">
+            <div class="title">
+                <h1>{{ shiftForm.get('id')?.value === 0 ? 'Přidat směnu' : 'Upravit směnu' }}</h1>
+                <div class="notification">
+                    <app-notification
+                        [notify]="shiftForm.touched && (dateError || fromError || toError || persoError)" />
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col label" [class.invalid]="dateError" [class.focused]="calendarFocus()">
+                <label for="username" class="font-semibold w-6rem">Datum</label>
+            </div>
+            <div class="col">
+                <div class="card flex justify-content-center" [class.shake]="dateError">
+                    <div class="calendarDivShift" [style.--calendar-top]="dateError ? '50px' : '35px'"
+                        (click)="onOpenCalendar()">
+                        <p-datepicker #calendar dateFormat="dd.mm.yy" (onInput)="onInput('calendar')"
+                            (onSelect)="onBlur('calendar')" (onShow)="calendarFocus.set(true)"
+                            (onClose)="calendarFocus.set(false)" formControlName="shiftDate" [maxDate]="maxDate" />
+                    </div>
+                </div>
+                @if (dateError) {
+                <div class="error">
+                    <p>* Chybné datum směny</p>
+                </div>
+                }
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col label" [class.invalid]="fromError">
+                <label for="username" class="font-semibold w-6rem">Začátek</label>
+            </div>
+            <div class="col">
+                <div class="card flex justify-content-center timefromDiv"
+                    [style.--timeslot-top]="fromError ? '50px' : '35px'" [class.shake]="fromError"
+                    (click)="onOpenFrom()" [style]="`--visibility: ${calendarFocus() ? 'hidden' : 'visible'}`">
+                    <p-datepicker class="shiftFrom" [timeOnly]="true" formControlName="shiftFrom" #timeFrom
+                        (onInput)="onInput('from')" (onSelect)="onBlur('from')" (onClose)="fromIsOpen.set(false);" />
+                </div>
+                @if (fromError) {
+                <div class="error" [style]="`--visibility: ${calendarFocus() ? 'hidden' : 'visible'}`">
+                    <p>* Zkontroluj začátek směny</p>
+                </div>
+                }
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col label" [class.invalid]="toError">
+                <label for="username" class="font-semibold w-6rem">Konec</label>
+            </div>
+            <div class="col">
+                <div class="card flex justify-content-center timetoDiv"
+                    [style.--timeslot-top]="toError ? '50px' : '35px'" [class.shake]="toError" (click)="onOpenTo()"
+                    [style]="`--visibility: ${calendarFocus() || (fromError && fromIsOpen()) ? 'hidden' : 'visible'}`">
+                    <p-datepicker class="shiftTo" [timeOnly]="true" formControlName="shiftTo" #timeTo
+                        (onInput)="onInput('to')" (onSelect)="onBlur('to')" (onClose)="toIsOpen.set(false);" />
+                </div>
+                @if (toError) {
+                <div class="error"
+                    [style]="`--visibility: ${calendarFocus() || (fromError && fromIsOpen()) ? 'hidden' : 'visible'}`">
+                    <p>* Zkontroluj konec směny</p>
+                </div>
+                }
+            </div>
+        </div>
+
+        <div class="row mt-4 mb-5">
+            <div class="col label" [class.invalid]="persoError">
+                <label for="float-input">Perso</label>
+            </div>
+            <div class="col persoDiv"
+                [style]="`--visibility: ${calendarFocus() || (toError && toIsOpen()) ? 'hidden' : 'visible'}`">
+                <textarea class="mt-2" id="float-input" rows="4" cols="30" pInputTextarea #perso
+                    formControlName="shiftPerso" (input)="checkPerso()" [class.shake]="persoError">
+                    </textarea>
+                @if (persoError) {
+                <div class="error"
+                    [style]="`--visibility: ${calendarFocus() || (toError && toIsOpen()) ? 'hidden' : 'visible'}`">
+                    <p>* Text je příliš dlouhý.</p>
+                </div>
+                }
+            </div>
+        </div>
+
+        @if (selectedShift().id > 0) {
+        <button type="button" class="btn delete" (click)="onDelete()"><i class="bi bi-trash"></i></button>
+        }
+
+        <div class="flex" style="text-align: center;"
+            [style]="`--visibility: ${calendarFocus() ? 'hidden' : 'visible'}`">
+            <button type="submit" id="addBtn" class="btn" (click)="onSubmitShiftForm()"
+                [disabled]="persoError || fromError || toError || dateError || compareTimes() || shiftForm.untouched">{{selectedShift().id
+                === 0 ? 'Zapsat' : 'Upravit'}}</button>
+        </div>
+
+    </form>
+</div>
+} @else {
+<div style="margin-top: 150px;">
+    <app-spinner [nullWidthHeight]="true" />
+</div>
+}

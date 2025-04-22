@@ -1,0 +1,7 @@
+<li [class.active]="isActive()" [style.--background]="isActive() ? color() : background()"
+    [style.--color]="isActive() ? background() : color()" [class.disabled]="isDisabled()" (click)="onPress()">
+    <span class="icon">
+        <i class="bi" [class]="icon()"></i>
+    </span>
+    <span class="text">{{text()}}</span>
+</li>

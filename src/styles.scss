@@ -1,0 +1,565 @@
+@import "primeicons/primeicons.css";
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import '../node_modules/animate.css/animate.min.css';
+
+
+p-dialog {
+    .p-dialog-mask {
+        .p-dialog.p-component {
+            .p-dialog-header {
+                span {
+                    font-size: 1rem;
+                }
+
+                .p-dialog-header-actions {
+                    .p-dialog-close-button {
+                        display: none !important;
+                    }
+                }
+            }
+
+            .p-dialog-content {
+                .buttons {
+                    display: flex;
+                    justify-content: end;
+                    margin-top: 10px;
+                }
+
+                p-button {
+                    .p-button {
+                        height: 30px !important;
+                        width: 90px !important;
+                        font-size: 0.9rem;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.p-button {
+    margin: 5px;
+    border-radius: 6px;
+    outline: none;
+    box-shadow: none;
+    border: none;
+    width: 90px;
+}
+
+
+
+.p-confirm-dialog-accept {
+    background: #05C46B;
+    color: #fff;
+}
+
+.p-dialog-footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.proposal-calendar {
+    p-datepicker {
+        .p-datepicker-panel.p-component {
+            left: 230px !important;
+            top: 95px !important;
+        }
+
+        .p-datepicker.p-component {
+            .p-datepicker-panel.p-component {
+                .p-datepicker-month-view {
+                    .p-datepicker-month.p-datepicker-month-selected {
+                        background: #24355A !important;
+                    }
+                }
+
+                .p-datepicker-calendar-container {
+                    .p-datepicker-calendar {
+                        .p-datepicker-header {
+                            p-button {
+                                .p-button-text {
+                                    color: #24355A !important;
+                                }
+                            }
+
+                            p-button:hover {
+                                .p-button-text {
+                                    background: #24355A;
+                                    color: #fff !important;
+                                    border: none;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                .p-datepicker-year-view {
+                    span.p-datepicker-year.p-datepicker-year-selected {
+                        background: #24355A !important;
+                    }
+                }
+            }
+        }
+    }
+}
+
+p-datepicker {
+    span {
+        input {
+            position: absolute !important;
+            top: -300px !important;
+            border: 2px solid #fff;
+        }
+    }
+}
+
+.calendarDivShift {
+    p-datepicker {
+        span {
+            input {
+                position: relative !important;
+                top: 0px !important;
+                border: 2px solid #fff;
+                height: 24px !important;
+                border: none;
+                outline: none;
+                width: 256px;
+                text-align: end;
+            }
+
+            .p-datepicker-panel.p-component {
+                top: 40px !important;
+                left: -25px !important;
+                width: 306px !important;
+
+                .p-datepicker-calendar-container {
+                    .p-datepicker-calendar {
+
+                        .p-datepicker-header {
+                            p-button {
+                                .p-button-text {
+                                    color: #24355A !important;
+                                }
+                            }
+
+                            p-button:hover {
+                                .p-button-text {
+                                    background: #24355A;
+                                    color: #fff !important;
+                                    border: none;
+                                }
+                            }
+                        }
+
+                        .p-datepicker-day-view {
+                            .p-datepicker-day-selected {
+                                background: #24355A !important;
+                            }
+                        }
+
+                        // .p-datepicker-year-view {
+                        //     span.p-datepicker-year.p-datepicker-year-selected {
+                        //         background: #24355A !important;
+                        //     }
+                        // }
+                    }
+                }
+
+                .p-datepicker-year-view {
+                    span.p-datepicker-year.p-datepicker-year-selected {
+                        background: #24355A !important;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.timefromDiv {
+    p-datepicker {
+        span {
+            input {
+                position: relative !important;
+                top: 0px !important;
+                border: none;
+                outline: none;
+                height: 24px !important;
+                width: 256px;
+                text-align: end;
+            }
+
+            .p-datepicker-panel.p-component {
+                top: 40px !important;
+                left: -25px !important;
+                width: 306px !important;
+                height: 130px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+
+                .p-datepicker-time-picker {
+                    p-button {
+                        .p-button-text {
+                            color: #24355A !important;
+                        }
+
+                        .p-button-text:hover {
+                            background: #24355A;
+                            color: #fff !important;
+                            border: none;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+.timetoDiv {
+    p-datepicker {
+        span {
+            input {
+                position: relative !important;
+                top: 0px !important;
+                border: none;
+                outline: none;
+                height: 24px !important;
+                width: 256px;
+                text-align: end;
+            }
+
+            .p-datepicker-panel.p-component {
+                top: 40px !important;
+                left: -25px !important;
+                width: 306px !important;
+                height: 130px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+
+                .p-datepicker-time-picker {
+                    p-button {
+                        .p-button-text {
+                            color: #24355A !important;
+                        }
+
+                        .p-button-text:hover {
+                            background: #24355A;
+                            color: #fff !important;
+                            border: none;
+                        }
+
+                        .p-button:focus-visible {
+                            outline: none !important;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+.row.proposal-delete {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    color: #D09B52;
+    font-weight: bold;
+
+    h4 {
+        display: flex;
+        justify-content: center;
+    }
+}
+
+.row.proposal-times {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    width: 10%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+    color: #D09B52;
+    font-weight: bold;
+
+    p-datepicker#timeFrom {
+        position: absolute !important;
+        top: 380px !important;
+        left: 55px !important;
+
+        span.p-datepicker.p-component.p-inputwrapper {
+            .p-inputtext {
+                text-align: center;
+                width: 70px !important;
+                border: 1px solid #D09B52;
+            }
+
+            .p-datepicker-timeonly {
+                display: none !important;
+            }
+
+        }
+    }
+
+    p-datepicker#timeTo {
+        position: absolute !important;
+        top: 380px !important;
+        left: 250px !important;
+
+        span.p-datepicker.p-component.p-inputwrapper {
+            .p-inputtext {
+                text-align: center;
+                width: 70px !important;
+                border: 1px solid #D09B52;
+            }
+
+            .p-datepicker-timeonly {
+                display: none !important;
+            }
+        }
+    }
+}
+
+
+// .calendarDivShift {
+//     p-datepicker {
+
+//         span {
+
+
+//             input {
+//                 position: relative !important;
+//                 top: 0px !important;
+//                 height: 10px;
+//                 text-align: right;
+
+//             }
+
+//             .p-datepicker {
+//                 margin-top: 0 !important;
+//                 top: var(--calendar-top, 35px) !important;
+//                 left: -160px !important;
+//             }
+//         }
+
+//         .p-datepicker:not(.p-calendar-disabled).p-focus>.p-inputtext {
+//             outline: 0 none;
+//             outline-offset: 0;
+//             box-shadow: none !important;
+//         }
+//     }
+// }
+
+// p-datepicker.timeSlot {
+//     margin-left: auto !important;
+//     margin-right: auto !important;
+
+//     span {
+//         input {
+//             position: relative !important;
+//             top: 0px !important;
+//         }
+//     }
+// }
+
+// p-cdatepicker.shiftFrom span,
+// p-datepicker.shiftTo span {
+//     .p-datepicker-timeonly {
+//         top: var(--timeslot-top, 35px) !important;
+//         width: 250px;
+//         left: -10px !important;
+//     }
+// }
+
+// p-datepicker.shiftFrom span input {
+//     position: relative !important;
+//     top: 0px !important;
+//     height: 10px !important;
+//     text-align: right;
+
+
+// }
+
+// p-datepicker.shiftTo span input {
+//     position: relative !important;
+//     top: 0px !important;
+//     height: 10px !important;
+//     text-align: right;
+// }
+
+// .p-datepicker:not(.p-datepicker-disabled).p-focus>.p-inputtext {
+//     outline: 0 none;
+//     outline-offset: 0;
+//     box-shadow: none !important;
+// }
+
+.card {
+    .p-dialog-title {
+        font-size: 1rem;
+    }
+}
+
+// .p-datepicker.p-component.p-datepicker-monthpicker {
+//     top: -20px !important;
+//     width: 240px;
+//     z-index: 999;
+//     left: -90px !important;
+//     color: #24355A !important;
+
+//     .p-monthpicker .p-monthpicker-month.p-highlight {
+//         background: transparent !important;
+//         outline: #24355A !important;
+//         color: #24355A !important;
+//         box-shadow: 0 0 0 0.2rem #24355A !important;
+//     }
+
+//     .p-monthpicker .p-monthpicker-month:hover {
+//         background: transparent !important;
+//     }
+
+//     .p-monthpicker .p-monthpicker-month:active {
+//         background: transparent !important;
+//         outline: none !important;
+//         color: #24355A !important;
+//         box-shadow: 0 0 0 0.2rem #24355A !important;
+//     }
+
+//     .p-datepicker-year.p-link:hover,
+//     .p-datepicker-year.p-link:active {
+//         color: #24355A !important;
+//     }
+
+//     .p-yearpicker .p-yearpicker-year.p-highlight {
+//         background: transparent !important;
+//         outline: #24355A !important;
+//         color: #24355A !important;
+//         box-shadow: 0 0 0 0.2rem #24355A !important;
+//     }
+
+//     .p-yearpicker .p-yearpicker-year:hover {
+//         background: transparent !important;
+//     }
+
+//     .p-yearpicker .p-yearpicker-year:active {
+//         background: transparent !important;
+//         outline: none !important;
+//         color: #24355A !important;
+//         box-shadow: none !important;
+//     }
+// }
+
+// .p-dialog-header-close.p-button {
+//     width: auto !important;
+// }
+
+// .p-dialog-header-close.p-button:hover {
+//     background: transparent !important;
+// }
+
+// .p-dialog-content label {
+//     color: #24355A !important;
+//     font-weight: bold;
+//     font-size: 1.1rem;
+// }
+
+// .p-dialog-content input,
+// .p-dialog-content input:active,
+// .p-dialog-content input:focus {
+//     border-radius: 0px;
+//     outline: none;
+//     box-shadow: none;
+//     border-left: none !important;
+//     border-right: none;
+//     border-top: none;
+//     border-bottom: 2px solid #24355A;
+//     text-align: center !important;
+// }
+
+// #cancelBtn .p-ripple.p-element.p-button.p-component {
+//     margin: 5px;
+//     border-radius: 6px;
+//     outline: none;
+//     box-shadow: none;
+//     border: none;
+//     width: 120px;
+//     background: #F53B57 !important;
+//     color: white !important;
+//     font-size: 0.9rem;
+// }
+
+// #addBtn .p-ripple.p-element.p-button.p-component {
+//     margin: 5px;
+//     border-radius: 6px;
+//     outline: none;
+//     box-shadow: none;
+//     border: none;
+//     width: 120px;
+//     background: #05C46B;
+//     color: #fff;
+//     font-size: 0.9rem;
+// }
+
+// #deleteBtn .p-ripple.p-element.p-button.p-component {
+//     margin: 5px;
+//     border-radius: 6px;
+//     outline: none;
+//     box-shadow: none;
+//     border: none;
+//     width: 120px;
+//     background: #24355A;
+//     color: #fff;
+//     font-size: 0.79rem;
+// }
+
+.drag-item.cdk-drag-dragging {
+    border: 2px solid #e2e2e2 !important;
+    border-radius: 20px !important;
+    color: #24355A;
+    background: #e2e2e2;
+}
+
+.cdk-drag-preview {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    border: 2px solid #e2e2e2 !important;
+    border-radius: 20px !important;
+    overflow: hidden !important;
+    background: #e2e2e2;
+    color: #24355A;
+}
+
+.cdk-drag-preview .col-4 {
+    text-align: right !important;
+}
+
+.cdk-drag-placeholder {
+    visibility: hidden !important;
+}
+
+p-toast {
+    .p-toast-bottom-right {
+        p-toastitem {
+            .p-toast-message {
+                margin: 0 !important;
+
+                .p-toast-message-content {
+                    .p-toast-message-text {
+                        gap: 0rem !important
+                    }
+                }
+            }
+        }
+    }
+}

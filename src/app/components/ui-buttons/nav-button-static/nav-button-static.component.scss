@@ -1,0 +1,42 @@
+li {
+    list-style: none;
+    list-style: none;
+    width: 70px;
+    height: 70px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    margin: 25px 0px;
+    transition: 0.5s;
+    border: 2px solid var(--background);
+    color: var(--color);
+    background: var(--background);
+    font-weight: 700;
+
+    span.icon {
+        font-size: 1.5rem;
+    }
+
+    span.text {
+        font-size: 0.9rem;
+    }
+}
+
+li.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+
+}
+
+li.disabled:hover {
+    cursor: default;
+}
+
+li:not(.disabled):hover {
+    box-shadow: 0 2px 25px var(--background);
+    background: var(--background);
+    color: var(--color);
+}

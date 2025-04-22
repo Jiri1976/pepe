@@ -1,0 +1,73 @@
+* {
+    font-family: "Poppins", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 0.9rem;
+}
+
+.navbar {
+    height: 75px;
+    padding: 10px 60px;
+    background: #fff !important;
+    box-shadow: 0 3px 10px 2px rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky !important;
+    top: 0;
+    width: 100vw;
+    z-index: 999;
+
+    .navbar-brand {
+        font-weight: bold;
+    }
+
+    .dropdown-toggle {
+        background: #fff;
+        border: 1px solid #bdb9b9;
+        color: #24355A;
+        font-weight: 700;
+        border-radius: 30px;
+    }
+
+    .dropdown-toggle:hover {
+        box-shadow: 0 3px 10px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    .dropdown-menu {
+        margin-top: 10px;
+        min-width: 195px;
+
+        .dropdown-item {
+            font-weight: 500;
+            color: #24355A;
+        }
+
+        .dropdown-item:hover {
+            color: #F53B57;
+            background-color: rgba(217, 213, 213, 0.2);
+            cursor: pointer;
+        }
+    }
+}
+
+img {
+    margin-right: 10px;
+}
+
+
+
+@media screen and (max-width: 599px) {
+    .navbar {
+        padding: 0;
+        z-index: 9;
+    }
+
+    .navbar-toggler {
+        margin-left: 10px;
+    }
+
+    img {
+        margin-right: 5px;
+    }
+}

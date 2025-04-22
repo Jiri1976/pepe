@@ -1,0 +1,65 @@
+@if(isLoading) {
+<app-spinner />
+}
+@else {
+<div class="sidenav">
+    <ul>
+        <app-nav-button-static background="#D09B52" color="#fff"
+            [icon]="!flipped() ? 'bi-person-add' : 'bi-arrow-left-circle'" [text]="!flipped() ? 'Přidat' : 'Zpět'"
+            (clicked)="open()" />
+        @if (!flipped()) {
+        <app-nav-button-active background="#fff" color="#24355A" icon="bi-house" text="F-M"
+            [isActive]="filter() === 'F-M'" (clicked)="onSelectList(1)" />
+        <app-nav-button-active background="#fff" color="#24355A" icon="bi-house" text="OVA"
+            [isActive]="filter() === 'OVA'" (clicked)="onSelectList(2)" />
+        <app-nav-button-active background="#fff" color="#24355A" icon="bi-person-fill" text="User"
+            [isActive]="role() === 'User' && (selectedList === 3 || selectedList === 1 || selectedList === 2)"
+            (clicked)="onSelectList(3)" />
+        <app-nav-button-active background="#fff" color="#24355A" icon="bi-person-heart" text="Master"
+            [isActive]="role() === 'Master' && (selectedList === 4 || selectedList === 1 || selectedList === 2)"
+            (clicked)="onSelectList(4)" />
+        <app-nav-button-active background="#fff" color="#24355A" icon="bi-person-hearts" text="Admin"
+            [isActive]="role() === 'Admin' && (selectedList === 5 || selectedList === 1 || selectedList === 2)"
+            (clicked)="onSelectList(5)" />
+        <app-nav-button-active background="#fff" color="#24355A" icon="bi-people" text="Všichni"
+            [isActive]="filter() === 'All'" (clicked)="onSelectList(6)" />
+        }
+    </ul>
+</div>
+<div class="box">
+    <div [class]="flipped() ? 'flipped' : ''" class="card">
+        <div class="front">
+            <ng-content select="flip-card-front">
+                <div class="users">
+                    <div class="row">
+                        @if(filteredUsers().length > 0) {
+                        @for(user of filteredUsers(); track $index) {
+                        <app-user-item [user]="user" (selectedId)="editUser($event)" />
+                        }
+
+                        @for(i of getEmptyLines(); track $index) {
+                        <app-empty-block />
+                        }
+                        } @else {
+                        <h4>Žádní uživatelé v databázi.</h4>
+                        }
+                    </div>
+                    @if (filteredUsers().length > 0) {
+                    <app-user-pagination (pageSelected)="onSelectPage($event)" [users]="filteredUsers()"
+                        [currentPage]="currentPage()" [hasNextPage]="hasNextPage()"
+                        [hasPreviousPage]="hasPreviousPage()" [lastPage]="lastPage()" />
+                    }
+
+                </div>
+            </ng-content>
+        </div>
+        <div class="back">
+            <ng-content select="flip-card-back">
+                <app-user (back)="goBack()" (deletedUser)="onRemoveUser($event)" (createdUser)="onCreate($event)"
+                    (updatedUser)="onUpdateUser($event)" />
+            </ng-content>
+        </div>
+    </div>
+</div>
+<app-confirm />
+}

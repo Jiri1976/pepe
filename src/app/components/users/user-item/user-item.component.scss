@@ -1,0 +1,87 @@
+.line {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #24355A;
+    font-family: "Poppins", sans-serif;
+    font-weight: bold;
+    font-style: normal;
+    font-size: 0.9rem;
+    height: 40px;
+    border-bottom: 1px solid #24355A;
+    transition: ease 0.2s all;
+
+    .col-4,
+    .col-5,
+    .col-1 {
+        font-size: 1rem;
+    }
+
+    .col-4,
+    .col-5 {
+        text-align: left;
+    }
+
+    .col-4.false,
+    .col-5.false,
+    .col-1.false {
+        color: #838282;
+    }
+
+
+    .col-1 {
+        text-align: right;
+    }
+
+    .role,
+    .pos {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: #fff;
+        height: 30px;
+        width: 30px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+
+    .role {
+        border-radius: 10%;
+    }
+
+    .pos {
+        border-radius: 50%;
+
+        img {
+            height: 30px;
+            width: 30px;
+        }
+    }
+
+    .role.Admin {
+        background-color: #F53B57;
+    }
+
+    .role.Master {
+        background-color: #05C46B;
+    }
+
+    .role.User {
+        background-color: #24355A;
+    }
+
+    .role.User.false {
+        background-color: #838282;
+        color: #fff;
+    }
+}
+
+.line:hover {
+    border-bottom: 0px !important;
+    // background: #e2e2e2;
+    cursor: pointer;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    border-radius: 5px;
+}

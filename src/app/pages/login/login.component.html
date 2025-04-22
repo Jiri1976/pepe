@@ -1,0 +1,48 @@
+@if(isLoading()) {
+<app-spinner />
+}
+@else {
+<div class="wrapper">
+    <div class="container main">
+        <div class="row">
+            <div class="col-md-6 side-image">
+            </div>
+            <div class="col-md-6 right">
+                <div class="input-box">
+                    <form [formGroup]="form">
+                        <div class="input-field">
+                            <input type="text" class="input" id="email" required="" autocomplete="off"
+                                formControlName="email">
+                            <label for="email">Email</label>
+                            <div style="height: 20px;">
+                                @if (email?.hasError('required') && email?.touched) {
+                                <span>Email je povinný údaj.</span>
+                                }
+                                @if (email?.hasError('email') && email?.touched) {
+                                <span>Špatný formát emailu.</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="input-field">
+                            <input type="password" class="input" id="pass" required="" formControlName="password">
+                            <label for="pass">Heslo</label>
+                            <div style="height: 20px;">
+                                @if (password?.hasError('required') && password?.touched) {
+                                <span>Heslo je povinný údaj.</span>
+                                }
+                                @if (password?.hasError('minlength') && password?.touched) {
+                                <span>Minimální délka hesla je šest znaků.</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="input-field">
+                            <button type="submit" class="submit" (click)="onSubmit()"
+                                [disabled]="form.invalid">Přihlásit se</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+}

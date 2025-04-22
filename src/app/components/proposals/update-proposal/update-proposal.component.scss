@@ -1,0 +1,133 @@
+p-dialog {
+    .p-dialog-mask {
+        .p-dialog.p-component {
+            .p-dialog-header {
+                .p-dialog-header-actions {
+                    .p-dialog-close-button {
+                        display: none !important;
+                    }
+                }
+            }
+        }
+    }
+}
+
+form {
+    border: 2px solid #D09B52;
+    padding: 10px;
+    width: 100%;
+    border-radius: 20px;
+
+    .submit,
+    .delete {
+        color: #fff;
+        height: 40px;
+        position: relative;
+    }
+
+    .submit {
+        background: #D09B52;
+        border: 2px solid #D09B52;
+        outline: 10px solid #fff;
+        width: calc(50% - 30px);
+        margin: 0 20px -20px 0;
+        float: right;
+        font-weight: 800;
+        font-size: 0.7em;
+        letter-spacing: 1.8pt;
+        text-transform: uppercase;
+        cursor: pointer;
+        top: -10px;
+        left: 0px;
+        opacity: 1;
+        margin-bottom: 1px;
+    }
+
+    .submit:disabled {
+        background: #f7c278;
+        border: 2px solid #f7c278;
+    }
+
+    .delete {
+        background: #F53B57;
+        font-weight: bold;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        transition: 0.3s;
+        border: none;
+        outline: none;
+        top: 20px;
+        left: -20px;
+        outline: 5px solid #fff;
+
+        .bi {
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+    }
+
+    .delete:hover {
+        background: #e60b2c;
+        border-color: #e60b2c;
+
+        .bi {
+            transform: scale(0.8);
+        }
+    }
+
+    .title {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        height: 30px;
+        margin-bottom: 10px;
+        margin-top: 10px;
+        justify-content: center;
+        width: 100%;
+    }
+}
+
+#focus {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #F53B57;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    position: absolute;
+    float: right;
+    top: 27px;
+    right: 15px;
+    background: #F53B57;
+    color: white;
+    outline: 5px solid #fff;
+    cursor: pointer;
+    transition: 0.3s;
+
+    .bi {
+        font-size: 2rem;
+        transition: 0.3s;
+    }
+}
+
+#focus:hover {
+    background: #e60b2c;
+    border-color: #e60b2c;
+
+    .bi {
+        transform: scale(0.6);
+    }
+}
+
+h1 {
+    font-size: 1rem;
+    color: #D09B52;
+    font-weight: bold;
+}

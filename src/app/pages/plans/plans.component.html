@@ -1,0 +1,39 @@
+<div class="sidenav">
+    <ul>
+        <app-nav-button-static background="#24355A" color="#fff" icon="bi-calendar" [text]="calendarTitle()"
+            (clicked)="toggleCalendar()" />
+        <div class="proposal-calendar">
+            <p-datepicker #calendar name="deadline" [(ngModel)]="defaultDate" view="month" dateFormat="mm-yy"
+                [readonlyInput]="true" [minDate]="loggedUser.role === 'Master' ? minDate : null"
+                (onSelect)="onSelectMonth()" />
+        </div>
+
+        @if (this.user().role === 'Admin') {
+        <app-nav-button-active background="#fff" color="#24355A" icon="bi-house" text="F-M"
+            [isActive]="destination() === 'F-M'" (clicked)="onChangeDestination('F-M')" />
+        <app-nav-button-active background="#fff" color="#24355A" icon="bi-house" text="OVA"
+            [isActive]="destination() === 'OVA'" (clicked)="onChangeDestination('OVA')" />
+        }
+
+        @if (users().length > 0) {
+        @if (!isPassedMonth()) {
+        <app-nav-button-static background="#1e81b0" color="#fff" icon="bi-arrow-clockwise" text="Znovu"
+            (clicked)="onReset()" [isDisabled]="nothingChanched()" />
+        <app-nav-button-static background="#05C46B" color="#fff" icon="bi-floppy" text="Uložit"
+            [isDisabled]="nothingChanched()" (clicked)="onSave()" />
+        }
+
+        @if (proposalCard().id > 0 && loggedUser.role === 'Admin') {
+        <app-nav-button-static background="#F53B57" color="#fff" icon="bi-trash" text="Smazat" (clicked)="onDelete()" />
+
+
+        <app-nav-button-static background="#1e81b0" color="#fff" icon="bi-filetype-pdf" text="PDF"
+            (clicked)="onOpenPDF()" [isDisabled]="!nothingChanched()" />
+        }
+        }
+    </ul>
+</div>
+<div class="box">
+    <app-proposals />
+</div>
+<app-confirm />

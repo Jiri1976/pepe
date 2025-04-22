@@ -1,0 +1,61 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 15%;
+
+    .category {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 250px;
+        height: 200px;
+        cursor: pointer;
+
+        img {
+            position: absolute;
+            width: 250px;
+            height: 200px;
+        }
+
+        .overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.55);
+            transition: 0.3s ease-in-out;
+        }
+
+        .category_text {
+            position: relative;
+            color: white;
+
+            .category_text_icon {
+                i {
+                    font-size: 3rem;
+                }
+            }
+
+            p {
+                font-size: 1.5rem;
+                font-weight: 600;
+            }
+        }
+
+        &:hover {
+            .overlay {
+                width: 80%;
+                height: 80%;
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 599px) {
+    .row {
+        gap: 20px;
+        flex-direction: column;
+    }
+}
