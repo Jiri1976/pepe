@@ -1,4 +1,5 @@
 <div class="card-wrapper">
+    @if (!cardLoading()) {
     @if(!formVisible()) {
     <div class="user-card-table">
         <div class="head">
@@ -26,7 +27,6 @@
                     <th class="user-name" style="width: 35% !important; text-align: center;">Perso</th>
                     @if((isPastCard() === false && loggedUser.role === 'Master') || (loggedUser.role === 'Admin')) {
                     <th class="user-name" style="width: 5% !important; text-align: center !important;"></th>
-                    <!-- <th class="user-name"></th> -->
                     }
                 </tr>
             </thead>
@@ -42,13 +42,8 @@
                     @if((isPastCard() === false && loggedUser.role === 'Master') || (loggedUser.role === 'Admin')) {
                     <td class="edit" style="width: 5% !important; text-align: center !important;"
                         (click)="onUpdate(shift)">
-                        <!-- <button class="btn edit" (click)="onUpdateShift(shift)"><i class="bi bi-trash"></i></button> -->
                         <i class="bi bi-arrow-right-circle"></i>
                     </td>
-                    <!-- <td class="buttons">
-                        <button class="btn delete"><i class="bi bi-pencil-square"
-                                (click)="onDeleteShift(shift.date, shift.id, shift.userId)"></i></button>
-                    </td> -->
                     }
                 </tr>
                 }
@@ -63,9 +58,9 @@
         </div>
         }
         @if(shiftCard()!.shifts.length === 0) {
-        <!-- <div class="empty-shifts">
-            <h4>Žádné uložené směny.</h4>           
-        </div> -->
+        <div class="empty-shifts">
+            <h4>Žádné uložené směny.</h4>
+        </div>
         <div class="action-buttons alone">
             <button class="addBtn" (click)="onAddShift()"><i class="bi bi-plus"></i></button>
         </div>
@@ -74,12 +69,13 @@
     </div>
     }
     @if (formVisible()) {
-    <app-shift-form (closeShiftForm)="onCloseShiftForm()" (shiftForSave)="onSave($event)" />
+    <app-shift-form (closeShiftForm)="onCloseShiftForm()" (shiftForSave)="onSave($event)"
+        (shiftForDelete)="onDeleteShift($event)" />
     }
-    <!-- } @else {
-    <div style="margin-top: 150px;">
+    } @else {
+    <div class="spinner-div">
         <app-spinner [nullWidthHeight]="true" />
     </div>
 
-    } -->
+    }
 </div>

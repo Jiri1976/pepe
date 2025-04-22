@@ -1,4 +1,3 @@
-@if(!isLoading) {
 <div class="form-div">
     <form [formGroup]="shiftForm">
         <div id="focus" (click)="onHideForm()"><i class="bi bi-x"></i></div>
@@ -99,11 +98,5 @@
                 [disabled]="persoError || fromError || toError || dateError || compareTimes() || shiftForm.untouched">{{selectedShift().id
                 === 0 ? 'Zapsat' : 'Upravit'}}</button>
         </div>
-
     </form>
 </div>
-} @else {
-<div style="margin-top: 150px;">
-    <app-spinner [nullWidthHeight]="true" />
-</div>
-}

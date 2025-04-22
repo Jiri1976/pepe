@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, DestroyRef, effect, ElementRef, inject, OnInit, output, signal, ViewChild } from '@angular/core';
+import { Component, computed, effect, ElementRef, inject, OnInit, output, signal, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Calendar, CalendarModule } from 'primeng/calendar';
 import { ButtonModule } from 'primeng/button';
@@ -8,17 +8,10 @@ import { TextareaModule } from 'primeng/textarea';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { ShiftService } from '../../../services/shift.service';
 import { ConfirmService } from '../../../services/confirm.service';
-import { concatMap, of, tap } from 'rxjs';
-import { HttpErrorResponse } from '@angular/common/http';
-import { ErrorHandlingService } from '../../../services/error-handling.service';
 import { Shift } from '../../../models/shifts/shift.interface';
-import { AlertService } from '../../../services/alert.service';
-import { SpinnerComponent } from "../../spinner/spinner.component";
-import { UserDTO } from '../../../models/users/userDTO.interface';
 import { DatePickerModule } from 'primeng/datepicker';
 import { NotificationComponent } from "../../notification/notification.component";
 import { OverlayModule } from 'primeng/overlay';
-import { InitShift } from '../../../models/shifts/initShift.interface';
 
 @Component({
   selector: 'app-shift-form',
@@ -31,7 +24,6 @@ import { InitShift } from '../../../models/shifts/initShift.interface';
     CalendarModule,
     TextareaModule,
     FloatLabelModule,
-    SpinnerComponent,
     DatePickerModule,
     NotificationComponent,
     OverlayModule
@@ -42,11 +34,6 @@ import { InitShift } from '../../../models/shifts/initShift.interface';
 export class ShiftFormComponent implements OnInit {
   private shiftService = inject(ShiftService);
   private confirmService = inject(ConfirmService);
-  private errorHandlingService = inject(ErrorHandlingService);
-  private destroyRef = inject(DestroyRef);
-  private alertService = inject(AlertService);
-  private cardShiftMonth = computed(() => this.shiftService.cardShiftMonthYear());
-
   maxDate = new Date();
   shiftForm!: FormGroup;
   selectedShift = computed(() => this.shiftService.selectedShift());
@@ -57,10 +44,10 @@ export class ShiftFormComponent implements OnInit {
   calendarFocus = signal(false);
   fromIsOpen = signal(false);
   toIsOpen = signal(false);
-  isLoading = false;
   oldAndNewValuesAreSame = true;
   closeShiftForm = output<boolean>();
   shiftForSave = output<Shift>();
+  shiftForDelete = output<Shift>();
 
   @ViewChild('calendar', { static: false }) calendar!: Calendar;
   @ViewChild('timeFrom', { static: false }) timeFrom!: Calendar;
@@ -84,38 +71,13 @@ export class ShiftFormComponent implements OnInit {
     this.initializedShitForm();
   }
 
-  // ngAfterViewInit() {
-  //   // this.timeFrom.hideOverlay();
-
-  // }
-
   onDelete() {
-
-    this.confirmService.confirm(`Opravdu chceš smazat směnu z ${new Date(this.shiftForm.get('shiftDate')?.value).toISOString()}`)
+    let date = new Date(this.shiftForm.get('shiftDate')?.value).toLocaleString("cs-CZ", { dateStyle: 'medium' });
+    this.confirmService.confirm(`Opravdu chceš smazat směnu z ${date}?`)
       .then((confirmed) => {
         if (confirmed) {
-          // this.closeShiftForm.emit(true);
-          // let hoursFrom = new Date(this.timeFrom.value).getHours() < 10 ? '0' + new Date(this.timeFrom.value).getHours() : new Date(this.timeFrom.value).getHours();
-          // let minutesFrom = new Date(this.timeFrom.value).getMinutes() < 10 ? '0' + new Date(this.timeFrom.value).getMinutes() : new Date(this.timeFrom.value).getMinutes();
-          // let hoursTo = new Date(this.timeTo.value).getHours() < 10 ? '0' + new Date(this.timeTo.value).getHours() : new Date(this.timeTo.value).getHours();
-          // let minutesTo = new Date(this.timeTo.value).getMinutes() < 10 ? '0' + new Date(this.timeTo.value).getMinutes() : new Date(this.timeTo.value).getMinutes();
-          // let calendarDay = new Date(this.calendar.value);
-          // let day = calendarDay.getDate() < 10 ? '0' + calendarDay.getDate() : calendarDay.getDate();
-          // let month = (calendarDay.getMonth() + 1) < 10 ? '0' + (calendarDay.getMonth() + 1) : (calendarDay.getMonth() + 1);
-          // let year = calendarDay.getFullYear();
-
-          // let initialShift = { ...this.selectedShift() };
-          // let shift: Shift = {
-          //   id: initialShift.id,
-          //   shiftCardId: 0,
-          //   userId: 0,
-          //   date: day + '.' + month + '.' + year,
-          //   from: hoursFrom.toString() + ':' + minutesFrom.toString(),
-          //   to: hoursTo.toString() + ':' + minutesTo.toString(),
-          //   hours: '',
-          //   perso: this.shiftForm.get("shiftPerso")?.value
-          //}
-          // this.shiftForSave.emit(shift);
+          this.closeShiftForm.emit(true);
+          this.shiftForDelete.emit(this.convertToShift());
         }
       });
   }
@@ -143,32 +105,11 @@ export class ShiftFormComponent implements OnInit {
 
   onSubmitShiftForm() {
     let title = this.selectedShift().id > 0 ? 'Opravdu chceš upravit směnu?' : 'Opravdu chceš vytvořit směnu?';
-
     this.confirmService.confirm(title)
       .then((confirmed) => {
         if (confirmed) {
           this.closeShiftForm.emit(true);
-          let hoursFrom = new Date(this.timeFrom.value).getHours() < 10 ? '0' + new Date(this.timeFrom.value).getHours() : new Date(this.timeFrom.value).getHours();
-          let minutesFrom = new Date(this.timeFrom.value).getMinutes() < 10 ? '0' + new Date(this.timeFrom.value).getMinutes() : new Date(this.timeFrom.value).getMinutes();
-          let hoursTo = new Date(this.timeTo.value).getHours() < 10 ? '0' + new Date(this.timeTo.value).getHours() : new Date(this.timeTo.value).getHours();
-          let minutesTo = new Date(this.timeTo.value).getMinutes() < 10 ? '0' + new Date(this.timeTo.value).getMinutes() : new Date(this.timeTo.value).getMinutes();
-          let calendarDay = new Date(this.calendar.value);
-          let day = calendarDay.getDate() < 10 ? '0' + calendarDay.getDate() : calendarDay.getDate();
-          let month = (calendarDay.getMonth() + 1) < 10 ? '0' + (calendarDay.getMonth() + 1) : (calendarDay.getMonth() + 1);
-          let year = calendarDay.getFullYear();
-
-          let initialShift = { ...this.selectedShift() };
-          let shift: Shift = {
-            id: initialShift.id,
-            shiftCardId: 0,
-            userId: 0,
-            date: day + '.' + month + '.' + year,
-            from: hoursFrom.toString() + ':' + minutesFrom.toString(),
-            to: hoursTo.toString() + ':' + minutesTo.toString(),
-            hours: '',
-            perso: this.shiftForm.get("shiftPerso")?.value
-          }
-          this.shiftForSave.emit(shift);
+          this.shiftForSave.emit(this.convertToShift());
         }
       });
   }
@@ -314,6 +255,30 @@ export class ShiftFormComponent implements OnInit {
       && (new Date(this.timeFrom?.value).getMinutes() === new Date(this.timeTo?.value).getMinutes()));
   }
 
+  private convertToShift() {
+    let hoursFrom = new Date(this.timeFrom.value).getHours() < 10 ? '0' + new Date(this.timeFrom.value).getHours() : new Date(this.timeFrom.value).getHours();
+    let minutesFrom = new Date(this.timeFrom.value).getMinutes() < 10 ? '0' + new Date(this.timeFrom.value).getMinutes() : new Date(this.timeFrom.value).getMinutes();
+    let hoursTo = new Date(this.timeTo.value).getHours() < 10 ? '0' + new Date(this.timeTo.value).getHours() : new Date(this.timeTo.value).getHours();
+    let minutesTo = new Date(this.timeTo.value).getMinutes() < 10 ? '0' + new Date(this.timeTo.value).getMinutes() : new Date(this.timeTo.value).getMinutes();
+    let calendarDay = new Date(this.calendar.value);
+    let day = calendarDay.getDate() < 10 ? '0' + calendarDay.getDate() : calendarDay.getDate();
+    let month = (calendarDay.getMonth() + 1) < 10 ? '0' + (calendarDay.getMonth() + 1) : (calendarDay.getMonth() + 1);
+    let year = calendarDay.getFullYear();
+
+    let initialShift = { ...this.selectedShift() };
+    let shift: Shift = {
+      id: initialShift.id,
+      shiftCardId: 0,
+      userId: 0,
+      date: day + '.' + month + '.' + year,
+      from: hoursFrom.toString() + ':' + minutesFrom.toString(),
+      to: hoursTo.toString() + ':' + minutesTo.toString(),
+      hours: '',
+      perso: this.shiftForm.get("shiftPerso")?.value
+    }
+    return shift;
+  }
+
   private compareOldAndNewValues() {
     let monthFromSelectedShift = '' + (this.selectedShift().date.getMonth() + 1);
     let dayFromSelectedShift = '' + this.selectedShift().date.getDate();
@@ -372,21 +337,6 @@ export class ShiftFormComponent implements OnInit {
     }
   }
 
-  private reloadShiftCard(monthYear: string, user: UserDTO) {
-    return this.shiftService.getUserShiftCard(monthYear, user).pipe(
-      tap(response => {
-        if (response === null) {
-          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
-        } else if (response.isSuccess === false) {
-          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
-        }
-        if (response !== null && response.isSuccess) {
-          // this.shiftAdministration.shiftCard.set(response.result);
-        }
-      })
-    );
-  }
-
   private initializedShitForm() {
     this.shiftForm = new FormGroup({
       'id': new FormControl({
@@ -411,9 +361,4 @@ export class ShiftFormComponent implements OnInit {
       }, [Validators.required, Validators.maxLength(100)])
     });
   }
-
-  private handleError = (errorRes: HttpErrorResponse) => {
-    this.isLoading = false;
-    return this.errorHandlingService.handleError(errorRes);
-  };
 }

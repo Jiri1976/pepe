@@ -21,19 +21,13 @@ export class ShiftService {
         perso: ''
     };
     private authService = inject(AuthService);
-    // destination = signal<string>('F-M');
     monthYear = signal<string>((new Date().getMonth() + 1).toString() + (new Date().getFullYear()).toString());
     selectedShift = signal<InitShift>(this.initialShift);
     cardShiftMonthYear = signal<string>('');
-    // isLoading = signal(false);
 
     setMonthYear(monthYear: string) {
         this.monthYear.set(monthYear);
     }
-
-    // setDestination(destination: string) {
-    //     this.destination.set(destination);
-    // }
 
     resetSelectedShift() {
         this.selectedShift.set(this.initialShift);

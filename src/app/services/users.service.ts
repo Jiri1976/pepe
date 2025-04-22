@@ -68,10 +68,8 @@ export class UsersService {
     getUsers(isAdmin: boolean, destination?: string) {
         let url = '';
         if (isAdmin) {
-            console.log('new');
             url = this.BASE_ROUTE + 'authentication/GetAllUsers';
         } else {
-            console.log('old');
             url = this.BASE_ROUTE + `authentication/GetListOfUsers?destination=${destination}`;
         }
         return this.http.get<Response>(url);
