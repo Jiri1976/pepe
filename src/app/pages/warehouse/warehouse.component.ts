@@ -16,12 +16,14 @@ import { ConfirmComponent } from '../../components/confirm/confirm.component';
 import { WarehouseCard } from '../../models/warehouse/warehouse-card.interface';
 import { ErrorHandlingService } from '../../services/error-handling.service';
 import { ConfirmService } from '../../services/confirm.service';
+import { NavButtonStaticComponent } from "../../components/ui-buttons/nav-button-static/nav-button-static.component";
+import { NavButtonActiveComponent } from "../../components/ui-buttons/nav-button-active/nav-button-active.component";
 
 @Component({
-    selector: 'app-warehouse',
-    imports: [AdminWarehouseComponent, MasterWarehouseComponent, SpinnerComponent, AddWarehouseItemComponent, DialogModule, ButtonModule, InputTextModule, ReactiveFormsModule, ConfirmComponent],
-    templateUrl: './warehouse.component.html',
-    styleUrl: './warehouse.component.scss'
+  selector: 'app-warehouse',
+  imports: [AdminWarehouseComponent, MasterWarehouseComponent, SpinnerComponent, AddWarehouseItemComponent, DialogModule, ButtonModule, InputTextModule, ReactiveFormsModule, ConfirmComponent, NavButtonStaticComponent, NavButtonActiveComponent],
+  templateUrl: './warehouse.component.html',
+  styleUrl: './warehouse.component.scss'
 })
 export class WarehouseComponent implements OnInit {
   private authService = inject(AuthService);

@@ -37,6 +37,14 @@ p-dialog {
     }
 }
 
+p-dialog.select-user {
+    .p-dialog-mask {
+        .p-dialog.p-component {
+            margin-left: 10rem !important;
+        }
+    }
+}
+
 .p-button {
     margin: 5px;
     border-radius: 6px;

@@ -35,6 +35,7 @@ export class ShiftCardComponent {
   updatedCard = output<ShiftCard>();
 
   onUpdateShift(shift: Shift) {
+    this.shiftService.setMonthYear(this.shiftCard()!.monthYear);
     let date = new Date(parseInt(shift.date.split('.')[2]), parseInt(shift.date.split('.')[1]) - 1, parseInt(shift.date.split('.')[0]));
     let from = new Date(parseInt(shift.date.split('.')[2]), parseInt(shift.date.split('.')[1]) - 1, parseInt(shift.date.split('.')[0]), parseInt(shift.from?.split(':')[0]!), parseInt(shift.from?.split(':')[1]!));
     let to = new Date(parseInt(shift.date.split('.')[2]), parseInt(shift.date.split('.')[1]) - 1, parseInt(shift.date.split('.')[0]), parseInt(shift.to?.split(':')[0]!), parseInt(shift.to?.split(':')[1]!));
@@ -54,21 +55,66 @@ export class ShiftCardComponent {
   }
 
   onAddShift() {
+    this.shiftService.setMonthYear(this.shiftCard()!.monthYear);
+    if (this.isPastCard()) {
+      let hours = new Date().getHours() < 10 ? '0' + new Date().getHours() : new Date().getHours();
+      let minutes = new Date().getMinutes() < 10 ? '0' + new Date().getMinutes() : new Date().getMinutes();
+      let _shift: Shift = {
+        id: 0,
+        shiftCardId: this.shiftCard()!.id,
+        userId: this.shiftCard()!.userId,
+        date: '01.' + this.shiftCard()!.monthYear.substring(0, 2) + '.' + this.shiftCard()!.monthYear.substring(2, 6),
+        from: `${hours}:${minutes}`,
+        to: `${hours}:${minutes}`,
+        hours: '',
+        perso: ''
+      }
+      this.shiftService.setSelectedShift(_shift);
+    }
     this.formVisible.set(true);
     this.openShiftForm.emit();
   }
 
   onUpdate(shift: Shift) {
+    this.shiftService.setMonthYear(this.shiftCard()!.monthYear);
     this.shiftService.setSelectedShift(shift);
     this.formVisible.set(true);
     this.openShiftForm.emit();
+
   }
 
   onDeleteCard() {
     this.confirmService.confirm(`Opravdu chceš smazat celou kartu?`)
       .then((confirmed) => {
         if (confirmed) {
+          this.cardLoading.set(true);
+          const subscription = this.shiftService.deleteShiftCard(this.shiftCard()!.id).pipe(
+            tap(response => {
+              if (response === null) {
+                this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+                this.cardLoading.set(false);
+              } else if (response.isSuccess === false) {
+                this.cardLoading.set(false);
+                this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+              } else if (response.isSuccess) {
+                let _card: ShiftCard = response.result;
+                this.shiftCard.set(_card);
+                this.updatedCard.emit(_card);
+                this.cardLoading.set(false);
+                this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Karta byla smazána!' });
+              }
+            }),
 
+          ).subscribe({
+            next: () => {
+
+            },
+            error: error => this.handleError(error)
+          });
+
+          this.destroyRef.onDestroy(() => {
+            subscription.unsubscribe();
+          });
         }
       });
   }
@@ -156,6 +202,46 @@ export class ShiftCardComponent {
     this.destroyRef.onDestroy(() => {
       subscription.unsubscribe();
     });
+  }
+
+  onToPdf() {
+    this.confirmService.confirm('Opravdu stáhnout kartu jako PDF soubor?')
+      .then((confirmed) => {
+        if (confirmed) {
+          this.cardLoading.set(true);
+          const subscription = this.shiftService.generatePDF(this.shiftCard()!).pipe(
+            tap(response => {
+              if (response === null) {
+                this.cardLoading.set(false);
+                this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+              } else if (response.isSuccess === false) {
+                this.cardLoading.set(false);
+                this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+              } else {
+                this.cardLoading.set(false);
+                const binary = atob(response.result);
+                const uint8Array = new Uint8Array(binary.length);
+                for (let i = 0; i < binary.length; i++) {
+                  uint8Array[i] = binary.charCodeAt(i);
+                }
+                const blob = new Blob([uint8Array], { type: 'application/pdf' });
+                var url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a')
+                a.href = url;
+                a.download = `${this.shiftCard()?.user} - ${this.convertMonthYear(this.shiftCard()!.monthYear)}.pdf`;
+                a.click();
+                URL.revokeObjectURL(url);
+              }
+            })
+          ).subscribe({
+            error: error => this.handleError(error)
+          });
+
+          this.destroyRef.onDestroy(() => {
+            subscription.unsubscribe();
+          });
+        }
+      });
   }
 
   isPastCard() {

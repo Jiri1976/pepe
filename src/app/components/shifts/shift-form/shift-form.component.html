@@ -21,7 +21,12 @@
                         (click)="onOpenCalendar()">
                         <p-datepicker #calendar dateFormat="dd.mm.yy" (onInput)="onInput('calendar')"
                             (onSelect)="onBlur('calendar')" (onShow)="calendarFocus.set(true)"
-                            (onClose)="calendarFocus.set(false)" formControlName="shiftDate" [maxDate]="maxDate" />
+                            (onClose)="calendarFocus.set(false)" formControlName="shiftDate" [minDate]="minDate"
+                            [maxDate]="maxDate" />
+                        <!-- <p-datepicker #calendar dateFormat="dd.mm.yy" (onInput)="onInput('calendar')"
+                            (onSelect)="onBlur('calendar')" (onShow)="calendarFocus.set(true)"
+                            (onClose)="calendarFocus.set(false)" formControlName="shiftDate" /> -->
+
                     </div>
                 </div>
                 @if (dateError) {

@@ -6,6 +6,7 @@ import { GetUserDTO } from "../models/users/getUserDTO.interface";
 import { Shift } from "../models/shifts/shift.interface";
 import { InitShift } from "../models/shifts/initShift.interface";
 import { AuthService } from "./auth.service";
+import { ShiftCard } from "../models/shifts/shiftCard.interface";
 
 @Injectable({
     providedIn: 'root'
@@ -21,7 +22,7 @@ export class ShiftService {
         perso: ''
     };
     private authService = inject(AuthService);
-    monthYear = signal<string>((new Date().getMonth() + 1).toString() + (new Date().getFullYear()).toString());
+    monthYear = signal<string>('');
     selectedShift = signal<InitShift>(this.initialShift);
     cardShiftMonthYear = signal<string>('');
 
@@ -88,16 +89,6 @@ export class ShiftService {
         return this.http.delete<Response>(url);
     }
 
-    deleteProposalCard(cardId: number) {
-        let httpOptions = {
-            headers: new HttpHeaders({
-                'user-role': this.authService.getUser().role,
-            })
-        };
-        const url = this.BASE_ROUTE + `Proposals/DeleteProposalCard?cardId=${cardId}`;
-        return this.http.delete<Response>(url, httpOptions);
-    }
-
     deleteShiftCard(cardId: number) {
         const url = this.BASE_ROUTE + `shifts/DeleteCard?id=${cardId}`;
         return this.http.delete<Response>(url);
@@ -110,5 +101,27 @@ export class ShiftService {
             destination
         }
         return this.http.post<Response>(url, model);
+    }
+
+    generatePDF(card: ShiftCard) {
+        const role = this.authService.getUser().role;
+        const url = this.BASE_ROUTE + 'shifts/GeneratePDFCard';
+
+        return this.http.post<Response>(url, card, {
+            headers: new HttpHeaders()
+                .set('Content-Type', 'application/json')
+                .set('user-role', role)
+        });
+    }
+
+    generateAllToPDF(cards: ShiftCard[]) {
+        const role = this.authService.getUser().role;
+        const url = this.BASE_ROUTE + 'shifts/generateAllToPDF';
+
+        return this.http.post<Response>(url, cards, {
+            headers: new HttpHeaders()
+                .set('Content-Type', 'application/json')
+                .set('user-role', role)
+        });
     }
 }

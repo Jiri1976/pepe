@@ -1,4 +1,57 @@
-@if(isLoading) {
+<div class="sidenav">
+    <ul>
+        <app-nav-button-static background="#24355A" color="#fff" icon="bi-calendar" text="Položky" />
+        <div class="proposal-calendar">
+            <!-- <p-datepicker #calendar name="deadline" [(ngModel)]="defaultDate" view="month" dateFormat="mm-yy"
+                [readonlyInput]="true" [maxDate]="loggedUser.role === 'Master' ? maxDate : null"
+                (onSelect)="onSelectMonth()" /> -->
+            <!-- <p-datepicker #calendar name="deadline" [(ngModel)]="defaultDate" view="month" dateFormat="mm-yy"
+                [readonlyInput]="true" [maxDate]="maxDate" (onSelect)="onSelectMonth()" /> -->
+        </div>
+
+        <!-- @if (this.loggedUser.role === 'Admin') {
+        <app-nav-button-active background="#fff" color="#24355A" icon="bi-house" text="F-M"
+            (clicked)="onSelectDestination('F-M')" [isActive]="destination() === 'F-M'"
+            [isDisabled]="formShiftVisible()" />
+        <app-nav-button-active background="#fff" color="#24355A" icon="bi-house" text="OVA"
+            [isActive]="destination() === 'OVA'" (clicked)="onSelectDestination('OVA')"
+            [isDisabled]="formShiftVisible()" />
+        }
+
+        <app-nav-button-active background="#fff" color="#24355A" icon="bi-people" text="Uživatelé" (click)="openModal()"
+            [isActive]="visibleModal()" [isDisabled]="formShiftVisible()" />
+        <app-nav-button-static background="#1e81b0" color="#fff" icon="bi-arrow-clockwise" text="Znovu"
+            (clicked)="onReset()" [isDisabled]="formShiftVisible()" />
+        <app-nav-button-static background="#1e81b0" color="#fff" icon="bi-filetype-pdf" text="Všichni"
+            (clicked)="onAllToPdf()" [isDisabled]="formShiftVisible()" /> -->
+    </ul>
+</div>
+<div class="box">
+    <!-- @if(!isLoading()) {
+    <div class="shift-card">
+        @if (cards().length > 0) {
+        <swiper-container #swiperRef effect="cards" grab-cursor="true" (swiperinit)="onSwiperInit($event)">
+            @for(card of cards(); track $index) {
+            <swiper-slide>
+                <app-shift-card [shiftCard]="card" (closeShiftForm)="onCloseShiftForm()"
+                    (openShiftForm)="onOpenShiftForm()" (updatedCard)="onCardUpdate($event)" />
+            </swiper-slide>
+            }
+        </swiper-container>
+        }
+    </div>
+    } @else {
+    <app-spinner [nullWidthHeight]="true" [marginTop]="20" />
+    } -->
+
+</div>
+
+<app-confirm />
+
+
+
+
+<!-- @if(isLoading) {
 <app-spinner />
 }
 @else {
@@ -15,7 +68,7 @@
                     }
                 </div>
                 <div class="flip-card-back">
-                    <!-- <app-add-warehouse-item (isLoading)="onIsLoading($event)" (backSelected)="onFlipCard($event)" /> -->
+                    
                     <app-add-warehouse-item (backSelected)="onFlipCard($event)" />
                 </div>
             </div>
@@ -55,4 +108,4 @@
     </div>
 </div>
 }
-<app-confirm />
+<app-confirm /> -->

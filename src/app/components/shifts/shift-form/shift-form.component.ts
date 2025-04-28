@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, ElementRef, inject, OnInit, output, signal, ViewChild } from '@angular/core';
+import { Component, computed, effect, ElementRef, inject, input, model, OnInit, output, signal, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Calendar, CalendarModule } from 'primeng/calendar';
 import { ButtonModule } from 'primeng/button';
@@ -34,7 +34,6 @@ import { OverlayModule } from 'primeng/overlay';
 export class ShiftFormComponent implements OnInit {
   private shiftService = inject(ShiftService);
   private confirmService = inject(ConfirmService);
-  maxDate = new Date();
   shiftForm!: FormGroup;
   selectedShift = computed(() => this.shiftService.selectedShift());
   persoError = false;
@@ -48,6 +47,9 @@ export class ShiftFormComponent implements OnInit {
   closeShiftForm = output<boolean>();
   shiftForSave = output<Shift>();
   shiftForDelete = output<Shift>();
+  monthYear = computed(() => this.shiftService.monthYear());
+  minDate = this.getMinDate(this.monthYear()!);
+  maxDate = new Date();
 
   @ViewChild('calendar', { static: false }) calendar!: Calendar;
   @ViewChild('timeFrom', { static: false }) timeFrom!: Calendar;
@@ -56,6 +58,9 @@ export class ShiftFormComponent implements OnInit {
 
   constructor() {
     effect(() => {
+      if (this.isPastCard()) {
+        this.maxDate = this.getMaxDate(this.monthYear());
+      }
       this.shiftForm.patchValue({
         'id': this.selectedShift().id,
         'shiftDate': this.selectedShift().date,
@@ -69,6 +74,10 @@ export class ShiftFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.initializedShitForm();
+  }
+
+  ngAfterViewInit() {
+    this.calendar.cd.detectChanges();
   }
 
   onDelete() {
@@ -335,6 +344,23 @@ export class ShiftFormComponent implements OnInit {
       this.shiftForm.markAsTouched();
       this.oldAndNewValuesAreSame = false;
     }
+  }
+
+  private getMinDate(monthYear: string) {
+    return new Date(parseInt(monthYear.substring(2, 6)), parseInt(monthYear.substring(0, 2)) - 1, 1);
+  }
+
+  private getMaxDate(monthYear: string) {
+    return new Date(parseInt(monthYear.substring(2, 6)), parseInt(monthYear.substring(0, 2)), 0);
+  }
+
+  private isPastCard() {
+    let currentDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    let cardDate = new Date(parseInt(this.monthYear().substring(2, 6)), parseInt(this.monthYear().substring(0, 2)) - 1, 1);
+    if (cardDate < currentDate) {
+      return true;
+    }
+    return false;
   }
 
   private initializedShitForm() {

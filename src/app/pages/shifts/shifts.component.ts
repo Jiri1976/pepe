@@ -22,7 +22,6 @@ import { ShiftCard } from '../../models/shifts/shiftCard.interface';
 import { ShiftCardComponent } from '../../components/shifts/shift-card/shift-card.component';
 import Swiper from 'swiper';
 
-
 @Component({
   selector: 'app-plans',
   imports: [
@@ -49,6 +48,7 @@ import Swiper from 'swiper';
 })
 export class ShiftsComponent implements OnInit {
   private swiper!: Swiper;
+  private MONTHS = ["LEDEN", "ÚNOR", "BŘEZEN", "DUBEN", "KVĚTEN", "ČERVEN", "ČRVENEC", "SRPEN", "ZÁŘÍ", "ŘÍJEN", "LISTOPAD", "PROSINEC"];
   private MONTHS_NAMES = ["LED", "ÚNO", "BŘE", "DUB", "KVĚ", "ČER", "ČRV", "SRP", "ZÁŘ", "ŘÍJ", "LIS", "PRO"];
   private MONTHS_NUM = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
   private authService = inject(AuthService);
@@ -86,7 +86,7 @@ export class ShiftsComponent implements OnInit {
       const swiper = (this.swiperRef.nativeElement as any).swiper;
       if (swiper) {
         swiper.on('slideChange', () => {
-          console.log('Slide changed! Index:', swiper.activeIndex);
+          // console.log('Slide changed! Index:', swiper.activeIndex);
         });
       }
     });
@@ -155,10 +155,50 @@ export class ShiftsComponent implements OnInit {
     this.getCards();
   }
 
-  onAdd() {
-    this.shiftService.resetSelectedShift();
-  }
+  onAllToPdf() {
+    let _cards = this.cards().filter(c => c.shifts.length > 0);
+    if (_cards.length === 0) {
+      this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Chybí uložené směny.' });
+      return;
+    }
+    this.confirmService.confirm('Opravdu stáhnout karty uživatelů?')
+      .then((confirmed) => {
+        if (confirmed) {
+          this.isLoading.set(true);
+          const subscription = this.shiftService.generateAllToPDF(_cards).pipe(
+            tap(response => {
+              if (response === null) {
+                this.isLoading.set(false);
+                this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+              } else if (response.isSuccess === false) {
+                this.isLoading.set(false);
+                this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+              } else {
+                this.isLoading.set(false);
+                const binary = atob(response.result);
+                const uint8Array = new Uint8Array(binary.length);
+                for (let i = 0; i < binary.length; i++) {
+                  uint8Array[i] = binary.charCodeAt(i);
+                }
+                const blob = new Blob([uint8Array], { type: 'application/pdf' });
+                var url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a')
+                a.href = url;
+                a.download = `${this.MONTHS[parseInt(this.monthYear().substring(0, 2)) - 1]} ${this.monthYear().substring(2, 6)}.pdf`;
+                a.click();
+                URL.revokeObjectURL(url);
+              }
+            })
+          ).subscribe({
+            error: error => this.handleError(error)
+          });
 
+          this.destroyRef.onDestroy(() => {
+            subscription.unsubscribe();
+          });
+        }
+      });
+  }
   onReset() {
     this.confirmService.confirm('Opravdu chceš znovu nahrát karty?')
       .then((confirmed) => {

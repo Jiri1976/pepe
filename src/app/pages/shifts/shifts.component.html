@@ -6,6 +6,8 @@
             <p-datepicker #calendar name="deadline" [(ngModel)]="defaultDate" view="month" dateFormat="mm-yy"
                 [readonlyInput]="true" [maxDate]="loggedUser.role === 'Master' ? maxDate : null"
                 (onSelect)="onSelectMonth()" />
+            <!-- <p-datepicker #calendar name="deadline" [(ngModel)]="defaultDate" view="month" dateFormat="mm-yy"
+                [readonlyInput]="true" [maxDate]="maxDate" (onSelect)="onSelectMonth()" /> -->
         </div>
 
         @if (this.loggedUser.role === 'Admin') {
@@ -21,6 +23,8 @@
             [isActive]="visibleModal()" [isDisabled]="formShiftVisible()" />
         <app-nav-button-static background="#1e81b0" color="#fff" icon="bi-arrow-clockwise" text="Znovu"
             (clicked)="onReset()" [isDisabled]="formShiftVisible()" />
+        <app-nav-button-static background="#1e81b0" color="#fff" icon="bi-filetype-pdf" text="Všichni"
+            (clicked)="onAllToPdf()" [isDisabled]="formShiftVisible()" />
     </ul>
 </div>
 <div class="box">

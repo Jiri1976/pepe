@@ -18,7 +18,7 @@
             border: 1px solid #24355A;
             border-radius: 5px;
             padding: 5px;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
             background: #f8f8f4;
             color: #24355A;
             justify-content: space-between;
@@ -188,14 +188,33 @@
                     rotate: 2turn;
                 }
             }
-        }
 
-        .action-buttons.alone {
-            justify-content: center;
-            position: absolute;
-            bottom: 10px;
-            right: 20px;
+            .pdfBtn {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                border-radius: 50%;
+                height: 30px;
+                width: 30px;
+                background: #1e81b0;
+                color: #fff;
+                border: none;
+                transition: ease 0.3s all;
+                position: absolute;
+                bottom: 10px;
+                right: 60px;
 
+                i {
+                    font-size: 1.1rem;
+                    font-weight: bold;
+                    transition: .5s ease-in-out;
+                }
+            }
+
+            .pdfBtn:hover {
+                box-shadow: 0 0 10px 3px #1e81b0;
+            }
         }
     }
 
