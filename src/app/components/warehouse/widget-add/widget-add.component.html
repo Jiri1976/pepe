@@ -1,0 +1,30 @@
+<div class="container">
+    @if (!isLoading()) {
+
+    @if ((itemForm.invalid && itemForm.touched) || (itemForm.dirty && itemForm.invalid)) {
+    <div class="notify">
+        <app-notification [notify]="(itemForm.invalid && itemForm.touched) || (itemForm.dirty && itemForm.invalid)"
+            [height]="'28px'" [width]="'28px'" [ringSize]="'1.2rem'" />
+    </div>
+    } @else {
+    <button class="save-button" (click)="onSave()" [disabled]="itemForm.invalid"><i class="bi bi-check-lg"></i></button>
+    }
+
+    <form [formGroup]="itemForm">
+        <div>
+            <input type="text" class="form-control"
+                [class.shake]="itemForm.get('name')?.touched &&itemForm.get('name')?.hasError('required') ||itemForm.get('name')?.untouched &&itemForm.get('name')?.dirty &&itemForm.get('name')?.hasError('required') ||itemForm.get('name')?.hasError('maxlength')"
+                id="name" [value]="itemForm.get('name')?.value" formControlName="name">
+            <div class="error"
+                [style.display]="(itemForm.get('name')?.touched &&itemForm.get('name')?.hasError('required') ||itemForm.get('name')?.untouched &&itemForm.get('name')?.dirty &&itemForm.get('name')?.hasError('required')) ? 'block' : 'none'">
+                * Název je povinný údaj</div>
+            <div class="error" [style.display]="itemForm.get('name')?.hasError('maxlength') ? 'block' : 'none'">
+                * Prosím pouze 30 znaků</div>
+        </div>
+    </form>
+    } @else {
+    <div class="spinner-box">
+        <app-spinner [nullWidthHeight]="true" [imgHeight]="'40px'" [imgWidth]="'40px'" />
+    </div>
+    }
+</div>

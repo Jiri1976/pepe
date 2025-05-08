@@ -13,7 +13,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    position: sticky !important;
+    // position: sticky !important;
+    position: fixed !important;
     top: 0;
     width: 100vw;
     z-index: 999;

@@ -37,7 +37,6 @@ import Swiper from 'swiper';
     NavButtonActiveComponent,
     OverlayModule,
     DatePickerModule,
-    CalendarModule,
     SpinnerComponent,
     SelectUserComponent,
     ShiftCardComponent
@@ -64,7 +63,7 @@ export class ShiftsComponent implements OnInit {
   monthYear = signal<string>(this.MONTHS_NUM[new Date().getMonth()] + new Date().getFullYear());
   loggedUser = this.authService.getUser();
   destination = signal(this.loggedUser.role === 'Master' ? this.loggedUser.destination : 'F-M');
-  isLoading = signal(false);
+  isLoading = signal(true);
   visibleModal = signal(false);
   users = signal<{ userName: string, userId: number }[]>([]);
   cards = signal<ShiftCard[]>([]);
@@ -219,21 +218,6 @@ export class ShiftsComponent implements OnInit {
 
         }
       });
-  }
-
-  isPassedMonth() {
-    let today = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-    // let _monthYear = this.proposalCard().monthYear.length === 5 ? '0' + this.proposalCard().monthYear : this.proposalCard().monthYear;
-
-    // let day = new Date(parseInt(_monthYear.substring(2, 6)), parseInt(_monthYear.substring(0, 2)) - 1, 1);
-    // if (day >= today) {
-    //   return false;
-    // }
-    return true;
-  }
-
-  private preparePDFData() {
-
   }
 
   private getCards() {

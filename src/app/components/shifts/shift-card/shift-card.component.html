@@ -16,7 +16,7 @@
             </div>
         </div>
         @if(shiftCard()!.shifts.length > 0) {
-        <table class="table table-striped mt-1">
+        <table class="table table-striped">
             <thead class="table-dark">
                 <tr>
                     <th class="user-name" style="width: 5% !important; text-align: right;">#</th>
@@ -82,7 +82,7 @@
     }
     } @else {
     <div class="spinner-div">
-        <app-spinner [nullWidthHeight]="true" />
+        <app-spinner [nullWidthHeight]="true" [marginTop]="20" />
     </div>
 
     }

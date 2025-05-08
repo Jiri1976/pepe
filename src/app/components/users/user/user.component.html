@@ -117,7 +117,12 @@
         @if (user().role === 'User' ) {
         <input type="radio" class="btn-check" name="isActive" id="isActive" (change)="changeIsActive()"
             formControlName="isActive">
-        <label [class]="`${activeUser() ? 'checked' : ''} btn isActive`" for="isActive"></label>
+        <!-- <label [class]="`${activeUser() ? 'checked' : ''} btn isActive`" for="isActive"></label> -->
+        @if (activeUser()) {
+        <label class="checked btn isActive" for="isActive"><i class="bi bi-heart-fill"></i></label>
+        } @else {
+        <label class="btn isActive" for="isActive"><i class="bi bi-sign-stop-fill"></i></label>
+        }
         }
 
         @if (user().id > 0 && user().role !== 'Admin') {

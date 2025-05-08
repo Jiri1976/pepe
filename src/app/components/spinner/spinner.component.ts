@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { SpinnerDirective } from '../../directives/spinner.directive';
 
 @Component({
@@ -15,4 +15,7 @@ import { SpinnerDirective } from '../../directives/spinner.directive';
         }
     ]
 })
-export class SpinnerComponent { }
+export class SpinnerComponent {
+    imgHeight = input<string>();
+    imgWidth = input<string>();
+}

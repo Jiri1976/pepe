@@ -1,3 +1,7 @@
+// :host {
+//     overflow-x: hidden !important;
+// }
+
 .sidenav {
     display: flex;
     flex-direction: column;
@@ -5,6 +9,9 @@
     align-items: center !important;
     width: 10rem;
     float: left;
+    position: fixed;
+    margin-top: 50px;
+    z-index: 999;
 
     ul {
         margin: 2rem 0 0 0;
@@ -15,164 +22,157 @@
             height: 50px;
             position: absolute;
             left: -90px;
-            top: 15px;
+            top: 60px;
         }
     }
 }
 
 
 .box {
-    width: calc(100% - 10rem) !important;
-    display: flex;
-    position: relative;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    font-family: 'Poppins', sans-serif;
-    position: relative;
-
-    .shift-card {
-        min-width: 750px;
-        margin: 1.5rem 0 0 0;
-        height: 750px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-
-        swiper-container {
-            margin: auto !important;
-            width: 740px;
-            height: 740px;
-
-            swiper-slide {
-                background: #fff !important;
-                box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-            }
-        }
-    }
-}
-
-
-
-.cardWrapper {
+    // margin-top: 50px;
+    // position: fixed;
+    // left: 10rem;
+    // width: calc(100% - 10rem) !important;
+    // display: flex;
+    // position: relative;
+    // flex-direction: column;
+    // justify-content: center;
+    // align-items: center;
+    // font-family: 'Poppins', sans-serif;
+    // position: relative;
+    //background: green;
+    // width: calc(100% - 10rem) !important;
     width: 100% !important;
     display: flex;
-    flex-direction: column;
+    float: right;
+    flex-direction: row;
     justify-content: center;
     align-items: center;
     font-family: 'Poppins', sans-serif;
-    overflow: hidden;
-
-    .flip-card {
-        background-color: transparent;
-        width: 50%;
-        min-height: 620px;
-        margin-left: auto;
-        margin-right: auto;
-        perspective: 1000px;
-        margin-top: 75px;
-    }
-
-    .flip-card-inner {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        text-align: center;
-        transition: transform 0.8s;
-        transform-style: preserve-3d;
-    }
-
-    .flip-card.hover .flip-card-inner {
-        transform: rotateX(180deg);
-    }
-
-    .flip-card-front,
-    .flip-card-back {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        -webkit-backface-visibility: hidden;
-        /* Safari */
-        backface-visibility: hidden;
-    }
-
-    .flip-card-front {
-        background-color: #fff;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-    }
-
-    .flip-card-back {
-        background-color: #fff;
-        transform: rotateX(180deg);
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        align-items: center;
-    }
+    position: relative;
+    margin-top: 50px;
 }
 
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
 
-#spinner {
-    width: 100%;
-    background: #fff;
-    display: flex;
-    flex-direction: column;
-    justify-content: center !important;
-    align-items: center !important;
 
-    img {
-        height: 50px;
-        width: 50px;
-    }
-}
+// .cardWrapper {
+//     width: 100% !important;
+//     display: flex;
+//     flex-direction: column;
+//     justify-content: center;
+//     align-items: center;
+//     font-family: 'Poppins', sans-serif;
+//     overflow: hidden;
 
-@-webkit-keyframes rotating
+//     .flip-card {
+//         background-color: transparent;
+//         width: 50%;
+//         min-height: 620px;
+//         margin-left: auto;
+//         margin-right: auto;
+//         perspective: 1000px;
+//         margin-top: 75px;
+//     }
 
-/* Safari and Chrome */
-    {
-    from {
-        -webkit-transform: rotate(0deg);
-        -o-transform: rotate(0deg);
-        transform: rotate(0deg);
-    }
+//     .flip-card-inner {
+//         position: relative;
+//         width: 100%;
+//         height: 100%;
+//         text-align: center;
+//         transition: transform 0.8s;
+//         transform-style: preserve-3d;
+//     }
 
-    to {
-        -webkit-transform: rotate(360deg);
-        -o-transform: rotate(360deg);
-        transform: rotate(360deg);
-    }
-}
+//     .flip-card.hover .flip-card-inner {
+//         transform: rotateX(180deg);
+//     }
 
-@keyframes rotating {
-    from {
-        -ms-transform: rotate(0deg);
-        -moz-transform: rotate(0deg);
-        -webkit-transform: rotate(0deg);
-        -o-transform: rotate(0deg);
-        transform: rotate(0deg);
-    }
+//     .flip-card-front,
+//     .flip-card-back {
+//         position: absolute;
+//         width: 100%;
+//         height: 100%;
+//         -webkit-backface-visibility: hidden;
+//         /* Safari */
+//         backface-visibility: hidden;
+//     }
 
-    to {
-        -ms-transform: rotate(360deg);
-        -moz-transform: rotate(360deg);
-        -webkit-transform: rotate(360deg);
-        -o-transform: rotate(360deg);
-        transform: rotate(360deg);
-    }
-}
+//     .flip-card-front {
+//         background-color: #fff;
+//         display: flex;
+//         flex-direction: column;
+//         justify-content: space-between;
+//     }
 
-.rotating {
-    -webkit-animation: rotating 2s linear infinite;
-    -moz-animation: rotating 2s linear infinite;
-    -ms-animation: rotating 2s linear infinite;
-    -o-animation: rotating 2s linear infinite;
-    animation: rotating 2s linear infinite;
-}
+//     .flip-card-back {
+//         background-color: #fff;
+//         transform: rotateX(180deg);
+//         display: flex;
+//         flex-direction: column;
+//         justify-content: space-between;
+//         align-items: center;
+//     }
+// }
+
+// input[type="number"]::-webkit-outer-spin-button,
+// input[type="number"]::-webkit-inner-spin-button {
+//     -webkit-appearance: none;
+//     margin: 0;
+// }
+
+// #spinner {
+//     width: 100%;
+//     background: #fff;
+//     display: flex;
+//     flex-direction: column;
+//     justify-content: center !important;
+//     align-items: center !important;
+
+//     img {
+//         height: 50px;
+//         width: 50px;
+//     }
+// }
+
+// @-webkit-keyframes rotating
+
+// /* Safari and Chrome */
+//     {
+//     from {
+//         -webkit-transform: rotate(0deg);
+//         -o-transform: rotate(0deg);
+//         transform: rotate(0deg);
+//     }
+
+//     to {
+//         -webkit-transform: rotate(360deg);
+//         -o-transform: rotate(360deg);
+//         transform: rotate(360deg);
+//     }
+// }
+
+// @keyframes rotating {
+//     from {
+//         -ms-transform: rotate(0deg);
+//         -moz-transform: rotate(0deg);
+//         -webkit-transform: rotate(0deg);
+//         -o-transform: rotate(0deg);
+//         transform: rotate(0deg);
+//     }
+
+//     to {
+//         -ms-transform: rotate(360deg);
+//         -moz-transform: rotate(360deg);
+//         -webkit-transform: rotate(360deg);
+//         -o-transform: rotate(360deg);
+//         transform: rotate(360deg);
+//     }
+// }
+
+// .rotating {
+//     -webkit-animation: rotating 2s linear infinite;
+//     -moz-animation: rotating 2s linear infinite;
+//     -ms-animation: rotating 2s linear infinite;
+//     -o-animation: rotating 2s linear infinite;
+//     animation: rotating 2s linear infinite;
+// }

@@ -1,10 +1,12 @@
 <div class="shift-assignment-container" [style]="`--margin-top: ${loggedUser.role === 'Master' ? '4rem' : '2rem'}`">
     @if(!proposalsLoading()) {
 
-    @if (isUnsavedPassedCard() && proposalCard().id === 0 && filteredUsers().length > 0) {
+    <!-- @if (isUnsavedPassedCard() && proposalCard().id === 0 && filteredUsers().length > 0) { -->
+    @if (isUnsavedPassedCard() && proposalCard().id === 0 && users().length > 0) {
     <h4>{{ unsavedProposalCardErrorText }}</h4>
     } @else {
-    @if(filteredUsers().length > 0) {
+    <!-- @if(filteredUsers().length > 0) { -->
+    @if(users().length > 0) {
     @if (!isUnsavedPassedCard()) {
     <div class="shift-pool" hide>
         <div cdkDropList id="shift-pool" [cdkDropListData]="wShifts()" [cdkDropListConnectedTo]="dropListIds()"

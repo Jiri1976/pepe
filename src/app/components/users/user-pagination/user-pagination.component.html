@@ -1,4 +1,31 @@
-<div class="row">
+<div>
+    @if (users().length > 0) {
+    <nav>
+        <ul class="pagination">
+            <li class="page-item">
+                <a class="page-link left" [class.hasPreviousPage]="hasPreviousPage()"
+                    [class.disabled]="!hasPreviousPage()" (click)="setPage(currentPage() - 1)" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+
+
+            <li class="page-item"><a class="center">{{`${currentPage()} / ${lastPage()}`}}</a>
+            </li>
+
+
+            <li class="page-item">
+                <a class="page-link right" [class.hasNextPage]="hasNextPage()" [class.disabled]="!hasNextPage()"
+                    (click)="setPage(currentPage() + 1)" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    }
+</div>
+
+<!-- <div class="row">
     @if (users().length > 0) {
     <nav>
         <ul class="pagination">
@@ -24,4 +51,4 @@
         </ul>
     </nav>
     }
-</div>
+</div> -->

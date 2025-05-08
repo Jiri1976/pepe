@@ -1,31 +1,51 @@
-import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, DestroyRef, ElementRef, inject, signal, ViewChild } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
-import { AdminWarehouseComponent } from '../../components/admin-warehouse/admin-warehouse.component';
-import { MasterWarehouseComponent } from '../../components/master-warehouse/master-warehouse.component';
-import { SpinnerComponent } from '../../components/spinner/spinner.component';
-import { AddWarehouseItemComponent } from '../../components/add-warehouse-item/add-warehouse-item.component';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { WarehouseService } from '../../services/warehouse.service';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from '../../services/alert.service';
 import { tap } from 'rxjs';
 import { ConfirmComponent } from '../../components/confirm/confirm.component';
-import { WarehouseCard } from '../../models/warehouse/warehouse-card.interface';
 import { ErrorHandlingService } from '../../services/error-handling.service';
 import { ConfirmService } from '../../services/confirm.service';
 import { NavButtonStaticComponent } from "../../components/ui-buttons/nav-button-static/nav-button-static.component";
 import { NavButtonActiveComponent } from "../../components/ui-buttons/nav-button-active/nav-button-active.component";
+import { WarehouseItemsComponent } from "../../components/warehouse/warehouse-items/warehouse-items.component";
+import { HideElementDirective } from '../../directives/hide-element.directive';
+import { WarehouseItem } from '../../models/warehouse/warehouse-item.interface';
+import { Calendar, CalendarModule } from 'primeng/calendar';
+import Swiper from 'swiper';
+import { CommonModule } from '@angular/common';
+import { DatePickerModule } from 'primeng/datepicker';
+import { WarehouseUnitsComponent } from '../../components/warehouse/warehouse-units/warehouse-units.component';
 
 @Component({
   selector: 'app-warehouse',
-  imports: [AdminWarehouseComponent, MasterWarehouseComponent, SpinnerComponent, AddWarehouseItemComponent, DialogModule, ButtonModule, InputTextModule, ReactiveFormsModule, ConfirmComponent, NavButtonStaticComponent, NavButtonActiveComponent],
+  imports: [
+    CommonModule,
+    CalendarModule,
+    DialogModule,
+    DatePickerModule,
+    ButtonModule,
+    InputTextModule,
+    ConfirmComponent,
+    NavButtonStaticComponent,
+    NavButtonActiveComponent,
+    WarehouseItemsComponent,
+    HideElementDirective,
+    WarehouseUnitsComponent
+  ],
   templateUrl: './warehouse.component.html',
-  styleUrl: './warehouse.component.scss'
+  styleUrl: './warehouse.component.scss',
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class WarehouseComponent implements OnInit {
+export class WarehouseComponent {
+  private swiper!: Swiper;
+  private MONTHS = ["LEDEN", "ÚNOR", "BŘEZEN", "DUBEN", "KVĚTEN", "ČERVEN", "ČRVENEC", "SRPEN", "ZÁŘÍ", "ŘÍJEN", "LISTOPAD", "PROSINEC"];
+  private MONTHS_NAMES = ["LED", "ÚNO", "BŘE", "DUB", "KVĚ", "ČER", "ČRV", "SRP", "ZÁŘ", "ŘÍJ", "LIS", "PRO"];
+  private MONTHS_NUM = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
   private authService = inject(AuthService);
   private warehouseService = inject(WarehouseService);
   private alertService = inject(AlertService);
@@ -33,152 +53,93 @@ export class WarehouseComponent implements OnInit {
   private errorHandlingService = inject(ErrorHandlingService);
   private confirmService = inject(ConfirmService);
 
-  isLoading = false;
+  isSaving = signal(false);
   unitIsLoading = false;
   user = computed(() => this.authService.user());
   flipped = signal(false);
   selectedUnit = computed(() => this.warehouseService.selectedUnit());
   unitHeaderTitle = '';
   visible: boolean = false;
-  unitForm!: FormGroup;
-  oldCard!: WarehouseCard;
+  // unitForm!: FormGroup;
+  // oldCard!: WarehouseCard;
+  warehouseItemsVisible = signal(false);
+  reorderedItems = signal<WarehouseItem[]>([]);
 
-  ngOnInit() {
-    this.initializedUnitForm();
+  calendarText = signal<string>(this.MONTHS_NAMES[new Date().getMonth()] + ' ' + new Date().getFullYear().toString().substring(2));
+  defaultDate = new Date(new Date().getFullYear(), new Date().getMonth());
+  maxDate: Date = new Date(new Date().getFullYear(), new Date().getMonth());
+  unitsActive = signal(true);
+
+  @ViewChild('calendar', { static: false }) calendar!: Calendar;
+  @ViewChild('swiperRef', { static: false }) swiperRef!: ElementRef;
+
+  onSwiperInit(event: any) {
+    setTimeout(() => {
+      const swiper = (this.swiperRef.nativeElement as any).swiper;
+      if (swiper) {
+        swiper.on('slideChange', () => {
+          // console.log('Slide changed! Index:', swiper.activeIndex);
+        });
+      }
+    });
   }
 
-  get amount() {
-    return this.unitForm.get('amount');
+  onShowItems() {
+    this.reorderedItems.set([]);
+    this.warehouseItemsVisible.set(true)
+    this.unitsActive.set(false);
   }
 
-  onFlipCard(showCheck: boolean) {
-    this.flipped.set(showCheck);
-    this.unitIsLoading = false;
+  onShowUnits() {
+    this.reorderedItems.set([]);
+    this.warehouseItemsVisible.set(false);
+    this.unitsActive.set(true);
   }
 
-  onSelectUnit() {
-    this.oldCard = { ...this.warehouseService.getCard() };
-    if (this.selectedUnit().amount === null) {
-      this.unitHeaderTitle = 'Zapsat hodnotu?';
-    } else {
-      this.unitHeaderTitle = 'Upravit hodnotu?';
+  toggleCalendar() {
+    if (this.calendar) {
+      if (this.calendar.overlayVisible) {
+        this.calendar.hideOverlay();
+        this.calendar.cd.detectChanges();
+      } else {
+        this.calendar.showOverlay();
+        this.calendar.cd.detectChanges();
+      }
     }
-    this.visible = true;
-    this.initializedUnitForm();
   }
 
-  onInput(value: string) {
-    this.amount?.setValue(value);
+  onSelectMonth() {
+
   }
 
-  onSubmit() {
-    this.confirmService.confirm(`Opravdu chceš ${this.unitHeaderTitle.toLowerCase()}?`)
-      .then((confirmed) => {
-        if (confirmed) {
-          this.visible = false;
-          this.unitIsLoading = true;
-          if (this.unitForm.invalid) {
-            return;
+  onSave() {
+    if (this.reorderedItems().length > 0) {
+      this.isSaving.set(true);
+      const subscription = this.warehouseService.reorderWarehouseItems(this.reorderedItems()).pipe(
+        tap(response => {
+          if (response === null) {
+            this.isSaving.set(false);
+            this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+          } else if (response.isSuccess === false) {
+            this.isSaving.set(false);
+            this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+          } else if (response.isSuccess) {
+            this.warehouseService.setItems(response.result);
+            this.reorderedItems.set([]);
+            this.isSaving.set(false);
+            this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Pořadí položek bylo změněno.' });
           }
-          if (typeof (+this.amount?.value) !== "number" || isNaN(+this.amount?.value)) {
-            return;
-          }
-          let data = { ...this.selectedUnit() };
-          data.amount = this.amount?.value;
-
-          const subscription = this.warehouseService.createUpdateWarehouseCard(data).pipe(
-            tap(response => {
-              this.unitIsLoading = false;
-              if (response === null) {
-                this.nullResponse();
-              } else if (response.isSuccess === false) {
-                this.oldCard.units.forEach(unit => {
-                  if (unit.date === this.selectedUnit().date) {
-                    unit.amount = null!;
-                  }
-                });
-                this.warehouseService.setWarehouseCard(this.oldCard);
-                this.amount?.setValue(null);
-                this.alertService.setAlert({
-                  severity: 'error',
-                  summary: 'Error',
-                  detail: response.errorMessage
-                });
-              } else if (response.isSuccess === true) {
-                this.alertService.setAlert({
-                  severity: 'success',
-                  summary: 'Success',
-                  detail: this.selectedUnit().amount === null ? 'Hodnota byla zapsána.' : 'Hodnota byla upravena.'
-                });
-                this.warehouseService.setWarehouseCard(response.result);
-              }
-            }),
-            tap({
-              error: error => this.handleError(error)
-            })
-          ).subscribe();
-
-          this.destroyRef.onDestroy(() => {
-            subscription.unsubscribe();
-          });
-        }
+        }),
+      ).subscribe({
+        error: (error) => this.handleError(error),
       });
+
+      this.destroyRef.onDestroy(() => subscription.unsubscribe());
+    }
   }
 
-  onClearWarehouseUnit() {
-    this.confirmService.confirm('Opravdu chceš smazat hodnotu?')
-      .then((confirmed) => {
-        if (confirmed) {
-          this.visible = false;
-          this.unitIsLoading = true;
-          const subscription = this.warehouseService.clearWarehouseUnit(this.selectedUnit()).pipe(
-            tap(response => {
-              this.unitIsLoading = false;
-              if (response === null) {
-                this.nullResponse();
-                this.warehouseService.setWarehouseCard(this.oldCard);
-              } else if (response.isSuccess === false) {
-                this.warehouseService.setWarehouseCard(this.oldCard);
-                this.amount?.setValue(undefined);
-                this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
-              } else {
-                this.amount?.setValue(undefined);
-                this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Hodnota byla smazána.' });
-                this.warehouseService.setWarehouseCard(response.result);
-              }
-            }),
-            tap({
-              error: error => this.handleError(error)
-            })
-          ).subscribe();
-
-          this.destroyRef.onDestroy(() => {
-            subscription.unsubscribe();
-          });
-        }
-      });
-  }
-
-  private initializedUnitForm() {
-    this.unitForm = new FormGroup({
-      'amount': new FormControl({
-        value: this.selectedUnit().amount,
-        disabled: false
-      }, [Validators.required, Validators.min(0), Validators.max(10000)])
-    });
-  }
-
-  private nullResponse() {
-    this.amount?.setValue(undefined);
-    this.alertService.setAlert({
-      severity: 'error',
-      summary: 'Error',
-      detail: 'Něco se pokazilo, zkus to znovu.'
-    });
-  }
 
   private handleError = (errorRes: HttpErrorResponse) => {
-    this.isLoading = false;
     this.visible = false;
     this.unitIsLoading = true;
     return this.errorHandlingService.handleError(errorRes);

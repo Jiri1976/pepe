@@ -23,8 +23,10 @@
             [isActive]="visibleModal()" [isDisabled]="formShiftVisible()" />
         <app-nav-button-static background="#1e81b0" color="#fff" icon="bi-arrow-clockwise" text="Znovu"
             (clicked)="onReset()" [isDisabled]="formShiftVisible()" />
+        @if (this.loggedUser.role === 'Admin') {
         <app-nav-button-static background="#1e81b0" color="#fff" icon="bi-filetype-pdf" text="Všichni"
             (clicked)="onAllToPdf()" [isDisabled]="formShiftVisible()" />
+        }
     </ul>
 </div>
 <div class="box">
@@ -42,7 +44,9 @@
         }
     </div>
     } @else {
-    <app-spinner [nullWidthHeight]="true" [marginTop]="20" />
+    <div class="spinner">
+        <app-spinner [nullWidthHeight]="true" [marginTop]="20" />
+    </div>
     }
 
 </div>

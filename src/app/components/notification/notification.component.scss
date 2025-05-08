@@ -3,8 +3,8 @@
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    width: 40px;
-    height: 40px;
+    height: var(--height, 40px);
+    width: var(--width, 40px);
     cursor: pointer;
     position: relative;
     padding: 1rem 1.1rem;
@@ -24,7 +24,7 @@
 }
 
 .bi {
-    font-size: 1.5rem;
+    font-size: var(--ringSize, 1.5rem);
 }
 
 

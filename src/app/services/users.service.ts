@@ -75,6 +75,11 @@ export class UsersService {
         return this.http.get<Response>(url);
     }
 
+    getProposalUsers(destination: string) {
+        let url = this.BASE_ROUTE + `authentication/GetListOfUsers?destination=${destination}`;
+        return this.http.get<Response>(url);
+    }
+
     createUser(_user: UserDTO) {
         const url = this.BASE_ROUTE + `authentication/Register`;
         return this.http.post<Response>(url, _user);

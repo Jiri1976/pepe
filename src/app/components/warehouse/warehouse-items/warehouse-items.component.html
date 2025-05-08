@@ -1,0 +1,56 @@
+<div class="container" cdkDropListGroup>
+    @if (!loading()) {
+
+    @if (items().length > 0) {
+
+    <div #delete class="delete" cdkDropList (cdkDropListDropped)="onDeleteDrop()">
+        <div><i class="bi bi-trash"></i></div>
+        <div *cdkDragPlaceholder></div>
+    </div>
+
+    <div #dashboard class="widget-wrapper">
+        @for(item of items(); track $index) {
+        <div>
+            <app-widget [item]="item" [index]="$index" [(selected)]="selected" cdkDropList
+                (cdkDropListDropped)="drop($event)" [cdkDropListData]="item.position" [(isDragged)]="isDragged" />
+        </div>
+        }
+        <div cdkDropList></div>
+    </div>
+    }
+
+    @if (items().length === 0 && !isDroppedToDelete()) {
+    <div class="empty-item">
+        <h4>Žádné uložené položky.</h4>
+    </div>
+    }
+
+    @if (!isDragged() && !isDroppedToDelete()) {
+    <div class="add" (click)="onAddItem()">
+        <div><i class="bi bi-plus"></i></div>
+    </div>
+    }
+
+    } @else {
+    <div class="spinner-div">
+        <app-spinner [nullWidthHeight]="true" [marginTop]="20" />
+    </div>
+    }
+</div>
+
+
+
+
+
+
+
+<!-- <app-widget
+  *ngFor="let widget of widgets"
+  cdkDrag
+  (cdkDragMoved)="onDragMoved($event)"
+  (cdkDragEnded)="onDragEnded($event)">
+</app-widget>
+
+<div class="delete" #deleteZone>
+  <div><i class="bi bi-trash"></i></div>
+</div> -->

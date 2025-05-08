@@ -1,0 +1,119 @@
+.container {
+    margin: 50px 0 0 0;
+    flex-direction: column;
+    width: 600px;
+    justify-content: center !important;
+    align-items: center;
+    display: flex;
+    grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+    grid-auto-columns: 600px;
+
+    .widget-wrapper {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin-bottom: 50px;
+    }
+}
+
+.add {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    position: fixed;
+    right: 2rem;
+    top: 105px;
+    transition: 0.3s;
+
+    .bi {
+        font-size: 2rem;
+        font-weight: bold;
+        color: rgba(73, 73, 81, 0.2);
+    }
+}
+
+.add:hover {
+    cursor: pointer;
+    background: #24355A;
+
+    .bi {
+        color: #fff;
+    }
+}
+
+.delete {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    position: fixed;
+    right: 2rem;
+    top: calc(100vh - 110px);
+    transition: 0.3s;
+
+    .bi {
+        font-size: 2rem;
+        font-weight: bold;
+        color: rgba(73, 73, 81, 0.2);
+    }
+}
+
+.delete:hover {
+    cursor: pointer;
+    background: #F53B57;
+
+    .bi {
+        color: #FFF;
+    }
+}
+
+.save-area {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: #05C46B;
+    position: fixed;
+    right: 2rem;
+    top: calc(100vh - 110px);
+    transition: 0.3s;
+
+    .bi {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #fff;
+    }
+}
+
+.empty-items {
+    margin-top: 150px;
+    margin-left: auto;
+    margin-right: auto;
+
+    h4 {
+        margin-top: 60px;
+        margin-bottom: 30px;
+        color: #24355A;
+        font-weight: bold;
+    }
+}
+
+.spinner-div {
+    margin-top: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}

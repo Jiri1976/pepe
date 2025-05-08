@@ -1,13 +1,22 @@
 <div class="sidenav">
     <ul>
-        <app-nav-button-static background="#24355A" color="#fff" icon="bi-calendar" text="Položky" />
+        <app-nav-button-active background="#fff" color="#24355A" icon="bi-house" text="Sklad" (clicked)="onShowUnits()"
+            [isActive]="!warehouseItemsVisible()" />
+
+        <app-nav-button-static background="#24355A" color="#fff" icon="bi-calendar" [text]="calendarText()"
+            (clicked)="toggleCalendar()" [isDisabled]="!unitsActive()" />
         <div class="proposal-calendar">
-            <!-- <p-datepicker #calendar name="deadline" [(ngModel)]="defaultDate" view="month" dateFormat="mm-yy"
-                [readonlyInput]="true" [maxDate]="loggedUser.role === 'Master' ? maxDate : null"
-                (onSelect)="onSelectMonth()" /> -->
-            <!-- <p-datepicker #calendar name="deadline" [(ngModel)]="defaultDate" view="month" dateFormat="mm-yy"
-                [readonlyInput]="true" [maxDate]="maxDate" (onSelect)="onSelectMonth()" /> -->
+            <p-datepicker #calendar name="deadline" [(ngModel)]="defaultDate" view="month" dateFormat="mm-yy"
+                [readonlyInput]="true" [maxDate]="user().role === 'Master' ? maxDate : null"
+                (onSelect)="onSelectMonth()" />
         </div>
+
+        <app-nav-button-active background="#fff" color="#24355A" hide icon="bi-list-ul" text="Položky"
+            (clicked)="onShowItems()" [isActive]="warehouseItemsVisible()" />
+
+        <app-nav-button-static background="#05C46B" color="#fff" icon="bi-floppy" text="Uložit"
+            [isDisabled]="reorderedItems().length === 0" (clicked)="onSave()" />
+
 
         <!-- @if (this.loggedUser.role === 'Admin') {
         <app-nav-button-active background="#fff" color="#24355A" icon="bi-house" text="F-M"
@@ -27,6 +36,14 @@
     </ul>
 </div>
 <div class="box">
+
+    @if (warehouseItemsVisible()) {
+    <app-warehouse-items [(reorderedItems)]="reorderedItems" [(isSaving)]="isSaving" />
+    }
+
+    @if (unitsActive()) {
+    <app-warehouse-units />
+    }
     <!-- @if(!isLoading()) {
     <div class="shift-card">
         @if (cards().length > 0) {

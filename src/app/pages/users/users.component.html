@@ -41,13 +41,15 @@
                         <app-empty-block />
                         }
                         } @else {
-                        <h4>Žádní uživatelé v databázi.</h4>
+                        <h4 class="mt-5">Žádní uživatelé v databázi.</h4>
                         }
                     </div>
-                    @if (filteredUsers().length > 0) {
-                    <app-user-pagination (pageSelected)="onSelectPage($event)" [users]="filteredUsers()"
-                        [currentPage]="currentPage()" [hasNextPage]="hasNextPage()"
-                        [hasPreviousPage]="hasPreviousPage()" [lastPage]="lastPage()" />
+                    @if (filteredUsers().length > 0 && !flipped()) {
+                    <div class="pagination-div">
+                        <app-user-pagination (pageSelected)="onSelectPage($event)" [users]="filteredUsers()"
+                            [currentPage]="currentPage()" [hasNextPage]="hasNextPage()"
+                            [hasPreviousPage]="hasPreviousPage()" [lastPage]="lastPage()" />
+                    </div>
                     }
 
                 </div>

@@ -72,7 +72,7 @@ p-dialog.select-user {
     p-datepicker {
         .p-datepicker-panel.p-component {
             left: 230px !important;
-            top: 95px !important;
+            top: 75px !important;
         }
 
         .p-datepicker.p-component {
@@ -125,6 +125,17 @@ p-datepicker {
 
 .calendarDivShift {
     p-datepicker {
+
+        .p-datepicker.p-component {
+            .p-datepicker-panel.p-component {
+                .p-datepicker-month-view {
+                    .p-datepicker-month.p-datepicker-month-selected {
+                        background: #24355A !important;
+                    }
+                }
+            }
+        }
+
         span {
             input {
                 position: relative !important;

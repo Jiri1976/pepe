@@ -304,6 +304,7 @@ export class ShiftCardComponent {
   }
 
   private handleError = (errorRes: HttpErrorResponse) => {
+    this.cardLoading.set(false);
     return this.errorHandlingService.handleError(errorRes);
   };
 }

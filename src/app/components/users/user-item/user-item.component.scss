@@ -8,7 +8,11 @@
     font-style: normal;
     font-size: 0.9rem;
     height: 40px;
-    border-bottom: 1px solid #24355A;
+    // border-bottom: 1px solid #24355A;
+    border-radius: 15px;
+    // box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    border: 1px solid rgba(100, 100, 111, 0.2);
+    margin: 10px 0;
     transition: ease 0.2s all;
 
     .col-4,
@@ -83,5 +87,5 @@
     // background: #e2e2e2;
     cursor: pointer;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-    border-radius: 5px;
+    border-radius: 15px;
 }

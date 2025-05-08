@@ -57,7 +57,7 @@ form {
     }
 
     .isActive {
-        background: #000;
+        background: #fff;
         font-weight: bold;
         width: 40px;
         height: 40px;
@@ -68,13 +68,20 @@ form {
         justify-content: center;
         align-items: center;
         transition: ease 0.3s all;
-        border: none;
+        border: 2px solid #000;
         outline: none;
         margin-bottom: 15px;
+
+        .bi {
+            margin-top: 3px;
+            margin-bottom: auto;
+            font-size: 1.6rem;
+            color: #000;
+        }
     }
 
     .isActive.checked {
-        background: #4ADE80;
+        background: #fff;
         font-weight: bold;
         width: 40px;
         height: 40px;
@@ -85,9 +92,16 @@ form {
         justify-content: center;
         align-items: center;
         transition: ease 0.3s all;
-        border: none;
+        border: 2px solid #4ADE80;
         outline: none;
         margin-bottom: 15px;
+
+        .bi {
+            margin-top: 5px;
+            margin-bottom: auto;
+            font-size: 1.2rem;
+            color: #4ADE80;
+        }
     }
 
     .title {

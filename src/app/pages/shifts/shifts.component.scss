@@ -5,6 +5,7 @@
     align-items: center !important;
     width: 10rem;
     float: left;
+    margin-top: 50px;
 
     ul {
         margin: 2rem 0 0 0;
@@ -22,13 +23,14 @@
 
 .box {
     width: calc(100% - 10rem) !important;
-    display: flex;
-    position: relative;
-    flex-direction: column;
+    display: inline;
+    float: right;
+    flex-direction: row;
     justify-content: center;
     align-items: center;
     font-family: 'Poppins', sans-serif;
     position: relative;
+    margin-top: 70px;
 
     .shift-card {
         min-width: 750px;
@@ -42,12 +44,20 @@
         swiper-container {
             margin: auto !important;
             width: 740px;
-            height: 740px;
+            height: 790px;
 
             swiper-slide {
                 background: #fff !important;
                 box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
             }
         }
+    }
+
+    .spinner {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
     }
 }

@@ -9,4 +9,7 @@ import { Component, input } from '@angular/core';
 })
 export class NotificationComponent {
   notify = input.required();
+  height = input<string>();
+  width = input<string>();
+  ringSize = input<string>();
 }

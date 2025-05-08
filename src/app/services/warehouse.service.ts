@@ -28,6 +28,11 @@ export class WarehouseService {
         this.warehouseCard.set(card);
     }
 
+    getAllWarehouseItems() {
+        const url = this.BASE_ROUTE + `Warehouse/GetAllWarehouseItems`;
+        return this.http.get<Response>(url);
+    }
+
     getInitialWarehouseState(destination: string, montYear: string) {
         const url = this.BASE_ROUTE + `Warehouse/GetInitialWarehouseState?destination=${destination}&monthYear=${montYear}`;
         return this.http.get<Response>(url);
@@ -58,6 +63,11 @@ export class WarehouseService {
         return this.http.get<Response>(url);
     }
 
+    getWarehouseCards(monthYear: string, destination: string) {
+        const url = this.BASE_ROUTE + `Warehouse/GetWarehouseCards?monthYear=${monthYear}&destination=${destination}`;
+        return this.http.get<Response>(url);
+    }
+
     createUpdateWarehouseCard(unit: WarehouseUnit) {
         let card = { ...this.warehouseCard() };
         let _unit = card.units.find(x => x.date === unit.date);
@@ -78,5 +88,22 @@ export class WarehouseService {
 
     getCard() {
         return { ...this.warehouseCard() };
+    }
+
+    updateWidgetPosition(sourceWidgetId: number, targetWidgetId: number) {
+        const sourceIndex = this.items().findIndex((w) => w.position === sourceWidgetId);
+        if (sourceIndex === -1) {
+            return;
+        }
+        const newWidgets = [...this.items()];
+        const sourceWidget = newWidgets.splice(sourceIndex, 1)[0];
+        const targetIndex = newWidgets.findIndex((w) => w.position === targetWidgetId);
+
+        if (targetIndex === -1) {
+            return;
+        }
+        const insertAt = targetIndex === sourceIndex ? targetIndex + 1 : targetIndex;
+        newWidgets.splice(insertAt, 0, sourceWidget);
+        this.items.set(newWidgets);
     }
 }

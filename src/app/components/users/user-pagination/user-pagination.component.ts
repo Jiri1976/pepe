@@ -13,7 +13,7 @@ export class UserPaginationComponent {
   hasPreviousPage = input.required<boolean>();
   hasNextPage = input.required<boolean>();
   users = input.required<GetUserDTO[]>();
-  lastPage = input.required<number[]>();;
+  lastPage = input.required<number>();;
 
   setPage(page: number) {
     this.pageSelected.emit(page);

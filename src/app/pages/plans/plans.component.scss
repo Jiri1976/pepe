@@ -5,6 +5,7 @@
     align-items: center !important;
     width: 10rem;
     float: left;
+    margin-top: 50px;
 
     ul {
         margin: 2rem 0 0 0;
@@ -21,6 +22,16 @@
 }
 
 .box {
+    // width: calc(100% - 10rem) !important;
+    // display: inline;
+    // float: right;
+    // flex-direction: row;
+    // justify-content: center;
+    // align-items: center;
+    // font-family: 'Poppins', sans-serif;
+    // position: relative;
+    // margin-top: 50px;
+
     width: calc(100% - 10rem) !important;
     display: inline;
     float: right;
@@ -29,4 +40,5 @@
     align-items: center;
     font-family: 'Poppins', sans-serif;
     position: relative;
+    margin-top: 70px;
 }
