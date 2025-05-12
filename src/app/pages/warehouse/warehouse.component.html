@@ -11,6 +11,15 @@
                 (onSelect)="onSelectMonth()" />
         </div>
 
+        @if (user().role === 'Admin') {
+        <app-nav-button-active background="#fff" color="#24355A" icon="bi-house" text="F-M"
+            (clicked)="onSelectDestination('F-M')" [isActive]="destination() === 'F-M'" [isDisabled]="!unitsActive()" />
+
+        <app-nav-button-active background="#fff" color="#24355A" icon="bi-house" text="OVA"
+            [isActive]="destination() === 'OVA'" (clicked)="onSelectDestination('OVA')" [isDisabled]="!unitsActive()" />
+        }
+
+
         <app-nav-button-active background="#fff" color="#24355A" hide icon="bi-list-ul" text="Položky"
             (clicked)="onShowItems()" [isActive]="warehouseItemsVisible()" />
 

@@ -1,7 +1,67 @@
-<div class="container" style="margin-top: 100px;">
+<div class="container">
     @if(!isLoading()) {
-    <p>units</p>
+    <div class="unit-card">
+        @if (cards().length > 0) {
+        <swiper-container #swiperRef effect="cards" grab-cursor="true" (swiperinit)="onSwiperInit($event)">
+            @for(card of cards(); track $index) {
+            <swiper-slide>
+                @if (card.units.length > 0) {
+                <div class="row unitList">
+                    <div class="row mb-3 head">
+                        <div class="col text-left">
+                            {{card.warehouseItemName}}
+                        </div>
+                        <div class="col" style="text-align: right !important;">
+                            {{ card.monthYearName}}
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        @for(unit of card.units | slice:0:11; track $index) {
+                        <div class="row w-100 mt-1" (click)="checkDate(unit.date) ? onSelectUnit(unit) : null"
+                            [ngClass]="checkDate(unit.date) ? 'dateValid' : ''">
+                            <div class="col first">{{unit.date}}</div>
+                            <div class="col second">{{unit.amount !== null ? unit.amount : '-'}}</div>
+                        </div>
+                        }
+                    </div>
+                    <div class="col-4">
+                        @for(unit of card.units | slice:11:22; track $index) {
+                        <div class="row w-100 mt-1" (click)="checkDate(unit.date) ? onSelectUnit(unit) : null"
+                            [ngClass]="checkDate(unit.date) ? 'dateValid' : ''">
+                            <div class="col first">{{unit.date}}</div>
+                            <div class="col second">{{unit.amount !== null ? unit.amount : '-'}}</div>
+                        </div>
+                        }
+                    </div>
+                    <div class="col-4">
+                        @for(unit of card.units | slice:22:card.units.length; track $index) {
+                        @if (unit.date !== '01.01.0000') {
+                        <div class="row w-100 mt-1" (click)="checkDate(unit.date) ? onSelectUnit(unit) : null"
+                            [ngClass]="checkDate(unit.date) ? 'dateValid' : ''">
+                            <div class="col first">{{unit.date}}</div>
+                            <div class="col second">{{unit.amount !== null ? unit.amount : '-'}}</div>
+                        </div>
+                        } @else {
+                        <div class="row w-100 mt-1">
+                            <div class="col first" style="color: #fff">{{unit.date}}</div>
+                            <div class="col second" style="color: #fff">-</div>
+                        </div>
+                        }
+                        }
+                    </div>
+                    <div class="row mt-3 foot">
+                        {{card.destination === 'F-M' ? 'Frýdek-Místek' : 'Ostrava'}}
+                    </div>
+                </div>
+                }
+            </swiper-slide>
+            }
+        </swiper-container>
+        }
+    </div>
     } @else {
-    <app-spinner />
+    <div class="spinner-box">
+        <app-spinner />
+    </div>
     }
 </div>

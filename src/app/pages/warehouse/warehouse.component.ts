@@ -1,4 +1,4 @@
-import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, DestroyRef, ElementRef, inject, signal, ViewChild } from '@angular/core';
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, DestroyRef, inject, model, signal, ViewChild } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
@@ -9,14 +9,12 @@ import { AlertService } from '../../services/alert.service';
 import { tap } from 'rxjs';
 import { ConfirmComponent } from '../../components/confirm/confirm.component';
 import { ErrorHandlingService } from '../../services/error-handling.service';
-import { ConfirmService } from '../../services/confirm.service';
 import { NavButtonStaticComponent } from "../../components/ui-buttons/nav-button-static/nav-button-static.component";
 import { NavButtonActiveComponent } from "../../components/ui-buttons/nav-button-active/nav-button-active.component";
 import { WarehouseItemsComponent } from "../../components/warehouse/warehouse-items/warehouse-items.component";
 import { HideElementDirective } from '../../directives/hide-element.directive';
 import { WarehouseItem } from '../../models/warehouse/warehouse-item.interface';
 import { Calendar, CalendarModule } from 'primeng/calendar';
-import Swiper from 'swiper';
 import { CommonModule } from '@angular/common';
 import { DatePickerModule } from 'primeng/datepicker';
 import { WarehouseUnitsComponent } from '../../components/warehouse/warehouse-units/warehouse-units.component';
@@ -42,7 +40,6 @@ import { WarehouseUnitsComponent } from '../../components/warehouse/warehouse-un
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class WarehouseComponent {
-  private swiper!: Swiper;
   private MONTHS = ["LEDEN", "ÚNOR", "BŘEZEN", "DUBEN", "KVĚTEN", "ČERVEN", "ČRVENEC", "SRPEN", "ZÁŘÍ", "ŘÍJEN", "LISTOPAD", "PROSINEC"];
   private MONTHS_NAMES = ["LED", "ÚNO", "BŘE", "DUB", "KVĚ", "ČER", "ČRV", "SRP", "ZÁŘ", "ŘÍJ", "LIS", "PRO"];
   private MONTHS_NUM = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
@@ -51,7 +48,6 @@ export class WarehouseComponent {
   private alertService = inject(AlertService);
   private destroyRef = inject(DestroyRef);
   private errorHandlingService = inject(ErrorHandlingService);
-  private confirmService = inject(ConfirmService);
 
   isSaving = signal(false);
   unitIsLoading = false;
@@ -60,8 +56,6 @@ export class WarehouseComponent {
   selectedUnit = computed(() => this.warehouseService.selectedUnit());
   unitHeaderTitle = '';
   visible: boolean = false;
-  // unitForm!: FormGroup;
-  // oldCard!: WarehouseCard;
   warehouseItemsVisible = signal(false);
   reorderedItems = signal<WarehouseItem[]>([]);
 
@@ -69,20 +63,10 @@ export class WarehouseComponent {
   defaultDate = new Date(new Date().getFullYear(), new Date().getMonth());
   maxDate: Date = new Date(new Date().getFullYear(), new Date().getMonth());
   unitsActive = signal(true);
+  destination = signal<string>('F-M');
 
   @ViewChild('calendar', { static: false }) calendar!: Calendar;
-  @ViewChild('swiperRef', { static: false }) swiperRef!: ElementRef;
-
-  onSwiperInit(event: any) {
-    setTimeout(() => {
-      const swiper = (this.swiperRef.nativeElement as any).swiper;
-      if (swiper) {
-        swiper.on('slideChange', () => {
-          // console.log('Slide changed! Index:', swiper.activeIndex);
-        });
-      }
-    });
-  }
+  @ViewChild(WarehouseUnitsComponent) warehouseUnits: any;
 
   onShowItems() {
     this.reorderedItems.set([]);
@@ -109,7 +93,17 @@ export class WarehouseComponent {
   }
 
   onSelectMonth() {
+    this.calendar.hideOverlay();
+    this.calendar.cd.detectChanges();
+    this.warehouseUnits.monthYear.set(this.MONTHS_NUM[new Date(this.calendar.value).getMonth()] + new Date(this.calendar.value).getFullYear());
+    this.calendarText.set(this.MONTHS_NAMES[new Date(this.calendar.value).getMonth()] + ' ' + new Date(this.calendar.value).getFullYear().toString().substring(2));
+    this.warehouseUnits.uploadCards();
+  }
 
+  onSelectDestination(destination: string) {
+    this.destination.set(destination);
+    this.warehouseUnits.destination.set(destination);
+    this.warehouseUnits.uploadCards();
   }
 
   onSave() {
@@ -137,7 +131,6 @@ export class WarehouseComponent {
       this.destroyRef.onDestroy(() => subscription.unsubscribe());
     }
   }
-
 
   private handleError = (errorRes: HttpErrorResponse) => {
     this.visible = false;
