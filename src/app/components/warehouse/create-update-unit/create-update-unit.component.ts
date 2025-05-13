@@ -1,7 +1,7 @@
-import { Component, input, InputSignal, model, output } from '@angular/core';
-import { DialogModule } from 'primeng/dialog';
-import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
+import { Component, input, InputSignal, model, output } from '@angular/core';
+import { ButtonModule } from 'primeng/button';
+import { DialogModule } from 'primeng/dialog';
 
 interface Users {
   userName: string;
@@ -9,14 +9,14 @@ interface Users {
 }
 
 @Component({
-  selector: 'app-select-user',
+  selector: 'app-create-update-unit',
   imports: [CommonModule, DialogModule, ButtonModule],
-  templateUrl: './select-user.component.html',
-  styleUrl: './select-user.component.scss'
+  templateUrl: './create-update-unit.component.html',
+  styleUrl: './create-update-unit.component.scss'
 })
-export class SelectUserComponent {
+export class CreateUpdateUnitComponent {
   visibleModal = model<boolean>(false);
-  users: InputSignal<Users[]> = input.required<Users[]>();
+  // users: InputSignal<Users[]> = input.required<Users[]>();
   selected = output<number>();
 
   onSelectUser(userId: number) {

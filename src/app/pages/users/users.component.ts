@@ -82,7 +82,6 @@ export class UsersComponent implements OnInit {
   filterUsers(users: GetUserDTO[]) {
     this.hasNextPage.set(this.PER_PAGE * this.currentPage() < users.length);
     this.hasPreviousPage.set(this.currentPage() > 1);
-    // this.lastPage.set(Array(Math.ceil(users.length / this.PER_PAGE)));
     this.lastPage.set(Math.ceil(users.length / this.PER_PAGE));
     return users.slice((this.currentPage() - 1) * this.perPage, this.perPage * this.currentPage());
   }

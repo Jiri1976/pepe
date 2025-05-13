@@ -8,10 +8,11 @@ import { WarehouseCard } from '../../../models/warehouse/warehouse-card.interfac
 import { SpinnerComponent } from "../../spinner/spinner.component";
 import Swiper from 'swiper';
 import { CommonModule } from '@angular/common';
+import { CreateUpdateUnitComponent } from '../create-update-unit/create-update-unit.component';
 
 @Component({
   selector: 'app-warehouse-units',
-  imports: [CommonModule, SpinnerComponent],
+  imports: [CommonModule, SpinnerComponent, CreateUpdateUnitComponent],
   templateUrl: './warehouse-units.component.html',
   styleUrl: './warehouse-units.component.scss',
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -27,6 +28,7 @@ export class WarehouseUnitsComponent implements OnInit {
   cards = signal<WarehouseCard[]>([]);
   destination = signal<string>('F-M');
   monthYear = signal<string>(this.MONTHS_NUM[new Date().getMonth()] + new Date().getFullYear());
+  visibleModal = signal<boolean>(false);
 
   @ViewChild('swiperRef', { static: false }) swiperRef!: ElementRef;
 
@@ -57,6 +59,8 @@ export class WarehouseUnitsComponent implements OnInit {
   }
 
   onSelectUnit(unit: any) {
+    this.visibleModal.set(true);
+    console.log(unit);
 
   }
 

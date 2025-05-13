@@ -1,9 +1,7 @@
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { DestroyRef, inject, Injectable, signal } from '@angular/core';
-import { throwError } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { Response } from '../models/response.interface';
-import { AlertService } from './alert.service';
 import { jwtDecode } from 'jwt-decode';
 import { AuthUser } from '../models/auth-user.interface';
 import { Router } from '@angular/router';
@@ -13,46 +11,22 @@ import { WarehouseService } from './warehouse.service';
   providedIn: 'root'
 })
 export class AuthService {
-  private destroyRef = inject(DestroyRef);
   private http = inject(HttpClient);
   private BASE_ROUTE = environment.AUTHENTICATION_PATH;
-  private alertService = inject(AlertService);
   private router = inject(Router);
   private tokenExpirationTimer: any;
   private initialUser: AuthUser = { name: '', email: '', role: '', destination: '', token: '', expiresIn: '' };
   private warehouseService = inject(WarehouseService);
-  isLoading = signal<boolean>(false);
+
   user = signal<AuthUser>(this.initialUser);
   firstRun = true;
 
-  constructor() { }
-
   login(loginRequest: any) {
-    this.isLoading.set(true);
     const url = this.BASE_ROUTE + 'authentication/Login';
-    const subscription = this.http.post<Response>(url, loginRequest, {
+    return this.http.post<Response>(url, loginRequest, {
       headers: new HttpHeaders()
         .set('Content-Type', 'application/json')
-    }).subscribe({
-      next: response => {
-        if (response.isSuccess === false) {
-          this.isLoading.set(false);
-          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
-        } else {
-          localStorage.setItem('token', response.result);
-          this.setUserDetail(response.result);
-          this.router.navigate(['main']);
-          setTimeout(() => {
-            this.isLoading.set(false);
-          }, 500);
-        }
-      },
-      error: error => this.handleError(error)
-    });
-
-    this.destroyRef.onDestroy(() => {
-      subscription.unsubscribe();
-    });
+    })
   }
 
   isLoggedIn = (): boolean => {
@@ -76,7 +50,6 @@ export class AuthService {
     this.warehouseService.items.set([]);
     this.warehouseService.selectedUnit.set({ id: 0, warehouseCardId: 0, warehouseItemId: 0, date: '', amount: 0 });
     this.warehouseService.warehouseCard.set({ id: 0, warehouseItemId: 0, warehouseItemName: '', monthYear: '', monthYearName: '', destination: '', units: [] });
-
     localStorage.removeItem('token');
     this.user.set(this.initialUser);
     this.firstRun = true;
@@ -113,15 +86,7 @@ export class AuthService {
     return user;
   }
 
-  getFirtsRun() {
-    return this.firstRun;
-  }
-
-  disableFirstRun() {
-    this.firstRun = false;
-  }
-
-  private setUserDetail(token: string) {
+  setUserDetail(token: string) {
     const decodedToken: any = jwtDecode(token!);
     let date = new Date(decodedToken.exp * 1000);
     const expirationTime = date.getTime() - new Date().getTime();
@@ -150,16 +115,5 @@ export class AuthService {
     let date = new Date(decodedToken.exp * 1000);
     const isTokenExpired = date.getTime() - new Date().getTime() > 0;
     return isTokenExpired;
-  }
-
-  private handleError = (errorRes: HttpErrorResponse) => {
-    this.isLoading.set(false);
-    let errorMessage = 'Vyskytla se chyba!';
-    if (!errorRes.error || !errorRes.error.message) {
-      this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: errorMessage });
-      return throwError(() => errorMessage);
-    }
-    this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: errorRes.error.message });
-    return throwError(() => errorRes.error.message);
   }
 }

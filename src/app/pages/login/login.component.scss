@@ -84,7 +84,8 @@
     font-size: 13px;
 }
 
-.input-field input:valid~label {
+.input-field input:valid~label,
+.input-field input:disabled~label {
     top: -10px;
     font-size: 13px;
     color: rgba(12, 17, 21, 255)
@@ -107,6 +108,11 @@
 
 .submit:disabled {
     background: #ececec;
+}
+
+.submit.loading:disabled {
+    background: #000;
+    color: #fff !important;
 }
 
 @media only screen and (max-width: 768px) {

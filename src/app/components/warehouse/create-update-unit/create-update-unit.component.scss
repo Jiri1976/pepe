@@ -1,0 +1,69 @@
+p-dialog {
+    .p-dialog-mask {
+        .p-dialog.p-component {
+            .p-dialog-header {
+                .p-dialog-header-actions {
+                    .p-dialog-close-button {
+                        display: none !important;
+                    }
+                }
+            }
+        }
+    }
+
+    .close,
+    .user {
+        display: flex;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .user {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 40px;
+        justify-content: center;
+        align-items: center;
+        border-radius: 5px;
+        border: 1px solid #24355A;
+        margin: 10px 0;
+        transition: 0.3s;
+
+        p {
+            color: #24355A;
+            font-weight: bold;
+            margin-bottom: 0 !important;
+            transition: 0.3s;
+        }
+    }
+
+    .user:hover {
+        cursor: pointer;
+        box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+        background: #24355A;
+
+        p {
+            color: #fff;
+        }
+    }
+
+    .close {
+        margin-top: 15px;
+
+        .closeBtn {
+            background: #24355A;
+            color: #fff;
+            border-radius: 5px;
+            border: 1px solid #24355A;
+            font-weight: bold;
+            height: 40px;
+            width: 120px;
+            transform: 0.3s;
+        }
+
+        .closeBtn:active {
+            opacity: 0.7;
+        }
+    }
+}
