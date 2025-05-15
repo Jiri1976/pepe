@@ -1,10 +1,43 @@
 <p-dialog class="create-unit" [modal]="true" [visible]="visibleModal()" [style]="{ width: '25rem' }">
-    <!-- @for(user of users(); track user.userId) {
-    <div class="user" (click)="onSelectUser(user.userId)">
-        <p>{{ user.userName }}</p>
-    </div>
-    } -->
-    <div class="close">
-        <button class="closeBtn" (click)="visibleModal.set(false)">Zavřít</button>
+    <div class="container">
+        <form autocomplete="off" id="form" [formGroup]="unitForm">
+
+            @if (amount?.hasError('pattern') && amount?.dirty) {
+            <div class="notify">
+                <app-notification [notify]="amount?.hasError('pattern') && amount?.dirty" [bottom]="0" />
+            </div>
+            } @else {
+            <div id="focus" (click)="onCancel()"><i class="bi bi-x"></i></div>
+            }
+
+            <div class="title">
+                <h1>{{selectedUnit()!.date}}</h1>
+            </div>
+            <input type="text" formControlName="amount" />
+            <div class="error" [style.display]="amount?.hasError('pattern') ? 'block' : 'none'">
+                * Prosím pouze čísla</div>
+
+            @if(selectedUnit()!.amount) {
+            <div class="active-delete">
+                <button type="button" class="btn delete" (click)="onSave('delete')"><i class="bi bi-trash"></i></button>
+            </div>
+            }
+
+            @if (!isLoading()) {
+            <button type="submit" class="btn submit" [disabled]="amount?.invalid" (click)="onSave('add')">{{
+                selectedUnit()!.amount ?
+                'Upravit' :
+                'Přidat'
+                }}</button>
+            } @else {
+            <button class="btn submit loading" type="button" disabled>
+                <span class="spinner-border spinner-border-sm text-white me-1" aria-hidden="true"></span>
+                {{ selectedUnit()!.amount ?
+                'Upravuji' :
+                'Přidávam'
+                }}
+            </button>
+            }
+        </form>
     </div>
 </p-dialog>

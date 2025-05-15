@@ -68,11 +68,7 @@ export class WarehouseService {
         return this.http.get<Response>(url);
     }
 
-    createUpdateWarehouseCard(unit: WarehouseUnit) {
-        let card = { ...this.warehouseCard() };
-        let _unit = card.units.find(x => x.date === unit.date);
-        const index = card.units.indexOf(_unit!);
-        card.units[index] = unit;
+    createUpdateWarehouseCard(card: WarehouseCard) {
         const url = this.BASE_ROUTE + `Warehouse/CreateUpdateWarehouseCard`;
         return this.http.post<Response>(url, card);
     }

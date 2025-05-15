@@ -151,24 +151,6 @@ export class ProposalsService {
 
     uploadProposals() {
         this.isProposalLoading.set(true);
-        // const subscription = this.usersService.getUsers(this.loggedUser.role === 'Admin', this.destination()).pipe(
-        //     filter(response => response.result.length > 0),
-        //     concatMap(response => {
-        //         if (response === null) {
-        //             this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
-        //         } else if (response.isSuccess === false) {
-        //             this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
-        //         } else if (response.isSuccess === true) {
-        //             this.savedUsers.set(response.result);
-        //             return this.getProposalCardObservable()
-        //         }
-        //         return of();
-        //     }),
-        // ).subscribe({
-        //     next: () => { },
-        //     error: error => this.handleError(error)
-        // });
-
         const subscription = this.usersService.getProposalUsers(this.destination()).pipe(
             filter(response => response.result.length > 0),
             concatMap(response => {

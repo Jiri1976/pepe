@@ -1,4 +1,4 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, DestroyRef, effect, ElementRef, inject, input, model, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, DestroyRef, ElementRef, inject, model, OnInit, signal, ViewChild } from '@angular/core';
 import { WarehouseService } from '../../../services/warehouse.service';
 import { AlertService } from '../../../services/alert.service';
 import { tap } from 'rxjs';
@@ -9,10 +9,13 @@ import { SpinnerComponent } from "../../spinner/spinner.component";
 import Swiper from 'swiper';
 import { CommonModule } from '@angular/common';
 import { CreateUpdateUnitComponent } from '../create-update-unit/create-update-unit.component';
+import { ItemsListComponent } from '../items-list/items-list.component';
+import { WarehouseUnit } from '../../../models/warehouse/warehouse-unit.interface';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-warehouse-units',
-  imports: [CommonModule, SpinnerComponent, CreateUpdateUnitComponent],
+  imports: [CommonModule, SpinnerComponent, CreateUpdateUnitComponent, ItemsListComponent],
   templateUrl: './warehouse-units.component.html',
   styleUrl: './warehouse-units.component.scss',
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -20,19 +23,37 @@ import { CreateUpdateUnitComponent } from '../create-update-unit/create-update-u
 export class WarehouseUnitsComponent implements OnInit {
   private MONTHS_NUM = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
   private warehouseService = inject(WarehouseService);
+  private authService = inject(AuthService);
   private alertService = inject(AlertService);
   private destroyRef = inject(DestroyRef);
   private errorHandlingService = inject(ErrorHandlingService);
   private swiper!: Swiper;
+  user = computed(() => this.authService.user());
   isLoading = signal(false);
   cards = signal<WarehouseCard[]>([]);
   destination = signal<string>('F-M');
   monthYear = signal<string>(this.MONTHS_NUM[new Date().getMonth()] + new Date().getFullYear());
   visibleModal = signal<boolean>(false);
+  visibleList = model(false);
+  items: {
+    name: string;
+    id: number;
+  }[] = [];
+  selectedIndex = signal<number>(0);
+  selectedUnit = signal<WarehouseUnit>({
+    id: 0,
+    warehouseCardId: 0,
+    warehouseItemId: 0,
+    date: '',
+    amount: undefined
+  });
 
   @ViewChild('swiperRef', { static: false }) swiperRef!: ElementRef;
 
   ngOnInit(): void {
+    if (this.user().role === 'Master') {
+      this.destination.set(this.user().destination);
+    }
     this.uploadCards();
   }
 
@@ -41,7 +62,6 @@ export class WarehouseUnitsComponent implements OnInit {
       const swiper = (this.swiperRef.nativeElement as any).swiper;
       if (swiper) {
         swiper.on('slideChange', () => {
-          // console.log('Slide changed! Index:', swiper.activeIndex);
         });
       }
     });
@@ -59,18 +79,28 @@ export class WarehouseUnitsComponent implements OnInit {
   }
 
   onSelectUnit(unit: any) {
+    this.swiper = this.swiperRef.nativeElement.swiper;
+    this.selectedIndex.set(this.swiper.activeIndex);
+    this.selectedUnit.set(unit);
     this.visibleModal.set(true);
-    console.log(unit);
-
   }
 
-  changes = effect(() => {
-    console.log(('changed'));
+  onSelectItem(itemId: number) {
+    if (itemId === -1) {
+      this.visibleList.set(false);
+      return;
+    }
+    this.visibleList.set(false);
+    this.swiper = this.swiperRef.nativeElement.swiper;
 
-  });
+    let index = this.cards().findIndex(u => u.warehouseItemId === itemId);
+    this.swiper.slideTo(index);
+  }
 
   uploadCards() {
     this.isLoading.set(true);
+    this.items = [];
+    this.cards.set([]);
     const subscription = this.warehouseService.getWarehouseCards(this.monthYear(), this.destination()).pipe(
       tap(response => {
         if (response === null) {
@@ -81,20 +111,14 @@ export class WarehouseUnitsComponent implements OnInit {
           this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
         } else if (response.isSuccess) {
           if (response.result.length > 0) {
-            let emptyUnit = {
-              id: 0,
-              warehouseCardId: 0,
-              warehouseItemId: 0,
-              date: '01.01.0000',
-            }
-            for (let i = 0; i < response.result.length; i++) {
-              for (let y = response.result[i].units.length; y < 33; y++) {
-                response.result[i].units.push(emptyUnit);
-              }
-            }
             this.cards.set(response.result);
-            this.isLoading.set(false);
+            this.getItems();
+            setTimeout(() => {
+              this.swiper = this.swiperRef.nativeElement.swiper;
+              this.swiper.slideTo(this.selectedIndex());
+            }, 100);
           }
+          this.isLoading.set(false);
         }
       }),
 
@@ -105,6 +129,12 @@ export class WarehouseUnitsComponent implements OnInit {
 
     this.destroyRef.onDestroy(() => {
       subscription.unsubscribe();
+    });
+  }
+
+  private getItems() {
+    this.cards().forEach(card => {
+      this.items.push({ name: card.warehouseItemName, id: card.warehouseItemId });
     });
   }
 

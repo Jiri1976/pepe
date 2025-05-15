@@ -12,4 +12,5 @@ export class NotificationComponent {
   height = input<string>();
   width = input<string>();
   ringSize = input<string>();
+  bottom = input<number>();
 }

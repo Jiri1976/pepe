@@ -1,9 +1,9 @@
 <div class="sidenav">
     <ul>
-        <app-nav-button-active background="#fff" color="#24355A" icon="bi-house" text="Sklad" (clicked)="onShowUnits()"
-            [isActive]="!warehouseItemsVisible()" />
+        <app-nav-button-active background="#fff" hide color="#24355A" icon="bi-house" text="Sklad"
+            (clicked)="onShowUnits()" [isActive]="!warehouseItemsVisible()" />
 
-        <app-nav-button-static background="#24355A" color="#fff" icon="bi-calendar" [text]="calendarText()"
+        <app-nav-button-static background="#24355A" hide color="#fff" icon="bi-calendar" [text]="calendarText()"
             (clicked)="toggleCalendar()" [isDisabled]="!unitsActive()" />
         <div class="proposal-calendar">
             <p-datepicker #calendar name="deadline" [(ngModel)]="defaultDate" view="month" dateFormat="mm-yy"
@@ -19,119 +19,32 @@
             [isActive]="destination() === 'OVA'" (clicked)="onSelectDestination('OVA')" [isDisabled]="!unitsActive()" />
         }
 
+        @if(user().role === 'Admin') {
+        <app-nav-button-active background="#fff" color="#24355A" icon="bi-list-check" text="Seznam"
+            (clicked)="onShowList()" [isDisabled]="!unitsActive()" />
+        } @else {
+        <app-nav-button-static background="#24355A" color="#fff" icon="bi-list-check" text="Seznam"
+            (clicked)="onShowList()" />
+        }
 
         <app-nav-button-active background="#fff" color="#24355A" hide icon="bi-list-ul" text="Položky"
             (clicked)="onShowItems()" [isActive]="warehouseItemsVisible()" />
 
-        <app-nav-button-static background="#05C46B" color="#fff" icon="bi-floppy" text="Uložit"
+        <app-nav-button-static background="#05C46B" hide color="#fff" icon="bi-floppy" text="Uložit"
             [isDisabled]="reorderedItems().length === 0" (clicked)="onSave()" />
 
 
-        <!-- @if (this.loggedUser.role === 'Admin') {
-        <app-nav-button-active background="#fff" color="#24355A" icon="bi-house" text="F-M"
-            (clicked)="onSelectDestination('F-M')" [isActive]="destination() === 'F-M'"
-            [isDisabled]="formShiftVisible()" />
-        <app-nav-button-active background="#fff" color="#24355A" icon="bi-house" text="OVA"
-            [isActive]="destination() === 'OVA'" (clicked)="onSelectDestination('OVA')"
-            [isDisabled]="formShiftVisible()" />
-        }
-
-        <app-nav-button-active background="#fff" color="#24355A" icon="bi-people" text="Uživatelé" (click)="openModal()"
-            [isActive]="visibleModal()" [isDisabled]="formShiftVisible()" />
-        <app-nav-button-static background="#1e81b0" color="#fff" icon="bi-arrow-clockwise" text="Znovu"
-            (clicked)="onReset()" [isDisabled]="formShiftVisible()" />
-        <app-nav-button-static background="#1e81b0" color="#fff" icon="bi-filetype-pdf" text="Všichni"
-            (clicked)="onAllToPdf()" [isDisabled]="formShiftVisible()" /> -->
+        <app-nav-button-static background="#1e81b0" hide color="#fff" icon="bi-filetype-pdf" text="PDF"
+            (clicked)="onOpenPDF()" />
     </ul>
 </div>
 <div class="box">
-
     @if (warehouseItemsVisible()) {
     <app-warehouse-items [(reorderedItems)]="reorderedItems" [(isSaving)]="isSaving" />
     }
 
     @if (unitsActive()) {
-    <app-warehouse-units />
+    <app-warehouse-units [(visibleList)]="visibleList" />
     }
-    <!-- @if(!isLoading()) {
-    <div class="shift-card">
-        @if (cards().length > 0) {
-        <swiper-container #swiperRef effect="cards" grab-cursor="true" (swiperinit)="onSwiperInit($event)">
-            @for(card of cards(); track $index) {
-            <swiper-slide>
-                <app-shift-card [shiftCard]="card" (closeShiftForm)="onCloseShiftForm()"
-                    (openShiftForm)="onOpenShiftForm()" (updatedCard)="onCardUpdate($event)" />
-            </swiper-slide>
-            }
-        </swiper-container>
-        }
-    </div>
-    } @else {
-    <app-spinner [nullWidthHeight]="true" [marginTop]="20" />
-    } -->
-
 </div>
-
 <app-confirm />
-
-
-
-
-<!-- @if(isLoading) {
-<app-spinner />
-}
-@else {
-<div class="cardWrapper">
-    <div style="display:flex; width: 100%;">
-        <div class="flip-card" [class.hover]="flipped()">
-            <div class="flip-card-inner">
-                <div class="flip-card-front">
-                    @if (user().role === 'Admin') {
-                    <app-admin-warehouse (checkSelected)="onFlipCard($event)" (outputUnit)="onSelectUnit()" />
-                    }
-                    @else if (user().role === 'Master') {
-                    <app-master-warehouse (outputUnit)="onSelectUnit()" />
-                    }
-                </div>
-                <div class="flip-card-back">
-                    
-                    <app-add-warehouse-item (backSelected)="onFlipCard($event)" />
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card">
-        <p-dialog [header]="unitHeaderTitle" [modal]="true" [(visible)]="visible" [style]="{ width: '25rem' }"
-            position="bottom">
-            @if (!unitIsLoading) {
-            <form [formGroup]="unitForm">
-                <div class="col">
-                    <div class="row text-center mb-2">
-                        <label for="username" class="font-semibold w-6rem">{{selectedUnit().date}}</label>
-                    </div>
-                    <div class="row mb-4">
-                        <input pInputText id="username" type="number" class="flex-auto w-25 ms-auto me-auto"
-                            autocomplete="off" #input (input)="onInput(input.value)" [value]="this.amount?.value" />
-                    </div>
-                </div>
-                @if (selectedUnit().amount !== null && selectedUnit().amount !== undefined) {
-                <div class="flex" style="text-align: center;">
-                    <p-button icon="pi pi-trash" label="Smazat" (onClick)="onClearWarehouseUnit()" id="deleteBtn" />
-                </div>
-                }
-                <div class="flex" style="text-align: center;">
-                    <p-button icon="pi pi-times" label="Zrušit" (onClick)="visible = false" id="cancelBtn" />
-                    <p-button icon="pi pi-check" [label]="selectedUnit().amount === null ? 'Zapsat' : 'Upravit'"
-                        id="addBtn" [disabled]="unitForm.invalid" (onClick)="onSubmit()" />
-                </div>
-            </form>
-            } @else {
-            <div id="spinner">
-                <img class="rotating" src="spinner.png" alt="spinner" />
-            </div>
-            }
-        </p-dialog>
-    </div>
-</div>
-}
-<app-confirm /> -->

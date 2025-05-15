@@ -33,7 +33,7 @@ import { WarehouseUnitsComponent } from '../../components/warehouse/warehouse-un
     NavButtonActiveComponent,
     WarehouseItemsComponent,
     HideElementDirective,
-    WarehouseUnitsComponent
+    WarehouseUnitsComponent,
   ],
   templateUrl: './warehouse.component.html',
   styleUrl: './warehouse.component.scss',
@@ -64,6 +64,7 @@ export class WarehouseComponent {
   maxDate: Date = new Date(new Date().getFullYear(), new Date().getMonth());
   unitsActive = signal(true);
   destination = signal<string>('F-M');
+  visibleList = signal(false);
 
   @ViewChild('calendar', { static: false }) calendar!: Calendar;
   @ViewChild(WarehouseUnitsComponent) warehouseUnits: any;
@@ -78,6 +79,10 @@ export class WarehouseComponent {
     this.reorderedItems.set([]);
     this.warehouseItemsVisible.set(false);
     this.unitsActive.set(true);
+  }
+
+  onShowList() {
+    this.visibleList.set(true);
   }
 
   toggleCalendar() {
@@ -130,6 +135,10 @@ export class WarehouseComponent {
 
       this.destroyRef.onDestroy(() => subscription.unsubscribe());
     }
+  }
+
+  onOpenPDF() {
+
   }
 
   private handleError = (errorRes: HttpErrorResponse) => {

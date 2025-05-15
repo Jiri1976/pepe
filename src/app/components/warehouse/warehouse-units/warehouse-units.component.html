@@ -35,17 +35,49 @@
                     </div>
                     <div class="col-4">
                         @for(unit of card.units | slice:22:card.units.length; track $index) {
-                        @if (unit.date !== '01.01.0000') {
+
                         <div class="row w-100 mt-1" (click)="checkDate(unit.date) ? onSelectUnit(unit) : null"
                             [ngClass]="checkDate(unit.date) ? 'dateValid' : ''">
                             <div class="col first">{{unit.date}}</div>
                             <div class="col second">{{unit.amount !== null ? unit.amount : '-'}}</div>
                         </div>
-                        } @else {
+                        }
+
+                        @switch (card.units.length) {
+                        @case (31) {
+                        @for(i of [1,2]; track i) {
                         <div class="row w-100 mt-1">
-                            <div class="col first" style="color: #fff">{{unit.date}}</div>
+                            <div class="col first" style="color: #fff">00</div>
                             <div class="col second" style="color: #fff">-</div>
                         </div>
+                        }
+                        }
+
+                        @case (30) {
+                        @for(i of [1,2,3]; track i) {
+                        <div class="row w-100 mt-1">
+                            <div class="col first" style="color: #fff">00</div>
+                            <div class="col second" style="color: #fff">-</div>
+                        </div>
+                        }
+                        }
+
+                        @case (29) {
+                        @for(i of [1,2,3,4]; track i) {
+                        <div class="row w-100 mt-1">
+                            <div class="col first" style="color: #fff">00</div>
+                            <div class="col second" style="color: #fff">-</div>
+                        </div>
+                        }
+                        }
+
+                        @case (28) {
+                        @for(i of [1,2,3,4,5]; track i) {
+                        <div class="row w-100 mt-1">
+                            <div class="col first" style="color: #fff">00</div>
+                            <div class="col second" style="color: #fff">-</div>
+                        </div>
+                        }
                         }
                         }
                     </div>
@@ -65,4 +97,6 @@
     </div>
     }
 </div>
-<app-create-update-unit [(visibleModal)]="visibleModal" />
+<app-create-update-unit [(visibleModal)]="visibleModal" [index]="selectedIndex()" [(selectedUnit)]="selectedUnit"
+    [cards]="cards()" (updated)="uploadCards()" />
+<app-items-list [visible]="visibleList()" [items]="items" (selected)="onSelectItem($event)" />
