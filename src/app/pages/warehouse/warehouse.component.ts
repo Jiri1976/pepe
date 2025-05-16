@@ -18,6 +18,7 @@ import { Calendar, CalendarModule } from 'primeng/calendar';
 import { CommonModule } from '@angular/common';
 import { DatePickerModule } from 'primeng/datepicker';
 import { WarehouseUnitsComponent } from '../../components/warehouse/warehouse-units/warehouse-units.component';
+import { WarehouseCard } from '../../models/warehouse/warehouse-card.interface';
 
 @Component({
   selector: 'app-warehouse',
@@ -65,6 +66,7 @@ export class WarehouseComponent {
   unitsActive = signal(true);
   destination = signal<string>('F-M');
   visibleList = signal(false);
+  cards = signal<WarehouseCard[]>([]);
 
   @ViewChild('calendar', { static: false }) calendar!: Calendar;
   @ViewChild(WarehouseUnitsComponent) warehouseUnits: any;
@@ -138,7 +140,37 @@ export class WarehouseComponent {
   }
 
   onOpenPDF() {
+    if (this.cards().length > 0) {
+      // this.isSaving.set(true);
+      const subscription = this.warehouseService.createPDF(this.cards()).pipe(
+        tap(response => {
+          if (response === null) {
+            // this.isSaving.set(false);
+            this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+          } else if (response.isSuccess === false) {
+            // this.isSaving.set(false);
+            this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+          } else if (response.isSuccess) {
+            const binary = atob(response.result);
+            const uint8Array = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) {
+              uint8Array[i] = binary.charCodeAt(i);
+            }
+            const blob = new Blob([uint8Array], { type: 'application/pdf' });
+            var url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a')
+            a.href = url;
+            a.download = `Sklad - ${this.cards()[0].monthYearName}.pdf`;
+            a.click();
+            URL.revokeObjectURL(url);
+          }
+        }),
+      ).subscribe({
+        error: (error) => this.handleError(error),
+      });
 
+      this.destroyRef.onDestroy(() => subscription.unsubscribe());
+    }
   }
 
   private handleError = (errorRes: HttpErrorResponse) => {

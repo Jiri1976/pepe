@@ -82,10 +82,6 @@ export class WarehouseService {
         return this.http.post<Response>(url, card);
     }
 
-    getCard() {
-        return { ...this.warehouseCard() };
-    }
-
     updateWidgetPosition(sourceWidgetId: number, targetWidgetId: number) {
         const sourceIndex = this.items().findIndex((w) => w.position === sourceWidgetId);
         if (sourceIndex === -1) {
@@ -101,5 +97,10 @@ export class WarehouseService {
         const insertAt = targetIndex === sourceIndex ? targetIndex + 1 : targetIndex;
         newWidgets.splice(insertAt, 0, sourceWidget);
         this.items.set(newWidgets);
+    }
+
+    createPDF(cards: WarehouseCard[]) {
+        const url = this.BASE_ROUTE + `Warehouse/createPDF`;
+        return this.http.post<Response>(url, cards);
     }
 }

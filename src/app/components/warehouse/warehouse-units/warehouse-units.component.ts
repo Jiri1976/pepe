@@ -30,7 +30,7 @@ export class WarehouseUnitsComponent implements OnInit {
   private swiper!: Swiper;
   user = computed(() => this.authService.user());
   isLoading = signal(false);
-  cards = signal<WarehouseCard[]>([]);
+  cards = model<WarehouseCard[]>([]);
   destination = signal<string>('F-M');
   monthYear = signal<string>(this.MONTHS_NUM[new Date().getMonth()] + new Date().getFullYear());
   visibleModal = signal<boolean>(false);
