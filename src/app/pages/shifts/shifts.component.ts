@@ -10,17 +10,16 @@ import { ConfirmComponent } from '../../components/confirm/confirm.component';
 import { ShiftService } from '../../services/shift.service';
 import { NavButtonStaticComponent } from "../../components/ui-buttons/nav-button-static/nav-button-static.component";
 import { NavButtonActiveComponent } from "../../components/ui-buttons/nav-button-active/nav-button-active.component";
-import { ConfirmService } from '../../services/confirm.service';
 import { OverlayModule } from 'primeng/overlay';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from '../../services/alert.service';
 import { tap } from 'rxjs';
 import { ErrorHandlingService } from '../../services/error-handling.service';
-import { SpinnerComponent } from "../../components/spinner/spinner.component";
 import { SelectUserComponent } from '../../components/shifts/select-user/select-user.component';
 import { ShiftCard } from '../../models/shifts/shiftCard.interface';
 import { ShiftCardComponent } from '../../components/shifts/shift-card/shift-card.component';
 import Swiper from 'swiper';
+import { trigger, transition, animate, style } from '@angular/animations';
 
 @Component({
   selector: 'app-plans',
@@ -37,13 +36,25 @@ import Swiper from 'swiper';
     NavButtonActiveComponent,
     OverlayModule,
     DatePickerModule,
-    SpinnerComponent,
     SelectUserComponent,
     ShiftCardComponent
   ],
   templateUrl: './shifts.component.html',
   styleUrl: './shifts.component.scss',
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  animations: [
+    trigger('fadeOut', [
+      transition(':leave', [
+        animate('500ms ease-out', style({ opacity: 0 })),
+      ]),
+    ]),
+    trigger('fadeIn', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('600ms ease-in', style({ opacity: 1 })),
+      ])
+    ]),
+  ]
 })
 export class ShiftsComponent implements OnInit {
   private swiper!: Swiper;
@@ -52,11 +63,9 @@ export class ShiftsComponent implements OnInit {
   private MONTHS_NUM = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
   private authService = inject(AuthService);
   private shiftService = inject(ShiftService);
-  private confirmService = inject(ConfirmService);
   private destroyRef = inject(DestroyRef);
   private alertService = inject(AlertService);
   private errorHandlingService = inject(ErrorHandlingService);
-  // private cdr = inject(ChangeDetectorRef);
   defaultDate = new Date(new Date().getFullYear(), new Date().getMonth());
   maxDate: Date = new Date(new Date().getFullYear(), new Date().getMonth());
   filteredUsers = signal<any[]>([]);
@@ -118,7 +127,6 @@ export class ShiftsComponent implements OnInit {
 
   onSelectUser(userId: number) {
     this.swiper = this.swiperRef.nativeElement.swiper;
-
     let index = this.users().findIndex(u => u.userId === userId);
     this.swiper.slideTo(index);
   }
@@ -160,64 +168,54 @@ export class ShiftsComponent implements OnInit {
       this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Chybí uložené směny.' });
       return;
     }
-    this.confirmService.confirm('Opravdu stáhnout karty uživatelů?')
-      .then((confirmed) => {
-        if (confirmed) {
-          this.isLoading.set(true);
-          const subscription = this.shiftService.generateAllToPDF(_cards).pipe(
-            tap(response => {
-              if (response === null) {
-                this.isLoading.set(false);
-                this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
-              } else if (response.isSuccess === false) {
-                this.isLoading.set(false);
-                this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
-              } else {
-                this.isLoading.set(false);
-                const binary = atob(response.result);
-                const uint8Array = new Uint8Array(binary.length);
-                for (let i = 0; i < binary.length; i++) {
-                  uint8Array[i] = binary.charCodeAt(i);
-                }
-                const blob = new Blob([uint8Array], { type: 'application/pdf' });
-                var url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a')
-                a.href = url;
-                a.download = `${this.MONTHS[parseInt(this.monthYear().substring(0, 2)) - 1]} ${this.monthYear().substring(2, 6)}.pdf`;
-                a.click();
-                URL.revokeObjectURL(url);
-              }
-            })
-          ).subscribe({
-            error: error => this.handleError(error)
-          });
-
-          this.destroyRef.onDestroy(() => {
-            subscription.unsubscribe();
-          });
+    this.isLoading.set(true);
+    const subscription = this.shiftService.generateAllToPDF(_cards).pipe(
+      tap(response => {
+        if (response === null) {
+          this.isLoading.set(false);
+          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+        } else if (response.isSuccess === false) {
+          this.isLoading.set(false);
+          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+        } else {
+          this.isLoading.set(false);
+          const binary = atob(response.result);
+          const uint8Array = new Uint8Array(binary.length);
+          for (let i = 0; i < binary.length; i++) {
+            uint8Array[i] = binary.charCodeAt(i);
+          }
+          const blob = new Blob([uint8Array], { type: 'application/pdf' });
+          var url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a')
+          a.href = url;
+          a.download = `${this.MONTHS[parseInt(this.monthYear().substring(0, 2)) - 1]} ${this.monthYear().substring(2, 6)}.pdf`;
+          a.click();
+          URL.revokeObjectURL(url);
         }
-      });
+      })
+    ).subscribe({
+      error: error => this.handleError(error)
+    });
+
+    this.destroyRef.onDestroy(() => {
+      subscription.unsubscribe();
+    });
   }
+
   onReset() {
-    this.confirmService.confirm('Opravdu chceš znovu nahrát karty?')
-      .then((confirmed) => {
-        if (confirmed) {
-          this.formShiftVisible.set(false);
-          const swiper = (this.swiperRef.nativeElement as any).swiper;
-          swiper.allowTouchMove = true;
-          this.getCards();
-        }
-      });
+    this.formShiftVisible.set(false);
+    const swiper = (this.swiperRef.nativeElement as any).swiper;
+    swiper.allowTouchMove = true;
+    this.getCards();
   }
 
-  onOpenPDF() {
-    this.confirmService.confirm('Opravdu chceš stáhnout PDF soubor?')
-      .then((confirmed) => {
-        if (confirmed) {
-
-
-        }
-      });
+  toggleSwipping(disable: boolean) {
+    const swiper = (this.swiperRef.nativeElement as any).swiper;
+    if (!disable) {
+      swiper.allowTouchMove = false;
+    } else {
+      swiper.allowTouchMove = true;
+    }
   }
 
   private getCards() {
@@ -239,8 +237,6 @@ export class ShiftsComponent implements OnInit {
             this.cards.set(_cards);
           }
           this.isLoading.set(false);
-
-
         }
       }),
     ).subscribe({

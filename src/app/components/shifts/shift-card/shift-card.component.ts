@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, DestroyRef, inject, model, output, signal } from '@angular/core';
+import { Component, DestroyRef, inject, model, output, signal, ViewChild } from '@angular/core';
 import { of, tap } from 'rxjs';
 import { InitShift } from '../../../models/shifts/initShift.interface';
 import { Shift } from '../../../models/shifts/shift.interface';
@@ -8,15 +8,28 @@ import { AuthService } from '../../../services/auth.service';
 import { ConfirmService } from '../../../services/confirm.service';
 import { ErrorHandlingService } from '../../../services/error-handling.service';
 import { ShiftService } from '../../../services/shift.service';
-import { SpinnerComponent } from '../../spinner/spinner.component';
 import { ShiftCard } from '../../../models/shifts/shiftCard.interface';
 import { ShiftFormComponent } from "../shift-form/shift-form.component";
+import { trigger, transition, animate, style } from '@angular/animations';
 
 @Component({
   selector: 'app-shift-card',
-  imports: [ShiftFormComponent, SpinnerComponent],
+  imports: [ShiftFormComponent],
   templateUrl: './shift-card.component.html',
-  styleUrl: './shift-card.component.scss'
+  styleUrl: './shift-card.component.scss',
+  animations: [
+    trigger('fadeOut', [
+      transition(':leave', [
+        animate('500ms ease-out', style({ opacity: 0 })),
+      ]),
+    ]),
+    trigger('fadeIn', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('600ms ease-in', style({ opacity: 1 })),
+      ])
+    ]),
+  ]
 })
 export class ShiftCardComponent {
   private shiftService = inject(ShiftService);
@@ -30,9 +43,10 @@ export class ShiftCardComponent {
   cardLoading = signal(false);
   shiftCard = model<ShiftCard>();
   formVisible = signal(false);
-  closeShiftForm = output<boolean>();
+  closeShiftForm = output();
   openShiftForm = output();
   updatedCard = output<ShiftCard>();
+  @ViewChild(ShiftFormComponent) shiftFormComponent: any;
 
   onUpdateShift(shift: Shift) {
     this.shiftService.setMonthYear(this.shiftCard()!.monthYear);
@@ -50,7 +64,7 @@ export class ShiftCardComponent {
   }
 
   onCloseShiftForm() {
-    this.closeShiftForm.emit(true);
+    this.closeShiftForm.emit();
     this.formVisible.set(false);
   }
 
@@ -80,7 +94,6 @@ export class ShiftCardComponent {
     this.shiftService.setSelectedShift(shift);
     this.formVisible.set(true);
     this.openShiftForm.emit();
-
   }
 
   onDeleteCard() {
@@ -120,20 +133,21 @@ export class ShiftCardComponent {
   }
 
   onDeleteShift(shift: Shift) {
-    this.cardLoading.set(true);
+    this.shiftFormComponent.loading.set(true);
+    this.openShiftForm.emit();
     const subscription = this.shiftService.deleteShift(shift.id).pipe(
       tap(response => {
         if (response === null) {
           this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
-          this.cardLoading.set(false);
+          this.shiftFormComponent.loading.set(false);
           this.shiftService.setSelectedShift(shift);
-          this.formVisible.set(true);
-          this.openShiftForm.emit();
+          this.shiftFormComponent.shiftForm.enable();
+          this.closeShiftForm.emit();
         } else if (response.isSuccess === false) {
-          this.cardLoading.set(false);
+          this.shiftFormComponent.loading.set(false);
           this.shiftService.setSelectedShift(shift);
-          this.formVisible.set(true);
-          this.openShiftForm.emit();
+          this.shiftFormComponent.shiftForm.enable();
+          this.closeShiftForm.emit();
           this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
         } else if (response.isSuccess) {
           this.shiftService.resetSelectedShift();
@@ -143,7 +157,9 @@ export class ShiftCardComponent {
           });
           this.shiftCard.set(_card);
           this.updatedCard.emit(_card);
-          this.cardLoading.set(false);
+          this.shiftFormComponent.loading.set(false);
+          this.formVisible.set(false);
+          this.closeShiftForm.emit();
           this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Směna byla smazána!' });
         }
       }),
@@ -161,36 +177,36 @@ export class ShiftCardComponent {
   }
 
   onSave(shift: Shift) {
-    this.cardLoading.set(true);
+    this.shiftFormComponent.loading.set(true);
     shift.shiftCardId = this.shiftCard()!.id;
-    shift.userId = this.shiftCard()!.userId;
-
+    shift.userId = this.shiftCard()!.userId; 0
+    this.openShiftForm.emit();
     const subscription = this.shiftService.createUpdateShift(shift).pipe(
       tap(response => {
         if (response === null) {
           this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
-          this.cardLoading.set(false);
+          this.shiftFormComponent.loading.set(false);
           this.shiftService.setSelectedShift(shift);
-          this.formVisible.set(true);
-          this.openShiftForm.emit();
+          this.shiftFormComponent.shiftForm.enable();
+          this.closeShiftForm.emit();
         } else if (response.isSuccess === false) {
-          this.cardLoading.set(false);
+          this.shiftFormComponent.loading.set(false);
           this.shiftService.setSelectedShift(shift);
-          this.formVisible.set(true);
-          this.openShiftForm.emit();
+          this.shiftFormComponent.shiftForm.enable();
+          this.closeShiftForm.emit();
           this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
         } else if (response.isSuccess) {
-
           let _card: ShiftCard = response.result;
           _card!.shifts.sort((a, b) => {
             return a.date.localeCompare(b.date);
           });
           this.shiftCard.set(_card);
           this.updatedCard.emit(_card);
-          this.cardLoading.set(false);
+          this.shiftFormComponent.loading.set(false);
+          this.formVisible.set(false);
+          this.closeShiftForm.emit();
           this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Směna byla uložena!' });
         }
-        return of();
       }),
 
     ).subscribe({
@@ -205,43 +221,42 @@ export class ShiftCardComponent {
   }
 
   onToPdf() {
-    this.confirmService.confirm('Opravdu stáhnout kartu jako PDF soubor?')
-      .then((confirmed) => {
-        if (confirmed) {
-          this.cardLoading.set(true);
-          const subscription = this.shiftService.generatePDF(this.shiftCard()!).pipe(
-            tap(response => {
-              if (response === null) {
-                this.cardLoading.set(false);
-                this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
-              } else if (response.isSuccess === false) {
-                this.cardLoading.set(false);
-                this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
-              } else {
-                this.cardLoading.set(false);
-                const binary = atob(response.result);
-                const uint8Array = new Uint8Array(binary.length);
-                for (let i = 0; i < binary.length; i++) {
-                  uint8Array[i] = binary.charCodeAt(i);
-                }
-                const blob = new Blob([uint8Array], { type: 'application/pdf' });
-                var url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a')
-                a.href = url;
-                a.download = `${this.shiftCard()?.user} - ${this.convertMonthYear(this.shiftCard()!.monthYear)}.pdf`;
-                a.click();
-                URL.revokeObjectURL(url);
-              }
-            })
-          ).subscribe({
-            error: error => this.handleError(error)
-          });
-
-          this.destroyRef.onDestroy(() => {
-            subscription.unsubscribe();
-          });
+    this.cardLoading.set(true);
+    this.openShiftForm.emit();
+    const subscription = this.shiftService.generatePDF(this.shiftCard()!).pipe(
+      tap(response => {
+        if (response === null) {
+          this.cardLoading.set(false);
+          this.closeShiftForm.emit();
+          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+        } else if (response.isSuccess === false) {
+          this.cardLoading.set(false);
+          this.closeShiftForm.emit();
+          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+        } else {
+          this.cardLoading.set(false);
+          this.closeShiftForm.emit();
+          const binary = atob(response.result);
+          const uint8Array = new Uint8Array(binary.length);
+          for (let i = 0; i < binary.length; i++) {
+            uint8Array[i] = binary.charCodeAt(i);
+          }
+          const blob = new Blob([uint8Array], { type: 'application/pdf' });
+          var url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a')
+          a.href = url;
+          a.download = `${this.shiftCard()?.user} - ${this.convertMonthYear(this.shiftCard()!.monthYear)}.pdf`;
+          a.click();
+          URL.revokeObjectURL(url);
         }
-      });
+      })
+    ).subscribe({
+      error: error => this.handleError(error)
+    });
+
+    this.destroyRef.onDestroy(() => {
+      subscription.unsubscribe();
+    });
   }
 
   isPastCard() {
@@ -299,12 +314,12 @@ export class ShiftCardComponent {
         converted = '' + year;
         break;
     }
-
     return converted;
   }
 
   private handleError = (errorRes: HttpErrorResponse) => {
     this.cardLoading.set(false);
+    this.shiftFormComponent.loading.set(false);
     return this.errorHandlingService.handleError(errorRes);
   };
 }

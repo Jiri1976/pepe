@@ -7,15 +7,28 @@ import { tap } from 'rxjs';
 import { ErrorHandlingService } from '../../../services/error-handling.service';
 import { WarehouseService } from '../../../services/warehouse.service';
 import { AlertService } from '../../../services/alert.service';
-import { SpinnerComponent } from "../../spinner/spinner.component";
 import { ConfirmService } from '../../../services/confirm.service';
 import { WarehouseItem } from '../../../models/warehouse/warehouse-item.interface';
+import { trigger, transition, animate, style } from '@angular/animations';
 
 @Component({
   selector: 'app-warehouse-items',
-  imports: [WidgetComponent, CdkDropList, CdkDropListGroup, SpinnerComponent, CdkDragPlaceholder],
+  imports: [WidgetComponent, CdkDropList, CdkDropListGroup, CdkDragPlaceholder],
   templateUrl: './warehouse-items.component.html',
-  styleUrl: './warehouse-items.component.scss'
+  styleUrl: './warehouse-items.component.scss',
+  animations: [
+    trigger('fadeOut', [
+      transition(':leave', [
+        animate('500ms ease-out', style({ opacity: 0 })),
+      ]),
+    ]),
+    trigger('fadeIn', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('600ms ease-in', style({ opacity: 1 })),
+      ])
+    ]),
+  ]
 })
 export class WarehouseItemsComponent implements OnInit {
   private errorHandlingService = inject(ErrorHandlingService);
@@ -23,7 +36,6 @@ export class WarehouseItemsComponent implements OnInit {
   private warehouseService = inject(WarehouseService);
   private alertService = inject(AlertService);
   private confirmService = inject(ConfirmService);
-
   dashboard = viewChild.required<ElementRef>('dashboard');
   isLoading = signal(false);
   items = computed(() => this.warehouseService.items());
@@ -32,8 +44,6 @@ export class WarehouseItemsComponent implements OnInit {
   isDroppedToDelete = signal(false);
   isDragged = signal(false);
   reorderedItems = model<WarehouseItem[]>([]);
-  isSaving = model<boolean>(false);
-  loading = computed(() => this.isLoading() || this.isSaving());
 
   ngOnInit() {
     this.isLoading.set(true);

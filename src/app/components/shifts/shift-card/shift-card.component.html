@@ -1,7 +1,7 @@
 <div class="card-wrapper">
     @if (!cardLoading()) {
     @if(!formVisible()) {
-    <div class="user-card-table">
+    <div class="user-card-table" @fadeIn @fadeOut>
         <div class="head">
             <div class="right">
                 <b>{{convertMonthYear(shiftCard()!.monthYear)}}</b>
@@ -78,12 +78,17 @@
     }
     @if (formVisible()) {
     <app-shift-form (closeShiftForm)="onCloseShiftForm()" (shiftForSave)="onSave($event)"
-        (shiftForDelete)="onDeleteShift($event)" />
+        (shiftForDelete)="onDeleteShift($event)" @fadeIn @fadeOut />
     }
     } @else {
-    <div class="spinner-div">
-        <app-spinner [nullWidthHeight]="true" [marginTop]="20" />
+    <div class="skeleton" @fadeOut>
+        @for(i of [1,2,3]; track i) {
+        <div class="empty-widget">
+            @if (i === 2) {
+            <div class="text title">Pracuje se na tom ...</div>
+            }
+        </div>
+        }
     </div>
-
     }
 </div>

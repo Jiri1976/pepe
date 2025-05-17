@@ -4,8 +4,13 @@
 
 
 p-dialog {
+
+    // background: #24355A !important;
+
     .p-dialog-mask {
         .p-dialog.p-component {
+
+
             .p-dialog-header {
                 span {
                     font-size: 1rem;
@@ -145,7 +150,9 @@ p-datepicker {
         }
 
         span {
-            input {
+
+            input,
+            input:disabled {
                 position: relative !important;
                 top: 0px !important;
                 border: 2px solid #fff;
@@ -154,6 +161,7 @@ p-datepicker {
                 outline: none;
                 width: 256px;
                 text-align: end;
+                background: #fff;
             }
 
             .p-datepicker-panel.p-component {
@@ -201,7 +209,9 @@ p-datepicker {
 .timefromDiv {
     p-datepicker {
         span {
-            input {
+
+            input,
+            input:disabled {
                 position: relative !important;
                 top: 0px !important;
                 border: none;
@@ -209,6 +219,7 @@ p-datepicker {
                 height: 24px !important;
                 width: 256px;
                 text-align: end;
+                background: #fff;
             }
 
             .p-datepicker-panel.p-component {
@@ -243,7 +254,9 @@ p-datepicker {
 .timetoDiv {
     p-datepicker {
         span {
-            input {
+
+            input,
+            input:disabled {
                 position: relative !important;
                 top: 0px !important;
                 border: none;
@@ -251,6 +264,7 @@ p-datepicker {
                 height: 24px !important;
                 width: 256px;
                 text-align: end;
+                background: #fff;
             }
 
             .p-datepicker-panel.p-component {

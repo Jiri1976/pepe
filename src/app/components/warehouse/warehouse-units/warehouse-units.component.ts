@@ -1,24 +1,40 @@
-import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, DestroyRef, ElementRef, inject, model, OnInit, signal, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, CUSTOM_ELEMENTS_SCHEMA, DestroyRef, ElementRef, inject, model, OnInit, signal, ViewChild } from '@angular/core';
 import { WarehouseService } from '../../../services/warehouse.service';
 import { AlertService } from '../../../services/alert.service';
 import { tap } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ErrorHandlingService } from '../../../services/error-handling.service';
 import { WarehouseCard } from '../../../models/warehouse/warehouse-card.interface';
-import { SpinnerComponent } from "../../spinner/spinner.component";
 import Swiper from 'swiper';
 import { CommonModule } from '@angular/common';
 import { CreateUpdateUnitComponent } from '../create-update-unit/create-update-unit.component';
 import { ItemsListComponent } from '../items-list/items-list.component';
 import { WarehouseUnit } from '../../../models/warehouse/warehouse-unit.interface';
 import { AuthService } from '../../../services/auth.service';
+import { HideElementDirective } from '../../../directives/hide-element.directive';
+import { ConfirmService } from '../../../services/confirm.service';
+import { trigger, transition, animate, style } from '@angular/animations';
 
 @Component({
   selector: 'app-warehouse-units',
-  imports: [CommonModule, SpinnerComponent, CreateUpdateUnitComponent, ItemsListComponent],
+  imports: [CommonModule, CreateUpdateUnitComponent, ItemsListComponent, HideElementDirective],
   templateUrl: './warehouse-units.component.html',
   styleUrl: './warehouse-units.component.scss',
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [
+    trigger('fadeOut', [
+      transition(':leave', [
+        animate('500ms ease-out', style({ opacity: 0 })),
+      ]),
+    ]),
+    trigger('fadeIn', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('600ms ease-in', style({ opacity: 1 })),
+      ])
+    ]),
+  ]
 })
 export class WarehouseUnitsComponent implements OnInit {
   private MONTHS_NUM = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
@@ -28,6 +44,7 @@ export class WarehouseUnitsComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
   private errorHandlingService = inject(ErrorHandlingService);
   private swiper!: Swiper;
+  private confirmService = inject(ConfirmService);
   user = computed(() => this.authService.user());
   isLoading = signal(false);
   cards = model<WarehouseCard[]>([]);
@@ -130,6 +147,35 @@ export class WarehouseUnitsComponent implements OnInit {
     this.destroyRef.onDestroy(() => {
       subscription.unsubscribe();
     });
+  }
+
+  onDeleteCard(id: number) {
+    let card = this.cards().find(c => c.id === id);
+    this.confirmService.confirm(`Opravdu chceš smazat kartu ${card?.warehouseItemName}?`)
+      .then((confirmed) => {
+        if (confirmed) {
+          this.isLoading.set(true);
+          const subscription = this.warehouseService.deleteWarehouseCard(id).pipe(
+            tap(response => {
+              if (response === null) {
+                this.isLoading.set(false);
+                this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+              } else if (response.isSuccess === false) {
+                this.isLoading.set(false);
+                this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+              } else {
+                this.uploadCards();
+              }
+            })
+          ).subscribe({
+            error: error => this.handleError(error)
+          });
+
+          this.destroyRef.onDestroy(() => {
+            subscription.unsubscribe();
+          });
+        }
+      });
   }
 
   private getItems() {

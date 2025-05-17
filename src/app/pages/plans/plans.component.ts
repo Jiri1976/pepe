@@ -145,8 +145,6 @@ export class PlansComponent implements OnInit {
                 }
                 const blob = new Blob([uint8Array], { type: 'application/pdf' });
                 var url = window.URL.createObjectURL(blob);
-                //window.open(url, '_blank', '');
-
                 const a = document.createElement('a')
                 a.href = url;
                 a.download = pdfCard.title;

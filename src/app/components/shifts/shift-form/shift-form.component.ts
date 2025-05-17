@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, ElementRef, inject, input, model, OnInit, output, signal, ViewChild } from '@angular/core';
+import { Component, computed, effect, ElementRef, inject, OnInit, output, signal, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Calendar, CalendarModule } from 'primeng/calendar';
 import { ButtonModule } from 'primeng/button';
@@ -50,6 +50,8 @@ export class ShiftFormComponent implements OnInit {
   monthYear = computed(() => this.shiftService.monthYear());
   minDate = this.getMinDate(this.monthYear()!);
   maxDate = new Date();
+  loading = signal(false);
+  loadingText = signal('');
 
   @ViewChild('calendar', { static: false }) calendar!: Calendar;
   @ViewChild('timeFrom', { static: false }) timeFrom!: Calendar;
@@ -81,12 +83,18 @@ export class ShiftFormComponent implements OnInit {
   }
 
   onDelete() {
+    if (this.loading()) {
+      return;
+    }
+    this.shiftForm.disable();
     let date = new Date(this.shiftForm.get('shiftDate')?.value).toLocaleString("cs-CZ", { dateStyle: 'medium' });
     this.confirmService.confirm(`Opravdu chceš smazat směnu z ${date}?`)
       .then((confirmed) => {
         if (confirmed) {
-          this.closeShiftForm.emit(true);
           this.shiftForDelete.emit(this.convertToShift());
+          this.loadingText.set('Odtraňuji směnu ...')
+        } else {
+          this.shiftForm.enable();
         }
       });
   }
@@ -113,17 +121,15 @@ export class ShiftFormComponent implements OnInit {
   }
 
   onSubmitShiftForm() {
-    let title = this.selectedShift().id > 0 ? 'Opravdu chceš upravit směnu?' : 'Opravdu chceš vytvořit směnu?';
-    this.confirmService.confirm(title)
-      .then((confirmed) => {
-        if (confirmed) {
-          this.closeShiftForm.emit(true);
-          this.shiftForSave.emit(this.convertToShift());
-        }
-      });
+    this.shiftForm.disable();
+    this.shiftForSave.emit(this.convertToShift());
+    this.loadingText.set(this.selectedShift().id > 0 ? 'Upravuji směnu ...' : 'Ukládám směnu ...')
   }
 
   onHideForm() {
+    if (this.loading()) {
+      return;
+    }
     this.persoError = false;
     this.dateError = false;
     this.fromError = false;

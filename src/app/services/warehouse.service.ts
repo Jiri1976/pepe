@@ -103,4 +103,9 @@ export class WarehouseService {
         const url = this.BASE_ROUTE + `Warehouse/createPDF`;
         return this.http.post<Response>(url, cards);
     }
+
+    deleteWarehouseCard(id: number) {
+        const url = this.BASE_ROUTE + `Warehouse/deleteWarehouseCard?id=${id}`;
+        return this.http.delete<Response>(url);
+    }
 }

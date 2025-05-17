@@ -31,7 +31,7 @@
 </div>
 <div class="box">
     @if(!isLoading()) {
-    <div class="shift-card">
+    <div class="shift-card" @fadeIn>
         @if (cards().length > 0) {
         <swiper-container #swiperRef effect="cards" grab-cursor="true" (swiperinit)="onSwiperInit($event)">
             @for(card of cards(); track $index) {
@@ -44,8 +44,8 @@
         }
     </div>
     } @else {
-    <div class="spinner">
-        <app-spinner [nullWidthHeight]="true" [marginTop]="20" />
+    <div class="skeleton" @fadeOut>
+        <div class="text title">Pracuje se na tom ...</div>
     </div>
     }
 

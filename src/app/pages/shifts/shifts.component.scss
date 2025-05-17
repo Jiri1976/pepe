@@ -23,7 +23,6 @@
 
 .box {
     width: calc(100% - 10rem) !important;
-    display: inline;
     float: right;
     flex-direction: row;
     justify-content: center;
@@ -31,18 +30,20 @@
     font-family: 'Poppins', sans-serif;
     position: relative;
     margin-top: 70px;
+    display: grid;
 
     .shift-card {
+        grid-column: 1;
+        grid-row: 1;
         min-width: 750px;
         margin: 1.5rem 0 0 0;
-        height: 750px;
+        height: 790px;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
 
         swiper-container {
-            margin: auto !important;
             width: 740px;
             height: 790px;
 
@@ -54,11 +55,41 @@
         }
     }
 
-    .spinner {
+    .skeleton {
+        grid-column: 1;
+        grid-row: 1;
+        margin: 1.5rem 0 0 0;
         display: flex;
-        flex-direction: column;
         justify-content: center;
+        flex-direction: column;
         align-items: center;
-        width: 100%;
+        box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+        padding: 20px;
+        min-width: 750px;
+        height: 790px;
+
+        background: linear-gradient(90deg,
+                #eee 25%,
+                #fff 50%,
+                #eee 75%);
+        background-size: 400% 100%;
+        animation: shimmer 2s infinite linear;
+        border-radius: 8px;
+
+        .title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #cecece;
+        }
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
     }
 }

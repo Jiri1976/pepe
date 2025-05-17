@@ -50,10 +50,7 @@ export class WarehouseComponent {
   private destroyRef = inject(DestroyRef);
   private errorHandlingService = inject(ErrorHandlingService);
 
-  isSaving = signal(false);
-  unitIsLoading = false;
   user = computed(() => this.authService.user());
-  flipped = signal(false);
   selectedUnit = computed(() => this.warehouseService.selectedUnit());
   unitHeaderTitle = '';
   visible: boolean = false;
@@ -70,6 +67,7 @@ export class WarehouseComponent {
 
   @ViewChild('calendar', { static: false }) calendar!: Calendar;
   @ViewChild(WarehouseUnitsComponent) warehouseUnits: any;
+  @ViewChild(WarehouseItemsComponent) warehouseItems: any;
 
   onShowItems() {
     this.reorderedItems.set([]);
@@ -115,19 +113,19 @@ export class WarehouseComponent {
 
   onSave() {
     if (this.reorderedItems().length > 0) {
-      this.isSaving.set(true);
+      this.warehouseItems.isLoading.set(true);
       const subscription = this.warehouseService.reorderWarehouseItems(this.reorderedItems()).pipe(
         tap(response => {
           if (response === null) {
-            this.isSaving.set(false);
+            this.warehouseItems.isLoading.set(false);
             this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
           } else if (response.isSuccess === false) {
-            this.isSaving.set(false);
+            this.warehouseItems.isLoading.set(false);
             this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
           } else if (response.isSuccess) {
             this.warehouseService.setItems(response.result);
             this.reorderedItems.set([]);
-            this.isSaving.set(false);
+            this.warehouseItems.isLoading.set(false);
             this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Pořadí položek bylo změněno.' });
           }
         }),
@@ -141,16 +139,17 @@ export class WarehouseComponent {
 
   onOpenPDF() {
     if (this.cards().length > 0) {
-      // this.isSaving.set(true);
+      this.warehouseUnits.isLoading.set(true);
       const subscription = this.warehouseService.createPDF(this.cards()).pipe(
         tap(response => {
           if (response === null) {
-            // this.isSaving.set(false);
+            this.warehouseUnits.isLoading.set(false);
             this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
           } else if (response.isSuccess === false) {
-            // this.isSaving.set(false);
+            this.warehouseUnits.isLoading.set(false);
             this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
           } else if (response.isSuccess) {
+            this.warehouseUnits.isLoading.set(false);
             const binary = atob(response.result);
             const uint8Array = new Uint8Array(binary.length);
             for (let i = 0; i < binary.length; i++) {
@@ -175,7 +174,8 @@ export class WarehouseComponent {
 
   private handleError = (errorRes: HttpErrorResponse) => {
     this.visible = false;
-    this.unitIsLoading = true;
+    this.warehouseItems.isLoading.set(false);
+    this.warehouseUnits.isLoading.set(false);
     return this.errorHandlingService.handleError(errorRes);
   };
 }

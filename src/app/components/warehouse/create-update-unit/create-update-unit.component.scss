@@ -20,7 +20,6 @@ p-dialog {
 
         form {
             border: 2px solid #D09B52;
-            // padding: 10px;
             width: 100%;
             border-radius: 20px;
             height: 150px;
@@ -212,7 +211,6 @@ p-dialog {
             position: absolute;
             top: 25px;
             right: 20px;
-            // z-index: 9;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -261,7 +259,6 @@ p-dialog {
             font-size: 0.7rem;
             position: absolute;
             bottom: 80px;
-            // color: red;
         }
 
         .btn-group {
@@ -298,31 +295,5 @@ p-dialog {
             font-weight: bold;
             font-size: 0.7rem;
         }
-
-        @keyframes shake {
-
-            10%,
-            90% {
-                transform: translate3d(-1px, 0, 0);
-            }
-
-            20%,
-            80% {
-                transform: translate3d(2px, 0, 0);
-            }
-
-            30%,
-            50%,
-            70% {
-                transform: translate3d(-4px, 0, 0);
-            }
-
-            40%,
-            60% {
-                transform: translate3d(4px, 0, 0);
-            }
-        }
     }
-
-
 }

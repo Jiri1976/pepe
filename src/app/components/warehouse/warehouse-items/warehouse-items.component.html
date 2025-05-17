@@ -1,39 +1,47 @@
 <div class="container" cdkDropListGroup>
-    @if (!loading()) {
+    @if (!isLoading()) {
+    <div class="block" @fadeIn>
+        @if (items().length > 0) {
 
-    @if (items().length > 0) {
+        <div #delete class="delete" cdkDropList (cdkDropListDropped)="onDeleteDrop()">
+            <div><i class="bi bi-trash"></i></div>
+            <div *cdkDragPlaceholder></div>
+        </div>
 
-    <div #delete class="delete" cdkDropList (cdkDropListDropped)="onDeleteDrop()">
-        <div><i class="bi bi-trash"></i></div>
-        <div *cdkDragPlaceholder></div>
-    </div>
-
-    <div #dashboard class="widget-wrapper">
-        @for(item of items(); track $index) {
-        <div>
-            <app-widget [item]="item" [index]="$index" [(selected)]="selected" cdkDropList
-                (cdkDropListDropped)="drop($event)" [cdkDropListData]="item.position" [(isDragged)]="isDragged" />
+        <div #dashboard class="widget-wrapper">
+            @for(item of items(); track $index) {
+            <div>
+                <app-widget [item]="item" [index]="$index" [(selected)]="selected" cdkDropList
+                    (cdkDropListDropped)="drop($event)" [cdkDropListData]="item.position" [(isDragged)]="isDragged" />
+            </div>
+            }
+            <div cdkDropList></div>
         </div>
         }
-        <div cdkDropList></div>
-    </div>
-    }
 
-    @if (items().length === 0 && !isDroppedToDelete()) {
-    <div class="empty-item">
-        <h4>Žádné uložené položky.</h4>
-    </div>
-    }
+        @if (items().length === 0 && !isDroppedToDelete()) {
+        <div class="empty-item">
+            <h4>Žádné uložené položky.</h4>
+        </div>
+        }
 
-    @if (!isDragged() && !isDroppedToDelete()) {
-    <div class="add" (click)="onAddItem()">
-        <div><i class="bi bi-plus"></i></div>
+        @if (!isDragged() && !isDroppedToDelete()) {
+        <div class="add" (click)="onAddItem()">
+            <div><i class="bi bi-plus"></i></div>
+        </div>
+        }
     </div>
-    }
+
 
     } @else {
-    <div class="spinner-div">
-        <app-spinner [nullWidthHeight]="true" [marginTop]="20" />
+    <div class="skeleton" @fadeOut>
+        @for(i of [1,2,3]; track i) {
+        <div class="empty-widget">
+            @if (i === 2) {
+            <div class="text title">Připravuji položky ...</div>
+            }
+        </div>
+        }
     </div>
     }
 </div>

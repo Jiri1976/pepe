@@ -23,10 +23,6 @@
                             (onSelect)="onBlur('calendar')" (onShow)="calendarFocus.set(true)"
                             (onClose)="calendarFocus.set(false)" formControlName="shiftDate" [minDate]="minDate"
                             [maxDate]="maxDate" />
-                        <!-- <p-datepicker #calendar dateFormat="dd.mm.yy" (onInput)="onInput('calendar')"
-                            (onSelect)="onBlur('calendar')" (onShow)="calendarFocus.set(true)"
-                            (onClose)="calendarFocus.set(false)" formControlName="shiftDate" /> -->
-
                     </div>
                 </div>
                 @if (dateError) {
@@ -99,9 +95,17 @@
 
         <div class="flex" style="text-align: center;"
             [style]="`--visibility: ${calendarFocus() ? 'hidden' : 'visible'}`">
+            @if(!loading()) {
             <button type="submit" id="addBtn" class="btn" (click)="onSubmitShiftForm()"
                 [disabled]="persoError || fromError || toError || dateError || compareTimes() || shiftForm.untouched">{{selectedShift().id
                 === 0 ? 'Zapsat' : 'Upravit'}}</button>
+            } @else {
+            <button class="btn" id="addBtn" type="button" disabled>
+                <span class="spinner-border spinner-border-sm text-white me-1" aria-hidden="true"></span>
+                {{ loadingText() }}
+            </button>
+            }
+
         </div>
     </form>
 </div>

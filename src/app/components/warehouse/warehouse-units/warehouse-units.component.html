@@ -1,6 +1,6 @@
 <div class="container">
-    @if(!isLoading()) {
-    <div class="unit-card">
+    @if (!isLoading()) {
+    <div class="unit-card" @fadeIn>
         @if (cards().length > 0) {
         <swiper-container #swiperRef effect="cards" grab-cursor="true" (swiperinit)="onSwiperInit($event)">
             @for(card of cards(); track $index) {
@@ -20,7 +20,7 @@
                         <div class="row w-100 mt-1" (click)="checkDate(unit.date) ? onSelectUnit(unit) : null"
                             [ngClass]="checkDate(unit.date) ? 'dateValid' : ''">
                             <div class="col first">{{unit.date}}</div>
-                            <div class="col second">{{unit.amount !== null ? unit.amount : '-'}}</div>
+                            <div class="col second">{{unit.amount !== null ? unit.amount : ''}}</div>
                         </div>
                         }
                     </div>
@@ -29,7 +29,7 @@
                         <div class="row w-100 mt-1" (click)="checkDate(unit.date) ? onSelectUnit(unit) : null"
                             [ngClass]="checkDate(unit.date) ? 'dateValid' : ''">
                             <div class="col first">{{unit.date}}</div>
-                            <div class="col second">{{unit.amount !== null ? unit.amount : '-'}}</div>
+                            <div class="col second">{{unit.amount !== null ? unit.amount : ''}}</div>
                         </div>
                         }
                     </div>
@@ -39,14 +39,14 @@
                         <div class="row w-100 mt-1" (click)="checkDate(unit.date) ? onSelectUnit(unit) : null"
                             [ngClass]="checkDate(unit.date) ? 'dateValid' : ''">
                             <div class="col first">{{unit.date}}</div>
-                            <div class="col second">{{unit.amount !== null ? unit.amount : '-'}}</div>
+                            <div class="col second">{{unit.amount !== null ? unit.amount : ''}}</div>
                         </div>
                         }
 
                         @switch (card.units.length) {
                         @case (31) {
                         @for(i of [1,2]; track i) {
-                        <div class="row w-100 mt-1">
+                        <div class="row empty w-100 mt-1">
                             <div class="col first" style="color: #fff">00</div>
                             <div class="col second" style="color: #fff">-</div>
                         </div>
@@ -55,7 +55,7 @@
 
                         @case (30) {
                         @for(i of [1,2,3]; track i) {
-                        <div class="row w-100 mt-1">
+                        <div class="row empty w-100 mt-1">
                             <div class="col first" style="color: #fff">00</div>
                             <div class="col second" style="color: #fff">-</div>
                         </div>
@@ -64,7 +64,7 @@
 
                         @case (29) {
                         @for(i of [1,2,3,4]; track i) {
-                        <div class="row w-100 mt-1">
+                        <div class="row empty w-100 mt-1">
                             <div class="col first" style="color: #fff">00</div>
                             <div class="col second" style="color: #fff">-</div>
                         </div>
@@ -73,7 +73,7 @@
 
                         @case (28) {
                         @for(i of [1,2,3,4,5]; track i) {
-                        <div class="row w-100 mt-1">
+                        <div class="row empty w-100 mt-1">
                             <div class="col first" style="color: #fff">00</div>
                             <div class="col second" style="color: #fff">-</div>
                         </div>
@@ -83,6 +83,10 @@
                     </div>
                     <div class="row mt-3 foot">
                         {{card.destination === 'F-M' ? 'Frýdek-Místek' : 'Ostrava'}}
+                        @if (card.id > 0) {
+                        <button hide class="delBtn" (click)="onDeleteCard(card.id)">Smazat&nbsp;<i
+                                class="bi bi-trash"></i></button>
+                        }
                     </div>
                 </div>
                 }
@@ -91,9 +95,10 @@
         </swiper-container>
         }
     </div>
+
     } @else {
-    <div class="spinner-box">
-        <app-spinner />
+    <div class="skeleton" @fadeOut>
+        <div class="text title">Připravuji karty ...</div>
     </div>
     }
 </div>
