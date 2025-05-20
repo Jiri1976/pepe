@@ -1,6 +1,5 @@
 import { ChangeDetectorRef, Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { UserComponent } from '../../components/users/user/user.component';
-import { SpinnerComponent } from '../../components/spinner/spinner.component';
 import { UserItemComponent } from '../../components/users/user-item/user-item.component';
 import { GetUserDTO } from '../../models/users/getUserDTO.interface';
 import { UserPaginationComponent } from '../../components/users/user-pagination/user-pagination.component';
@@ -14,13 +13,13 @@ import { ErrorHandlingService } from '../../services/error-handling.service';
 import { AlertService } from '../../services/alert.service';
 import { CommonModule } from '@angular/common';
 import { EmptyBlockComponent } from "../../components/users/empty-block/empty-block.component";
+import { trigger, transition, animate, style } from '@angular/animations';
 
 @Component({
   selector: 'app-users',
   imports: [
     CommonModule,
     UserComponent,
-    SpinnerComponent,
     UserItemComponent,
     UserPaginationComponent,
     ConfirmComponent,
@@ -29,7 +28,20 @@ import { EmptyBlockComponent } from "../../components/users/empty-block/empty-bl
     EmptyBlockComponent
   ],
   templateUrl: './users.component.html',
-  styleUrl: './users.component.scss'
+  styleUrl: './users.component.scss',
+  animations: [
+    trigger('fadeOut', [
+      transition(':leave', [
+        animate('500ms ease-out', style({ opacity: 0 })),
+      ]),
+    ]),
+    trigger('fadeIn', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('600ms ease-in', style({ opacity: 1 })),
+      ])
+    ]),
+  ]
 })
 export class UsersComponent implements OnInit {
   private usersService = inject(UsersService);
@@ -39,8 +51,8 @@ export class UsersComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
   private PER_PAGE = 10;
   private cdr = inject(ChangeDetectorRef);
-  flipped = signal(false);
-  isLoading = false;
+  // flipped = signal(false);
+  isLoading = signal(false);
   users = computed(() => this.usersService.users());
   filter = signal<'All' | 'F-M' | 'OVA'>('All');
   role = signal<'User' | 'Master' | 'Admin'>('User');
@@ -50,12 +62,13 @@ export class UsersComponent implements OnInit {
   hasNextPage = signal<boolean>(false);
   hasPreviousPage = signal<boolean>(false);
   lastPage = signal<number>(1);
+  edit = signal(false);
 
   ngOnInit() {
-    this.isLoading = true;
+    this.isLoading.set(true);
     const subscription = this.usersService.getUsers(true).pipe(
       tap(response => {
-        this.isLoading = false;
+        this.isLoading.set(false);
         if (response === null) {
           this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
         } else if (response.isSuccess === false) {
@@ -129,17 +142,19 @@ export class UsersComponent implements OnInit {
   }
 
   open() {
-    if (this.flipped()) {
+    if (this.edit()) {
       this.usersService.resetUser();
     } else {
       this.usersService.clearUser();
     }
-    this.flipped.set(!this.flipped());
+    this.edit.set(!this.edit());
+    // this.flipped.set(!this.flipped());
   }
 
   close() {
     this.usersService.clearUser();
-    this.flipped.set(false);
+    this.edit.set(false);
+    // this.flipped.set(false);
   }
 
   goBack() {
@@ -149,7 +164,8 @@ export class UsersComponent implements OnInit {
 
   editUser(id: number) {
     this.usersService.setUser(this.users().find(u => u.id === id)!);
-    this.flipped.set(true);
+    // this.flipped.set(true);
+    this.edit.set(true);
   }
 
   onSelectPage(selectedPage: number) {
@@ -198,7 +214,7 @@ export class UsersComponent implements OnInit {
   }
 
   private handleError = (errorRes: HttpErrorResponse) => {
-    this.isLoading = false;
+    this.isLoading.set(false);
     return this.errorHandlingService.handleError(errorRes);
   };
 }

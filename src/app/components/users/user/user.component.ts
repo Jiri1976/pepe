@@ -1,10 +1,9 @@
-import { ChangeDetectorRef, Component, computed, DestroyRef, effect, inject, output, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, DestroyRef, inject, OnInit, output, signal } from '@angular/core';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule, FormsModule, AbstractControl } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from '../../../services/alert.service';
 import { ConvertToGetUserDTO, ConvertToUserDTO } from '../../../helpers/conversions';
 import { GetUserDTO } from '../../../models/users/getUserDTO.interface';
-import { SpinnerComponent } from "../../spinner/spinner.component";
 import { ErrorHandlingService } from '../../../services/error-handling.service';
 import { ConfirmService } from '../../../services/confirm.service';
 import { concatMap, of } from 'rxjs';
@@ -16,11 +15,12 @@ import { CheckBoxesValidator } from '../../../helpers/user-checkboxes.validation
 @Component({
   selector: 'app-user',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, SpinnerComponent, NotificationComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, NotificationComponent],
   templateUrl: './user.component.html',
   styleUrl: './user.component.scss'
 })
-export class UserComponent {
+export class UserComponent implements OnInit {
+
   private destroyRef = inject(DestroyRef);
   private usersService = inject(UsersService);
   private alertService = inject(AlertService);
@@ -33,20 +33,11 @@ export class UserComponent {
   deletedUser = output<number>();
   createdUser = output<GetUserDTO>();
   updatedUser = output<GetUserDTO>();
-  isLoading = false;
+  isLoading = signal(false);
   userForm!: FormGroup;
   inputsFocused = signal(false);
   activeUser = signal(true);
-
-  userIsChanged = effect(() => {
-    if (this.user().id > 0) {
-      this.patchForm();
-      this.nothingChanged = true;
-    } else {
-      this.initializedUserForm();
-      this.nothingChanged = true;
-    }
-  });
+  actionText = signal('');
 
   get name() {
     return this.userForm.get('name');
@@ -80,6 +71,10 @@ export class UserComponent {
     return this.userForm.get('isActive');
   }
 
+  ngOnInit(): void {
+    this.initializedUserForm();
+  }
+
   onGoBack() {
     this.back.emit(true);
     this.initializedUserForm();
@@ -97,15 +92,19 @@ export class UserComponent {
       this.confirmService.confirm('Opravdu chceš přidat uživatele?')
         .then((confirmed) => {
           if (confirmed) {
-            this.isLoading = true;
+            this.isLoading.set(true);
+            this.actionText.set('Přidávám...');
+            this.userForm.disable();
             const userDTO = ConvertToUserDTO(_user);
 
             const subscription = this.usersService.createUser(userDTO).pipe(
               concatMap(response => {
-                this.isLoading = false;
+                this.isLoading.set(false);
                 if (response === null) {
+                  this.userForm.enable();
                   this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
                 } else if (response.isSuccess === false) {
+                  this.userForm.enable();
                   this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
                 } else if (response.isSuccess) {
                   userDTO.id = response.result;
@@ -114,7 +113,10 @@ export class UserComponent {
                   this.usersService.setUser(getUserDTO);
                   this.usersService.addUser(getUserDTO);
                   this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: `Úspěšně přidán - ${userDTO.name} ${userDTO.surname}` });
+                  this.userForm.reset();
                   this.createdUser.emit(getUserDTO);
+                  this.initializedUserForm();
+                  this.checkValues();
                 }
                 return of();
               }),
@@ -143,20 +145,27 @@ export class UserComponent {
       this.confirmService.confirm('Opravdu chceš upravit uživatele?')
         .then((confirmed) => {
           if (confirmed) {
-            this.isLoading = true;
+            this.isLoading.set(true);
+            this.actionText.set('Upravuji...');
+            this.userForm.disable();
             const getUserDTO = ConvertToGetUserDTO(_user);
             const subscription = this.usersService.updateUser(getUserDTO).pipe(
               concatMap(response => {
-                this.isLoading = false;
+                this.isLoading.set(false);
                 if (response === null) {
+                  this.userForm.enable();
                   this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
                 } else if (response.isSuccess === false) {
+                  this.userForm.enable();
                   this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
                 } else if (response.isSuccess) {
+                  this.userForm.enable();
                   this.usersService.setUser(getUserDTO);
                   this.updatedUser.emit(getUserDTO);
                   this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: response.result });
                   this.usersService.updateAllAfterUpdate(getUserDTO);
+                  this.initializedUserForm();
+                  this.checkValues();
                 }
                 return of();
               }),
@@ -179,16 +188,21 @@ export class UserComponent {
     this.confirmService.confirm('Opravdu chceš smazat uživatele?')
       .then((confirmed) => {
         if (confirmed) {
-          this.isLoading = true;
+          this.isLoading.set(true);
+          this.actionText.set('Odstraňuji...');
+          this.userForm.disable();
           const subscription = this.usersService.deleteUser(this.user().id).pipe(
             concatMap(response => {
               let userId = this.user().id;
-              this.isLoading = false;
+              this.isLoading.set(false);
               if (response === null) {
+                this.userForm.enable();
                 this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
               } else if (response.isSuccess === false) {
+                this.userForm.enable();
                 this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
               } else if (response.isSuccess) {
+                this.userForm.enable();
                 this.deletedUser.emit(this.user().id);
                 this.usersService.removeUser(userId);
                 this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: `Uživatel byl úspěšně smazán.` });
@@ -313,7 +327,6 @@ export class UserComponent {
     this.activeUser.set(!this.activeUser());
     this.userForm.get('isActive')?.setValue(this.activeUser());
     this.checkValues();
-    // this.cdr.detectChanges();
   }
 
   private initializedUserForm() {
@@ -365,6 +378,14 @@ export class UserComponent {
         disabled: false
       }, [])
     }, { validators: CheckBoxesValidator.CheckBoxesAreCheckedValidator });
+
+    if (this.user().role !== 'User') {
+      this.userForm.get('role')?.disable();
+      this.userForm.get('destination')?.disable();
+      this.userForm.get('position')?.disable();
+    }
+
+    this.activeUser.set(this.user().isActive);
   }
 
   private patchForm() {
@@ -391,7 +412,7 @@ export class UserComponent {
   }
 
   private handleError = (errorRes: HttpErrorResponse) => {
-    this.isLoading = false;
+    this.isLoading.set(false);
     return this.errorHandlingService.handleError(errorRes);
   };
 }

@@ -23,8 +23,8 @@
 }
 
 .add {
-    width: 80px;
-    height: 80px;
+    width: 70px;
+    height: 70px;
     border-radius: 16px;
     display: flex;
     flex-direction: column;
@@ -53,8 +53,8 @@
 }
 
 .delete {
-    width: 80px;
-    height: 80px;
+    width: 70px;
+    height: 70px;
     border-radius: 16px;
     display: flex;
     flex-direction: column;
@@ -79,27 +79,6 @@
 
     .bi {
         color: #FFF;
-    }
-}
-
-.save-area {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background: #05C46B;
-    position: fixed;
-    right: 2rem;
-    top: calc(100vh - 110px);
-    transition: 0.3s;
-
-    .bi {
-        font-size: 2rem;
-        font-weight: bold;
-        color: #fff;
     }
 }
 

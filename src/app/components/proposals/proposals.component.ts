@@ -2,13 +2,13 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { DragDropModule, CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
 import { TooltipModule } from 'primeng/tooltip';
-import { SpinnerComponent } from '../spinner/spinner.component';
 import { HideElementDirective } from '../../directives/hide-element.directive';
 import { ProposalsService } from '../../services/proposals.service';
 import { AuthService } from '../../services/auth.service';
 import { ProposalButtonComponent } from "./proposla-button/proposal-button.component";
 import { UpdateProposalComponent } from "./update-proposal/update-proposal.component";
 import { CustomProposalButtonComponent } from "./custom-proposal-button/custom-proposal-button.component";
+import { trigger, transition, animate, style } from '@angular/animations';
 
 
 @Component({
@@ -17,14 +17,26 @@ import { CustomProposalButtonComponent } from "./custom-proposal-button/custom-p
     CommonModule,
     DragDropModule,
     TooltipModule,
-    SpinnerComponent,
     HideElementDirective,
     ProposalButtonComponent,
     UpdateProposalComponent,
     CustomProposalButtonComponent
   ],
   templateUrl: './proposals.component.html',
-  styleUrl: './proposals.component.scss'
+  styleUrl: './proposals.component.scss',
+  animations: [
+    trigger('fadeOut', [
+      transition(':leave', [
+        animate('500ms ease-out', style({ opacity: 0 })),
+      ]),
+    ]),
+    trigger('fadeIn', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('600ms ease-in', style({ opacity: 1 })),
+      ])
+    ]),
+  ]
 })
 export class ProposalsComponent {
   private authService = inject(AuthService);

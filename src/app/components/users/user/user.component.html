@@ -1,7 +1,3 @@
-@if(isLoading) {
-<app-spinner [nullWidthHeight]="true" />
-} @else {
-
 <form autocomplete="off" id="form" [formGroup]="userForm">
     <input type="hidden" formControlName="id" [value]="user().id" />
     <div id="focus" (click)="onGoBack()"><i class="bi bi-x"></i></div>
@@ -117,7 +113,6 @@
         @if (user().role === 'User' ) {
         <input type="radio" class="btn-check" name="isActive" id="isActive" (change)="changeIsActive()"
             formControlName="isActive">
-        <!-- <label [class]="`${activeUser() ? 'checked' : ''} btn isActive`" for="isActive"></label> -->
         @if (activeUser()) {
         <label class="checked btn isActive" for="isActive"><i class="bi bi-heart-fill"></i></label>
         } @else {
@@ -130,8 +125,13 @@
             [ngStyle]="{'margin-left' : user().role === 'User' ? '15px' : ''}"><i class="bi bi-trash"></i></button>
         }
     </div>
-
+    @if (!isLoading()) {
     <button type="submit" class="btn submit" (click)="onSubmit()" [disabled]="userForm.invalid || nothingChanged">{{
         user().id === 0 ? 'Přidat' : 'Upravit' }}</button>
+    } @else {
+    <button class="btn submit" type="button" disabled>
+        <span class="spinner-border spinner-border-sm text-white me-1" aria-hidden="true"></span>
+        {{ actionText() }}
+    </button>
+    }
 </form>
-}
