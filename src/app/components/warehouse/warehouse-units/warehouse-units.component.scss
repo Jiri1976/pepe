@@ -1,8 +1,9 @@
 .container {
     display: grid;
+    width: 100%;
 
     .unit-card {
-        margin: 100px 0 0 0;
+        margin: 80px 0 0 0;
         display: flex;
         justify-content: center;
         grid-column: 1;
@@ -69,6 +70,22 @@
                             background: #e2e2e2;
                             cursor: pointer;
                         }
+
+                        .row.today {
+                            background: #24355A;
+                            color: #fff;
+                        }
+
+                        .row.today:hover {
+                            background: #1e81b0;
+                            border: 1px solid #1e81b0;
+                            color: #fff;
+                        }
+
+                        .row.old {
+                            background: #efefef;
+                            pointer-events: none !important;
+                        }
                     }
 
                     .foot {
@@ -111,31 +128,113 @@
         }
     }
 
-    .skeleton {
-        grid-column: 1;
-        grid-row: 1;
-        margin: 100px 0 0 0;
-        display: flex;
+    .missig-items {
+        // grid-column: 1;
+        // grid-row: 1;
+        margin: 40px 0 0 0 !important;
+        display: grid;
         justify-content: center;
         flex-direction: column;
         align-items: center;
+        position: absolute;
+        // height: 500px;
+
+
+        h4 {
+            color: #24355A;
+            font-weight: bold !important;
+            // margin-top: 10% !important;
+            // font-size: 1.5rem;
+        }
+    }
+
+    .skeleton {
+        grid-column: 1;
+        grid-row: 1;
+        margin: 80px 0 0 0;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
         box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
         padding: 20px;
         min-width: 900px;
         height: 500px;
-
-        background: linear-gradient(90deg,
-                #eee 25%,
-                #fff 50%,
-                #eee 75%);
-        background-size: 400% 100%;
-        animation: shimmer 2s infinite linear;
         border-radius: 8px;
+        position: relative;
 
-        .title {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #cecece;
+        .unitList {
+            min-width: 850px;
+            padding: 20px;
+            display: flex;
+            flex-direction: row;
+            justify-content: center !important;
+            align-items: center;
+            margin: 0 12px;
+
+            .head {
+                border: 2px solid #e0e0e0;
+                border-radius: 5px;
+                background: linear-gradient(90deg,
+                        #eee 25%,
+                        #fff 50%,
+                        #eee 75%);
+                background-size: 400% 100%;
+                animation: shimmer 2s infinite linear;
+                height: 38px;
+            }
+
+            .col-4 {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+
+                .row {
+                    border: 1px solid #e0e0e0;
+                    border-radius: 5px;
+                    margin: 3px 0 !important;
+
+                    background: linear-gradient(90deg,
+                            #eee 25%,
+                            #fff 50%,
+                            #eee 75%);
+                    background-size: 400% 100%;
+                    animation: shimmer 2s infinite linear;
+                    width: 281px;
+                    height: 24px !important;
+                }
+            }
+
+            .foot {
+                border: 1px solid #e0e0e0;
+                border-radius: 5px;
+                justify-content: end;
+                align-items: center;
+
+                border: 2px solid #e0e0e0;
+                border-radius: 5px;
+                background: linear-gradient(90deg,
+                        #eee 25%,
+                        #fff 50%,
+                        #eee 75%);
+                background-size: 400% 100%;
+                animation: shimmer 2s infinite linear;
+                height: 36px;
+
+                .delBtn {
+                    width: 100px;
+                    height: 25px;
+                    position: relative;
+                    right: 65px;
+                    border: 2px solid #e0e0e0;
+                    border-radius: 5px;
+                    background: linear-gradient(90deg,
+                            #eee 25%,
+                            #fff 50%,
+                            #eee 75%);
+                    background-size: 400% 100%;
+                    animation: shimmer 2s infinite linear;
+                }
+            }
         }
     }
 }

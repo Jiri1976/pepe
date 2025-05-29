@@ -17,9 +17,8 @@ p-dialog {
         justify-content: center;
         align-items: center;
 
-
         form {
-            border: 2px solid #D09B52;
+            border: 2px solid #24355A;
             width: 100%;
             border-radius: 20px;
             height: 150px;
@@ -38,9 +37,8 @@ p-dialog {
                 h1 {
                     font-size: 1.2rem;
                     font-weight: bold;
-                    color: #D09B52;
+                    color: #24355A;
                 }
-
             }
 
             .submit,
@@ -51,8 +49,8 @@ p-dialog {
             }
 
             .submit {
-                background: #D09B52;
-                border: 2px solid #D09B52;
+                background: #24355A;
+                border: 2px solid #24355A;
                 outline: 5px solid #fff;
                 width: calc(50% - 30px);
                 margin: 0 30px -20px 0;
@@ -69,15 +67,16 @@ p-dialog {
             }
 
             .submit:disabled {
-                background: #f7c278;
-                border: 2px solid #f7c278;
+                background: #1e81b0;
+                border: 2px solid #1e81b0;
             }
 
             .delete {
                 background: #F53B57;
                 font-weight: bold;
-                width: 40px;
-                border-radius: 50%;
+                width: 30px;
+                height: 30px;
+                border-radius: 5px;
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
@@ -85,8 +84,8 @@ p-dialog {
                 transition: ease 0.3s all;
                 position: absolute;
                 outline: 5px solid #fff;
-                bottom: 30px;
-                left: 15px;
+                bottom: 40px;
+                left: 25px;
 
                 i {
                     font-size: 1.5rem;
@@ -180,12 +179,12 @@ p-dialog {
             justify-content: center;
             align-items: center;
             border: 1px solid #F53B57;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            border-radius: 5px;
             position: absolute;
-            top: 25px;
-            right: 20px;
+            top: 35px;
+            right: 25px;
             background: #F53B57;
             color: white;
             outline: 5px solid #fff;
@@ -207,27 +206,13 @@ p-dialog {
             }
         }
 
-        .notify {
-            position: absolute;
-            top: 25px;
-            right: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            outline: 5px solid #fff;
-            width: 40px !important;
-            height: 40px !important;
-            border-radius: 50%;
-        }
-
         input {
             padding: 10px 15px;
             border: none;
-            border-bottom: 2px solid #D09B52 !important;
+            border-bottom: 2px solid #24355A !important;
             outline: none !important;
             transition: .3s ease;
-            color: #868283;
+            color: #24355A;
             text-align: center;
             position: relative;
             top: -20px;
@@ -236,7 +221,7 @@ p-dialog {
         input:focus,
         input:active {
             border: none;
-            border-bottom: 2px solid #D09B52 !important;
+            border-bottom: 2px solid #24355A !important;
             outline: none !important;
             box-shadow: none !important;
         }
@@ -259,35 +244,6 @@ p-dialog {
             font-size: 0.7rem;
             position: absolute;
             bottom: 80px;
-        }
-
-        .btn-group {
-            label {
-                border: 2px solid #EAE4DA;
-                color: #A3A5AA;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                box-shadow: none !important;
-            }
-
-            label.left-one {
-                border-top-left-radius: 10px !important;
-                border-bottom-left-radius: 10px !important;
-            }
-
-            label.right-one {
-                border-top-right-radius: 10px !important;
-                border-bottom-right-radius: 10px !important;
-            }
-
-            .btn-check:checked+.btn {
-                background: #D09B52;
-                color: #fff;
-                border: 2px solid #D09B52 !important;
-                outline-color: #D09B52 !important;
-            }
         }
 
         .error {

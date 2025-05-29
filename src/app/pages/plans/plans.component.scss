@@ -1,34 +1,53 @@
 .sidenav {
-    display: flex;
-    flex-direction: column;
-    transition: all .5s ease;
-    align-items: center !important;
-    width: 10rem;
-    float: left;
-    margin-top: 50px;
+    position: fixed;
+    height: 100%;
+    z-index: 9999;
 
-    ul {
-        margin: 2rem 0 0 0;
-        padding: 0;
 
-        .proposal-calendar {
-            width: 190px;
-            height: 50px;
-            position: absolute;
-            left: -90px;
-            top: 15px;
-        }
-    }
+    // display: flex;
+    // flex-direction: column;
+    // transition: all .5s ease;
+    // align-items: center !important;
+    // width: 10rem;
+    // float: left;
+    // margin-top: 50px;
+    // border: 1px solid black;
+
+    // ul {
+    //     margin: 2rem 0 0 0;
+    //     padding: 0;
+
+    //     .proposal-calendar {
+    //         width: 190px;
+    //         height: 50px;
+    //         position: absolute;
+    //         left: -90px;
+    //         top: 15px;
+    //     }
+    // }
 }
 
 .box {
-    width: calc(100% - 10rem) !important;
-    display: inline;
-    float: right;
+    // width: calc(100% - 10rem) !important;
+    width: 100% !important;
+    // display: inline;
+    display: flex;
+    // float: right;
     flex-direction: row;
     justify-content: center;
     align-items: center;
     font-family: 'Poppins', sans-serif;
     position: relative;
-    margin-top: 70px;
+    // margin-top: 70px;
+
+
+    //  width: 100% !important;
+    // display: flex;
+    // float: right;
+    // flex-direction: row;
+    // justify-content: center;
+    // align-items: center;
+    // font-family: 'Poppins', sans-serif;
+    // position: relative;
+    // margin-top: 50px;
 }

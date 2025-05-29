@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, effect, inject, input, model, OnInit, output, signal } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
-import { NotificationComponent } from "../../notification/notification.component";
 import { WarehouseCard } from '../../../models/warehouse/warehouse-card.interface';
 import { WarehouseUnit } from '../../../models/warehouse/warehouse-unit.interface';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -14,7 +13,7 @@ import { map } from 'rxjs';
 
 @Component({
   selector: 'app-create-update-unit',
-  imports: [CommonModule, DialogModule, ButtonModule, NotificationComponent, ReactiveFormsModule],
+  imports: [CommonModule, DialogModule, ButtonModule, ReactiveFormsModule],
   templateUrl: './create-update-unit.component.html',
   styleUrl: './create-update-unit.component.scss'
 })
@@ -98,8 +97,8 @@ export class CreateUpdateUnitComponent implements OnInit {
       ]
       )
     });
+    this.amount?.markAsUntouched();
   }
-
 
   private handleError = (errorRes: HttpErrorResponse) => {
     this.isLoading.set(false);

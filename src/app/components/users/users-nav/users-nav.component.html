@@ -1,0 +1,52 @@
+<div class="menu" [class]="{'open': isOpened()}">
+    <button class="action_btn" (click)="onOpen()">
+        <img src="spinner.png" alt="navigace" width="70" height="70" />
+    </button>
+    <ul>
+        <li style="--i: 1; --x: -35; --y: -90;" [style.--background]="'#24355A'">
+            <a (click)="createUpdate()" [style.--background]="'#24355A'" [style.--color]="'#fff'">
+                <i class="bi bi-person-add"></i>
+            </a>
+        </li>
+
+        <li style="--i: 2; --x: 35; --y: -90;">
+            <a (click)="usersComp.onSelectList(1)" [style.--background]="filter() === 'F-M' ? '#24355A' : '#1e81b0'"
+                [style.--color]="'#fff'">
+                <p>F-M</p>
+            </a>
+        </li>
+        <li style="--i: 3;--x: 90; --y: -35;">
+            <a (click)="usersComp.onSelectList(2)" [style.--background]="filter() === 'OVA' ? '#24355A' : '#1e81b0'"
+                [style.--color]="'#fff'">
+                <p>OVA</p>
+            </a>
+        </li>
+        <li style="--i: 4;--x: 90; --y: 35;">
+            <a (click)="usersComp.onSelectList(3)"
+                [style.--background]="role() === 'User' && (selectedList() === 3 || selectedList() === 1 || selectedList() === 2) ? '#24355A' : '#1e81b0'"
+                [style.--color]="'#fff'">
+                <p>User</p>
+            </a>
+        </li>
+        <li style="--i: 5; --x: 35; --y: 85;">
+            <a (click)="usersComp.onSelectList(4)"
+                [style.--background]="role() === 'Master' && (selectedList() === 4 || selectedList() === 1 || selectedList() === 2) ? '#24355A' : '#1e81b0'"
+                [style.--color]="'#fff'">
+                <p>Master</p>
+            </a>
+        </li>
+        <li style="--i: 6; --x: -35; --y: 85;">
+            <a (click)="usersComp.onSelectList(5)"
+                [style.--background]="role() === 'Admin' && (selectedList() === 5 || selectedList() === 1 || selectedList() === 2) ? '#24355A' : '#1e81b0'"
+                [style.--color]="'#fff'">
+                <p>Admin</p>
+            </a>
+        </li>
+        <li style="--i: 7; --x: -85; --y: 35;">
+            <a (click)="usersComp.onSelectList(6)" [style.--background]="filter() === 'All' ? '#24355A' : '#1e81b0'"
+                [style.--color]="'#fff'">
+                <p>VŠE</p>
+            </a>
+        </li>
+    </ul>
+</div>

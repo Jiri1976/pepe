@@ -23,8 +23,10 @@
         </div>
     </form>
     } @else {
-    <div class="spinner-box">
-        <app-spinner [nullWidthHeight]="true" [imgHeight]="'40px'" [imgWidth]="'40px'" />
+    <div class="spinner">
+        <div class="spinner-border text-secondary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
     </div>
     }
 </div>

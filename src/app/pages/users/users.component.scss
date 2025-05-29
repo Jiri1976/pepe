@@ -1,28 +1,16 @@
-.sidenav {
-    margin-top: 50px;
-    display: flex;
-    flex-direction: column;
-    transition: all .5s ease;
-    align-items: center !important;
-    width: 10rem;
-    float: left;
-
-    ul {
-        margin: 2rem 0 0 0;
-        padding: 0;
-    }
+:host {
+    height: 100%;
 }
 
 .box {
-    margin-top: 100px;
-    width: calc(100% - 10rem) !important;
+    margin-top: 110px;
+    width: 100%;
     display: grid;
     float: right;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     font-family: 'Poppins', sans-serif;
-    height: 100%;
 
     .users {
         position: relative;
@@ -37,6 +25,7 @@
             h4 {
                 font-weight: bold;
                 color: #24355A;
+                text-align: center;
             }
         }
 
@@ -54,7 +43,7 @@
         justify-content: center;
         flex-direction: column;
         align-items: center;
-        margin-top: 60px;
+        margin-top: 50px;
         width: 670px;
         position: relative;
         height: 100%;

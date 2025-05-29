@@ -19,7 +19,7 @@ export class ConfirmService {
                 rejectButtonProps: {
                     label: 'Ne',
                     severity: 'danger',
-                    outlined: true,
+                    outlined: false,
                 },
                 acceptButtonStyleClass: 'p-button-sm',
                 acceptButtonProps: {

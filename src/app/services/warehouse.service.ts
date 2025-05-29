@@ -5,6 +5,8 @@ import { Response } from '../models/response.interface';
 import { WarehouseItem } from "../models/warehouse/warehouse-item.interface";
 import { WarehouseUnit } from "../models/warehouse/warehouse-unit.interface";
 import { WarehouseCard } from "../models/warehouse/warehouse-card.interface";
+import { BehaviorSubject, Observable } from "rxjs";
+import { WarehouseItemsComponent } from "../components/warehouse/warehouse-items/warehouse-items.component";
 
 @Injectable({
     providedIn: 'root'
@@ -12,29 +14,31 @@ import { WarehouseCard } from "../models/warehouse/warehouse-card.interface";
 export class WarehouseService {
     private http = inject(HttpClient);
     private BASE_ROUTE = environment.WAREHOUSE_PATH;
+    private compRef = new BehaviorSubject<WarehouseItemsComponent | null>(null);
     items = signal<WarehouseItem[]>([]);
     warehouseCard = signal<WarehouseCard>({ id: 0, warehouseItemId: 0, warehouseItemName: '', monthYear: '', monthYearName: '', destination: '', units: [] });
     selectedUnit = signal<WarehouseUnit>({ id: 0, warehouseCardId: 0, warehouseItemId: 0, date: '', amount: 0 });
+    visibleList = signal(false);
+
+    setComponent(comp: WarehouseItemsComponent) {
+        this.compRef.next(comp);
+    }
+
+    getComponent(): Observable<WarehouseItemsComponent | null> {
+        return this.compRef.asObservable();
+    }
+
+    callOnAddItem() {
+        const comp = this.compRef.getValue();
+        comp?.onAddItem();
+    }
 
     setItems(_items: WarehouseItem[]) {
         this.items.set(_items);
     }
 
-    setSelectedUnit(unit: WarehouseUnit) {
-        this.selectedUnit.set(unit);
-    }
-
-    setWarehouseCard(card: WarehouseCard) {
-        this.warehouseCard.set(card);
-    }
-
     getAllWarehouseItems() {
         const url = this.BASE_ROUTE + `Warehouse/GetAllWarehouseItems`;
-        return this.http.get<Response>(url);
-    }
-
-    getInitialWarehouseState(destination: string, montYear: string) {
-        const url = this.BASE_ROUTE + `Warehouse/GetInitialWarehouseState?destination=${destination}&monthYear=${montYear}`;
         return this.http.get<Response>(url);
     }
 
@@ -73,15 +77,6 @@ export class WarehouseService {
         return this.http.post<Response>(url, card);
     }
 
-    clearWarehouseUnit(unit: WarehouseUnit) {
-        let card = { ...this.warehouseCard() };
-        let _unit = card.units.find(x => x.date === unit.date);
-        const index = card.units.indexOf(_unit!);
-        card.units[index].amount = undefined;
-        const url = this.BASE_ROUTE + `Warehouse/CreateUpdateWarehouseCard`;
-        return this.http.post<Response>(url, card);
-    }
-
     updateWidgetPosition(sourceWidgetId: number, targetWidgetId: number) {
         const sourceIndex = this.items().findIndex((w) => w.position === sourceWidgetId);
         if (sourceIndex === -1) {
@@ -106,6 +101,11 @@ export class WarehouseService {
 
     deleteWarehouseCard(id: number) {
         const url = this.BASE_ROUTE + `Warehouse/deleteWarehouseCard?id=${id}`;
+        return this.http.delete<Response>(url);
+    }
+
+    deleteWarehouseCards(monthYear: string, destination: string) {
+        const url = this.BASE_ROUTE + `Warehouse/deleteWarehouseCards?monthYear=${monthYear}&destination=${destination}`;
         return this.http.delete<Response>(url);
     }
 }

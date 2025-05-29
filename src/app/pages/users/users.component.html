@@ -1,27 +1,3 @@
-<div class="sidenav">
-    <ul>
-        <app-nav-button-static background="#D09B52" color="#fff"
-            [icon]="!edit() ? 'bi-person-add' : 'bi-arrow-left-circle'" [text]="!edit() ? 'Přidat' : 'Zpět'"
-            (clicked)="open()" />
-        <!-- @if (!edit()) { -->
-        <app-nav-button-active background="#fff" color="#24355A" icon="bi-house" text="F-M"
-            [isActive]="filter() === 'F-M'" (clicked)="onSelectList(1)" [isDisabled]="edit()" />
-        <app-nav-button-active background="#fff" color="#24355A" icon="bi-house" text="OVA"
-            [isActive]="filter() === 'OVA'" (clicked)="onSelectList(2)" [isDisabled]="edit()" />
-        <app-nav-button-active background="#fff" color="#24355A" icon="bi-person-fill" text="User"
-            [isActive]="role() === 'User' && (selectedList === 3 || selectedList === 1 || selectedList === 2)"
-            (clicked)="onSelectList(3)" [isDisabled]="edit()" />
-        <app-nav-button-active background="#fff" color="#24355A" icon="bi-person-heart" text="Master"
-            [isActive]="role() === 'Master' && (selectedList === 4 || selectedList === 1 || selectedList === 2)"
-            (clicked)="onSelectList(4)" [isDisabled]="edit()" />
-        <app-nav-button-active background="#fff" color="#24355A" icon="bi-person-hearts" text="Admin"
-            [isActive]="role() === 'Admin' && (selectedList === 5 || selectedList === 1 || selectedList === 2)"
-            (clicked)="onSelectList(5)" [isDisabled]="edit()" />
-        <app-nav-button-active background="#fff" color="#24355A" icon="bi-people" text="Všichni"
-            [isActive]="filter() === 'All'" (clicked)="onSelectList(6)" [isDisabled]="edit()" />
-        <!-- } -->
-    </ul>
-</div>
 <div class="box">
     @if (!isLoading()) {
 
@@ -40,13 +16,6 @@
             <h4 class="mt-5">Žádní uživatelé v databázi.</h4>
             }
         </div>
-        @if (filteredUsers().length > 0 && !edit()) {
-        <div class="pagination-div">
-            <app-user-pagination (pageSelected)="onSelectPage($event)" [users]="filteredUsers()"
-                [currentPage]="currentPage()" [hasNextPage]="hasNextPage()" [hasPreviousPage]="hasPreviousPage()"
-                [lastPage]="lastPage()" />
-        </div>
-        }
     </div>
     }
 
@@ -68,6 +37,17 @@
         }
     </div>
     }
-</div>
 
+    <app-users-nav [(edit)]="edit" [(filter)]="filter" [(role)]="role" [(selectedList)]="selectedList" @fadeIn
+        @fadeOut />
+
+    @if (filteredUsers().length > 0 && !edit()) {
+    <div class="pagination-div" @fadeIn @fadeOut>
+        <app-user-pagination (pageSelected)="onSelectPage($event)" [users]="filteredUsers()"
+            [currentPage]="currentPage()" [hasNextPage]="hasNextPage()" [hasPreviousPage]="hasPreviousPage()"
+            [lastPage]="lastPage()" />
+    </div>
+    }
+
+</div>
 <app-confirm />

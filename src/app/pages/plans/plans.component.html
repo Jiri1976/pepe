@@ -1,5 +1,5 @@
 <div class="sidenav">
-    <ul>
+    <!-- <ul>
         <app-nav-button-static background="#24355A" color="#fff" icon="bi-calendar" [text]="calendarTitle()"
             (clicked)="toggleCalendar()" />
         <div class="proposal-calendar">
@@ -31,7 +31,8 @@
             (clicked)="onOpenPDF()" [isDisabled]="!nothingChanched()" />
         }
         }
-    </ul>
+    </ul> -->
+    <app-proposals-nav [(pdfLoading)]="pdfLoading" />
 </div>
 <div class="box">
     <app-proposals />

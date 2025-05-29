@@ -16,7 +16,7 @@
     border-radius: inherit;
     overflow: hidden;
     background: #fff;
-    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     border: none;
     margin: 10px 0;
     cursor: move;
@@ -44,6 +44,5 @@
 
     .settings-button:hover {
         background: #cecece;
-
     }
 }

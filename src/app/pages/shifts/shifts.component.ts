@@ -1,16 +1,10 @@
-import { Component, DestroyRef, inject, OnInit, signal, ViewChild, CUSTOM_ELEMENTS_SCHEMA, ElementRef } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal, ViewChild, CUSTOM_ELEMENTS_SCHEMA, ElementRef, computed, effect } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { CalendarModule, Calendar } from 'primeng/calendar';
-import { DatePickerModule } from 'primeng/datepicker';
 import { DialogModule } from 'primeng/dialog';
 import { ConfirmComponent } from '../../components/confirm/confirm.component';
 import { ShiftService } from '../../services/shift.service';
-import { NavButtonStaticComponent } from "../../components/ui-buttons/nav-button-static/nav-button-static.component";
-import { NavButtonActiveComponent } from "../../components/ui-buttons/nav-button-active/nav-button-active.component";
-import { OverlayModule } from 'primeng/overlay';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from '../../services/alert.service';
 import { tap } from 'rxjs';
@@ -19,41 +13,25 @@ import { SelectUserComponent } from '../../components/shifts/select-user/select-
 import { ShiftCard } from '../../models/shifts/shiftCard.interface';
 import { ShiftCardComponent } from '../../components/shifts/shift-card/shift-card.component';
 import Swiper from 'swiper';
-import { trigger, transition, animate, style } from '@angular/animations';
+import { ShiftsNavComponent } from "../../components/shifts/shifts-nav/shifts-nav.component";
+import { PageAnimation } from '../../animations/page.animation';
 
 @Component({
   selector: 'app-plans',
   imports: [
     CommonModule,
-    CalendarModule,
     ConfirmComponent,
     DialogModule,
     ButtonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    DatePickerModule,
-    NavButtonStaticComponent,
-    NavButtonActiveComponent,
-    OverlayModule,
-    DatePickerModule,
     SelectUserComponent,
-    ShiftCardComponent
+    ShiftCardComponent,
+    ShiftsNavComponent
   ],
   templateUrl: './shifts.component.html',
   styleUrl: './shifts.component.scss',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   animations: [
-    trigger('fadeOut', [
-      transition(':leave', [
-        animate('500ms ease-out', style({ opacity: 0 })),
-      ]),
-    ]),
-    trigger('fadeIn', [
-      transition(':enter', [
-        style({ opacity: 0 }),
-        animate('600ms ease-in', style({ opacity: 1 })),
-      ])
-    ]),
+    PageAnimation
   ]
 })
 export class ShiftsComponent implements OnInit {
@@ -66,36 +44,47 @@ export class ShiftsComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
   private alertService = inject(AlertService);
   private errorHandlingService = inject(ErrorHandlingService);
-  defaultDate = new Date(new Date().getFullYear(), new Date().getMonth());
-  maxDate: Date = new Date(new Date().getFullYear(), new Date().getMonth());
   filteredUsers = signal<any[]>([]);
   monthYear = signal<string>(this.MONTHS_NUM[new Date().getMonth()] + new Date().getFullYear());
   loggedUser = this.authService.getUser();
   destination = signal(this.loggedUser.role === 'Master' ? this.loggedUser.destination : 'F-M');
-  isLoading = signal(true);
+  isLoading = signal(false);
   visibleModal = signal(false);
   users = signal<{ userName: string, userId: number }[]>([]);
   cards = signal<ShiftCard[]>([]);
   currentIndex = signal<number>(0);
   calendarText = signal<string>(this.MONTHS_NAMES[new Date().getMonth()] + ' ' + new Date().getFullYear().toString().substring(2));
-  formShiftVisible = signal(false);
+  formShiftVisible = computed(() => this.shiftService.shiftFormVisible());
+  pdfOn = signal(false);
+  empty = new Array(45);
 
   @ViewChild('swiperRef', { static: false }) swiperRef!: ElementRef;
-  @ViewChild('calendar', { static: false }) calendar!: Calendar;
-  @ViewChild('timeFrom', { static: false }) timeFrom!: Calendar;
-  @ViewChild('timeTo', { static: false }) timeTo!: Calendar;
 
   ngOnInit(): void {
     this.getCards();
   }
 
+  formShiftEffect = effect(() => {
+    if (this.formShiftVisible()) {
+      const swiper = (this.swiperRef.nativeElement as any).swiper;
+      swiper.allowTouchMove = false;
+    } else {
+      if (!this.isLoading()) {
+        setTimeout(() => {
+          if (this.cards().length > 0) {
+            const swiper = (this.swiperRef.nativeElement as any).swiper;
+            swiper.allowTouchMove = true;
+          }
+        }, 100);
+      }
+    }
+  })
+
   onSwiperInit(event: any) {
     setTimeout(() => {
       const swiper = (this.swiperRef.nativeElement as any).swiper;
       if (swiper) {
-        swiper.on('slideChange', () => {
-          // console.log('Slide changed! Index:', swiper.activeIndex);
-        });
+        swiper.on('slideChange', () => { });
       }
     });
   }
@@ -111,18 +100,6 @@ export class ShiftsComponent implements OnInit {
     if (!this.formShiftVisible()) {
       this.visibleModal.set(true);
     }
-  }
-
-  onOpenShiftForm() {
-    this.formShiftVisible.set(true);
-    const swiper = (this.swiperRef.nativeElement as any).swiper;
-    swiper.allowTouchMove = false;
-  }
-
-  onCloseShiftForm() {
-    this.formShiftVisible.set(false);
-    const swiper = (this.swiperRef.nativeElement as any).swiper;
-    swiper.allowTouchMove = true;
   }
 
   onSelectUser(userId: number) {
@@ -141,24 +118,10 @@ export class ShiftsComponent implements OnInit {
     this.getCards();
   }
 
-  toggleCalendar() {
-    if (this.calendar) {
-      if (this.calendar.overlayVisible) {
-        this.calendar.hideOverlay();
-        this.calendar.cd.detectChanges();
-      } else {
-        this.calendar.showOverlay();
-        this.calendar.cd.detectChanges();
-      }
-    }
-  }
-
-  onSelectMonth() {
-    this.calendar.hideOverlay();
-    this.calendar.cd.detectChanges();
-    let _monthYear = this.MONTHS_NUM[new Date(this.calendar.value).getMonth()] + new Date(this.calendar.value).getFullYear();
+  onSelectMonth(date: string) {
+    let _monthYear = this.MONTHS_NUM[new Date(date).getMonth()] + new Date(date).getFullYear();
     this.monthYear.set(_monthYear);
-    this.calendarText.set(this.MONTHS_NAMES[new Date(this.calendar.value).getMonth()] + ' ' + new Date(this.calendar.value).getFullYear().toString().substring(2));
+    this.calendarText.set(this.MONTHS_NAMES[new Date(date).getMonth()] + ' ' + new Date(date).getFullYear().toString().substring(2));
     this.getCards();
   }
 
@@ -168,17 +131,17 @@ export class ShiftsComponent implements OnInit {
       this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Chybí uložené směny.' });
       return;
     }
-    this.isLoading.set(true);
+    this.pdfOn.set(true);
     const subscription = this.shiftService.generateAllToPDF(_cards).pipe(
       tap(response => {
         if (response === null) {
-          this.isLoading.set(false);
+          this.pdfOn.set(false);
           this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
         } else if (response.isSuccess === false) {
-          this.isLoading.set(false);
+          this.pdfOn.set(false);
           this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
         } else {
-          this.isLoading.set(false);
+          this.pdfOn.set(false);
           const binary = atob(response.result);
           const uint8Array = new Uint8Array(binary.length);
           for (let i = 0; i < binary.length; i++) {
@@ -203,7 +166,6 @@ export class ShiftsComponent implements OnInit {
   }
 
   onReset() {
-    this.formShiftVisible.set(false);
     const swiper = (this.swiperRef.nativeElement as any).swiper;
     swiper.allowTouchMove = true;
     this.getCards();

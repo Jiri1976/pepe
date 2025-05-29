@@ -5,8 +5,6 @@
 
 p-dialog {
 
-    // background: #24355A !important;
-
     .p-dialog-mask {
         .p-dialog.p-component {
 
@@ -38,6 +36,28 @@ p-dialog {
                     }
                 }
             }
+        }
+    }
+}
+
+.p-dialog.p-confirmdialog {
+    background: #000 !important;
+    border: 2px solid #000 !important;
+    color: #fff;
+
+    .p-dialog-header {
+        display: flex;
+        justify-content: center;
+        text-transform: uppercase;
+
+        .p-dialog-header-actions {
+            display: none !important;
+        }
+    }
+
+    .p-dialog-content {
+        .pi {
+            color: #fff !important;
         }
     }
 }
@@ -77,18 +97,24 @@ p-dialog.create-unit {
 .p-dialog-footer {
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: center !important;
     align-items: center;
 }
 
 .proposal-calendar {
     p-datepicker {
         .p-datepicker-panel.p-component {
-            left: 230px !important;
-            top: 75px !important;
+            left: 10px !important;
+            // top: calc(100% - 250px) !important;
+            // bottom: 0 !important;
         }
 
         .p-datepicker.p-component {
+
+            input {
+                display: none;
+            }
+
             .p-datepicker-panel.p-component {
                 .p-datepicker-month-view {
                     .p-datepicker-month.p-datepicker-month-selected {

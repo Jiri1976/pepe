@@ -13,7 +13,7 @@
             border: 2px solid #24355A;
             border-radius: 5px;
             padding: 5px;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
             background: #f8f8f4;
             color: #24355A;
             justify-content: space-between;
@@ -110,6 +110,13 @@
                     }
                 }
             }
+
+            tbody:before {
+                content: "@";
+                display: block;
+                line-height: 10px;
+                text-indent: -99999px;
+            }
         }
 
         h4 {
@@ -195,6 +202,11 @@
                     font-size: 1.1rem;
                     font-weight: bold;
                     transition: .5s ease-in-out;
+                }
+
+                .spinner-border {
+                    width: 15px;
+                    height: 15px;
                 }
             }
 

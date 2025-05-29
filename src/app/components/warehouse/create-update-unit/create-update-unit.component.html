@@ -1,15 +1,7 @@
 <p-dialog class="create-unit" [modal]="true" [visible]="visibleModal()" [style]="{ width: '25rem' }">
     <div class="container">
         <form autocomplete="off" id="form" [formGroup]="unitForm">
-
-            @if (amount?.hasError('pattern') && amount?.dirty) {
-            <div class="notify">
-                <app-notification [notify]="amount?.hasError('pattern') && amount?.dirty" [bottom]="0" />
-            </div>
-            } @else {
             <div id="focus" (click)="onCancel()"><i class="bi bi-x"></i></div>
-            }
-
             <div class="title">
                 <h1>{{selectedUnit()!.date}}</h1>
             </div>

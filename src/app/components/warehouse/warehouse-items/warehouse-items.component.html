@@ -18,28 +18,18 @@
             <div cdkDropList></div>
         </div>
         }
-
-        @if (items().length === 0 && !isDroppedToDelete()) {
-        <div class="empty-item">
-            <h4>Žádné uložené položky.</h4>
-        </div>
-        }
-
-        @if (!isDragged() && !isDroppedToDelete()) {
-        <div class="add" (click)="onAddItem()">
-            <div><i class="bi bi-plus"></i></div>
-        </div>
-        }
     </div>
 
+    @if (items().length === 0 && !isDroppedToDelete()) {
+    <div class="empty-item" @fadeIn>
+        <h4>Žádné uložené položky.</h4>
+    </div>
+    }
 
     } @else {
     <div class="skeleton" @fadeOut>
         @for(i of [1,2,3]; track i) {
         <div class="empty-widget">
-            @if (i === 2) {
-            <div class="text title">Připravuji položky ...</div>
-            }
         </div>
         }
     </div>

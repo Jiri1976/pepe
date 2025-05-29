@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, inject, OnInit, ViewChild } from '@angular/core';
+import { Component, computed, DestroyRef, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -8,8 +8,6 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { DialogModule } from 'primeng/dialog';
 import { ConfirmComponent } from '../../components/confirm/confirm.component';
 import { ProposalsComponent } from '../../components/proposals/proposals.component';
-import { NavButtonStaticComponent } from "../../components/ui-buttons/nav-button-static/nav-button-static.component";
-import { NavButtonActiveComponent } from "../../components/ui-buttons/nav-button-active/nav-button-active.component";
 import { ProposalsService } from '../../services/proposals.service';
 import { ConfirmService } from '../../services/confirm.service';
 import { OverlayModule } from 'primeng/overlay';
@@ -18,6 +16,9 @@ import { AlertService } from '../../services/alert.service';
 import { tap } from 'rxjs';
 import { ErrorHandlingService } from '../../services/error-handling.service';
 import { ProposalsPDF, ShiftPDF, UserPDF } from '../../models/proposals/proposalsPDF.interface';
+import { trigger, transition, animate, style } from '@angular/animations';
+import { ProposalsNavComponent } from "../../components/proposals/proposals-nav/proposals-nav.component";
+import { PageAnimation } from '../../animations/page.animation';
 
 @Component({
   selector: 'app-plans',
@@ -31,14 +32,14 @@ import { ProposalsPDF, ShiftPDF, UserPDF } from '../../models/proposals/proposal
     FormsModule,
     ReactiveFormsModule,
     DatePickerModule,
-    NavButtonStaticComponent,
-    NavButtonActiveComponent,
     OverlayModule,
-    DatePickerModule,
-    CalendarModule
+    ProposalsNavComponent
   ],
   templateUrl: './plans.component.html',
-  styleUrl: './plans.component.scss'
+  styleUrl: './plans.component.scss',
+  animations: [
+    PageAnimation
+  ]
 })
 export class PlansComponent implements OnInit {
   private MONTHS_NUM = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
@@ -50,15 +51,16 @@ export class PlansComponent implements OnInit {
   private errorHandlingService = inject(ErrorHandlingService);
   defaultDate = new Date(new Date().getFullYear(), new Date().getMonth());
   minDate: Date = new Date(new Date().getFullYear(), new Date().getMonth());
-  destination = computed(() => this.proposalsService.destination());
+  // destination = computed(() => this.proposalsService.destination());
   loggedUser = this.authService.getUser();
   proposalCard = computed(() => this.proposalsService.proposalCard());
   isLoading = computed(() => this.proposalsService.isProposalLoading());
   user = computed(() => this.authService.user());
   users = computed(() => this.proposalsService.users());
-  calendarTitle = computed(() => this.proposalsService.calendarTitle());
+  // calendarTitle = computed(() => this.proposalsService.calendarTitle());
   nothingChanched = computed(() => this.proposalsService.nothingChanged());
   assignments = computed(() => this.proposalsService.assignments());
+  pdfLoading = signal(false);
   @ViewChild('calendar', { static: false }) calendar!: Calendar;
 
   ngOnInit(): void {
@@ -81,10 +83,10 @@ export class PlansComponent implements OnInit {
     }
   }
 
-  onSelectMonth() {
-    this.calendar.hideOverlay();
-    this.calendar.cd.detectChanges();
-    let monthYear = this.MONTHS_NUM[new Date(this.calendar.value).getMonth()] + new Date(this.calendar.value).getFullYear();
+  onSelectMonth(date: string) {
+    // this.calendar.hideOverlay();
+    // this.calendar.cd.detectChanges();
+    let monthYear = this.MONTHS_NUM[new Date(date).getMonth()] + new Date(date).getFullYear();
     this.proposalsService.monthYear.set(monthYear);
     this.proposalsService.uploadProposals();
   }
@@ -114,53 +116,43 @@ export class PlansComponent implements OnInit {
   }
 
   onReset() {
-    this.confirmService.confirm('Opravdu chceš resetovat návrhy směn?')
-      .then((confirmed) => {
-        if (confirmed) {
-          this.proposalsService.uploadProposals();
-        }
-      });
+    this.proposalsService.uploadProposals();
   }
 
   onOpenPDF() {
-    this.confirmService.confirm('Opravdu chceš stáhnout PDF soubor?')
-      .then((confirmed) => {
-        if (confirmed) {
-          this.proposalsService.isProposalLoading.set(true);
-          let pdfCard = this.preparePDFData();
-          const subscription = this.proposalsService.uploadPDF(pdfCard, this.user().role).pipe(
-            tap(response => {
-              if (response === null) {
-                this.proposalsService.isProposalLoading.set(false);
-                this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
-              } else if (response.isSuccess === false) {
-                this.proposalsService.isProposalLoading.set(false);
-                this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
-              } else {
-                this.proposalsService.isProposalLoading.set(false);
-                const binary = atob(response.result);
-                const uint8Array = new Uint8Array(binary.length);
-                for (let i = 0; i < binary.length; i++) {
-                  uint8Array[i] = binary.charCodeAt(i);
-                }
-                const blob = new Blob([uint8Array], { type: 'application/pdf' });
-                var url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a')
-                a.href = url;
-                a.download = pdfCard.title;
-                a.click();
-                URL.revokeObjectURL(url);
-              }
-            })
-          ).subscribe({
-            error: error => this.handleError(error)
-          });
-
-          this.destroyRef.onDestroy(() => {
-            subscription.unsubscribe();
-          });
+    this.pdfLoading.set(true);
+    let pdfCard = this.preparePDFData();
+    const subscription = this.proposalsService.uploadPDF(pdfCard, this.user().role).pipe(
+      tap(response => {
+        if (response === null) {
+          this.pdfLoading.set(false);
+          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+        } else if (response.isSuccess === false) {
+          this.pdfLoading.set(false);
+          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+        } else {
+          this.pdfLoading.set(false);
+          const binary = atob(response.result);
+          const uint8Array = new Uint8Array(binary.length);
+          for (let i = 0; i < binary.length; i++) {
+            uint8Array[i] = binary.charCodeAt(i);
+          }
+          const blob = new Blob([uint8Array], { type: 'application/pdf' });
+          var url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a')
+          a.href = url;
+          a.download = pdfCard.title;
+          a.click();
+          URL.revokeObjectURL(url);
         }
-      });
+      })
+    ).subscribe({
+      error: error => this.handleError(error)
+    });
+
+    this.destroyRef.onDestroy(() => {
+      subscription.unsubscribe();
+    });
   }
 
   isPassedMonth() {

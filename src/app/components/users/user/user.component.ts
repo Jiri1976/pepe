@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, computed, DestroyRef, inject, OnInit, output, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, OnInit, output, signal } from '@angular/core';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule, FormsModule, AbstractControl } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from '../../../services/alert.service';
@@ -7,10 +7,10 @@ import { GetUserDTO } from '../../../models/users/getUserDTO.interface';
 import { ErrorHandlingService } from '../../../services/error-handling.service';
 import { ConfirmService } from '../../../services/confirm.service';
 import { concatMap, of } from 'rxjs';
-import { NotificationComponent } from "../../notification/notification.component";
 import { UsersService } from '../../../services/users.service';
 import { CommonModule } from '@angular/common';
 import { CheckBoxesValidator } from '../../../helpers/user-checkboxes.validation';
+import { NotificationComponent } from "../../notification/notification.component";
 
 @Component({
   selector: 'app-user',
@@ -20,13 +20,11 @@ import { CheckBoxesValidator } from '../../../helpers/user-checkboxes.validation
   styleUrl: './user.component.scss'
 })
 export class UserComponent implements OnInit {
-
   private destroyRef = inject(DestroyRef);
   private usersService = inject(UsersService);
   private alertService = inject(AlertService);
   private errorHandlingService = inject(ErrorHandlingService);
   private confirmService = inject(ConfirmService);
-  private cdr = inject(ChangeDetectorRef);
   back = output<boolean>();
   user = computed(() => this.usersService.user());
   nothingChanged = true;
@@ -76,6 +74,7 @@ export class UserComponent implements OnInit {
   }
 
   onGoBack() {
+    this.usersService.navigationOpen.set(true);
     this.back.emit(true);
     this.initializedUserForm();
   }
@@ -263,23 +262,28 @@ export class UserComponent implements OnInit {
     let surnameIFalse = (this.surname?.touched && this.surname?.hasError('required') || this.surname?.untouched && this.surname?.dirty && this.surname?.hasError('required') || this.surname?.hasError('maxlength'));
     let emailIsFalse = (this.email?.touched && this.email?.hasError('required') || (this.email?.touched && this.email?.hasError('email')));
     let passwordIsFalse = (this.password?.touched && this.password?.hasError('required') || this.password?.untouched && this.password?.dirty && this.password?.hasError('required') || this.password?.hasError('maxlength'));
-    let checkBoxesAreFalse = this.userForm.hasError('checkBoxesInvalid');
+    // let checkBoxesAreFalse = this.userForm.hasError('checkBoxesInvalid');
+
+    // return nameIsFalse ||
+    //   surnameIFalse ||
+    //   emailIsFalse ||
+    //   passwordIsFalse ||
+    //   (!nameIsFalse && !surnameIFalse && !emailIsFalse && !passwordIsFalse && !this.inputsFocused() && checkBoxesAreFalse);
 
     return nameIsFalse ||
       surnameIFalse ||
       emailIsFalse ||
-      passwordIsFalse ||
-      (!nameIsFalse && !surnameIFalse && !emailIsFalse && !passwordIsFalse && !this.inputsFocused() && checkBoxesAreFalse);
+      passwordIsFalse;
   }
 
-  showBoxError(control: AbstractControl | null) {
-    return this.name?.valid &&
-      this.surname?.valid &&
-      this.email?.valid &&
-      this.password?.valid &&
-      !this.inputsFocused() &&
-      control?.hasError('required');
-  }
+  // showBoxError(control: AbstractControl | null) {
+  //   return this.name?.valid &&
+  //     this.surname?.valid &&
+  //     this.email?.valid &&
+  //     this.password?.valid &&
+  //     !this.inputsFocused() &&
+  //     control?.hasError('required');
+  // }
 
   nameCanShake() {
     return this.name?.touched &&
@@ -379,30 +383,7 @@ export class UserComponent implements OnInit {
       }, [])
     }, { validators: CheckBoxesValidator.CheckBoxesAreCheckedValidator });
 
-    if (this.user().role !== 'User') {
-      this.userForm.get('role')?.disable();
-      this.userForm.get('destination')?.disable();
-      this.userForm.get('position')?.disable();
-    }
-
-    this.activeUser.set(this.user().isActive);
-  }
-
-  private patchForm() {
-    this.userForm.patchValue({
-      id: this.user().id,
-      name: this.user().name,
-      surname: this.user().surname,
-      email: this.user().email,
-      password: 'password',
-      role: this.user().role,
-      position: this.user().position,
-      destination: this.user().destination,
-      nick: this.user().nick,
-      isActive: this.user().isActive
-    });
-
-    if (this.user().role !== 'User') {
+    if (this.user().role !== 'User' && this.user().id > 0) {
       this.userForm.get('role')?.disable();
       this.userForm.get('destination')?.disable();
       this.userForm.get('position')?.disable();

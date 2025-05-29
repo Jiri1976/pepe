@@ -51,7 +51,7 @@ export class WarehouseUnitsComponent implements OnInit {
   destination = signal<string>('F-M');
   monthYear = signal<string>(this.MONTHS_NUM[new Date().getMonth()] + new Date().getFullYear());
   visibleModal = signal<boolean>(false);
-  visibleList = model(false);
+  visibleList = computed(() => this.warehouseService.visibleList());
   items: {
     name: string;
     id: number;
@@ -85,14 +85,30 @@ export class WarehouseUnitsComponent implements OnInit {
   }
 
   checkDate(date: string) {
-    if (date === '01.01.0000') {
-      return;
-    }
     let _date = new Date(parseInt(date.split('.')[2]), parseInt(date.split('.')[1]) - 1, parseInt(date.split('.')[0]));
     if (_date > new Date()) {
       return false;
     }
     return true;
+  }
+
+  isOlderThanToday(date: string) {
+    let _date = new Date(parseInt(date.split('.')[2]), parseInt(date.split('.')[1]) - 1, parseInt(date.split('.')[0]));
+    if (_date < new Date()) {
+      return true;
+    }
+    return false;
+  }
+
+  isToday(date: string) {
+    let d = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+    let today = d.getDate() + "-" + (d.getMonth() + 1) + "-" + d.getFullYear();
+    let fromDate = new Date(parseInt(date.split('.')[2]), parseInt(date.split('.')[1]) - 1, parseInt(date.split('.')[0]));
+    let day = fromDate.getDate() + "-" + (fromDate.getMonth() + 1) + "-" + fromDate.getFullYear();
+    if (today === day) {
+      return true;
+    }
+    return false;
   }
 
   onSelectUnit(unit: any) {
@@ -104,10 +120,10 @@ export class WarehouseUnitsComponent implements OnInit {
 
   onSelectItem(itemId: number) {
     if (itemId === -1) {
-      this.visibleList.set(false);
+      this.warehouseService.visibleList.set(false);
       return;
     }
-    this.visibleList.set(false);
+    this.warehouseService.visibleList.set(false);
     this.swiper = this.swiperRef.nativeElement.swiper;
 
     let index = this.cards().findIndex(u => u.warehouseItemId === itemId);
@@ -156,6 +172,38 @@ export class WarehouseUnitsComponent implements OnInit {
         if (confirmed) {
           this.isLoading.set(true);
           const subscription = this.warehouseService.deleteWarehouseCard(id).pipe(
+            tap(response => {
+              if (response === null) {
+                this.isLoading.set(false);
+                this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+              } else if (response.isSuccess === false) {
+                this.isLoading.set(false);
+                this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+              } else {
+                this.uploadCards();
+              }
+            })
+          ).subscribe({
+            error: error => this.handleError(error)
+          });
+
+          this.destroyRef.onDestroy(() => {
+            subscription.unsubscribe();
+          });
+        }
+      });
+  }
+
+  onDeleteCards() {
+    if (this.cards().length === 0) {
+      this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Chybí karty.' });
+      return;
+    }
+    this.confirmService.confirm(`Opravdu smazat karty za ${this.cards()[0].monthYearName}?`)
+      .then((confirmed) => {
+        if (confirmed) {
+          this.isLoading.set(true);
+          const subscription = this.warehouseService.deleteWarehouseCards(this.monthYear(), this.destination()).pipe(
             tap(response => {
               if (response === null) {
                 this.isLoading.set(false);

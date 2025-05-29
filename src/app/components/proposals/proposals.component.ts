@@ -8,8 +8,7 @@ import { AuthService } from '../../services/auth.service';
 import { ProposalButtonComponent } from "./proposla-button/proposal-button.component";
 import { UpdateProposalComponent } from "./update-proposal/update-proposal.component";
 import { CustomProposalButtonComponent } from "./custom-proposal-button/custom-proposal-button.component";
-import { trigger, transition, animate, style } from '@angular/animations';
-
+import { PageAnimation } from '../../animations/page.animation';
 
 @Component({
   selector: 'app-proposals',
@@ -25,17 +24,7 @@ import { trigger, transition, animate, style } from '@angular/animations';
   templateUrl: './proposals.component.html',
   styleUrl: './proposals.component.scss',
   animations: [
-    trigger('fadeOut', [
-      transition(':leave', [
-        animate('500ms ease-out', style({ opacity: 0 })),
-      ]),
-    ]),
-    trigger('fadeIn', [
-      transition(':enter', [
-        style({ opacity: 0 }),
-        animate('600ms ease-in', style({ opacity: 1 })),
-      ])
-    ]),
+    PageAnimation
   ]
 })
 export class ProposalsComponent {
@@ -57,6 +46,8 @@ export class ProposalsComponent {
   dropListIds = computed(() => this.proposalsService.dropListIds());
   monthYear = computed(() => this.proposalsService.monthYear());
   updateVisible = signal(false);
+  emptyDays = new Array(31);
+  emptyUsers = new Array(13);
 
   ngOnInit(): void {
     this.proposalsService.uploadProposals();

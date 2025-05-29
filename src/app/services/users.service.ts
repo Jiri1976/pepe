@@ -15,6 +15,7 @@ export class UsersService {
     private initialUser: GetUserDTO = { id: 0, name: '', surname: '', email: '', role: '', position: '', destination: '', nick: '', isActive: true };
     users = signal<GetUserDTO[]>([]);
     user = signal<GetUserDTO>(this.initialUser);
+    navigationOpen = signal(true);
 
     clearUser() {
         this.user.set(this.initialUser);

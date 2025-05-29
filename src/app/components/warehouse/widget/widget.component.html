@@ -3,11 +3,11 @@
     <button class="settings-button" (click)="onUpdate()"><i class="bi bi-gear"></i></button>
     <p>{{item().name}}</p>
     } @else {
-    <app-widget-add [position]="item().position" />
+    <app-widget-add [position]="item().position" @fadeIn @fadeOut />
     }
 
     @if (updateVisible()) {
-    <app-widget-update [(updateVisible)]="updateVisible" [item]="item()" />
+    <app-widget-update [(updateVisible)]="updateVisible" [item]="item()" @fadeIn @fadeOut />
     }
     <div *cdkDragPlaceholder></div>
 </div>

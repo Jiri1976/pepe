@@ -1,50 +1,14 @@
 <div class="sidenav">
-    <ul>
-        <app-nav-button-active background="#fff" hide color="#24355A" icon="bi-house" text="Sklad"
-            (clicked)="onShowUnits()" [isActive]="!warehouseItemsVisible()" />
-
-        <app-nav-button-static background="#24355A" hide color="#fff" icon="bi-calendar" [text]="calendarText()"
-            (clicked)="toggleCalendar()" [isDisabled]="!unitsActive()" />
-        <div class="proposal-calendar">
-            <p-datepicker #calendar name="deadline" [(ngModel)]="defaultDate" view="month" dateFormat="mm-yy"
-                [readonlyInput]="true" [maxDate]="user().role === 'Master' ? maxDate : null"
-                (onSelect)="onSelectMonth()" />
-        </div>
-
-        @if (user().role === 'Admin') {
-        <app-nav-button-active background="#fff" color="#24355A" icon="bi-house" text="F-M"
-            (clicked)="onSelectDestination('F-M')" [isActive]="destination() === 'F-M'" [isDisabled]="!unitsActive()" />
-
-        <app-nav-button-active background="#fff" color="#24355A" icon="bi-house" text="OVA"
-            [isActive]="destination() === 'OVA'" (clicked)="onSelectDestination('OVA')" [isDisabled]="!unitsActive()" />
-        }
-
-        @if(user().role === 'Admin') {
-        <app-nav-button-active background="#fff" color="#24355A" icon="bi-list-check" text="Seznam"
-            (clicked)="onShowList()" [isDisabled]="!unitsActive()" />
-        } @else {
-        <app-nav-button-static background="#24355A" color="#fff" icon="bi-list-check" text="Seznam"
-            (clicked)="onShowList()" />
-        }
-
-        <app-nav-button-active background="#fff" color="#24355A" hide icon="bi-list-ul" text="Položky"
-            (clicked)="onShowItems()" [isActive]="warehouseItemsVisible()" />
-
-        <app-nav-button-static background="#05C46B" hide color="#fff" icon="bi-floppy" text="Uložit"
-            [isDisabled]="reorderedItems().length === 0" (clicked)="onSave()" />
-
-
-        <app-nav-button-static background="#1e81b0" hide color="#fff" icon="bi-filetype-pdf" text="PDF"
-            (clicked)="onOpenPDF()" />
-    </ul>
+    <app-warehouse-nav [(unitsActive)]="unitsActive" [(warehouseItemsVisible)]="warehouseItemsVisible"
+        [(calendarText)]="calendarText" [(destination)]="destination" [(pdfLoading)]="pdfLoading"
+        [(reorderedItems)]="reorderedItems" @fadeIn />
 </div>
 <div class="box">
     @if (warehouseItemsVisible()) {
     <app-warehouse-items [(reorderedItems)]="reorderedItems" />
     }
-
     @if (unitsActive()) {
-    <app-warehouse-units [(visibleList)]="visibleList" [(cards)]="cards" />
+    <app-warehouse-units [(cards)]="cards" />
     }
 </div>
 <app-confirm />

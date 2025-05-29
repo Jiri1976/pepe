@@ -1,26 +1,7 @@
 .sidenav {
-    display: flex;
-    flex-direction: column;
-    transition: all .5s ease;
-    align-items: center !important;
-    width: 10rem;
-    float: left;
     position: fixed;
-    margin-top: 50px;
-    z-index: 999;
-
-    ul {
-        margin: 2rem 0 0 0;
-        padding: 0;
-
-        .proposal-calendar {
-            width: 190px;
-            height: 50px;
-            position: absolute;
-            left: -90px;
-            top: 60px;
-        }
-    }
+    height: 100%;
+    z-index: 9999;
 }
 
 

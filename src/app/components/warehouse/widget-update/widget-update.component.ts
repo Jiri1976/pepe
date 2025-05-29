@@ -1,7 +1,6 @@
 import { Component, computed, DestroyRef, inject, input, model, signal } from '@angular/core';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { WarehouseItem } from '../../../models/warehouse/warehouse-item.interface';
-import { SpinnerComponent } from "../../spinner/spinner.component";
 import { tap } from 'rxjs';
 import { AlertService } from '../../../services/alert.service';
 import { ErrorHandlingService } from '../../../services/error-handling.service';
@@ -11,7 +10,7 @@ import { NotificationComponent } from "../../notification/notification.component
 
 @Component({
   selector: 'app-widget-update',
-  imports: [ReactiveFormsModule, SpinnerComponent, NotificationComponent],
+  imports: [ReactiveFormsModule, NotificationComponent],
   templateUrl: './widget-update.component.html',
   styleUrl: './widget-update.component.scss'
 })
@@ -42,7 +41,7 @@ export class WidgetUpdateComponent {
       shortName: 'XXL',
       position: this.item().position
     }
-
+    this.isLoading.set(true);
     const subscription = this.warehouseService.updateWarehouseItem(newItem).pipe(
       tap(response => {
         if (response === null) {

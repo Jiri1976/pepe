@@ -26,7 +26,7 @@
         box-sizing: border-box;
         border-radius: inherit;
         overflow: hidden;
-        box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         cursor: move;
 
         p {
@@ -76,19 +76,17 @@
             align-items: center;
             height: 28px;
             width: 28px;
-            color: #D09B52;
-            border: 1px solid #D09B52;
+            color: #24355A;
+            border: 1px solid #24355A;
             outline: 5px solid #fff;
             z-index: 9;
             transition: .3s;
         }
 
         .save-button:hover {
-            background: #D09B52;
+            background: #24355A;
             color: #fff;
-
         }
-
 
         input {
             position: relative;
@@ -97,12 +95,12 @@
             width: 320px;
             font-size: 0.9rem;
             height: 30px;
-            border-bottom: 2px solid #D09B52;
+            border-bottom: 2px solid #24355A;
             border-top: 0;
             border-left: 0;
             border-right: 0;
             outline: none;
-            color: #868283;
+            color: #24355A;
             border-radius: 0;
         }
 
@@ -111,7 +109,7 @@
             border-top: 0;
             border-left: 0;
             border-right: 0;
-            border-bottom: 2px solid #D09B52;
+            border-bottom: 2px solid #24355A;
             outline: none !important;
             box-shadow: none !important;
         }
@@ -121,7 +119,7 @@
         input:-webkit-autofill:focus,
         input:-webkit-autofill:active {
             -webkit-background-clip: text;
-            -webkit-text-fill-color: #868283;
+            -webkit-text-fill-color: #24355A;
             transition: background-color 5000s ease-in-out 0s;
             box-shadow: inset 0 0 20px 20px transparent;
         }
@@ -131,6 +129,19 @@
             position: absolute;
             bottom: 3px;
             color: red;
+        }
+
+        .spinner {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+
+            .text-secondary {
+                --bs-text-opacity: 1;
+                color: #24355A !important;
+            }
         }
     }
 }

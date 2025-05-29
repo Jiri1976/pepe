@@ -6,12 +6,12 @@ import { tap } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ErrorHandlingService } from '../../../services/error-handling.service';
 import { AlertService } from '../../../services/alert.service';
-import { SpinnerComponent } from "../../spinner/spinner.component";
 import { NotificationComponent } from "../../notification/notification.component";
+import { WarehouseItemsComponent } from '../warehouse-items/warehouse-items.component';
 
 @Component({
   selector: 'app-widget-add',
-  imports: [ReactiveFormsModule, SpinnerComponent, NotificationComponent],
+  imports: [ReactiveFormsModule, NotificationComponent],
   templateUrl: './widget-add.component.html',
   styleUrl: './widget-add.component.scss'
 })
@@ -20,6 +20,7 @@ export class WidgetAddComponent {
   private errorHandlingService = inject(ErrorHandlingService);
   private alertService = inject(AlertService);
   private destroyRef = inject(DestroyRef);
+  private warehouseItemsComp = inject(WarehouseItemsComponent);
   itemForm!: FormGroup;
   position = input.required<number>();
   items = computed(() => this.warehouseService.items());
@@ -34,9 +35,10 @@ export class WidgetAddComponent {
       id: 0,
       name: this.itemForm.get('name')?.value,
       shortName: 'XXL',
-      position: this.position()
+      // position: this.position()
+      position: 1
     }
-
+    this.isLoading.set(true);
     const subscription = this.warehouseService.createWarehouseItem(newItem).pipe(
       tap(response => {
         if (response === null) {
@@ -46,9 +48,9 @@ export class WidgetAddComponent {
           this.isLoading.set(false);
           this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
         } else if (response.isSuccess) {
-          let _items = [...this.items()];
-          _items = _items.filter(i => i.position !== this.position());
-          _items.push(response.result);
+          newItem.id = response.result.id;
+          let _items = [newItem, ...this.items()];
+          _items = _items.filter(i => i.id !== 0);
           this.warehouseService.setItems(_items);
           this.isLoading.set(false);
           this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Položka byla uložena!' });

@@ -1,54 +1,56 @@
 <div class="sidenav">
-    <ul>
-        <app-nav-button-static background="#24355A" color="#fff" icon="bi-calendar" [text]="calendarText()"
-            (clicked)="toggleCalendar()" [isDisabled]="formShiftVisible()" />
-        <div class="proposal-calendar">
-            <p-datepicker #calendar name="deadline" [(ngModel)]="defaultDate" view="month" dateFormat="mm-yy"
-                [readonlyInput]="true" [maxDate]="loggedUser.role === 'Master' ? maxDate : null"
-                (onSelect)="onSelectMonth()" />
-            <!-- <p-datepicker #calendar name="deadline" [(ngModel)]="defaultDate" view="month" dateFormat="mm-yy"
-                [readonlyInput]="true" [maxDate]="maxDate" (onSelect)="onSelectMonth()" /> -->
-        </div>
-
-        @if (this.loggedUser.role === 'Admin') {
-        <app-nav-button-active background="#fff" color="#24355A" icon="bi-house" text="F-M"
-            (clicked)="onSelectDestination('F-M')" [isActive]="destination() === 'F-M'"
-            [isDisabled]="formShiftVisible()" />
-        <app-nav-button-active background="#fff" color="#24355A" icon="bi-house" text="OVA"
-            [isActive]="destination() === 'OVA'" (clicked)="onSelectDestination('OVA')"
-            [isDisabled]="formShiftVisible()" />
-        }
-
-        <app-nav-button-active background="#fff" color="#24355A" icon="bi-people" text="Uživatelé" (click)="openModal()"
-            [isActive]="visibleModal()" [isDisabled]="formShiftVisible()" />
-        <app-nav-button-static background="#1e81b0" color="#fff" icon="bi-arrow-clockwise" text="Znovu"
-            (clicked)="onReset()" [isDisabled]="formShiftVisible()" />
-        @if (this.loggedUser.role === 'Admin') {
-        <app-nav-button-static background="#1e81b0" color="#fff" icon="bi-filetype-pdf" text="Všichni"
-            (clicked)="onAllToPdf()" [isDisabled]="formShiftVisible()" />
-        }
-    </ul>
+    <app-shifts-nav @fadeIn @fadeOut [(calendarText)]="calendarText" [(destination)]="destination" [(pdfOn)]="pdfOn" />
 </div>
+
 <div class="box">
     @if(!isLoading()) {
+    @if (cards().length > 0) {
     <div class="shift-card" @fadeIn>
-        @if (cards().length > 0) {
+
         <swiper-container #swiperRef effect="cards" grab-cursor="true" (swiperinit)="onSwiperInit($event)">
             @for(card of cards(); track $index) {
             <swiper-slide>
-                <app-shift-card [shiftCard]="card" (closeShiftForm)="onCloseShiftForm()"
-                    (openShiftForm)="onOpenShiftForm()" (updatedCard)="onCardUpdate($event)" />
+                <app-shift-card [shiftCard]="card" (updatedCard)="onCardUpdate($event)" />
             </swiper-slide>
             }
         </swiper-container>
-        }
+
     </div>
     } @else {
+    <h4>Chybí evidovaní pracovníci na pobočce - {{destination()}}</h4>
+    }
+    } @else {
     <div class="skeleton" @fadeOut>
-        <div class="text title">Pracuje se na tom ...</div>
+        <div class="head">
+        </div>
+
+        <table class="table table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th class="user-name" style="width: 5% !important; text-align: right;"></th>
+                    <th class="user-name" style="width: 15% !important; text-align: center;"></th>
+                    <th class="user-name" style="width: 15% !important; text-align: center;"></th>
+                    <th class="user-name" style="width: 15% !important; text-align: center;"></th>
+                    <th class="user-name" style="width: 10% !important; text-align: center;"></th>
+                    <th class="user-name" style="width: 35% !important; text-align: center;"></th>
+                </tr>
+            </thead>
+            <tbody class="table-group-divider">
+                @for(e of empty; track $index) {
+                <tr>
+                    <th scope="row" style="width: 5% !important; text-align: right !important;"></th>
+                    <td style="width: 15% !important; text-align: center !important;"></td>
+                    <td style="width: 15% !important; text-align: center !important;"></td>
+                    <td style="width: 15% !important; text-align: center !important;"></td>
+                    <td style="width: 10% !important; text-align: center !important;"></td>
+                    <td class="perso" style="width: 35% !important;"></td>
+                </tr>
+                }
+            </tbody>
+        </table>
     </div>
     }
-
 </div>
+
 <app-select-user [(visibleModal)]="visibleModal" [users]="users()" (selected)="onSelectUser($event)" />
 <app-confirm />

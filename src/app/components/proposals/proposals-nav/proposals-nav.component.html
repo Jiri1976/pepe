@@ -1,0 +1,81 @@
+<div class="menu" [class]="{'open': isOpened()}">
+    <button class="action_btn" (click)="onOpen()">
+        <img src="spinner.png" alt="navigace" width="70" height="70" />
+    </button>
+
+    <div hide class="proposal-calendar">
+        <p-datepicker #calendar name="deadline" [(ngModel)]="defaultDate" view="month" dateFormat="mm-yy"
+            [readonlyInput]="true" [minDate]="plansComponent.loggedUser.role === 'Master' ? minDate : null"
+            (onSelect)="onSelectMonth()" />
+    </div>
+
+    <ul>
+        <li hide style="--i: 1; --x: -35; --y: -90;" class="first" (click)="toggleCalendar()"
+            [class.disabled]="users().length === 0">
+            <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
+                <i class="bi bi-calendar"></i>
+                <p>{{ calendarTitle() }}</p>
+            </a>
+        </li>
+
+        <li hide style="--i: 2; --x: 35; --y: -90;" (click)="plansComponent.onChangeDestination('F-M')">
+            <a [style.--background]="destination() === 'F-M' ? '#24355A' : '#1e81b0'" [style.--color]="'#fff'">
+                <p>F-M</p>
+            </a>
+        </li>
+
+        <li hideAdmin style="--i: 1; --x: -35; --y: -80;" (click)="plansComponent.onReset()"
+            [class.disabled]="users().length === 0">
+            <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
+                <i class="bi bi-arrow-clockwise"></i>
+            </a>
+        </li>
+
+        <li hideAdmin style="--i: 2; --x: 35; --y: -80;" (click)="plansComponent.onSave()"
+            [class.disabled]="plansComponent.nothingChanched()">
+            <a [style.--background]="'#05C46B'" [style.--color]="'#fff'">
+                <i class="bi bi-floppy"></i>
+            </a>
+        </li>
+
+        <li hide style="--i: 3;--x: 90; --y: -35;" (click)="plansComponent.onChangeDestination('OVA')">
+            <a [style.--background]="destination() === 'OVA' ? '#24355A' : '#1e81b0'" [style.--color]="'#fff'">
+                <p>OVA</p>
+            </a>
+        </li>
+
+        <li hide style="--i: 4;--x: 90; --y: 35;" (click)="plansComponent.onReset()"
+            [class.disabled]="users().length === 0">
+            <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
+                <i class="bi bi-arrow-clockwise"></i>
+            </a>
+        </li>
+
+        <li hide style="--i: 5; --x: 35; --y: 85;" (click)="plansComponent.onSave()"
+            [class.disabled]="plansComponent.nothingChanched()">
+            <a [style.--background]="'#05C46B'" [style.--color]="'#fff'">
+                <i class="bi bi-floppy"></i>
+            </a>
+        </li>
+
+        <li hide style="--i: 6; --x: -35; --y: 85;" (click)="plansComponent.onDelete()"
+            [class.disabled]="plansComponent.proposalCard().id === 0">
+            <a [style.--background]="'#F53B57'" [style.--color]="'#fff'">
+                <i class="bi bi-floppy"></i>
+            </a>
+        </li>
+
+        <li hide style="--i: 7; --x: -85; --y: 35;" [class.disabled]="plansComponent.proposalCard().id === 0"
+            (click)="plansComponent.onOpenPDF()">
+            <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
+                @if (!pdfLoading()) {
+                <i class="bi bi-filetype-pdf"></i>
+                } @else {
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                }
+            </a>
+        </li>
+    </ul>
+</div>

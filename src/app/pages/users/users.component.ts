@@ -1,11 +1,9 @@
-import { ChangeDetectorRef, Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { UserComponent } from '../../components/users/user/user.component';
 import { UserItemComponent } from '../../components/users/user-item/user-item.component';
 import { GetUserDTO } from '../../models/users/getUserDTO.interface';
 import { UserPaginationComponent } from '../../components/users/user-pagination/user-pagination.component';
 import { ConfirmComponent } from '../../components/confirm/confirm.component';
-import { NavButtonStaticComponent } from "../../components/ui-buttons/nav-button-static/nav-button-static.component";
-import { NavButtonActiveComponent } from "../../components/ui-buttons/nav-button-active/nav-button-active.component";
 import { UsersService } from '../../services/users.service';
 import { tap } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -13,7 +11,8 @@ import { ErrorHandlingService } from '../../services/error-handling.service';
 import { AlertService } from '../../services/alert.service';
 import { CommonModule } from '@angular/common';
 import { EmptyBlockComponent } from "../../components/users/empty-block/empty-block.component";
-import { trigger, transition, animate, style } from '@angular/animations';
+import { UsersNavComponent } from '../../components/users/users-nav/users-nav.component';
+import { PageAnimation } from '../../animations/page.animation';
 
 @Component({
   selector: 'app-users',
@@ -23,24 +22,13 @@ import { trigger, transition, animate, style } from '@angular/animations';
     UserItemComponent,
     UserPaginationComponent,
     ConfirmComponent,
-    NavButtonStaticComponent,
-    NavButtonActiveComponent,
-    EmptyBlockComponent
+    EmptyBlockComponent,
+    UsersNavComponent
   ],
   templateUrl: './users.component.html',
   styleUrl: './users.component.scss',
   animations: [
-    trigger('fadeOut', [
-      transition(':leave', [
-        animate('500ms ease-out', style({ opacity: 0 })),
-      ]),
-    ]),
-    trigger('fadeIn', [
-      transition(':enter', [
-        style({ opacity: 0 }),
-        animate('600ms ease-in', style({ opacity: 1 })),
-      ])
-    ]),
+    PageAnimation
   ]
 })
 export class UsersComponent implements OnInit {
@@ -50,13 +38,11 @@ export class UsersComponent implements OnInit {
   private alertService = inject(AlertService);
   private destroyRef = inject(DestroyRef);
   private PER_PAGE = 10;
-  private cdr = inject(ChangeDetectorRef);
-  // flipped = signal(false);
   isLoading = signal(false);
   users = computed(() => this.usersService.users());
   filter = signal<'All' | 'F-M' | 'OVA'>('All');
   role = signal<'User' | 'Master' | 'Admin'>('User');
-  selectedList = 6;
+  selectedList = signal<number>(6);
   currentPage = signal<number>(1);
   filteredUsers = signal<GetUserDTO[]>([]);
   hasNextPage = signal<boolean>(false);
@@ -88,10 +74,6 @@ export class UsersComponent implements OnInit {
     });
   }
 
-  ngAfterViewInit() {
-    this.cdr.detectChanges();
-  }
-
   filterUsers(users: GetUserDTO[]) {
     this.hasNextPage.set(this.PER_PAGE * this.currentPage() < users.length);
     this.hasPreviousPage.set(this.currentPage() > 1);
@@ -104,11 +86,11 @@ export class UsersComponent implements OnInit {
     _users = this.sortUsers(_users);
     this.usersService.setUsers(_users);
     this.filteredUsers.set(this.filterUsers(_users));
-    this.onSelectList(this.selectedList);
+    this.onSelectList(this.selectedList());
   }
 
   onSelectList(value: number, pageNumber?: number) {
-    this.selectedList = value;
+    this.selectedList.set(value);
     if (!pageNumber) {
       this.currentPage.set(1);
     } else {
@@ -148,13 +130,11 @@ export class UsersComponent implements OnInit {
       this.usersService.clearUser();
     }
     this.edit.set(!this.edit());
-    // this.flipped.set(!this.flipped());
   }
 
   close() {
     this.usersService.clearUser();
     this.edit.set(false);
-    // this.flipped.set(false);
   }
 
   goBack() {
@@ -164,20 +144,19 @@ export class UsersComponent implements OnInit {
 
   editUser(id: number) {
     this.usersService.setUser(this.users().find(u => u.id === id)!);
-    // this.flipped.set(true);
     this.edit.set(true);
   }
 
   onSelectPage(selectedPage: number) {
     this.currentPage.set(selectedPage);
-    this.onSelectList(this.selectedList, this.currentPage());
+    this.onSelectList(this.selectedList(), this.currentPage());
   }
 
   onRemoveUser(id: number) {
     let _users = [...this.users()];
     _users = _users.filter((user) => user.id !== id);
     this.usersService.setUsers(_users);
-    this.onSelectList(this.selectedList);
+    this.onSelectList(this.selectedList());
     this.usersService.clearUser();
   }
 

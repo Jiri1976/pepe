@@ -1,4 +1,4 @@
-<div class="shift-assignment-container" [style]="`--margin-top: ${loggedUser.role === 'Master' ? '4rem' : '2rem'}`">
+<div class="shift-assignment-container" [style]="`--margin-top: ${loggedUser.role === 'Master' ? '4rem' : '6rem'}`">
     @if(!proposalsLoading()) {
 
     @if (isUnsavedPassedCard() && proposalCard().id === 0 && users().length > 0) {
@@ -8,9 +8,6 @@
     @if(users().length > 0) {
     <div class="wrapper">
         @if (!isUnsavedPassedCard()) {
-
-
-
         <div class="shift-pool" hide @fadeIn>
             <div cdkDropList id="shift-pool" [cdkDropListData]="wShifts()" [cdkDropListConnectedTo]="dropListIds()"
                 class="shift-list" (cdkDropListDropped)="onDrop($event, '')">
@@ -132,10 +129,42 @@
     <h4>Chybí evidovaní pracovníci na pobočce - {{destination()}}</h4>
     }
     }
-
     } @else {
     <div class="skeleton" @fadeOut>
-        <div class="text title">Pracuje se na tom ...</div>
+        <table class="empty">
+            <thead>
+                <tr>
+                    <th class="user-name"></th>
+                    @for(day of emptyDays; track $index) {
+                    <th>
+                        <div class="head-cell">
+                            <div class="head-cell-date">
+
+                            </div>
+                            <div class="head-cell-week-day">
+
+                            </div>
+                        </div>
+                    </th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @for(user of emptyUsers; track $index) {
+                <tr>
+                    <td class="user-name-cell">
+                    </td>
+
+                    @for(day of emptyDays; track $index; let i = $index) {
+                    <td>
+
+
+                    </td>
+                    }
+                </tr>
+                }
+            </tbody>
+        </table>
     </div>
     }
 </div>

@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, input, InputSignal, model, output } from '@angular/core';
+import { Component, computed, inject, input, output } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
+import { WarehouseService } from '../../../services/warehouse.service';
 
 @Component({
   selector: 'app-items-list',
@@ -10,7 +11,8 @@ import { DialogModule } from 'primeng/dialog';
   styleUrl: './items-list.component.scss'
 })
 export class ItemsListComponent {
-  visible = input.required<boolean>();
+  private warehouseService = inject(WarehouseService);
+  visible = computed(() => this.warehouseService.visibleList());
   items = input.required<{
     name: string;
     id: number;

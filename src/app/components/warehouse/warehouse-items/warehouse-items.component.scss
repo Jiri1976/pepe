@@ -12,6 +12,8 @@
         grid-column: 1;
         grid-row: 1;
         height: 100%;
+        position: absolute;
+        margin-top: 60px;
     }
 
     .widget-wrapper {
@@ -19,36 +21,6 @@
         flex-direction: column;
         justify-content: center;
         margin-bottom: 50px;
-    }
-}
-
-.add {
-    width: 70px;
-    height: 70px;
-    border-radius: 16px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-    position: fixed;
-    right: 2rem;
-    top: 105px;
-    transition: 0.3s;
-
-    .bi {
-        font-size: 2rem;
-        font-weight: bold;
-        color: rgba(73, 73, 81, 0.2);
-    }
-}
-
-.add:hover {
-    cursor: pointer;
-    background: #24355A;
-
-    .bi {
-        color: #fff;
     }
 }
 
@@ -85,15 +57,14 @@
 .empty-item {
     grid-column: 1;
     grid-row: 1;
-    margin: 100px 0 0 0;
+    margin: 10% 0 0 0;
     display: flex;
     justify-content: center;
     flex-direction: column;
     align-items: center;
+    position: absolute;
 
     h4 {
-        margin-top: 60px;
-        margin-bottom: 30px;
         color: #24355A;
         font-weight: bold;
     }
@@ -102,11 +73,12 @@
 .skeleton {
     grid-column: 1;
     grid-row: 1;
-    margin: 100px 0 0 0;
+    margin: 15% 0 0 0;
     display: flex;
     justify-content: center;
     flex-direction: column;
     align-items: center;
+    position: absolute;
 
     .empty-widget {
         height: 70px;
@@ -130,12 +102,6 @@
                 #eee 75%);
         background-size: 400% 100%;
         animation: shimmer 2s infinite linear;
-    }
-
-    .title {
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: #cecece;
     }
 }
 

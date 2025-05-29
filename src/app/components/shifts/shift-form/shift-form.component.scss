@@ -15,7 +15,7 @@
 }
 
 .form-div {
-    border: 2px solid #D09B52;
+    border: 2px solid #24355A;
     border-radius: 20px;
 
     #focus {
@@ -55,8 +55,8 @@
     #addBtn {
         position: relative;
         color: #fff;
-        background: #D09B52;
-        border: 2px solid #D09B52;
+        background: #24355A;
+        border: 2px solid #24355A;
         outline: 10px solid #fff;
         height: 40px;
         width: calc(50% - 20px);
@@ -77,8 +77,8 @@
     }
 
     #addBtn:disabled {
-        background: #f7c278;
-        border: 2px solid #f7c278;
+        background: #1e81b0;
+        border: 2px solid #1e81b0;
     }
 
     .row {
@@ -98,7 +98,7 @@
 
             h1 {
                 font-size: 2em;
-                color: #D09B52;
+                color: #24355A;
                 font-weight: bold;
             }
 
@@ -111,7 +111,7 @@
         .col.label {
             text-align: left !important;
             font-weight: bold;
-            color: #D09B52;
+            color: #24355A;
         }
 
         .col.label.invalid {

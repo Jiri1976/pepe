@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, DestroyRef, inject, model, output, signal, ViewChild } from '@angular/core';
+import { Component, computed, DestroyRef, inject, model, output, signal, ViewChild } from '@angular/core';
 import { of, tap } from 'rxjs';
 import { InitShift } from '../../../models/shifts/initShift.interface';
 import { Shift } from '../../../models/shifts/shift.interface';
@@ -42,10 +42,9 @@ export class ShiftCardComponent {
   loggedUser = this.authService.getUser();
   cardLoading = signal(false);
   shiftCard = model<ShiftCard>();
-  formVisible = signal(false);
-  closeShiftForm = output();
-  openShiftForm = output();
+  formVisible = computed(() => this.shiftService.shiftFormVisible());
   updatedCard = output<ShiftCard>();
+  pdfLoading = signal(false);
   @ViewChild(ShiftFormComponent) shiftFormComponent: any;
 
   onUpdateShift(shift: Shift) {
@@ -64,8 +63,7 @@ export class ShiftCardComponent {
   }
 
   onCloseShiftForm() {
-    this.closeShiftForm.emit();
-    this.formVisible.set(false);
+    this.shiftService.shiftFormVisible.set(false);
   }
 
   onAddShift() {
@@ -85,15 +83,13 @@ export class ShiftCardComponent {
       }
       this.shiftService.setSelectedShift(_shift);
     }
-    this.formVisible.set(true);
-    this.openShiftForm.emit();
+    this.shiftService.shiftFormVisible.set(true);
   }
 
   onUpdate(shift: Shift) {
     this.shiftService.setMonthYear(this.shiftCard()!.monthYear);
     this.shiftService.setSelectedShift(shift);
-    this.formVisible.set(true);
-    this.openShiftForm.emit();
+    this.shiftService.shiftFormVisible.set(true);
   }
 
   onDeleteCard() {
@@ -134,7 +130,6 @@ export class ShiftCardComponent {
 
   onDeleteShift(shift: Shift) {
     this.shiftFormComponent.loading.set(true);
-    this.openShiftForm.emit();
     const subscription = this.shiftService.deleteShift(shift.id).pipe(
       tap(response => {
         if (response === null) {
@@ -142,12 +137,10 @@ export class ShiftCardComponent {
           this.shiftFormComponent.loading.set(false);
           this.shiftService.setSelectedShift(shift);
           this.shiftFormComponent.shiftForm.enable();
-          this.closeShiftForm.emit();
         } else if (response.isSuccess === false) {
           this.shiftFormComponent.loading.set(false);
           this.shiftService.setSelectedShift(shift);
           this.shiftFormComponent.shiftForm.enable();
-          this.closeShiftForm.emit();
           this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
         } else if (response.isSuccess) {
           this.shiftService.resetSelectedShift();
@@ -158,8 +151,7 @@ export class ShiftCardComponent {
           this.shiftCard.set(_card);
           this.updatedCard.emit(_card);
           this.shiftFormComponent.loading.set(false);
-          this.formVisible.set(false);
-          this.closeShiftForm.emit();
+          this.shiftService.shiftFormVisible.set(false);
           this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Směna byla smazána!' });
         }
       }),
@@ -180,7 +172,6 @@ export class ShiftCardComponent {
     this.shiftFormComponent.loading.set(true);
     shift.shiftCardId = this.shiftCard()!.id;
     shift.userId = this.shiftCard()!.userId; 0
-    this.openShiftForm.emit();
     const subscription = this.shiftService.createUpdateShift(shift).pipe(
       tap(response => {
         if (response === null) {
@@ -188,12 +179,10 @@ export class ShiftCardComponent {
           this.shiftFormComponent.loading.set(false);
           this.shiftService.setSelectedShift(shift);
           this.shiftFormComponent.shiftForm.enable();
-          this.closeShiftForm.emit();
         } else if (response.isSuccess === false) {
           this.shiftFormComponent.loading.set(false);
           this.shiftService.setSelectedShift(shift);
           this.shiftFormComponent.shiftForm.enable();
-          this.closeShiftForm.emit();
           this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
         } else if (response.isSuccess) {
           let _card: ShiftCard = response.result;
@@ -203,8 +192,7 @@ export class ShiftCardComponent {
           this.shiftCard.set(_card);
           this.updatedCard.emit(_card);
           this.shiftFormComponent.loading.set(false);
-          this.formVisible.set(false);
-          this.closeShiftForm.emit();
+          this.shiftService.shiftFormVisible.set(false);
           this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Směna byla uložena!' });
         }
       }),
@@ -221,21 +209,17 @@ export class ShiftCardComponent {
   }
 
   onToPdf() {
-    this.cardLoading.set(true);
-    this.openShiftForm.emit();
+    this.pdfLoading.set(true);
     const subscription = this.shiftService.generatePDF(this.shiftCard()!).pipe(
       tap(response => {
         if (response === null) {
-          this.cardLoading.set(false);
-          this.closeShiftForm.emit();
+          this.pdfLoading.set(false);
           this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
         } else if (response.isSuccess === false) {
-          this.cardLoading.set(false);
-          this.closeShiftForm.emit();
+          this.pdfLoading.set(false);
           this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
         } else {
-          this.cardLoading.set(false);
-          this.closeShiftForm.emit();
+          this.pdfLoading.set(false);
           const binary = atob(response.result);
           const uint8Array = new Uint8Array(binary.length);
           for (let i = 0; i < binary.length; i++) {

@@ -46,37 +46,11 @@ export class WarehouseItemsComponent implements OnInit {
   reorderedItems = model<WarehouseItem[]>([]);
 
   ngOnInit() {
-    this.isLoading.set(true);
-    const subscription = this.warehouseService.getAllWarehouseItems().pipe(
-      tap(response => {
-        if (response === null) {
-          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
-          this.isLoading.set(false);
-        } else if (response.isSuccess === false) {
-          this.isLoading.set(false);
-          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
-        } else if (response.isSuccess) {
-          if (response.result.length > 0) {
-            this.isLoading.set(false);
-            this.originals = response.result;
-            this.warehouseService.setItems(response.result);
-            setTimeout(() => {
-              wrapGrid(this.dashboard().nativeElement, {
-                duration: 300
-              });
-            }, 500);
-          }
-        }
-      }),
+    this.uploadItems();
+  }
 
-    ).subscribe({
-      next: () => { },
-      error: error => this.handleError(error)
-    });
-
-    this.destroyRef.onDestroy(() => {
-      subscription.unsubscribe();
-    });
+  ngAfterViewInit() {
+    this.warehouseService.setComponent(this);
   }
 
   onAddItem() {
@@ -98,12 +72,16 @@ export class WarehouseItemsComponent implements OnInit {
       return;
     }
     const { previousContainer, container, item: { data } } = event;
-    this.warehouseService.updateWidgetPosition(previousContainer.data, container.data);
-    let _reorderedItems = [...this.items()];
-    for (let i = 0; i < _items.length; i++) {
-      _reorderedItems[i].position = i + 1;
+
+    if (previousContainer.data !== container.data) {
+      this.warehouseService.updateWidgetPosition(previousContainer.data, container.data);
+      let _reorderedItems = [...this.items()];
+      for (let i = 0; i < _items.length; i++) {
+        _reorderedItems[i].position = i + 1;
+      }
+      this.reorderedItems.set(_reorderedItems);
     }
-    this.reorderedItems.set(_reorderedItems);
+
   }
 
   onDeleteDrop() {
@@ -125,10 +103,12 @@ export class WarehouseItemsComponent implements OnInit {
           const subscription = this.warehouseService.deleteWarehouseItem(this.selected().id).pipe(
             tap(response => {
               if (response === null) {
+                this.warehouseService.setItems(_items);
                 this.isDroppedToDelete.set(false);
                 this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
                 this.isLoading.set(false);
               } else if (response.isSuccess === false) {
+                this.warehouseService.setItems(_items);
                 this.isDroppedToDelete.set(false);
                 this.isLoading.set(false);
                 this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
@@ -150,6 +130,40 @@ export class WarehouseItemsComponent implements OnInit {
           this.warehouseService.setItems(_items);
         }
       });
+  }
+
+  uploadItems() {
+    this.isLoading.set(true);
+    const subscription = this.warehouseService.getAllWarehouseItems().pipe(
+      tap(response => {
+        if (response === null) {
+          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+          this.isLoading.set(false);
+        } else if (response.isSuccess === false) {
+          this.isLoading.set(false);
+          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+        } else if (response.isSuccess) {
+          this.isLoading.set(false);
+          if (response.result.length > 0) {
+            this.originals = response.result;
+            this.warehouseService.setItems(response.result);
+            setTimeout(() => {
+              wrapGrid(this.dashboard().nativeElement, {
+                duration: 300
+              });
+            }, 500);
+          }
+        }
+      }),
+
+    ).subscribe({
+      next: () => { },
+      error: error => this.handleError(error)
+    });
+
+    this.destroyRef.onDestroy(() => {
+      subscription.unsubscribe();
+    });
   }
 
   private handleError = (errorRes: HttpErrorResponse) => {
