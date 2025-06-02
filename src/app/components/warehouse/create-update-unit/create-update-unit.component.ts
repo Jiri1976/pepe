@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, DestroyRef, effect, inject, input, model, OnInit, output, signal } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
@@ -13,7 +13,7 @@ import { map } from 'rxjs';
 
 @Component({
   selector: 'app-create-update-unit',
-  imports: [CommonModule, DialogModule, ButtonModule, ReactiveFormsModule],
+  imports: [DialogModule, ButtonModule, ReactiveFormsModule],
   templateUrl: './create-update-unit.component.html',
   styleUrl: './create-update-unit.component.scss'
 })

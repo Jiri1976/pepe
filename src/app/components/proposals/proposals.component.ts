@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, computed, inject, signal } from '@angular/core';
 import { DragDropModule, CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
 import { TooltipModule } from 'primeng/tooltip';
@@ -13,14 +13,13 @@ import { PageAnimation } from '../../animations/page.animation';
 @Component({
   selector: 'app-proposals',
   imports: [
-    CommonModule,
     DragDropModule,
     TooltipModule,
     HideElementDirective,
     ProposalButtonComponent,
     UpdateProposalComponent,
     CustomProposalButtonComponent
-  ],
+],
   templateUrl: './proposals.component.html',
   styleUrl: './proposals.component.scss',
   animations: [

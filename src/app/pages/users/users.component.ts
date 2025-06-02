@@ -9,7 +9,7 @@ import { tap } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ErrorHandlingService } from '../../services/error-handling.service';
 import { AlertService } from '../../services/alert.service';
-import { CommonModule } from '@angular/common';
+
 import { EmptyBlockComponent } from "../../components/users/empty-block/empty-block.component";
 import { UsersNavComponent } from '../../components/users/users-nav/users-nav.component';
 import { PageAnimation } from '../../animations/page.animation';
@@ -17,14 +17,13 @@ import { PageAnimation } from '../../animations/page.animation';
 @Component({
   selector: 'app-users',
   imports: [
-    CommonModule,
     UserComponent,
     UserItemComponent,
     UserPaginationComponent,
     ConfirmComponent,
     EmptyBlockComponent,
     UsersNavComponent
-  ],
+],
   templateUrl: './users.component.html',
   styleUrl: './users.component.scss',
   animations: [

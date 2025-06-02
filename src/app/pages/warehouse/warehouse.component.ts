@@ -12,7 +12,7 @@ import { ErrorHandlingService } from '../../services/error-handling.service';
 import { WarehouseItemsComponent } from "../../components/warehouse/warehouse-items/warehouse-items.component";
 import { WarehouseItem } from '../../models/warehouse/warehouse-item.interface';
 import { CalendarModule } from 'primeng/calendar';
-import { CommonModule } from '@angular/common';
+
 import { DatePickerModule } from 'primeng/datepicker';
 import { WarehouseUnitsComponent } from '../../components/warehouse/warehouse-units/warehouse-units.component';
 import { WarehouseCard } from '../../models/warehouse/warehouse-card.interface';
@@ -23,7 +23,6 @@ import { PageAnimation } from '../../animations/page.animation';
 @Component({
   selector: 'app-warehouse',
   imports: [
-    CommonModule,
     CalendarModule,
     DialogModule,
     DatePickerModule,
@@ -33,7 +32,7 @@ import { PageAnimation } from '../../animations/page.animation';
     WarehouseItemsComponent,
     WarehouseUnitsComponent,
     WarehouseNavComponent
-  ],
+],
   templateUrl: './warehouse.component.html',
   styleUrl: './warehouse.component.scss',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

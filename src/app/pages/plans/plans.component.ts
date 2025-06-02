@@ -1,6 +1,6 @@
 import { Component, computed, DestroyRef, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { CalendarModule, Calendar } from 'primeng/calendar';
@@ -23,7 +23,6 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 @Component({
   selector: 'app-plans',
   imports: [
-    CommonModule,
     CalendarModule,
     ConfirmComponent,
     ProposalsComponent,
@@ -35,7 +34,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     OverlayModule,
     ProposalsNavComponent,
     DragDropModule
-  ],
+],
   templateUrl: './plans.component.html',
   styleUrl: './plans.component.scss',
   animations: [

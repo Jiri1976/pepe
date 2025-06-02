@@ -1,6 +1,6 @@
 import { Component, DestroyRef, inject, OnInit, signal, ViewChild, CUSTOM_ELEMENTS_SCHEMA, ElementRef, computed, effect } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
-import { CommonModule } from '@angular/common';
+
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { ConfirmComponent } from '../../components/confirm/confirm.component';
@@ -19,14 +19,13 @@ import { PageAnimation } from '../../animations/page.animation';
 @Component({
   selector: 'app-plans',
   imports: [
-    CommonModule,
     ConfirmComponent,
     DialogModule,
     ButtonModule,
     SelectUserComponent,
     ShiftCardComponent,
     ShiftsNavComponent
-  ],
+],
   templateUrl: './shifts.component.html',
   styleUrl: './shifts.component.scss',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

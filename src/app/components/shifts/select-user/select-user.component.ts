@@ -1,7 +1,7 @@
 import { Component, input, InputSignal, model, output } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
-import { CommonModule } from '@angular/common';
+
 
 interface Users {
   userName: string;
@@ -10,7 +10,7 @@ interface Users {
 
 @Component({
   selector: 'app-select-user',
-  imports: [CommonModule, DialogModule, ButtonModule],
+  imports: [DialogModule, ButtonModule],
   templateUrl: './select-user.component.html',
   styleUrl: './select-user.component.scss'
 })

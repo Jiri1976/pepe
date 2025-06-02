@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, computed, inject, input, output } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
@@ -6,7 +6,7 @@ import { WarehouseService } from '../../../services/warehouse.service';
 
 @Component({
   selector: 'app-items-list',
-  imports: [CommonModule, DialogModule, ButtonModule],
+  imports: [DialogModule, ButtonModule],
   templateUrl: './items-list.component.html',
   styleUrl: './items-list.component.scss'
 })

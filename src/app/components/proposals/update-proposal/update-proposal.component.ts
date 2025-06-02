@@ -3,7 +3,7 @@ import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { ProposalsService } from '../../../services/proposals.service';
 import { DatePickerModule } from 'primeng/datepicker';
-import { CommonModule } from '@angular/common';
+
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NotificationComponent } from "../../notification/notification.component";
 import { DateValidator } from '../../../helpers/proposal-times.validator';
@@ -12,14 +12,13 @@ import { AlertService } from '../../../services/alert.service';
 @Component({
   selector: 'app-update-proposal',
   imports: [
-    CommonModule,
     DialogModule,
     ButtonModule,
     DatePickerModule,
     FormsModule,
     ReactiveFormsModule,
     NotificationComponent
-  ],
+],
   templateUrl: './update-proposal.component.html',
   styleUrl: './update-proposal.component.scss'
 })
