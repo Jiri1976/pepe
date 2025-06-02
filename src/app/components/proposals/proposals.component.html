@@ -2,13 +2,13 @@
     @if(!proposalsLoading()) {
 
     @if (isUnsavedPassedCard() && proposalCard().id === 0 && users().length > 0) {
-    <h4 @fadeIn>{{ unsavedProposalCardErrorText }}</h4>
+    <h4>{{ unsavedProposalCardErrorText }}</h4>
     } @else {
 
     @if(users().length > 0) {
     <div class="wrapper">
         @if (!isUnsavedPassedCard()) {
-        <div class="shift-pool" hide @fadeIn>
+        <div class="shift-pool" hide>
             <div cdkDropList id="shift-pool" [cdkDropListData]="wShifts()" [cdkDropListConnectedTo]="dropListIds()"
                 class="shift-list" (cdkDropListDropped)="onDrop($event, '')">
                 @for(shift of wShifts(); track $index) {
@@ -40,7 +40,7 @@
         </div>
         }
 
-        <div class="user-days-table" @fadeIn>
+        <div class="user-days-table">
             <table
                 [style]="`--min-width-table: ${proposalCard().proposalDays.length * 40 + 'px'} --margin-top-table: ${isUnsavedPassedCard() ? '30px' : ''}`">
                 <thead>
@@ -61,10 +61,11 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @for(user of users(); track $index) {
+                    @for(user of users(); track $index; let userIndex = $index) {
                     <tr>
                         <td class="user-name-cell"
-                            [style]="`--background-color-user: ${user.position === 'Cook' ? '#f9f9f9' : '#fff' }`">{{
+                            [style]="`--background-color-user: ${user.position === 'Cook' ? '#f9f9f9' : '#fff' }`"
+                            [class.last-cook]="userIndex === cookCount() - 1">{{
                             user.name }}
                         </td>
 
@@ -73,10 +74,12 @@
                             (cdkDropListDropped)="onDrop($event, 'cell-' + user.id + '-' + i)" class="drop-zone"
                             [cdkDropListConnectedTo]="dropListIds()"
                             [class.disabled]="assignments()[user.id][i].length > 0"
-                            [style]="`--background-color-dropzone: ${isFridayOrSaturday(day.date) ? '#f9f9f9' : '#fff' }`">
+                            [style]="`--background-color-dropzone: ${isFridayOrSaturday(day.date) ? '#f9f9f9' : '#fff' }`"
+                            [class.last-cook]="userIndex === cookCount() - 1" (click)="onClick(user.id, i)">
                             @for(shift of assignments()[user.id][i]; track $index; let j = $index) {
-                            <div cdkDrag [cdkDragData]="assignments()[user.id][i]" class="assigned-shift"
-                                (click)="onUpdateProposal(user.id, i, day.date, user.name)">
+                            <div cdkDrag [cdkDragDisabled]="isPassedTime(day.date)"
+                                [cdkDragData]="assignments()[user.id][i]" class="assigned-shift"
+                                (click)="!isPassedTime(day.date) && onUpdateProposal(user.id, i, day.date, user.name)">
                                 @if(shift.from === '11:00' && (shift.to === '22:00' || shift.to === '23:00')) {
                                 @if (isFridayOrSaturday(day.date) && (shift.to !== '23:00')) {
                                 <div cdkDrag class="shift-block custom">
@@ -130,7 +133,7 @@
     }
     }
     } @else {
-    <div class="skeleton" @fadeOut>
+    <div class="skeleton">
         <table class="empty">
             <thead>
                 <tr>
@@ -157,8 +160,6 @@
 
                     @for(day of emptyDays; track $index; let i = $index) {
                     <td>
-
-
                     </td>
                     }
                 </tr>

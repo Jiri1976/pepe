@@ -13,7 +13,7 @@
                 <li><a class="dropdown-item" routerLink="/users">Uživatelé</a></li>
                 }
                 @if (user().role === 'Admin' || user().role === 'Master') {
-                <li><a class="dropdown-item" routerLink="/plans">Plán směn</a></li>
+                <li><a class="dropdown-item" routerLink="/plans">Rozpis směn</a></li>
                 }
                 @if (user().role === 'Admin' || user().role === 'Master') {
                 <li><a class="dropdown-item" routerLink="/shifts">Směny</a></li>

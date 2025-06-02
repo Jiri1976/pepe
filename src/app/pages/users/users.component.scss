@@ -13,7 +13,6 @@
     font-family: 'Poppins', sans-serif;
 
     .users {
-        position: relative;
         height: 100%;
         grid-column: 1;
         grid-row: 1;
@@ -39,11 +38,11 @@
     .edit-div {
         grid-column: 1;
         grid-row: 1;
-        display: flex;
+        display: grid;
         justify-content: center;
         flex-direction: column;
-        align-items: center;
-        margin-top: 50px;
+        // align-items: center;
+        // margin-top: 50px;
         width: 670px;
         position: relative;
         height: 100%;

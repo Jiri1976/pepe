@@ -40,6 +40,16 @@ p-dialog {
     }
 }
 
+p-dialog {
+    .p-dialog-mask.p-overlay-mask {
+        z-index: 9999 !important;
+    }
+}
+
+.p-dialog-mask.p-overlay-mask {
+    z-index: 9999 !important;
+}
+
 .p-dialog.p-confirmdialog {
     background: #000 !important;
     border: 2px solid #000 !important;
@@ -104,9 +114,7 @@ p-dialog.create-unit {
 .proposal-calendar {
     p-datepicker {
         .p-datepicker-panel.p-component {
-            left: 10px !important;
-            // top: calc(100% - 250px) !important;
-            // bottom: 0 !important;
+            left: 35px !important;
         }
 
         .p-datepicker.p-component {
@@ -334,7 +342,7 @@ p-datepicker {
     justify-content: center;
     align-items: center;
     margin-bottom: 20px;
-    color: #D09B52;
+    color: #24355A;
     font-weight: bold;
 
     h4 {
@@ -352,7 +360,7 @@ p-datepicker {
     justify-content: center;
     align-items: center;
     margin-bottom: 10px;
-    color: #D09B52;
+    color: #24355A;
     font-weight: bold;
 
     p-datepicker#timeFrom {
@@ -364,7 +372,7 @@ p-datepicker {
             .p-inputtext {
                 text-align: center;
                 width: 70px !important;
-                border: 1px solid #D09B52;
+                border: 1px solid #24355A;
             }
 
             .p-datepicker-timeonly {
@@ -383,7 +391,7 @@ p-datepicker {
             .p-inputtext {
                 text-align: center;
                 width: 70px !important;
-                border: 1px solid #D09B52;
+                border: 1px solid #24355A;
             }
 
             .p-datepicker-timeonly {

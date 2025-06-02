@@ -13,7 +13,7 @@ export const RouteAnimation =
                     animate('600ms ease-in', style({ opacity: 1 })),
                 ], { optional: true }),
                 query(':leave', [
-                    animate('500ms ease-out', style({ opacity: 0 })),
+                    animate('400ms ease-out', style({ opacity: 0 })),
                 ], { optional: true }),
             ])
         ]),

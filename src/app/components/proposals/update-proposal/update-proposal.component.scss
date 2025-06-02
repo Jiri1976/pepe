@@ -13,10 +13,10 @@ p-dialog {
 }
 
 form {
-    border: 2px solid #D09B52;
+    border: 2px solid #24355A;
     padding: 10px;
     width: 100%;
-    border-radius: 20px;
+    border-radius: 10px;
 
     .submit,
     .delete {
@@ -26,8 +26,8 @@ form {
     }
 
     .submit {
-        background: #D09B52;
-        border: 2px solid #D09B52;
+        background: #24355A;
+        border: 2px solid #24355A;
         outline: 10px solid #fff;
         width: calc(50% - 30px);
         margin: 0 20px -20px 0;
@@ -44,8 +44,8 @@ form {
     }
 
     .submit:disabled {
-        background: #f7c278;
-        border: 2px solid #f7c278;
+        background: #1e81b0;
+        border: 2px solid #1e81b0;
     }
 
     .delete {
@@ -53,7 +53,7 @@ form {
         font-weight: bold;
         width: 30px;
         height: 30px;
-        border-radius: 50%;
+        border-radius: 5px;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -61,8 +61,8 @@ form {
         transition: 0.3s;
         border: none;
         outline: none;
-        top: 20px;
-        left: -20px;
+        top: 15px;
+        left: -15px;
         outline: 5px solid #fff;
 
         .bi {
@@ -100,10 +100,10 @@ form {
     border: 1px solid #F53B57;
     width: 30px;
     height: 30px;
-    border-radius: 50%;
+    border-radius: 5px;
     position: absolute;
     float: right;
-    top: 27px;
+    top: 35px;
     right: 15px;
     background: #F53B57;
     color: white;
@@ -128,6 +128,6 @@ form {
 
 h1 {
     font-size: 1rem;
-    color: #D09B52;
+    color: #24355A;
     font-weight: bold;
 }

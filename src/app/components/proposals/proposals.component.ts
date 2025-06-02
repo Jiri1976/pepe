@@ -48,6 +48,7 @@ export class ProposalsComponent {
   updateVisible = signal(false);
   emptyDays = new Array(31);
   emptyUsers = new Array(13);
+  cookCount = computed(() => this.proposalsService.cookCount());
 
   ngOnInit(): void {
     this.proposalsService.uploadProposals();
@@ -129,7 +130,7 @@ export class ProposalsComponent {
     return true;
   }
 
-  private isPassedTime(date: string) {
+  isPassedTime(date: string) {
     let _day = parseInt(date.split('.')[0]);
     let _year = parseInt(date.split('.')[2]);
     let _month = parseInt(date.split('.')[1]) - 1;
@@ -139,5 +140,14 @@ export class ProposalsComponent {
       return false;
     }
     return true;
+  }
+
+  onClick(userId: number, index: number) {
+    let assignment = { ...this.assignments()[userId][index] }
+    if (Object.keys(assignment).length > 0) {
+      alert('full')
+    }
+    console.log(assignment);
+
   }
 }

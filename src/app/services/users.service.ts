@@ -77,8 +77,6 @@ export class UsersService {
     }
 
     getProposalUsers(destination: string) {
-        console.log('here');
-
         let url = this.BASE_ROUTE + `authentication/GetListOfUsers?destination=${destination}`;
         return this.http.get<Response>(url);
     }

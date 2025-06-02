@@ -1,5 +1,5 @@
 import { Component, computed, DestroyRef, inject, OnInit, output, signal } from '@angular/core';
-import { FormGroup, FormControl, Validators, ReactiveFormsModule, FormsModule, AbstractControl } from '@angular/forms';
+import { FormGroup, FormControl, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from '../../../services/alert.service';
 import { ConvertToGetUserDTO, ConvertToUserDTO } from '../../../helpers/conversions';
@@ -88,49 +88,43 @@ export class UserComponent implements OnInit {
       let _user = this.userForm.value;
       _user.id = this.user().id;
       _user.nick = _user.name!.substring(0, 1) + _user.surname!.substring(0, 1);
-      this.confirmService.confirm('Opravdu chceš přidat uživatele?')
-        .then((confirmed) => {
-          if (confirmed) {
-            this.isLoading.set(true);
-            this.actionText.set('Přidávám...');
-            this.userForm.disable();
-            const userDTO = ConvertToUserDTO(_user);
+      this.isLoading.set(true);
+      this.actionText.set('Přidávám...');
+      this.userForm.disable();
+      const userDTO = ConvertToUserDTO(_user);
 
-            const subscription = this.usersService.createUser(userDTO).pipe(
-              concatMap(response => {
-                this.isLoading.set(false);
-                if (response === null) {
-                  this.userForm.enable();
-                  this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
-                } else if (response.isSuccess === false) {
-                  this.userForm.enable();
-                  this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
-                } else if (response.isSuccess) {
-                  userDTO.id = response.result;
-                  userDTO.password = '';
-                  const getUserDTO = ConvertToGetUserDTO(userDTO);
-                  this.usersService.setUser(getUserDTO);
-                  this.usersService.addUser(getUserDTO);
-                  this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: `Úspěšně přidán - ${userDTO.name} ${userDTO.surname}` });
-                  this.userForm.reset();
-                  this.createdUser.emit(getUserDTO);
-                  this.initializedUserForm();
-                  this.checkValues();
-                }
-                return of();
-              }),
-            ).subscribe({
-              next: () => {
-
-              },
-              error: error => this.handleError(error)
-            });
-
-            this.destroyRef.onDestroy(() => {
-              subscription.unsubscribe();
-            });
+      const subscription = this.usersService.createUser(userDTO).pipe(
+        concatMap(response => {
+          this.isLoading.set(false);
+          if (response === null) {
+            this.userForm.enable();
+            this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+          } else if (response.isSuccess === false) {
+            this.userForm.enable();
+            this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+          } else if (response.isSuccess) {
+            userDTO.id = response.result;
+            userDTO.password = '';
+            const getUserDTO = ConvertToGetUserDTO(userDTO);
+            this.usersService.setUser(getUserDTO);
+            this.usersService.addUser(getUserDTO);
+            this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: `Úspěšně přidán - ${userDTO.name} ${userDTO.surname}` });
+            this.userForm.reset();
+            this.createdUser.emit(getUserDTO);
+            this.onGoBack();
           }
-        });
+          return of();
+        }),
+      ).subscribe({
+        next: () => {
+
+        },
+        error: error => this.handleError(error)
+      });
+
+      this.destroyRef.onDestroy(() => {
+        subscription.unsubscribe();
+      });
     } else {
       let _user = this.userForm.value;
       _user.id = this.user().id;
@@ -141,45 +135,39 @@ export class UserComponent implements OnInit {
         _user.position = this.user().position;
       }
 
-      this.confirmService.confirm('Opravdu chceš upravit uživatele?')
-        .then((confirmed) => {
-          if (confirmed) {
-            this.isLoading.set(true);
-            this.actionText.set('Upravuji...');
-            this.userForm.disable();
-            const getUserDTO = ConvertToGetUserDTO(_user);
-            const subscription = this.usersService.updateUser(getUserDTO).pipe(
-              concatMap(response => {
-                this.isLoading.set(false);
-                if (response === null) {
-                  this.userForm.enable();
-                  this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
-                } else if (response.isSuccess === false) {
-                  this.userForm.enable();
-                  this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
-                } else if (response.isSuccess) {
-                  this.userForm.enable();
-                  this.usersService.setUser(getUserDTO);
-                  this.updatedUser.emit(getUserDTO);
-                  this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: response.result });
-                  this.usersService.updateAllAfterUpdate(getUserDTO);
-                  this.initializedUserForm();
-                  this.checkValues();
-                }
-                return of();
-              }),
-            ).subscribe({
-              next: () => {
-
-              },
-              error: error => this.handleError(error)
-            });
-
-            this.destroyRef.onDestroy(() => {
-              subscription.unsubscribe();
-            });
+      this.isLoading.set(true);
+      this.actionText.set('Upravuji...');
+      this.userForm.disable();
+      const getUserDTO = ConvertToGetUserDTO(_user);
+      const subscription = this.usersService.updateUser(getUserDTO).pipe(
+        concatMap(response => {
+          this.isLoading.set(false);
+          if (response === null) {
+            this.userForm.enable();
+            this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+          } else if (response.isSuccess === false) {
+            this.userForm.enable();
+            this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+          } else if (response.isSuccess) {
+            this.userForm.enable();
+            this.usersService.setUser(getUserDTO);
+            this.updatedUser.emit(getUserDTO);
+            this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: response.result });
+            this.usersService.updateAllAfterUpdate(getUserDTO);
+            this.onGoBack();
           }
-        });
+          return of();
+        }),
+      ).subscribe({
+        next: () => {
+
+        },
+        error: error => this.handleError(error)
+      });
+
+      this.destroyRef.onDestroy(() => {
+        subscription.unsubscribe();
+      });
     }
   }
 
@@ -262,28 +250,12 @@ export class UserComponent implements OnInit {
     let surnameIFalse = (this.surname?.touched && this.surname?.hasError('required') || this.surname?.untouched && this.surname?.dirty && this.surname?.hasError('required') || this.surname?.hasError('maxlength'));
     let emailIsFalse = (this.email?.touched && this.email?.hasError('required') || (this.email?.touched && this.email?.hasError('email')));
     let passwordIsFalse = (this.password?.touched && this.password?.hasError('required') || this.password?.untouched && this.password?.dirty && this.password?.hasError('required') || this.password?.hasError('maxlength'));
-    // let checkBoxesAreFalse = this.userForm.hasError('checkBoxesInvalid');
-
-    // return nameIsFalse ||
-    //   surnameIFalse ||
-    //   emailIsFalse ||
-    //   passwordIsFalse ||
-    //   (!nameIsFalse && !surnameIFalse && !emailIsFalse && !passwordIsFalse && !this.inputsFocused() && checkBoxesAreFalse);
 
     return nameIsFalse ||
       surnameIFalse ||
       emailIsFalse ||
       passwordIsFalse;
   }
-
-  // showBoxError(control: AbstractControl | null) {
-  //   return this.name?.valid &&
-  //     this.surname?.valid &&
-  //     this.email?.valid &&
-  //     this.password?.valid &&
-  //     !this.inputsFocused() &&
-  //     control?.hasError('required');
-  // }
 
   nameCanShake() {
     return this.name?.touched &&

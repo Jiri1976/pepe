@@ -49,8 +49,8 @@ export const routes: Routes = [
         path: 'plans',
         loadComponent: () => import('./pages/plans/plans.component').then(m => m.PlansComponent),
         canMatch: [AdminMasterGuard],
-        title: 'Plán směn',
-        data: { animation: 'shifts', role: ['Admin', 'Master'] }
+        title: 'Rozpis směn',
+        data: { animation: 'plans', role: ['Admin', 'Master'] }
     },
     {
         path: '**',

@@ -110,6 +110,7 @@ table {
     border-radius: 10px;
     min-width: var(--min-width-table);
     margin-top: var(--margin-top-table);
+    margin-bottom: 20px;
 
     th,
     td {
@@ -156,6 +157,11 @@ table {
 
     td.drop-zone {
         background-color: var(--background-color-dropzone)
+    }
+
+    td.drop-zone.last-cook,
+    td.user-name-cell.last-cook {
+        border-bottom: 2px solid black;
     }
 }
 

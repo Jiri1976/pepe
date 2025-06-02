@@ -1,4 +1,4 @@
-<div class="row line mt-1" (click)="editUser(user().id)">
+<div class="row line mt-1" (click)="editUser(user().id)" [style.--border]="!user().isActive ? '#838282' : ''">
     <div [class]="`col-4 ${user().isActive}`">{{ user().name }}</div>
     <div [class]="`col-5 ${user().isActive}`">{{ user().surname }}</div>
     <div [class]="`col-1 role ${user().role} ${user().isActive}`">{{

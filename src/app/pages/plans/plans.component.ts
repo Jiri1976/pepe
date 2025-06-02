@@ -16,9 +16,9 @@ import { AlertService } from '../../services/alert.service';
 import { tap } from 'rxjs';
 import { ErrorHandlingService } from '../../services/error-handling.service';
 import { ProposalsPDF, ShiftPDF, UserPDF } from '../../models/proposals/proposalsPDF.interface';
-import { trigger, transition, animate, style } from '@angular/animations';
 import { ProposalsNavComponent } from "../../components/proposals/proposals-nav/proposals-nav.component";
 import { PageAnimation } from '../../animations/page.animation';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-plans',
@@ -33,7 +33,8 @@ import { PageAnimation } from '../../animations/page.animation';
     ReactiveFormsModule,
     DatePickerModule,
     OverlayModule,
-    ProposalsNavComponent
+    ProposalsNavComponent,
+    DragDropModule
   ],
   templateUrl: './plans.component.html',
   styleUrl: './plans.component.scss',
@@ -50,14 +51,12 @@ export class PlansComponent implements OnInit {
   private alertService = inject(AlertService);
   private errorHandlingService = inject(ErrorHandlingService);
   defaultDate = new Date(new Date().getFullYear(), new Date().getMonth());
-  minDate: Date = new Date(new Date().getFullYear(), new Date().getMonth());
-  // destination = computed(() => this.proposalsService.destination());
+  maxDate: Date = new Date(new Date().getFullYear(), new Date().getMonth());
   loggedUser = this.authService.getUser();
   proposalCard = computed(() => this.proposalsService.proposalCard());
   isLoading = computed(() => this.proposalsService.isProposalLoading());
   user = computed(() => this.authService.user());
   users = computed(() => this.proposalsService.users());
-  // calendarTitle = computed(() => this.proposalsService.calendarTitle());
   nothingChanched = computed(() => this.proposalsService.nothingChanged());
   assignments = computed(() => this.proposalsService.assignments());
   pdfLoading = signal(false);
@@ -83,27 +82,29 @@ export class PlansComponent implements OnInit {
     }
   }
 
-  onSelectMonth(date: string) {
-    // this.calendar.hideOverlay();
-    // this.calendar.cd.detectChanges();
+  onSelectMonth() {
+    let date = this.calendar.value;
     let monthYear = this.MONTHS_NUM[new Date(date).getMonth()] + new Date(date).getFullYear();
     this.proposalsService.monthYear.set(monthYear);
     this.proposalsService.uploadProposals();
   }
 
   onChangeDestination(destination: string) {
-    this.proposalsService.destination.set(destination);
-    this.proposalsService.uploadProposals();
+    if (!this.nothingChanched()) {
+      this.confirmService.confirm('Nejsou uloženy změny, chceš pokračovat?')
+        .then((confirmed) => {
+          if (confirmed) {
+            this.changeDestination(destination);
+          }
+        });
+    } else {
+      this.changeDestination(destination);
+    }
   }
 
   onSave() {
-    this.confirmService.confirm('Opravdu chceš upravit směny?')
-      .then((confirmed) => {
-        if (confirmed) {
-          this.proposalsService.isProposalLoading.set(true);
-          this.proposalsService.onSave();
-        }
-      });
+    this.proposalsService.isSaving.set(true);
+    this.proposalsService.onSave();
   }
 
   onDelete() {
@@ -116,7 +117,16 @@ export class PlansComponent implements OnInit {
   }
 
   onReset() {
-    this.proposalsService.uploadProposals();
+    if (!this.nothingChanched()) {
+      this.confirmService.confirm('Nejsou uloženy změny, chceš pokračovat?')
+        .then((confirmed) => {
+          if (confirmed) {
+            this.proposalsService.uploadProposals();
+          }
+        });
+    } else {
+      this.proposalsService.uploadProposals();
+    }
   }
 
   onOpenPDF() {
@@ -164,6 +174,12 @@ export class PlansComponent implements OnInit {
       return false;
     }
     return true;
+  }
+
+  private changeDestination(destination: string) {
+    this.proposalsService.isProposalLoading.set(true);
+    this.proposalsService.destination.set(destination);
+    this.proposalsService.uploadProposals();
   }
 
   private preparePDFData() {

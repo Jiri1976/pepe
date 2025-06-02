@@ -6,12 +6,16 @@
 
 .menu {
     position: relative;
-    width: 250px;
-    height: 250px;
+    width: var(--nav-width, 250px);
+    height: var(--nav-width, 250px);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    transition: 0.5s;
+    transition-delay: var(--delay, 0);
+    border-radius: 50%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .menu .action_btn {
@@ -28,15 +32,8 @@
     z-index: 1;
     position: relative;
     bottom: -5px;
+    margin-top: 5px;
 }
-
-// .menu .action_btn:hover {
-//     scale: 1.05;
-// }
-
-// .menu .action_btn:active {
-//     scale: 0.95;
-// }
 
 .menu.open .action_btn {
     transform: rotate(180deg);

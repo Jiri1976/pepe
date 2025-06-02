@@ -6,7 +6,7 @@ import { ProposalCard } from "../models/proposals/proposalCard.interface";
 import { AuthService } from "./auth.service";
 import { SelectedProposal } from "../models/proposals/selectedProposal.interface";
 import { UsersService } from "./users.service";
-import { concatMap, filter, of, tap } from "rxjs";
+import { concatMap, of, tap } from "rxjs";
 import { AlertService } from "./alert.service";
 import { GetUserDTO } from "../models/users/getUserDTO.interface";
 import { ErrorHandlingService } from "./error-handling.service";
@@ -24,7 +24,6 @@ export class ProposalsService {
     private alertService = inject(AlertService);
     private errorHandlingService = inject(ErrorHandlingService);
     private BASE_ROUTE = environment.SHIFTS_PATH;
-    private loggedUser = this.authService.getUser();
     private initialProposalCard: ProposalCard = {
         id: 0,
         monthYear: '',
@@ -47,7 +46,7 @@ export class ProposalsService {
     monthYear = signal<string>((new Date().getMonth() + 1).toString() + (new Date().getFullYear()).toString());
     proposalCard = signal<ProposalCard>(this.initialProposalCard);
     selectedProposal = signal<SelectedProposal>(this.initialSelectedProposal);
-    savedUsers = signal<GetUserDTO[]>([]); // do we need them as signal ????
+    savedUsers = signal<GetUserDTO[]>([]);
     isProposalLoading = signal(false);
     filteredUsers = signal<GetUserDTO[]>([]);
     uploadedCard = structuredClone(this.proposalCard());
@@ -63,6 +62,8 @@ export class ProposalsService {
     dropListIds = signal<string[]>([]);
     timeFrom = signal<Date>(new Date());
     timeTo = signal<Date>(new Date());
+    isSaving = signal(false);
+    cookCount = signal<number>(0);
 
     getProposalsByMonthAndDestination() {
         let httpOptions = {
@@ -91,10 +92,10 @@ export class ProposalsService {
         const subscription = this.saveProposals(this.proposalCard()).pipe(
             tap(response => {
                 if (response === null) {
-                    this.isProposalLoading.set(false);
+                    this.isSaving.set(false);
                     this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
                 } else if (response.isSuccess === false) {
-                    this.isProposalLoading.set(false);
+                    this.isSaving.set(false);
                     this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
                 } else {
                     this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Úspěšně uloženo!' });
@@ -105,7 +106,7 @@ export class ProposalsService {
                     }
                     this.uploadedCard = structuredClone(this.proposalCard());
                     this.checkNothingChanged();
-                    this.isProposalLoading.set(false);
+                    this.isSaving.set(false);
                 }
             })
         ).subscribe({
@@ -151,56 +152,45 @@ export class ProposalsService {
 
     uploadProposals() {
         this.isProposalLoading.set(true);
-        // const subscription = this.usersService.getProposalUsers(this.destination()).pipe(
-        //     filter(response => response.result.length > 0),            
-        //     concatMap(response => {
-        //         if (response === null) {
-        //             this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
-        //         } else if (response.isSuccess === false) {
-        //             this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
-        //         } else if (response.isSuccess === true) {
-        //             this.savedUsers.set(response.result);
-        //             return this.getProposalCardObservable()
-        //         }
-        //         return of();
-        //     }),
-        // ).subscribe({
-        //     next: () => {
-        //     },
-        //     error: error => this.handleError(error)
-        // });
-
-        // this.destroyRef.onDestroy(() => {
-        //     subscription.unsubscribe();
-        // });
-
         const subscription = this.usersService.getProposalUsers(this.destination()).pipe(
             concatMap(response => {
+                // if (response === null) {
+                //     this.alertService.setAlert({
+                //         severity: 'error',
+                //         summary: 'Error',
+                //         detail: 'Něco se pokazilo, zkus to znovu.'
+                //     });
+                //     return of();
+                // }
+
+                // if (response.isSuccess === false) {
+                //     this.alertService.setAlert({
+                //         severity: 'error',
+                //         summary: 'Error',
+                //         detail: response.errorMessage
+                //     });
+                //     return of();
+                // }
+
+                // // if (response.result.length === 0) {
+                // //     this.isProposalLoading.set(false);
+                // //     return of();
+                // // }
+
+                // this.savedUsers.set(response.result);
+                // return this.getProposalCardObservable();
+
                 if (response === null) {
-                    this.alertService.setAlert({
-                        severity: 'error',
-                        summary: 'Error',
-                        detail: 'Něco se pokazilo, zkus to znovu.'
-                    });
-                    return of();
-                }
-
-                if (response.isSuccess === false) {
-                    this.alertService.setAlert({
-                        severity: 'error',
-                        summary: 'Error',
-                        detail: response.errorMessage
-                    });
-                    return of();
-                }
-
-                if (response.result.length === 0) {
                     this.isProposalLoading.set(false);
-                    return of();
+                    this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+                } else if (response.isSuccess === false) {
+                    this.isProposalLoading.set(false);
+                    this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+                } else if (response.isSuccess) {
+                    this.savedUsers.set(response.result);
+                    return this.getProposalCardObservable();
                 }
-
-                this.savedUsers.set(response.result);
-                return this.getProposalCardObservable();
+                return of();
             }),
         ).subscribe({
             next: () => { },
@@ -374,10 +364,8 @@ export class ProposalsService {
     }
 
     private initializeUsers() {
-
         let today = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
         let _monthYear = this.monthYear().length === 5 ? '0' + this.monthYear() : this.monthYear()
-
         let day = new Date(parseInt(_monthYear.substring(2, 6)), parseInt(_monthYear.substring(0, 2)) - 1, 1);
 
         let users: { id: number, userId: number, name: string, position: string }[] = [];
@@ -413,19 +401,21 @@ export class ProposalsService {
         );
 
         if (cooks.length > 0) {
+            this.cookCount.set(cooks.length);
+
             cooks.forEach((user, index) => {
-                users.push({ id: index + 1, userId: user.id, name: `${user.name} ${user.surname.charAt(0).toUpperCase()}`, position: user.position })
+                users.push({ id: index + 1, userId: user.id, name: `${user.name}`, position: user.position })
             });
 
             if (drivers.length > 0) {
                 drivers.forEach((user, index) => {
-                    users.push({ id: index + 1 + cooks.length, userId: user.id, name: `${user.name} ${user.surname.charAt(0).toUpperCase()}`, position: user.position })
+                    users.push({ id: index + 1 + cooks.length, userId: user.id, name: `${user.name}`, position: user.position })
                 });
             }
         } else {
             if (drivers.length > 0) {
                 drivers.forEach((user, index) => {
-                    users.push({ id: index + 1, userId: user.id, name: `${user.name} ${user.surname.charAt(0).toUpperCase()}`, position: user.position })
+                    users.push({ id: index + 1, userId: user.id, name: `${user.name}`, position: user.position })
                 });
             }
         }
@@ -471,7 +461,8 @@ export class ProposalsService {
     }
 
     private handleError = (errorRes: HttpErrorResponse) => {
-        this.isProposalLoading.set(false);
+        this.isSaving?.set(false);
+        this.isProposalLoading?.set(false);
         return this.errorHandlingService.handleError(errorRes);
     };
 }

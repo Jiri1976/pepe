@@ -1,4 +1,5 @@
-<div class="menu" [class]="{'open': !-shiftFormVisible()}">
+<div class="menu" [class]="{'open': !-shiftFormVisible()}" [style.--nav-width]="shiftFormVisible() ? '90px' : ''"
+    [style.--delay]="shiftFormVisible() ? '0.6s' : ''">
     <button class="action_btn" (click)="onOpen()">
         <img src="spinner.png" alt="navigace" width="70" height="70" />
     </button>
@@ -9,7 +10,7 @@
     </div>
 
     <ul>
-        <li hide style="--i: 1; --x: -35; --y: -75;" class="first" (click)="toggleCalendar()"
+        <li hide style="--i: 1; --x: -33; --y: -75;" class="first" (click)="toggleCalendar()"
             [class.disabled]="shiftsComponent.cards().length === 0">
             <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
                 <i class="bi bi-calendar"></i>
@@ -17,7 +18,7 @@
             </a>
         </li>
 
-        <li hideAdmin style="--i: 1; --x: -35; --y: -75;" class="first" (click)="toggleCalendar()"
+        <li hideAdmin style="--i: 1; --x: -33; --y: -75;" class="first" (click)="toggleCalendar()"
             [class.disabled]="shiftsComponent.cards().length === 0">
             <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
                 <i class="bi bi-calendar"></i>
@@ -46,13 +47,13 @@
             </a>
         </li>
 
-        <li hide style="--i: 4; --x: 35; --y: 75;" (click)="shiftsComponent.onSelectDestination('F-M')">
+        <li hide style="--i: 4; --x: 33; --y: 75;" (click)="shiftsComponent.onSelectDestination('F-M')">
             <a [style.--background]="destination() === 'F-M' ? '#24355A' : '#1e81b0'" [style.--color]="'#fff'">
                 <p>F-M</p>
             </a>
         </li>
 
-        <li hide style="--i: 5;--x: -35; --y: 75;" (click)="shiftsComponent.onSelectDestination('OVA')">
+        <li hide style="--i: 5;--x: -33; --y: 75;" (click)="shiftsComponent.onSelectDestination('OVA')">
             <a [style.--background]="destination() === 'OVA' ? '#24355A' : '#1e81b0'" [style.--color]="'#fff'">
                 <p>OVA</p>
             </a>
