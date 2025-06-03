@@ -68,21 +68,25 @@ export class ShiftCardComponent {
 
   onAddShift() {
     this.shiftService.setMonthYear(this.shiftCard()!.monthYear);
-    if (this.isPastCard()) {
-      let hours = new Date().getHours() < 10 ? '0' + new Date().getHours() : new Date().getHours();
-      let minutes = new Date().getMinutes() < 10 ? '0' + new Date().getMinutes() : new Date().getMinutes();
-      let _shift: Shift = {
-        id: 0,
-        shiftCardId: this.shiftCard()!.id,
-        userId: this.shiftCard()!.userId,
-        date: '01.' + this.shiftCard()!.monthYear.substring(0, 2) + '.' + this.shiftCard()!.monthYear.substring(2, 6),
-        from: `${hours}:${minutes}`,
-        to: `${hours}:${minutes}`,
-        hours: '',
-        perso: ''
-      }
-      this.shiftService.setSelectedShift(_shift);
+    let _shift: Shift = {
+      id: 0,
+      shiftCardId: this.shiftCard()!.id,
+      userId: this.shiftCard()!.userId,
+      date: '',
+      from: '11:00',
+      to: '22:00',
+      hours: '',
+      perso: ''
     }
+
+    if (this.isPastCard()) {
+      _shift.date = `01.${this.shiftCard()!.monthYear.substring(0, 2)}.${this.shiftCard()!.monthYear.substring(2, 6)}`;
+    } else {
+      let day = new Date().getDate() < 10 ? '0' + new Date().getDate() : (new Date().getDate()).toString();
+      _shift.date = `${day}.${this.shiftCard()!.monthYear.substring(0, 2)}.${this.shiftCard()!.monthYear.substring(2, 6)}`;
+      _shift.to = this.isFridayOrSaturday(_shift.date) ? '23:00' : '22:00';
+    }
+    this.shiftService.setSelectedShift(_shift);
     this.shiftService.shiftFormVisible.set(true);
   }
 
@@ -143,7 +147,6 @@ export class ShiftCardComponent {
           this.shiftFormComponent.shiftForm.enable();
           this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
         } else if (response.isSuccess) {
-          this.shiftService.resetSelectedShift();
           let _card: ShiftCard = response.result;
           _card!.shifts.sort((a, b) => {
             return a.date.localeCompare(b.date);
@@ -301,9 +304,18 @@ export class ShiftCardComponent {
     return converted;
   }
 
+  private isFridayOrSaturday(date: string) {
+    var day = new Date(parseInt(date.split('.')[2]), parseInt(date.split('.')[1]) - 1, parseInt(date.split('.')[0]));
+    if (day.getDay() == 5 || day.getDay() == 6) {
+      return true;
+    }
+    return false;
+  }
+
+
   private handleError = (errorRes: HttpErrorResponse) => {
-    this.cardLoading.set(false);
-    this.shiftFormComponent.loading.set(false);
+    this.cardLoading?.set(false);
+    this.shiftFormComponent?.loading?.set(false);
     return this.errorHandlingService.handleError(errorRes);
   };
 }

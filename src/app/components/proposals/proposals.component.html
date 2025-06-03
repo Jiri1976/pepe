@@ -75,11 +75,12 @@
                             [cdkDropListConnectedTo]="dropListIds()"
                             [class.disabled]="assignments()[user.id][i].length > 0"
                             [style]="`--background-color-dropzone: ${isFridayOrSaturday(day.date) ? '#f9f9f9' : '#fff' }`"
-                            [class.last-cook]="userIndex === cookCount() - 1" (click)="onClick(user.id, i)">
+                            [class.last-cook]="userIndex === cookCount() - 1"
+                            (click)="onAdd(user.id, i, day.date, user.name)">
                             @for(shift of assignments()[user.id][i]; track $index; let j = $index) {
                             <div cdkDrag [cdkDragDisabled]="isPassedTime(day.date)"
                                 [cdkDragData]="assignments()[user.id][i]" class="assigned-shift"
-                                (click)="!isPassedTime(day.date) && onUpdateProposal(user.id, i, day.date, user.name)">
+                                (click)="(!isPassedTime(day.date) || (loggedUser.role === 'Admin')) && onUpdateProposal(user.id, i, day.date, user.name)">
                                 @if(shift.from === '11:00' && (shift.to === '22:00' || shift.to === '23:00')) {
                                 @if (isFridayOrSaturday(day.date) && (shift.to !== '23:00')) {
                                 <div cdkDrag class="shift-block custom">
@@ -123,7 +124,7 @@
                     }
                 </tbody>
             </table>
-            <app-update-proposal [(updateVisible)]="updateVisible" />
+            <app-update-proposal [(updateVisible)]="updateVisible" [(masterAdd)]="masterAdd" />
         </div>
     </div>
     }

@@ -29,11 +29,16 @@
         }
 
         @if(!selectedProposal().delete) {
-        <button type="button" class="btn delete" (click)="onDelete()"><i class="bi bi-trash"></i></button>
+        <button type="button" class="btn delete" (click)="onDelete()"
+            [style.visibility]="masterAdd() ? 'hidden' : ''"><i class="bi bi-trash"></i></button>
         }
+        @if (!masterAdd()) {
         <button type="submit" class="btn submit" (click)="onUpdate()"
-            [disabled]="(proposalForm.pristine || proposalForm.invalid) && !selectedProposal().delete">{{
+            [disabled]="proposalForm.invalid && !selectedProposal().delete">{{
             `${selectedProposal().delete ? 'Odstranit' :
             'Upravit'}`}}</button>
+        } @else {
+        <button type="submit" class="btn submit" (click)="onUpdate()" [disabled]="proposalForm.invalid">Přidat</button>
+        }
     </form>
 </p-dialog>

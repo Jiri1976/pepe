@@ -3,7 +3,6 @@ import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { ProposalsService } from '../../../services/proposals.service';
 import { DatePickerModule } from 'primeng/datepicker';
-
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NotificationComponent } from "../../notification/notification.component";
 import { DateValidator } from '../../../helpers/proposal-times.validator';
@@ -18,7 +17,7 @@ import { AlertService } from '../../../services/alert.service';
     FormsModule,
     ReactiveFormsModule,
     NotificationComponent
-],
+  ],
   templateUrl: './update-proposal.component.html',
   styleUrl: './update-proposal.component.scss'
 })
@@ -31,6 +30,7 @@ export class UpdateProposalComponent implements OnInit {
   selectedProposalTimeFrom = computed(() => this.proposalsService.timeFrom());
   selectedProposalTimeTo = computed(() => this.proposalsService.timeTo());
   proposalForm!: FormGroup;
+  masterAdd = model(false);
 
   get timeFrom() {
     return this.proposalForm.get('timeFrom');
@@ -48,7 +48,7 @@ export class UpdateProposalComponent implements OnInit {
     this.proposalForm.patchValue({
       'timeFrom': this.selectedProposalTimeFrom(),
       'timeTo': this.selectedProposalTimeTo()
-    })
+    });
   });
 
   onUpdate() {
@@ -57,9 +57,7 @@ export class UpdateProposalComponent implements OnInit {
       return;
     }
     this.updateVisible.set(false);
-
     let isFridaySaturday = this.isFridayOrSaturday(this.selectedProposal().date);
-
     let hoursFrom = new Date(this.timeFrom?.value).getHours() < 10 ? '0' + new Date(this.timeFrom?.value).getHours() : new Date(this.timeFrom?.value).getHours();
     let minutesFrom = new Date(this.timeFrom?.value).getMinutes() < 10 ? '0' + new Date(this.timeFrom?.value).getMinutes() : new Date(this.timeFrom?.value).getMinutes();
     let hoursTo = new Date(this.timeTo?.value).getHours() < 10 ? '0' + new Date(this.timeTo?.value).getHours() : new Date(this.timeTo?.value).getHours();
@@ -86,8 +84,15 @@ export class UpdateProposalComponent implements OnInit {
 
     let _assignments = { ...this.assignments() };
     let assignment: any = _assignments[this.selectedProposal().x][this.selectedProposal().y];
-    assignment[0].from = `${hoursFrom}:${minutesFrom}`;
-    assignment[0].to = `${hoursTo}:${minutesTo}`;
+
+    if (Object.keys(assignment).length > 0) {
+      assignment[0].from = `${hoursFrom}:${minutesFrom}`;
+      assignment[0].to = `${hoursTo}:${minutesTo}`;
+    } else {
+      let newAssignment: any = { name: 'W', from: `${hoursFrom}:${minutesFrom}`, to: `${hoursTo}:${minutesTo}` };
+      _assignments[this.selectedProposal().x][this.selectedProposal().y] = [newAssignment];
+      assignment = newAssignment;
+    }
 
     if (isFridaySaturday) {
       if (parseInt(hoursFrom.toString()) === 11 && (parseInt(minutesFrom.toString()) === 0) && parseInt(hoursTo.toString()) === 23) {
@@ -103,7 +108,6 @@ export class UpdateProposalComponent implements OnInit {
         assignment[0].name = '';
       }
     }
-
     this.proposalsService.updateAssigments(_assignments);
     this.proposalsService.setProposals();
   }
@@ -133,7 +137,7 @@ export class UpdateProposalComponent implements OnInit {
       'timeTo': new FormControl({
         value: this.selectedProposalTimeTo(),
         disabled: false
-      }, [Validators.required])
+      }, [Validators.required,])
     }, { validators: DateValidator.ProposalTimesValidator });
   }
 }

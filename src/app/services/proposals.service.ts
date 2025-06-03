@@ -154,32 +154,6 @@ export class ProposalsService {
         this.isProposalLoading.set(true);
         const subscription = this.usersService.getProposalUsers(this.destination()).pipe(
             concatMap(response => {
-                // if (response === null) {
-                //     this.alertService.setAlert({
-                //         severity: 'error',
-                //         summary: 'Error',
-                //         detail: 'Něco se pokazilo, zkus to znovu.'
-                //     });
-                //     return of();
-                // }
-
-                // if (response.isSuccess === false) {
-                //     this.alertService.setAlert({
-                //         severity: 'error',
-                //         summary: 'Error',
-                //         detail: response.errorMessage
-                //     });
-                //     return of();
-                // }
-
-                // // if (response.result.length === 0) {
-                // //     this.isProposalLoading.set(false);
-                // //     return of();
-                // // }
-
-                // this.savedUsers.set(response.result);
-                // return this.getProposalCardObservable();
-
                 if (response === null) {
                     this.isProposalLoading.set(false);
                     this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });

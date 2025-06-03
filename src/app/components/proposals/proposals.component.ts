@@ -1,7 +1,6 @@
 
 import { Component, computed, inject, signal } from '@angular/core';
-import { DragDropModule, CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
-import { TooltipModule } from 'primeng/tooltip';
+import { CdkDragDrop, DragDropModule, transferArrayItem } from '@angular/cdk/drag-drop';
 import { HideElementDirective } from '../../directives/hide-element.directive';
 import { ProposalsService } from '../../services/proposals.service';
 import { AuthService } from '../../services/auth.service';
@@ -14,12 +13,11 @@ import { PageAnimation } from '../../animations/page.animation';
   selector: 'app-proposals',
   imports: [
     DragDropModule,
-    TooltipModule,
     HideElementDirective,
     ProposalButtonComponent,
     UpdateProposalComponent,
     CustomProposalButtonComponent
-],
+  ],
   templateUrl: './proposals.component.html',
   styleUrl: './proposals.component.scss',
   animations: [
@@ -48,6 +46,7 @@ export class ProposalsComponent {
   emptyDays = new Array(31);
   emptyUsers = new Array(13);
   cookCount = computed(() => this.proposalsService.cookCount());
+  masterAdd = signal(false);
 
   ngOnInit(): void {
     this.proposalsService.uploadProposals();
@@ -106,6 +105,7 @@ export class ProposalsComponent {
     if (this.loggedUser.role === 'Master' && this.isPassedTime(date)) {
       return;
     }
+    this.masterAdd.set(false);
     let assignment: any = this.assignments()[x][y];
     let proposal = { name: assignment[0].name, x: x, y: y, date: date, user: user, from: assignment[0].from, to: assignment[0].to, delete: false };
     if (proposal.from === 'OVA' || proposal.from === 'F-M') {
@@ -125,7 +125,7 @@ export class ProposalsComponent {
       return false;
     }
     let MONTHS_NAMES = ["leden", "únor", "březen", "duben", "květen", "červen", "červenec", "srpen", "září", "říjen", "listopad", "prosinec"];
-    this.unsavedProposalCardErrorText = `Plán směn pro ${MONTHS_NAMES[parseInt(_monthYear.substring(0, 2)) - 1]} ${_monthYear.substring(2, 6)} není uložen.`;
+    this.unsavedProposalCardErrorText = `Rozpis směn pro ${MONTHS_NAMES[parseInt(_monthYear.substring(0, 2)) - 1]} ${_monthYear.substring(2, 6)} není uložen.`;
     return true;
   }
 
@@ -141,12 +141,15 @@ export class ProposalsComponent {
     return true;
   }
 
-  onClick(userId: number, index: number) {
+  onAdd(userId: number, index: number, date: string, user: string) {
     let assignment = { ...this.assignments()[userId][index] }
-    if (Object.keys(assignment).length > 0) {
-      alert('full')
+    if (Object.keys(assignment).length > 0 || this.isPassedTime(date)) {
+      return;
     }
-    console.log(assignment);
-
+    let proposal = { name: 'W', x: userId, y: index, date: date, user: user, from: '11:00', to: this.isFridayOrSaturday(date) ? '23:00' : '22:00', delete: false };
+    this.masterAdd.set(true);
+    this.proposalsService.setSelectedProposal(proposal);
+    this.proposalsService.setTime(proposal);
+    this.updateVisible.set(true);
   }
 }

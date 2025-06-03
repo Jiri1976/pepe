@@ -23,7 +23,7 @@ import { PageAnimation } from '../../animations/page.animation';
     ConfirmComponent,
     EmptyBlockComponent,
     UsersNavComponent
-],
+  ],
   templateUrl: './users.component.html',
   styleUrl: './users.component.scss',
   animations: [

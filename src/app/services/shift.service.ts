@@ -31,10 +31,6 @@ export class ShiftService {
         this.monthYear.set(monthYear);
     }
 
-    resetSelectedShift() {
-        this.selectedShift.set(this.initialShift);
-    }
-
     setSelectedShift(shift: Shift) {
         let date = new Date(parseInt(shift.date.split('.')[2]), parseInt(shift.date.split('.')[1]) - 1, parseInt(shift.date.split('.')[0]));
         let from = new Date(parseInt(shift.date.split('.')[2]), parseInt(shift.date.split('.')[1]) - 1, parseInt(shift.date.split('.')[0]), parseInt(shift.from?.split(':')[0]!), parseInt(shift.from?.split(':')[1]!));
@@ -44,17 +40,6 @@ export class ShiftService {
             date: date,
             from: from,
             to: to,
-            perso: shift.perso ? shift.perso : ''
-        }
-        this.selectedShift.set(initShift);
-    }
-
-    selectShift(shift: Shift) {
-        let initShift: InitShift = {
-            id: shift.id,
-            date: new Date(),
-            from: new Date(),
-            to: new Date(),
             perso: shift.perso ? shift.perso : ''
         }
         this.selectedShift.set(initShift);

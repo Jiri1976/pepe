@@ -134,7 +134,6 @@ export class ShiftFormComponent implements OnInit {
     this.dateError = false;
     this.fromError = false;
     this.toError = false;
-    this.shiftService.resetSelectedShift();
     this.closeShiftForm.emit(true);
   }
 
