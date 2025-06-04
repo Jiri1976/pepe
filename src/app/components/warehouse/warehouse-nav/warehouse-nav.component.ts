@@ -87,4 +87,9 @@ export class WarehouseNavComponent {
   onAddItem() {
     this.warehouseService.callOnAddItem();
   }
+
+  onOpenMasterAdd() {
+    this.warehouseComp.masterAddVisible.set(true);
+
+  }
 }

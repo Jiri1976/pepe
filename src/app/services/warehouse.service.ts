@@ -77,6 +77,11 @@ export class WarehouseService {
         return this.http.post<Response>(url, card);
     }
 
+    updateWarehouseCards(cards: WarehouseCard[]) {
+        const url = this.BASE_ROUTE + `Warehouse/UpdateWarehouseCards`;
+        return this.http.post<Response>(url, cards);
+    }
+
     updateWidgetPosition(sourceWidgetId: number, targetWidgetId: number) {
         const sourceIndex = this.items().findIndex((w) => w.position === sourceWidgetId);
         if (sourceIndex === -1) {

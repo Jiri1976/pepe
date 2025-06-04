@@ -19,6 +19,7 @@ import { WarehouseCard } from '../../models/warehouse/warehouse-card.interface';
 import { WarehouseNavComponent } from "../../components/warehouse/warehouse-nav/warehouse-nav.component";
 import { ConfirmService } from '../../services/confirm.service';
 import { PageAnimation } from '../../animations/page.animation';
+import { MasterAddComponent } from '../../components/warehouse/master-add/master-add.component';
 
 @Component({
   selector: 'app-warehouse',
@@ -31,8 +32,9 @@ import { PageAnimation } from '../../animations/page.animation';
     ConfirmComponent,
     WarehouseItemsComponent,
     WarehouseUnitsComponent,
-    WarehouseNavComponent
-],
+    WarehouseNavComponent,
+    MasterAddComponent
+  ],
   templateUrl: './warehouse.component.html',
   styleUrl: './warehouse.component.scss',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -60,6 +62,7 @@ export class WarehouseComponent {
   destination = signal<string>('F-M');
   cards = signal<WarehouseCard[]>([]);
   pdfLoading = signal(false);
+  masterAddVisible = signal(false);
 
   @ViewChild(WarehouseUnitsComponent) warehouseUnits: any;
   @ViewChild(WarehouseItemsComponent) warehouseItems: any;
@@ -136,7 +139,7 @@ export class WarehouseComponent {
             var url = window.URL.createObjectURL(blob);
             const a = document.createElement('a')
             a.href = url;
-            a.download = `Sklad - ${this.cards()[0].monthYearName}.pdf`;
+            a.download = `Sklad - ${this.cards()[0].monthYearName} - ${this.cards()[0].destination}.pdf`;
             a.click();
             URL.revokeObjectURL(url);
           }

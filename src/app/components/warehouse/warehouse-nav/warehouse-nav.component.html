@@ -3,12 +3,6 @@
         <img src="spinner.png" alt="navigace" width="70" height="70" />
     </button>
 
-    <!-- <div class="proposal-calendar" hide>
-        <p-datepicker #calendar name="deadline" [(ngModel)]="defaultDate" view="month" dateFormat="mm-yy"
-            [readonlyInput]="true" [maxDate]="maxDate" (onSelect)="onSelectMonth()" />
-    </div> -->
-
-
     <ul>
         <li style="--i: 1; --x: -33; --y: -80;" (click)="warehouseComp.onShowUnits()" hide>
             <a [style.--background]="unitsActive() ? '#24355A' : '#1e81b0'" [style.--color]="'#fff'">
@@ -102,7 +96,8 @@
             </a>
         </li>
 
-        <li style="--i: 2; --x: 33; --y: -80;" hideAdmin>
+        <li style="--i: 2; --x: 33; --y: -80;" hideAdmin (click)="onOpenMasterAdd()"
+            [class.disabled]="this.warehouseComp.cards().length === 0">
             <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
                 <i class="bi bi-plus"></i>
             </a>

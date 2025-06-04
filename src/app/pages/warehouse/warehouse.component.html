@@ -10,5 +10,8 @@
     @if (unitsActive()) {
     <app-warehouse-units [(cards)]="cards" />
     }
+    @if (masterAddVisible()) {
+    <app-master-add [(masterAddVisible)]="masterAddVisible" [cards]="cards()" />
+    }
 </div>
 <app-confirm />
