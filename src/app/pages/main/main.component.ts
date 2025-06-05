@@ -1,12 +1,12 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink, RouterOutlet } from '@angular/router';
 import { HideElementDirective } from '../../directives/hide-element.directive';
 import { ProposalsService } from '../../services/proposals.service';
 import { UsersService } from '../../services/users.service';
 
 @Component({
   selector: 'app-main',
-  imports: [RouterLink, HideElementDirective],
+  imports: [RouterLink, HideElementDirective, RouterOutlet],
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss'
 })

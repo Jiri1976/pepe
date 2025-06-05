@@ -100,7 +100,7 @@ export class ShiftService {
         });
     }
 
-    generateAllToPDF(cards: ShiftCard[]) {
+    generateAllToPDF(cards: ShiftCard[], destination: string) {
         const role = this.authService.getUser().role;
         const url = this.BASE_ROUTE + 'shifts/generateAllToPDF';
 
@@ -108,6 +108,7 @@ export class ShiftService {
             headers: new HttpHeaders()
                 .set('Content-Type', 'application/json')
                 .set('user-role', role)
+                .set('destination', destination)
         });
     }
 }

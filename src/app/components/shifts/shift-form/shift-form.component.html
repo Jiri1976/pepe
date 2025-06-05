@@ -97,7 +97,7 @@
             [style]="`--visibility: ${calendarFocus() ? 'hidden' : 'visible'}`">
             @if(!loading()) {
             <button type="submit" id="addBtn" class="btn" (click)="onSubmitShiftForm()"
-                [disabled]="persoError || fromError || toError || dateError || compareTimes() || shiftForm.untouched">{{selectedShift().id
+                [disabled]="persoError || fromError || toError || dateError">{{selectedShift().id
                 === 0 ? 'Zapsat' : 'Upravit'}}</button>
             } @else {
             <button class="btn" id="addBtn" type="button" disabled>

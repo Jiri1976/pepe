@@ -25,7 +25,7 @@ import { PageAnimation } from '../../animations/page.animation';
     SelectUserComponent,
     ShiftCardComponent,
     ShiftsNavComponent
-],
+  ],
   templateUrl: './shifts.component.html',
   styleUrl: './shifts.component.scss',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -131,7 +131,7 @@ export class ShiftsComponent implements OnInit {
       return;
     }
     this.pdfOn.set(true);
-    const subscription = this.shiftService.generateAllToPDF(_cards).pipe(
+    const subscription = this.shiftService.generateAllToPDF(_cards, this.destination()).pipe(
       tap(response => {
         if (response === null) {
           this.pdfOn.set(false);
@@ -150,7 +150,7 @@ export class ShiftsComponent implements OnInit {
           var url = window.URL.createObjectURL(blob);
           const a = document.createElement('a')
           a.href = url;
-          a.download = `${this.MONTHS[parseInt(this.monthYear().substring(0, 2)) - 1]} ${this.monthYear().substring(2, 6)}.pdf`;
+          a.download = `${this.MONTHS[parseInt(this.monthYear().substring(0, 2)) - 1]} ${this.monthYear().substring(2, 6)} - ${this.destination()}.pdf`;
           a.click();
           URL.revokeObjectURL(url);
         }

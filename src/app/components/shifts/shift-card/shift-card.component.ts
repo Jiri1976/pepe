@@ -11,6 +11,7 @@ import { ShiftService } from '../../../services/shift.service';
 import { ShiftCard } from '../../../models/shifts/shiftCard.interface';
 import { ShiftFormComponent } from "../shift-form/shift-form.component";
 import { trigger, transition, animate, style } from '@angular/animations';
+import { ShiftsComponent } from '../../../pages/shifts/shifts.component';
 
 @Component({
   selector: 'app-shift-card',
@@ -38,6 +39,7 @@ export class ShiftCardComponent {
   private errorHandlingService = inject(ErrorHandlingService);
   private alertService = inject(AlertService);
   private destroyRef = inject(DestroyRef);
+  private shiftComponent = inject(ShiftsComponent);
   visibleModal = model<boolean>(false);
   loggedUser = this.authService.getUser();
   cardLoading = signal(false);
@@ -110,10 +112,11 @@ export class ShiftCardComponent {
                 this.cardLoading.set(false);
                 this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
               } else if (response.isSuccess) {
-                let _card: ShiftCard = response.result;
-                this.shiftCard.set(_card);
-                this.updatedCard.emit(_card);
+                // let _card: ShiftCard = response.result;
+                // this.shiftCard.set(_card);
+                // this.updatedCard.emit(_card);
                 this.cardLoading.set(false);
+                this.shiftComponent.onReset();
                 this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Karta byla smazána!' });
               }
             }),
@@ -147,14 +150,15 @@ export class ShiftCardComponent {
           this.shiftFormComponent.shiftForm.enable();
           this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
         } else if (response.isSuccess) {
-          let _card: ShiftCard = response.result;
-          _card!.shifts.sort((a, b) => {
-            return a.date.localeCompare(b.date);
-          });
-          this.shiftCard.set(_card);
-          this.updatedCard.emit(_card);
+          // let _card: ShiftCard = response.result;
+          // _card!.shifts.sort((a, b) => {
+          //   return a.date.localeCompare(b.date);
+          // });
+          // this.shiftCard.set(_card);
+          // this.updatedCard.emit(_card);
           this.shiftFormComponent.loading.set(false);
           this.shiftService.shiftFormVisible.set(false);
+          this.shiftComponent.onReset();
           this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Směna byla smazána!' });
         }
       }),
@@ -188,14 +192,9 @@ export class ShiftCardComponent {
           this.shiftFormComponent.shiftForm.enable();
           this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
         } else if (response.isSuccess) {
-          let _card: ShiftCard = response.result;
-          _card!.shifts.sort((a, b) => {
-            return a.date.localeCompare(b.date);
-          });
-          this.shiftCard.set(_card);
-          this.updatedCard.emit(_card);
           this.shiftFormComponent.loading.set(false);
           this.shiftService.shiftFormVisible.set(false);
+          this.shiftComponent.onReset();
           this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Směna byla uložena!' });
         }
       }),
