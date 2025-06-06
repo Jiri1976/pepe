@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, DestroyRef, inject, model, output, signal, ViewChild } from '@angular/core';
-import { of, tap } from 'rxjs';
+import { tap } from 'rxjs';
 import { InitShift } from '../../../models/shifts/initShift.interface';
 import { Shift } from '../../../models/shifts/shift.interface';
 import { AlertService } from '../../../services/alert.service';
@@ -112,9 +112,6 @@ export class ShiftCardComponent {
                 this.cardLoading.set(false);
                 this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
               } else if (response.isSuccess) {
-                // let _card: ShiftCard = response.result;
-                // this.shiftCard.set(_card);
-                // this.updatedCard.emit(_card);
                 this.cardLoading.set(false);
                 this.shiftComponent.onReset();
                 this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Karta byla smazána!' });
@@ -122,9 +119,7 @@ export class ShiftCardComponent {
             }),
 
           ).subscribe({
-            next: () => {
-
-            },
+            next: () => { },
             error: error => this.handleError(error)
           });
 
@@ -150,12 +145,6 @@ export class ShiftCardComponent {
           this.shiftFormComponent.shiftForm.enable();
           this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
         } else if (response.isSuccess) {
-          // let _card: ShiftCard = response.result;
-          // _card!.shifts.sort((a, b) => {
-          //   return a.date.localeCompare(b.date);
-          // });
-          // this.shiftCard.set(_card);
-          // this.updatedCard.emit(_card);
           this.shiftFormComponent.loading.set(false);
           this.shiftService.shiftFormVisible.set(false);
           this.shiftComponent.onReset();
@@ -164,9 +153,7 @@ export class ShiftCardComponent {
       }),
 
     ).subscribe({
-      next: () => {
-
-      },
+      next: () => { },
       error: error => this.handleError(error)
     });
 
@@ -212,7 +199,7 @@ export class ShiftCardComponent {
 
   onToPdf() {
     this.pdfLoading.set(true);
-    const subscription = this.shiftService.generatePDF(this.shiftCard()!).pipe(
+    const subscription = this.shiftService.generatePDF(this.shiftCard()!, this.shiftComponent.destination()).pipe(
       tap(response => {
         if (response === null) {
           this.pdfLoading.set(false);
@@ -231,7 +218,7 @@ export class ShiftCardComponent {
           var url = window.URL.createObjectURL(blob);
           const a = document.createElement('a')
           a.href = url;
-          a.download = `${this.shiftCard()?.user} - ${this.convertMonthYear(this.shiftCard()!.monthYear)}.pdf`;
+          a.download = `${this.shiftCard()?.user} - ${this.convertMonthYear(this.shiftCard()!.monthYear)} - ${this.shiftComponent.destination()}.pdf`;
           a.click();
           URL.revokeObjectURL(url);
         }
@@ -310,7 +297,6 @@ export class ShiftCardComponent {
     }
     return false;
   }
-
 
   private handleError = (errorRes: HttpErrorResponse) => {
     this.cardLoading?.set(false);

@@ -89,7 +89,7 @@ export class ShiftService {
         return this.http.post<Response>(url, model);
     }
 
-    generatePDF(card: ShiftCard) {
+    generatePDF(card: ShiftCard, destination: string) {
         const role = this.authService.getUser().role;
         const url = this.BASE_ROUTE + 'shifts/GeneratePDFCard';
 
@@ -97,6 +97,7 @@ export class ShiftService {
             headers: new HttpHeaders()
                 .set('Content-Type', 'application/json')
                 .set('user-role', role)
+                .set('destination', destination)
         });
     }
 
