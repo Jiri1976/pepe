@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, ElementRef, inject, OnInit, output, signal, ViewChild } from '@angular/core';
+import { Component, computed, effect, ElementRef, inject, input, OnInit, output, signal, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Calendar, CalendarModule } from 'primeng/calendar';
 import { ButtonModule } from 'primeng/button';
@@ -10,7 +10,6 @@ import { ShiftService } from '../../../services/shift.service';
 import { ConfirmService } from '../../../services/confirm.service';
 import { Shift } from '../../../models/shifts/shift.interface';
 import { DatePickerModule } from 'primeng/datepicker';
-import { NotificationComponent } from "../../notification/notification.component";
 import { OverlayModule } from 'primeng/overlay';
 
 @Component({
@@ -25,7 +24,6 @@ import { OverlayModule } from 'primeng/overlay';
     TextareaModule,
     FloatLabelModule,
     DatePickerModule,
-    NotificationComponent,
     OverlayModule
   ],
   templateUrl: './shift-form.component.html',
@@ -52,6 +50,7 @@ export class ShiftFormComponent implements OnInit {
   maxDate = new Date();
   loading = signal(false);
   loadingText = signal('');
+  userName = input.required<string | undefined>();
 
   @ViewChild('calendar', { static: false }) calendar!: Calendar;
   @ViewChild('timeFrom', { static: false }) timeFrom!: Calendar;

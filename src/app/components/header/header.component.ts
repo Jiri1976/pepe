@@ -3,10 +3,11 @@ import { ButtonModule } from 'primeng/button';
 import { AuthService } from '../../services/auth.service';
 import { RouterLink } from '@angular/router';
 import { PageAnimation } from '../../animations/page.animation';
+import { HideElementDirective } from '../../directives/hide-element.directive';
 
 @Component({
   selector: 'app-header',
-  imports: [ButtonModule, RouterLink],
+  imports: [ButtonModule, RouterLink, HideElementDirective],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
   animations: [

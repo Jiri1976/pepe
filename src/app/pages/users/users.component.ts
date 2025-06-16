@@ -9,7 +9,6 @@ import { tap } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ErrorHandlingService } from '../../services/error-handling.service';
 import { AlertService } from '../../services/alert.service';
-
 import { EmptyBlockComponent } from "../../components/users/empty-block/empty-block.component";
 import { UsersNavComponent } from '../../components/users/users-nav/users-nav.component';
 import { PageAnimation } from '../../animations/page.animation';
@@ -22,7 +21,7 @@ import { PageAnimation } from '../../animations/page.animation';
     UserPaginationComponent,
     ConfirmComponent,
     EmptyBlockComponent,
-    UsersNavComponent
+    UsersNavComponent,
   ],
   templateUrl: './users.component.html',
   styleUrl: './users.component.scss',

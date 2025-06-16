@@ -2,19 +2,22 @@
     <app-shifts-nav @fadeIn @fadeOut [(calendarText)]="calendarText" [(destination)]="destination" [(pdfOn)]="pdfOn" />
 </div>
 
+<div class="shifts-calendar">
+    <p-datepicker #calendar name="deadline" [(ngModel)]="defaultDate" view="month" dateFormat="mm-yy"
+        [readonlyInput]="true" [maxDate]="maxDate" (onSelect)="onSelectMonth()" />
+</div>
+
 <div class="box">
     @if(!isLoading()) {
     @if (cards().length > 0) {
     <div class="shift-card" @fadeIn>
-
         <swiper-container #swiperRef effect="cards" grab-cursor="true" (swiperinit)="onSwiperInit($event)">
             @for(card of cards(); track $index) {
             <swiper-slide>
-                <app-shift-card [shiftCard]="card" (updatedCard)="onCardUpdate($event)" />
+                <app-shift-card [shiftCard]="card" (updatedCard)="onCardUpdate($event)" [currentIndex]="$index" />
             </swiper-slide>
             }
         </swiper-container>
-
     </div>
     } @else {
     <h4>Chybí evidovaní pracovníci na pobočce - {{destination()}}</h4>

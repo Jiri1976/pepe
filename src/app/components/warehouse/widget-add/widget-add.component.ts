@@ -22,9 +22,9 @@ export class WidgetAddComponent {
   private destroyRef = inject(DestroyRef);
   private warehouseItemsComp = inject(WarehouseItemsComponent);
   itemForm!: FormGroup;
-  position = input.required<number>();
   items = computed(() => this.warehouseService.items());
   isLoading = signal<boolean>(false);
+  item = input.required<WarehouseItem>();
 
   ngOnInit() {
     this.initializedItemForm();
@@ -35,7 +35,6 @@ export class WidgetAddComponent {
       id: 0,
       name: this.itemForm.get('name')?.value,
       shortName: 'XXL',
-      // position: this.position()
       position: 1
     }
     this.isLoading.set(true);
@@ -67,6 +66,10 @@ export class WidgetAddComponent {
     this.destroyRef.onDestroy(() => {
       subscription.unsubscribe();
     });
+  }
+
+  onDelete() {
+    this.warehouseItemsComp.onDelete(this.item());
   }
 
   private initializedItemForm() {

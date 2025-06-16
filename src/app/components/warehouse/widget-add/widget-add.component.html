@@ -1,6 +1,6 @@
 <div class="container">
     @if (!isLoading()) {
-
+    <button class="delete-button" (click)="onDelete()"><i class="bi bi-trash"></i></button>
     @if ((itemForm.invalid && itemForm.touched) || (itemForm.dirty && itemForm.invalid)) {
     <div class="notify">
         <app-notification [notify]="(itemForm.invalid && itemForm.touched) || (itemForm.dirty && itemForm.invalid)"

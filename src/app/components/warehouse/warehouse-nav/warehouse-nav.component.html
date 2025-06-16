@@ -1,45 +1,44 @@
-<div class="menu" [class]="{'open': isOpened()}">
-    <button class="action_btn" (click)="onOpen()" [class.disabled]="this.warehouseComp.cards().length === 0">
-        <img src="spinner.png" alt="navigace" width="70" height="70" />
-    </button>
-
+@if (unitsActive()) {
+<div class="menu" [style.--height]="loggedUser.role === 'Master' ? '105px' : '410px'" @fadeIn @fadeOut>
     <ul>
-        <li style="--i: 1; --x: -33; --y: -80;" (click)="warehouseComp.onShowUnits()" hide>
+        <li style="--x: 0; --y: -175;" (click)="warehouseComp.onShowUnits()" hide>
             <a [style.--background]="unitsActive() ? '#24355A' : '#1e81b0'" [style.--color]="'#fff'">
                 <i class="bi bi-house"></i>
             </a>
         </li>
 
-        @if (unitsActive()) {
-        <li style="--i: 2; --x: 33; --y: -80;" [style.--background]="'#24355A'" (click)="toggleCalendar()" class="cal"
-            @fadeIn @fadeOut hide [class.disabled]="this.warehouseComp.cards().length === 0">
+        <li style="--x: 0; --y: -125;" (click)="warehouseComp.toggleCalendar()" class="cal" @fadeIn @fadeOut hide
+            [class.disabled]="this.warehouseComp.cards().length === 0">
             <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
                 <i class="bi bi-calendar"></i>
                 <p>{{ calendarText() }}</p>
             </a>
         </li>
 
-        <li style="--i: 3; --x: 80; --y: -30;" (click)="warehouseComp.onSelectDestination('F-M')" @fadeIn @fadeOut hide
+        <li style="--x: 0; --y: -75;" (click)="warehouseComp.onSelectDestination('F-M')" @fadeIn @fadeOut hide
             [class.disabled]="this.warehouseComp.cards().length === 0">
             <a [style.--background]="destination() === 'F-M' ? '#24355A' : '#1e81b0'" [style.--color]="'#fff'"
                 [style.--color]="'#fff'">
                 <p>F-M</p>
             </a>
         </li>
-        <li style="--i: 4; --x: 80; --y: 35;" (click)="warehouseComp.onSelectDestination('OVA')" @fadeIn @fadeOut hide
+
+        <li style="--x: 0; --y: -25;" (click)="warehouseComp.onSelectDestination('OVA')" @fadeIn @fadeOut hide
             [class.disabled]="this.warehouseComp.cards().length === 0">
             <a [style.--background]="destination() === 'OVA' ? '#24355A' : '#1e81b0'" [style.--color]="'#fff'"
                 [style.--color]="'#fff'">
                 <p>OVA</p>
             </a>
         </li>
-        <li style="--i: 5; --x: 33; --y: 80;" (click)="onShowList()" @fadeIn @fadeOut hide
+
+        <li style="--x: 0; --y: 25;" (click)="onShowList()" @fadeIn @fadeOut hide
             [class.disabled]="this.warehouseComp.cards().length === 0">
             <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
                 <i class="bi bi-list-check"></i>
             </a>
         </li>
-        <li style="--i: 6; --x: -33; --y: 80;" (click)="warehouseComp.onOpenPDF()" @fadeIn @fadeOut hide
+
+        <li style="--x: 0; --y: 75;" (click)="warehouseComp.onOpenPDF()" @fadeIn @fadeOut hide
             [class.disabled]="this.warehouseComp.cards().length === 0">
             <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
                 @if (!pdfLoading()) {
@@ -52,51 +51,27 @@
             </a>
         </li>
 
-        <li style="--i: 7; --x: -80; --y: 35;" @fadeIn @fadeOut (click)="onDeleteCards()" hide
+        <li style="--x: 0; --y: 125;" @fadeIn @fadeOut (click)="onDeleteCards()" hide
             [class.disabled]="this.warehouseComp.cards().length === 0">
             <a [style.--background]="'#F53B57'" [style.--color]="'#fff'">
                 <i class="bi bi-trash"></i>
             </a>
         </li>
-        }
 
-        <li style="--8: 3;--x: -80; --y: -30;" (click)="warehouseComp.onShowItems()" hide>
+        <li style="--x: 0; --y: 175;" (click)="warehouseComp.onShowItems()" hide>
             <a [style.--background]="warehouseItemsVisible() ? '#24355A' : '#1e81b0'" [style.--color]="'#fff'">
                 <i class="bi bi-list-ul"></i>
             </a>
         </li>
 
-        @if (warehouseItemsVisible()) {
-        <li style="--i: 2; --x: 33; --y: -80;" [style.--background]="'#24355A'"
-            (click)="reorderedItems().length > 0 && warehouseComp.onSave()" class="cal" @fadeIn @fadeOut
-            [class.disabled]="reorderedItems().length === 0">
-            <a [style.--background]="reorderedItems().length > 0 ? '#05C46B' : '#78c09e'" [style.--color]="'#fff'">
-                <i class="bi bi-floppy"></i>
-            </a>
-        </li>
-
-        <li style="--i: 3; --x: 80; --y: -30;" (click)="warehouseComp.onReloadItems()" @fadeIn @fadeOut
-            [class.disabled]="items().length === 0">
-            <a [style.--background]="'#24355A'" [style.--color]="'#fff'" [style.--color]="'#fff'">
-                <i class="bi bi-arrow-clockwise"></i>
-            </a>
-        </li>
-
-        <li style="--i: 4; --x: 80; --y: 35;" @fadeIn @fadeOut (click)="onAddItem()">
-            <a [style.--background]="'#24355A'" [style.--color]="'#fff'" [style.--color]="'#fff'">
-                <i class="bi bi-plus"></i>
-            </a>
-        </li>
-        }
-
-        <li style="--i: 1; --x: -33; --y: -80;" (click)="onShowList()" hideAdmin
+        <li style="--x: 0; --y: -25;" (click)="onShowList()" hideAdmin
             [class.disabled]="this.warehouseComp.cards().length === 0">
             <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
                 <i class="bi bi-list-ul"></i>
             </a>
         </li>
 
-        <li style="--i: 2; --x: 33; --y: -80;" hideAdmin (click)="onOpenMasterAdd()"
+        <li style="--x: 0; --y: 25;" hideAdmin (click)="onOpenMasterAdd()"
             [class.disabled]="this.warehouseComp.cards().length === 0">
             <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
                 <i class="bi bi-plus"></i>
@@ -104,3 +79,35 @@
         </li>
     </ul>
 </div>
+}
+
+@if (warehouseItemsVisible()) {
+<div class="menu" [style.--height]="'210px'" @fadeIn @fadeOut>
+    <ul>
+        <li style="--x: 0; --y: -75;" (click)="warehouseComp.onShowUnits()" hide>
+            <a [style.--background]="unitsActive() ? '#24355A' : '#1e81b0'" [style.--color]="'#fff'">
+                <i class="bi bi-house"></i>
+            </a>
+        </li>
+
+        <li style="--x: 0; --y: -25;" (click)="warehouseComp.onReloadItems()" @fadeIn @fadeOut
+            [class.disabled]="items().length === 0">
+            <a [style.--background]="'#24355A'" [style.--color]="'#fff'" [style.--color]="'#fff'">
+                <i class="bi bi-arrow-clockwise"></i>
+            </a>
+        </li>
+
+        <li style="--x: 0; --y: 25;" @fadeIn @fadeOut (click)="onAddItem()">
+            <a [style.--background]="'#24355A'" [style.--color]="'#fff'" [style.--color]="'#fff'">
+                <i class="bi bi-plus"></i>
+            </a>
+        </li>
+
+        <li style="--x: 0; --y: 75;" (click)="warehouseComp.onShowItems()" hide>
+            <a [style.--background]="warehouseItemsVisible() ? '#24355A' : '#1e81b0'" [style.--color]="'#fff'">
+                <i class="bi bi-list-ul"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+}

@@ -22,7 +22,7 @@ p-dialog {
         display: flex;
         flex-direction: column;
         width: 100%;
-        height: 40px;
+        height: 30px;
         justify-content: center;
         align-items: center;
         border-radius: 5px;
@@ -35,6 +35,8 @@ p-dialog {
             font-weight: bold;
             margin-bottom: 0 !important;
             transition: 0.3s;
+            font-family: "Poppins", sans-serif;
+            font-size: 14px;
         }
     }
 
@@ -57,9 +59,11 @@ p-dialog {
             border-radius: 5px;
             border: 1px solid #24355A;
             font-weight: bold;
-            height: 40px;
+            height: 30px;
             width: 120px;
             transform: 0.3s;
+            font-family: "Poppins", sans-serif;
+            font-size: 14px;
         }
 
         .closeBtn:active {

@@ -5,6 +5,7 @@ import { WarehouseItem } from '../../../models/warehouse/warehouse-item.interfac
 import { WarehouseService } from '../../../services/warehouse.service';
 import { WidgetAddComponent } from "../widget-add/widget-add.component";
 import { trigger, transition, animate, style } from '@angular/animations';
+import { WarehouseItemsComponent } from '../warehouse-items/warehouse-items.component';
 
 @Component({
   selector: 'app-widget',
@@ -27,6 +28,7 @@ import { trigger, transition, animate, style } from '@angular/animations';
 })
 export class WidgetComponent {
   private warehouseService = inject(WarehouseService);
+  private warehouseItems = inject(WarehouseItemsComponent);
   updateVisible = signal(false);
   item = input.required<WarehouseItem>();
   index = input.required<number>();
@@ -45,5 +47,9 @@ export class WidgetComponent {
 
   onDragEnded(event: any) {
     this.isDragged.set(false);
+  }
+
+  onDelete() {
+    this.warehouseItems.onDelete(this.item());
   }
 }

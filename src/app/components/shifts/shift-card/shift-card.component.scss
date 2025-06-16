@@ -45,10 +45,9 @@
             thead {
                 tr {
                     th {
-                        height: 20px !important;
-                        font-size: 0.8rem;
+                        height: 25px !important;
+                        font-size: 0.9rem;
                         padding: 0 !important;
-                        vertical-align: middle !important;
                     }
                 }
             }
@@ -65,7 +64,7 @@
                 }
 
                 tr {
-
+                    margin: 10px 0 !important;
 
                     td {
                         transition: 0.2s ease-in-out;
@@ -86,20 +85,6 @@
                                 font-size: 0.5rem;
                             }
                         }
-
-                        button.edit {
-                            background: #05C46B;
-                            color: #fff;
-                        }
-                    }
-
-                    td.edit:hover {
-                        cursor: pointer;
-
-                        .bi {
-                            font-size: 10px;
-                            color: #F53B57 !important;
-                        }
                     }
 
                     td.perso {
@@ -109,13 +94,14 @@
                         max-width: 245px;
                     }
                 }
+
+                tr:hover>td {
+                    background: #e2e2e2 !important;
+                }
             }
 
-            tbody:before {
-                content: "@";
-                display: block;
-                line-height: 10px;
-                text-indent: -99999px;
+            tbody:hover {
+                cursor: grab;
             }
         }
 
@@ -131,39 +117,15 @@
             flex-direction: row;
             justify-content: space-between;
 
-            .addBtn {
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                border-radius: 5px;
-                height: 30px;
-                width: 30px;
-                background: #05C46B;
-                color: #fff;
-                border: none;
-                position: absolute;
-                bottom: 10px;
-                right: 20px;
-                transition: ease 0.3s all;
-
-                i {
-                    font-size: 1.5rem;
-                }
-            }
-
-            .addBtn:hover {
-                box-shadow: 0 0 10px 3px #05C46B;
-            }
-
             .deleteCardBtn {
                 display: flex;
-                flex-direction: column;
+                flex-direction: row;
                 justify-content: center;
                 align-items: center;
                 border-radius: 5px;
                 height: 30px;
-                width: 30px;
+                width: 120px;
+                font-size: 13px;
                 background: #F53B57;
                 color: #fff;
                 border: none;
@@ -173,8 +135,13 @@
                 left: 20px;
 
                 i {
-                    font-size: 1.5rem;
+                    font-size: 1.3rem;
                     font-weight: bold;
+                }
+
+                .spinner-border {
+                    width: 15px;
+                    height: 15px;
                 }
             }
 
@@ -184,19 +151,20 @@
 
             .pdfBtn {
                 display: flex;
-                flex-direction: column;
+                flex-direction: row;
                 justify-content: center;
                 align-items: center;
                 border-radius: 5px;
                 height: 30px;
-                width: 30px;
+                width: 120px;
                 background: #1e81b0;
                 color: #fff;
                 border: none;
                 transition: ease 0.3s all;
                 position: absolute;
                 bottom: 10px;
-                right: 60px;
+                right: 20px;
+                font-size: 13px;
 
                 i {
                     font-size: 1.1rem;

@@ -1,6 +1,6 @@
 import { Component, computed, DestroyRef, ElementRef, inject, model, OnInit, signal, viewChild } from '@angular/core';
 import { WidgetComponent } from "../widget/widget.component";
-import { CdkDragDrop, CdkDragPlaceholder, CdkDropList, CdkDropListGroup } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, CdkDropList, CdkDropListGroup } from '@angular/cdk/drag-drop';
 import { wrapGrid } from 'animate-css-grid';
 import { HttpErrorResponse } from '@angular/common/http';
 import { tap } from 'rxjs';
@@ -10,10 +10,11 @@ import { AlertService } from '../../../services/alert.service';
 import { ConfirmService } from '../../../services/confirm.service';
 import { WarehouseItem } from '../../../models/warehouse/warehouse-item.interface';
 import { trigger, transition, animate, style } from '@angular/animations';
+import { WarehouseComponent } from '../../../pages/warehouse/warehouse.component';
 
 @Component({
   selector: 'app-warehouse-items',
-  imports: [WidgetComponent, CdkDropList, CdkDropListGroup, CdkDragPlaceholder],
+  imports: [WidgetComponent, CdkDropList, CdkDropListGroup],
   templateUrl: './warehouse-items.component.html',
   styleUrl: './warehouse-items.component.scss',
   animations: [
@@ -31,6 +32,7 @@ import { trigger, transition, animate, style } from '@angular/animations';
   ]
 })
 export class WarehouseItemsComponent implements OnInit {
+  private warehouseComponent = inject(WarehouseComponent);
   private errorHandlingService = inject(ErrorHandlingService);
   private destroyRef = inject(DestroyRef);
   private warehouseService = inject(WarehouseService);
@@ -64,6 +66,25 @@ export class WarehouseItemsComponent implements OnInit {
     this.warehouseService.setItems(_items);
   }
 
+  // drop(event: CdkDragDrop<number, any>) {
+  //   let _items = [...this.items()];
+  //   const isUnsaved = _items.filter(i => i.id === 0);
+  //   if (isUnsaved.length > 0) {
+  //     this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Nejdříve ulož položku!' });
+  //     return;
+  //   }
+  //   const { previousContainer, container, item: { data } } = event;
+
+  //   if (previousContainer.data !== container.data) {
+  //     this.warehouseService.updateWidgetPosition(previousContainer.data, container.data);
+  //     let _reorderedItems = [...this.items()];
+  //     for (let i = 0; i < _items.length; i++) {
+  //       _reorderedItems[i].position = i + 1;
+  //     }
+  //     this.reorderedItems.set(_reorderedItems);
+  //   }
+  // }
+
   drop(event: CdkDragDrop<number, any>) {
     let _items = [...this.items()];
     const isUnsaved = _items.filter(i => i.id === 0);
@@ -80,27 +101,26 @@ export class WarehouseItemsComponent implements OnInit {
         _reorderedItems[i].position = i + 1;
       }
       this.reorderedItems.set(_reorderedItems);
+      this.warehouseComponent.onSave();
     }
-
   }
 
-  onDeleteDrop() {
+  onDelete(item: WarehouseItem) {
     this.isDroppedToDelete.set(true);
     let _items = [...this.items()];
-    let removed_items = _items.filter(i => i.position !== this.selected().position);
+    let removed_items = _items.filter(i => i.position !== item.position);
     this.warehouseService.setItems(removed_items);
-    const index = _items.indexOf(this.selected());
 
-    if (_items[index].id === 0) {
+    if (item.id === 0) {
       this.isDroppedToDelete.set(false);
       return;
     }
 
-    this.confirmService.confirm(`Opravdu smazat položku ${this.selected().name}?`)
+    this.confirmService.confirm(`Opravdu smazat položku ${item.name}?`)
       .then((confirmed) => {
         if (confirmed) {
           this.isLoading.set(true);
-          const subscription = this.warehouseService.deleteWarehouseItem(this.selected().id).pipe(
+          const subscription = this.warehouseService.deleteWarehouseItem(item.id).pipe(
             tap(response => {
               if (response === null) {
                 this.warehouseService.setItems(_items);

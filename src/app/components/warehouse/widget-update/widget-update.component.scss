@@ -27,7 +27,14 @@
         border-radius: inherit;
         overflow: hidden;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        cursor: move;
+
+        form {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
 
         p {
             margin: 0;
@@ -46,14 +53,16 @@
             align-items: center;
             height: 28px;
             width: 28px;
-            border: 1px solid #cecece;
+            color: #24355A;
+            // border: 1px solid #cecece;
             z-index: 9;
-            transition: .3s;
+            transition: all .3s ease-in-out;
         }
 
         .close-button:hover {
-            background: #cecece;
-
+            background: #24355A;
+            ;
+            color: #fff;
         }
 
         .notify {
@@ -77,10 +86,10 @@
             height: 28px;
             width: 28px;
             color: #24355A;
-            border: 1px solid #24355A;
+            // border: 1px solid #24355A;
             outline: 5px solid #fff;
             z-index: 9;
-            transition: .3s;
+            transition: all .3s ease-in-out;
         }
 
         .save-button:hover {
@@ -90,9 +99,8 @@
 
         input {
             position: relative;
-            left: 7px;
             top: -3px;
-            width: 320px;
+            width: 270px;
             font-size: 0.9rem;
             height: 30px;
             border-bottom: 2px solid #24355A;

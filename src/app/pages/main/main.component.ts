@@ -2,7 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { HideElementDirective } from '../../directives/hide-element.directive';
 import { ProposalsService } from '../../services/proposals.service';
-import { UsersService } from '../../services/users.service';
+// import { UsersService } from '../../services/users.service';
 
 @Component({
   selector: 'app-main',
@@ -12,10 +12,10 @@ import { UsersService } from '../../services/users.service';
 })
 export class MainComponent implements OnInit {
   private proposalsService = inject(ProposalsService);
-  private usersService = inject(UsersService);
+  // private usersService = inject(UsersService);
 
   ngOnInit(): void {
     this.proposalsService.resetCalendars();
-    this.usersService.navigationOpen.set(true);
+    // this.usersService.navigationOpen.set(true);
   }
 }

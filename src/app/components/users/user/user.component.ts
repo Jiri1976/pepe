@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, inject, OnInit, output, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, model, OnInit, output, signal, ViewChild } from '@angular/core';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from '../../../services/alert.service';
@@ -10,12 +10,12 @@ import { concatMap, of } from 'rxjs';
 import { UsersService } from '../../../services/users.service';
 import { CommonModule } from '@angular/common';
 import { CheckBoxesValidator } from '../../../helpers/user-checkboxes.validation';
-import { NotificationComponent } from "../../notification/notification.component";
+import { UserItemComponent } from '../user-item/user-item.component';
 
 @Component({
   selector: 'app-user',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, NotificationComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './user.component.html',
   styleUrl: './user.component.scss'
 })
@@ -36,6 +36,8 @@ export class UserComponent implements OnInit {
   inputsFocused = signal(false);
   activeUser = signal(true);
   actionText = signal('');
+  lineHeight = model<string>('40px');
+  userVisible = model(false);
 
   get name() {
     return this.userForm.get('name');
@@ -74,9 +76,11 @@ export class UserComponent implements OnInit {
   }
 
   onGoBack() {
-    this.usersService.navigationOpen.set(true);
+    //this.initializedUserForm();
     this.back.emit(true);
-    this.initializedUserForm();
+    //this.usersService.callOnClose();
+    // this.userVisible.set(false);
+    // this.lineHeight.set('40px');
   }
 
   onSubmit() {
@@ -245,17 +249,17 @@ export class UserComponent implements OnInit {
     this.nothingChanged = name && surname && email && role && position && destination && isActive;
   }
 
-  notificate() {
-    let nameIsFalse = (this.name?.touched && this.name?.hasError('required') || this.name?.untouched && this.name?.dirty && this.name?.hasError('required') || this.name?.hasError('maxlength'));
-    let surnameIFalse = (this.surname?.touched && this.surname?.hasError('required') || this.surname?.untouched && this.surname?.dirty && this.surname?.hasError('required') || this.surname?.hasError('maxlength'));
-    let emailIsFalse = (this.email?.touched && this.email?.hasError('required') || (this.email?.touched && this.email?.hasError('email')));
-    let passwordIsFalse = (this.password?.touched && this.password?.hasError('required') || this.password?.untouched && this.password?.dirty && this.password?.hasError('required') || this.password?.hasError('maxlength'));
+  // notificate() {
+  //   let nameIsFalse = (this.name?.touched && this.name?.hasError('required') || this.name?.untouched && this.name?.dirty && this.name?.hasError('required') || this.name?.hasError('maxlength'));
+  //   let surnameIFalse = (this.surname?.touched && this.surname?.hasError('required') || this.surname?.untouched && this.surname?.dirty && this.surname?.hasError('required') || this.surname?.hasError('maxlength'));
+  //   let emailIsFalse = (this.email?.touched && this.email?.hasError('required') || (this.email?.touched && this.email?.hasError('email')));
+  //   let passwordIsFalse = (this.password?.touched && this.password?.hasError('required') || this.password?.untouched && this.password?.dirty && this.password?.hasError('required') || this.password?.hasError('maxlength'));
 
-    return nameIsFalse ||
-      surnameIFalse ||
-      emailIsFalse ||
-      passwordIsFalse;
-  }
+  //   return nameIsFalse ||
+  //     surnameIFalse ||
+  //     emailIsFalse ||
+  //     passwordIsFalse;
+  // }
 
   nameCanShake() {
     return this.name?.touched &&
@@ -305,6 +309,11 @@ export class UserComponent implements OnInit {
     this.checkValues();
   }
 
+  isRoleDisabled(): boolean {
+    const role = this.user().role;
+    return role === 'Admin' || role === 'Master';
+  }
+
   private initializedUserForm() {
     this.userForm = new FormGroup({
       'id': new FormControl({
@@ -350,7 +359,7 @@ export class UserComponent implements OnInit {
         disabled: true
       }, []),
       'isActive': new FormControl({
-        value: true,
+        value: this.user().isActive,
         disabled: false
       }, [])
     }, { validators: CheckBoxesValidator.CheckBoxesAreCheckedValidator });
@@ -359,6 +368,7 @@ export class UserComponent implements OnInit {
       this.userForm.get('role')?.disable();
       this.userForm.get('destination')?.disable();
       this.userForm.get('position')?.disable();
+      this.userForm.get('isActive')?.disable();
     }
 
     this.activeUser.set(this.user().isActive);

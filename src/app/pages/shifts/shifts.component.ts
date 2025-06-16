@@ -15,6 +15,10 @@ import { ShiftCardComponent } from '../../components/shifts/shift-card/shift-car
 import Swiper from 'swiper';
 import { ShiftsNavComponent } from "../../components/shifts/shifts-nav/shifts-nav.component";
 import { PageAnimation } from '../../animations/page.animation';
+import { FormsModule } from '@angular/forms';
+import { CalendarModule, Calendar } from 'primeng/calendar';
+import { DatePickerModule } from 'primeng/datepicker';
+import { Shift } from '../../models/shifts/shift.interface';
 
 @Component({
   selector: 'app-plans',
@@ -24,7 +28,10 @@ import { PageAnimation } from '../../animations/page.animation';
     ButtonModule,
     SelectUserComponent,
     ShiftCardComponent,
-    ShiftsNavComponent
+    ShiftsNavComponent,
+    CalendarModule,
+    DatePickerModule,
+    FormsModule
   ],
   templateUrl: './shifts.component.html',
   styleUrl: './shifts.component.scss',
@@ -56,7 +63,9 @@ export class ShiftsComponent implements OnInit {
   formShiftVisible = computed(() => this.shiftService.shiftFormVisible());
   pdfOn = signal(false);
   empty = new Array(45);
-
+  defaultDate = new Date(new Date().getFullYear(), new Date().getMonth());
+  maxDate: Date = new Date(new Date().getFullYear(), new Date().getMonth());
+  @ViewChild('calendar', { static: false }) calendar!: Calendar;
   @ViewChild('swiperRef', { static: false }) swiperRef!: ElementRef;
 
   ngOnInit(): void {
@@ -112,12 +121,30 @@ export class ShiftsComponent implements OnInit {
     this.currentIndex.set(swiperInstance.activeIndex);
   }
 
+  slideToCard(index: number) {
+    this.swiper = this.swiperRef.nativeElement.swiper;
+    this.swiper.slideTo(index);
+  }
+
   onSelectDestination(destination: string) {
     this.destination.set(destination);
     this.getCards();
   }
 
-  onSelectMonth(date: string) {
+  toggleCalendar() {
+    if (this.calendar) {
+      if (this.calendar.overlayVisible) {
+        this.calendar.hideOverlay();
+        this.calendar.cd.detectChanges();
+      } else {
+        this.calendar.showOverlay();
+        this.calendar.cd.detectChanges();
+      }
+    }
+  }
+
+  onSelectMonth() {
+    let date = this.calendar.value;
     let _monthYear = this.MONTHS_NUM[new Date(date).getMonth()] + new Date(date).getFullYear();
     this.monthYear.set(_monthYear);
     this.calendarText.set(this.MONTHS_NAMES[new Date(date).getMonth()] + ' ' + new Date(date).getFullYear().toString().substring(2));
@@ -179,6 +206,55 @@ export class ShiftsComponent implements OnInit {
     }
   }
 
+  onAddShift() {
+    if (this.cards().length === 0) {
+      return;
+    }
+    let card = { ...this.cards()[this.currentIndex()] };
+    this.shiftService.setMonthYear(card.monthYear);
+    let _shift: Shift = {
+      id: 0,
+      shiftCardId: card.id,
+      userId: card.userId,
+      date: '',
+      from: '11:00',
+      to: '22:00',
+      hours: '',
+      perso: ''
+    }
+
+    if (this.isPastCard()) {
+      _shift.date = `01.${card.monthYear.substring(0, 2)}.${card.monthYear.substring(2, 6)}`;
+    } else {
+      let day = new Date().getDate() < 10 ? '0' + new Date().getDate() : (new Date().getDate()).toString();
+      _shift.date = `${day}.${card.monthYear.substring(0, 2)}.${card.monthYear.substring(2, 6)}`;
+      _shift.to = this.isFridayOrSaturday(_shift.date) ? '23:00' : '22:00';
+    }
+    this.shiftService.setSelectedShift(_shift);
+    this.shiftService.shiftFormVisible.set(true);
+  }
+
+  isPastCard() {
+    if (this.isLoading() || this.cards().length === 0) {
+      return true;
+    }
+    let card = { ...this.cards()[this.currentIndex()] };
+    let currentDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    let cardDate = new Date(parseInt(card.monthYear.substring(2, 6)), parseInt(card.monthYear.substring(0, 2)) - 1, 1);
+    if (cardDate < currentDate) {
+      return true;
+    }
+    return false;
+  }
+
+  private isFridayOrSaturday(date: string) {
+    var day = new Date(parseInt(date.split('.')[2]), parseInt(date.split('.')[1]) - 1, parseInt(date.split('.')[0]));
+    if (day.getDay() == 5 || day.getDay() == 6) {
+      return true;
+    }
+    return false;
+  }
+
   private getCards() {
     this.isLoading.set(true);
     const subscription = this.shiftService.getUsersShiftCards(this.monthYear(), this.destination()).pipe(
@@ -196,6 +272,12 @@ export class ShiftsComponent implements OnInit {
             let _users = _cards.map((card: any) => { return { userName: card.user, userId: card.userId } });
             this.users.set(_users);
             this.cards.set(_cards);
+            setTimeout(() => {
+              this.slideToCard(this.currentIndex());
+            }, 100)
+          } else {
+            this.users.set([]);
+            this.cards.set([]);
           }
           this.isLoading.set(false);
         }

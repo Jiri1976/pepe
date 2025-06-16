@@ -3,6 +3,10 @@
         [(calendarText)]="calendarText" [(destination)]="destination" [(pdfLoading)]="pdfLoading"
         [(reorderedItems)]="reorderedItems" @fadeIn />
 </div>
+<div class="warehouse-calendar">
+    <p-datepicker #calendar name="deadline" [(ngModel)]="defaultDate" view="month" dateFormat="mm-yy"
+        [readonlyInput]="true" [maxDate]="maxDate" (onSelect)="onSelectMonth()" />
+</div>
 <div class="box">
     @if (warehouseItemsVisible()) {
     <app-warehouse-items [(reorderedItems)]="reorderedItems" />

@@ -12,10 +12,9 @@ import { UserDTO } from "../models/users/userDTO.interface";
 export class UsersService {
     private http = inject(HttpClient);
     private BASE_ROUTE = environment.AUTHENTICATION_PATH;
-    private initialUser: GetUserDTO = { id: 0, name: '', surname: '', email: '', role: '', position: '', destination: '', nick: '', isActive: true };
+    private initialUser: GetUserDTO = { id: 0, name: '', surname: '', email: '', role: 'User', position: 'Cook', destination: 'F-M', nick: '', isActive: true };
     users = signal<GetUserDTO[]>([]);
     user = signal<GetUserDTO>(this.initialUser);
-    navigationOpen = signal(true);
 
     clearUser() {
         this.user.set(this.initialUser);

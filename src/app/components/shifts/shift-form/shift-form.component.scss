@@ -1,7 +1,6 @@
 :host {
     position: absolute;
     z-index: 2;
-    color: black;
     top: 0;
     left: 0;
     border-radius: inherit;
@@ -12,68 +11,32 @@
     justify-content: center;
     align-items: center;
     box-sizing: border-box;
+    background: transparent;
+    backdrop-filter: blur(3px);
 }
 
 .form-div {
-    border: 2px solid #24355A;
-    border-radius: 20px;
-
-    #focus {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        border: 1px solid #F53B57;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        position: relative;
-        float: right;
-        top: -40px;
-        left: 20px;
-        background: #F53B57;
-        color: white;
-        outline: 5px solid #fff;
-        cursor: pointer;
-        transition: 0.3s;
-
-        .bi {
-            font-size: 2rem;
-            transition: 0.3s;
-        }
-    }
-
-    #focus:hover {
-        background: #e60b2c;
-        border-color: #e60b2c;
-
-        .bi {
-            transform: scale(0.6);
-        }
-    }
+    border: 2px solid #d1d5db;
+    border-radius: 10px;
+    font-family: "Poppins", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 0.8rem;
+    background: #fff;
+    margin-bottom: 40px;
 
     #addBtn {
-        position: relative;
         color: #fff;
         background: #24355A;
-        border: 2px solid #24355A;
-        outline: 10px solid #fff;
-        height: 40px;
-        width: calc(50% - 20px);
-        margin: 0 30px -20px 0;
-        float: right;
-        font-weight: 800;
-        font-size: 0.7em;
-        letter-spacing: 1.8pt;
-        text-transform: uppercase;
+        height: 30px;
         cursor: pointer;
-        top: 0px;
-        left: 10px;
         opacity: 1;
         display: flex;
         flex-direction: row;
         justify-content: center;
         align-items: center;
+        font-weight: bold;
+        font-size: 13px;
     }
 
     #addBtn:disabled {
@@ -90,16 +53,18 @@
             display: flex;
             flex-direction: row;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center;
             height: 60px;
             width: 100%;
             padding-left: 0 !important;
             padding-right: 0 !important;
 
             h1 {
-                font-size: 2em;
+                font-size: 1.4rem;
                 color: #24355A;
                 font-weight: bold;
+                font-family: "Poppins", sans-serif;
+                text-decoration: underline;
             }
 
             .notification {
@@ -108,15 +73,62 @@
             }
         }
 
-        .col.label {
-            text-align: left !important;
-            font-weight: bold;
-            color: #24355A;
+        .col-6 {
+            .label {
+                text-align: left !important;
+                font-weight: bold;
+                color: #24355A;
+            }
+
+            .label.invalid {
+                color: #F53B57;
+                animation: shake 0.82s cubic-bezier(.36, .07, .19, .97) both;
+            }
+
+            textarea,
+            textarea:disabled {
+                border: 1px solid #d1d5db;
+                border-radius: 0.375rem;
+                font-size: 0.8rem;
+                color: #24355A;
+                resize: none;
+                background: #fff;
+            }
+
+            textarea:active,
+            textarea:focus {
+                border: 1px solid #d1d5db !important;
+                outline: none !important;
+            }
+
+            textarea.shake {
+                outline: none;
+                animation: shake 0.82s cubic-bezier(.36, .07, .19, .97) both;
+            }
+
+            .cancel {
+                height: 30px;
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+                border: 1px solid #F53B57;
+                color: #fff;
+                background: #F53B57;
+                border-radius: 5px;
+                font-weight: bold;
+            }
+
+            .btn {
+                .spinner-border {
+                    --bs-spinner-width: 1.4rem;
+                    --bs-spinner-height: 1.4rem;
+                }
+            }
         }
 
-        .col.label.invalid {
-            color: #F53B57;
-            animation: shake 0.82s cubic-bezier(.36, .07, .19, .97) both;
+        .col-6.inline {
+            display: flex;
         }
 
         .col {
@@ -141,29 +153,6 @@
                 border: 1px solid #F53B57;
                 box-shadow: 0 0 2px 2px #F53B57;
                 animation: shake 0.82s;
-            }
-
-            textarea,
-            textarea:disabled {
-                border: 1px solid #d1d5db;
-                border-radius: 0.375rem;
-                font-size: 0.8rem;
-                color: #868283;
-                resize: none;
-                background: #fff;
-            }
-
-            textarea:active,
-            textarea:focus {
-                border: 1px solid #d1d5db !important;
-                outline: none !important;
-            }
-
-            textarea.shake {
-                border: 2px solid #F53B57;
-                outline: none;
-                box-shadow: 0 0 2px 2px #F53B57;
-                animation: shake 0.82s cubic-bezier(.36, .07, .19, .97) both;
             }
         }
 
@@ -190,37 +179,6 @@
 
     .flex {
         visibility: var(--visibility);
-    }
-
-    .delete {
-        background: #F53B57;
-        font-weight: bold;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        transition: ease 0.3s all;
-        border: none;
-        outline: 5px solid #fff;
-        color: #fff;
-        position: relative;
-        left: -20px;
-        bottom: -35px;
-
-        i {
-            font-size: 1.5rem;
-            font-weight: bold;
-            transition: .3s;
-        }
-    }
-
-    .delete:hover {
-        .bi {
-            transform: scale(0.7);
-        }
     }
 }
 

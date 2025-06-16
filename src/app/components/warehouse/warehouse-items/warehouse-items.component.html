@@ -2,12 +2,6 @@
     @if (!isLoading()) {
     <div class="block" @fadeIn>
         @if (items().length > 0) {
-
-        <div #delete class="delete" cdkDropList (cdkDropListDropped)="onDeleteDrop()">
-            <div><i class="bi bi-trash"></i></div>
-            <div *cdkDragPlaceholder></div>
-        </div>
-
         <div #dashboard class="widget-wrapper">
             @for(item of items(); track $index) {
             <div>

@@ -1,6 +1,5 @@
 <div class="card-wrapper">
     @if (!cardLoading()) {
-    @if(!formVisible()) {
     <div class="user-card-table" @fadeIn @fadeOut>
         <div class="head">
             <div class="right">
@@ -16,45 +15,38 @@
             </div>
         </div>
         @if(shiftCard()!.shifts.length > 0) {
-        <table class="table table-striped">
+        <table class="table">
             <thead class="table-dark">
                 <tr>
-                    <th class="user-name" style="width: 5% !important; text-align: right;">#</th>
-                    <th class="user-name" style="width: 15% !important; text-align: center;">Datum</th>
-                    <th class="user-name" style="width: 15% !important; text-align: center;">Začátek</th>
-                    <th class="user-name" style="width: 15% !important; text-align: center;">Konec</th>
-                    <th class="user-name" style="width: 10% !important; text-align: center;">Hodiny</th>
-                    <th class="user-name" style="width: 35% !important; text-align: center;">Perso</th>
-                    @if((isPastCard() === false && loggedUser.role === 'Master') || (loggedUser.role === 'Admin')) {
-                    <th class="user-name" style="width: 5% !important; text-align: center !important;"></th>
-                    }
+                    <th style="width: 5% !important; text-align: right; border-top-left-radius: 10px;">#</th>
+                    <th style="width: 15% !important; text-align: center;">Datum</th>
+                    <th style="width: 15% !important; text-align: center;">Začátek</th>
+                    <th style="width: 15% !important; text-align: center;">Konec</th>
+                    <th style="width: 15% !important; text-align: center;">Hodiny</th>
+                    <th style="width: 40% !important; text-align: center; border-top-right-radius: 10px;">Perso</th>
                 </tr>
             </thead>
             <tbody class="table-group-divider">
                 @for(shift of shiftCard()!.shifts; track $index) {
-                <tr>
-                    <th scope="row" style="width: 5% !important; text-align: right !important;">{{$index + 1}}.</th>
+                <tr
+                    (click)="((isPastCard() === false && loggedUser.role === 'Master') || (loggedUser.role === 'Admin')) && onUpdate(shift)">
+                    <td scope="row" style="width: 5% !important; text-align: right !important; font-weight: bold;">
+                        {{$index + 1}}.</td>
                     <td style="width: 15% !important; text-align: center !important;">{{shift.date}}</td>
                     <td style="width: 15% !important; text-align: center !important;">{{shift.from}}</td>
                     <td style="width: 15% !important; text-align: center !important;">{{shift.to}}</td>
-                    <td style="width: 10% !important; text-align: center !important;">{{shift.hours}}</td>
-                    <td class="perso" style="width: 35% !important;">{{shift.perso}}</td>
-                    @if((isPastCard() === false && loggedUser.role === 'Master') || (loggedUser.role === 'Admin')) {
-                    <td class="edit" style="width: 5% !important; text-align: center !important;"
-                        (click)="onUpdate(shift)">
-                        <i class="bi bi-arrow-right-circle"></i>
-                    </td>
-                    }
+                    <td style="width: 15% !important; text-align: center !important;">{{shift.hours}}</td>
+                    <td class="perso" style="width: 40% !important;">{{shift.perso}}</td>
                 </tr>
                 }
             </tbody>
         </table>
         <div class="action-buttons">
             @if (loggedUser.role === 'Admin') {
-            <button class="deleteCardBtn" (click)="onDeleteCard()"><i class="bi bi-x"></i></button>
+            <button class="deleteCardBtn" (click)="onDeleteCard()"><i class="bi bi-x"></i> Smazat kartu</button>
             <button class="pdfBtn" (click)="onToPdf()">
                 @if (!pdfLoading()) {
-                <i class="bi bi-filetype-pdf"></i>
+                <i class="bi bi-filetype-pdf"></i>&nbsp;Stáhnout PDF
                 } @else {
                 <div class="spinner-border" role="status">
                     <span class="visually-hidden">Loading...</span>
@@ -62,10 +54,6 @@
                 }
             </button>
             }
-            @if((isPastCard() === false && loggedUser.role === 'Master') || (loggedUser.role === 'Admin')) {
-            <button class="addBtn" (click)="onAddShift()"><i class="bi bi-plus"></i></button>
-            }
-
         </div>
         }
         @if(shiftCard()!.shifts.length === 0) {
@@ -74,21 +62,11 @@
         </div>
         <div class="action-buttons">
             @if (loggedUser.role === 'Admin' && shiftCard()!.id > 0) {
-            <button class="deleteCardBtn" (click)="onDeleteCard()"><i class="bi bi-x"></i></button>
-            }
-            @if((isPastCard() === false && loggedUser.role === 'Master') || (loggedUser.role === 'Admin')) {
-            <button class="addBtn" (click)="onAddShift()"><i class="bi bi-plus"></i></button>
+            <button class="deleteCardBtn" (click)="onDeleteCard()"><i class="bi bi-x"></i> Smazat kartu</button>
             }
         </div>
         }
-
     </div>
-
-    }
-    @if (formVisible()) {
-    <app-shift-form (closeShiftForm)="onCloseShiftForm()" (shiftForSave)="onSave($event)"
-        (shiftForDelete)="onDeleteShift($event)" @fadeIn @fadeOut />
-    }
     } @else {
     <div class="skeleton" @fadeOut>
         @for(i of [1,2,3]; track i) {
@@ -101,3 +79,8 @@
     </div>
     }
 </div>
+
+@if (formVisible()) {
+<app-shift-form (closeShiftForm)="onCloseShiftForm()" (shiftForSave)="onSave($event)"
+    (shiftForDelete)="onDeleteShift($event)" @fadeIn @fadeOut [userName]="shiftCard()?.user" />
+}

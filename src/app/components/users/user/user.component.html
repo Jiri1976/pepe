@@ -1,129 +1,144 @@
 <form autocomplete="off" id="form" [formGroup]="userForm">
     <input type="hidden" formControlName="id" [value]="user().id" />
-    <div id="focus" (click)="onGoBack()"><i class="bi bi-x"></i></div>
-
-    <div class="title">
+    <div class="title mt-4 mb-4">
         <h1>{{ user().id === 0 ? 'Přidat uživatele' : 'Upravit uživatele' }}</h1>
-        <app-notification [notify]="notificate()" />
     </div>
 
-    <input type="text" half [class.shake]="nameCanShake()" id="userName" [value]="user().name" formControlName="name"
-        (input)="checkValues()" placeholder="Jméno" autocomplete="no" (focus)="onInputFocus()" (blur)="onInputBlur()">
-    <input type="text" half id="userSurname" [value]="user().surname" formControlName="surname" placeholder="Příjmení"
-        autocomplete="no" (input)="checkValues()" [class.shake]="surnameCanShake()" (focus)="onInputFocus()"
-        (blur)="onInputBlur()">
+    <div class="row">
+        <div class="col-6">
 
-    <div class="blockDiv">
-        <div class="blockError">
-            <div class="error"
-                [style.display]="(name?.touched && name?.hasError('required') || name?.untouched && name?.dirty && name?.hasError('required')) ? 'block' : 'none'">
-                * Jméno je povinný údaj</div>
-            <div class="error" [style.display]="name?.hasError('maxlength') ? 'block' : 'none'">
-                * Prosím pouze 15 znaků</div>
-        </div>
-        <div class="blockErrorSmall">
-            <div class="error"
-                [style.display]="(surname?.touched && surname?.hasError('required') || surname?.untouched && surname?.dirty && surname?.hasError('required')) ? 'block' : 'none'">
-                * Příjmení je povinný údaj</div>
-            <div class="error" [style.display]="surname?.hasError('maxlength') ? 'block' : 'none'">
-                * Prosím pouze 20 znaků</div>
-        </div>
-    </div>
+            <div>
+                <input type="text" [class.shake]="nameCanShake()" id="userName" [value]="user().name"
+                    formControlName="name" (input)="checkValues()" placeholder="Jméno" autocomplete="no"
+                    (focus)="onInputFocus()" (blur)="onInputBlur()">
+                <div class="blockError">
+                    <div class="error"
+                        [style.display]="(name?.touched && name?.hasError('required') || name?.untouched && name?.dirty && name?.hasError('required')) ? 'block' : 'none'">
+                        * Jméno je povinný údaj</div>
+                    <div class="error" [style.display]="name?.hasError('maxlength') ? 'block' : 'none'">
+                        * Prosím pouze 15 znaků</div>
+                </div>
+            </div>
 
-    <input type="text" placeholder="Email" autocomplete="no" id="email" [value]="user().email" formControlName="email"
-        (input)="checkValues()" [class.shake]="emailCanShake()" (focus)="onInputFocus()" (blur)="onInputBlur()">
+            <div class="mt-4">
+                <input type="text" id="userSurname" [value]="user().surname" formControlName="surname"
+                    placeholder="Příjmení" autocomplete="no" (input)="checkValues()" [class.shake]="surnameCanShake()"
+                    (focus)="onInputFocus()" (blur)="onInputBlur()">
+                <div class="blockError">
+                    <div class="error"
+                        [style.display]="(surname?.touched && surname?.hasError('required') || surname?.untouched && surname?.dirty && surname?.hasError('required')) ? 'block' : 'none'">
+                        * Příjmení je povinný údaj</div>
+                    <div class="error" [style.display]="surname?.hasError('maxlength') ? 'block' : 'none'">
+                        * Prosím pouze 20 znaků</div>
+                </div>
+            </div>
 
-    <div class="blockDiv">
-        <div style="width: 100%;">
-            <div class="error"
-                [style.display]="(email?.touched && email?.hasError('required') || email?.untouched && email?.dirty && email?.hasError('required')) ? 'block' : 'none'">
-                * Email je povinný údaj</div>
-            <div class="error" [style.display]="email?.touched && email?.hasError('email') ? 'block' : 'none'">
-                * Email má špatný formát</div>
-        </div>
-    </div>
+            <div class="mt-4">
+                <input type="text" placeholder="Email" autocomplete="no" id="email" [value]="user().email"
+                    formControlName="email" (input)="checkValues()" [class.shake]="emailCanShake()"
+                    (focus)="onInputFocus()" (blur)="onInputBlur()">
 
-    <div class="btn-group selectors" role="group">
-        <input type="radio" class="btn-check" name="role" id="btnrole1" autocomplete="off" value="Admin"
-            (change)="checkValues()" [checked]="user().role === 'Admin'" formControlName="role">
-        <label class="btn btn-outline-primary left-one" for="btnrole1"
-            [class.disabled]="user().role === 'Admin' || user().role === 'Master'" style="width: 33%;">Admin</label>
+                <div class="blockError">
+                    <div class="error"
+                        [style.display]="(email?.touched && email?.hasError('required') || email?.untouched && email?.dirty && email?.hasError('required')) ? 'block' : 'none'">
+                        * Email je povinný údaj</div>
+                    <div class="error" [style.display]="email?.touched && email?.hasError('email') ? 'block' : 'none'">
+                        * Email má špatný formát</div>
+                </div>
+            </div>
 
-        <input type="radio" class="btn-check" name="role" id="btnrole2" autocomplete="off" value="Master"
-            (change)="checkValues()" [checked]="user().role === 'Master'" formControlName="role">
-        <label class="btn btn-outline-primary center-one" for="btnrole2" style="width: 33%;"
-            [class.disabled]="user().role === 'Admin' || user().role === 'Master'">Master</label>
-
-        <input type="radio" class="btn-check" name="role" id="btnrole3" autocomplete="off" value="User"
-            (change)="checkValues()" [checked]="user().role === 'User'" formControlName="role">
-        <label class="btn btn-outline-primary right-one" for="btnrole3" style="width: 33%;"
-            [class.disabled]="user().role === 'Admin' || user().role === 'Master'">User</label>
-    </div>
-
-    <input type="password" half placeholder="Heslo" autocomplete="no" id="password" formControlName="password"
-        [readonly]="user().id > 0" [class.shake]="passwordCanShake()" (focus)="onInputFocus()" (blur)="onInputBlur()">
-
-    <div class="blockDiv">
-        <div class="blockError">
-            <div class="error"
-                [style.display]="(password?.touched && password?.hasError('required') || password?.untouched && password?.dirty && password?.hasError('required')) ? 'block' : 'none'">
-                * Heslo je povinný údaj</div>
-            <div class="error" [style.display]="password?.hasError('maxlength') ? 'block' : 'none'">
-                * Prosím pouze 14 znaků</div>
-        </div>
-    </div>
-
-    <div class="twoRadio" [style.--bottom]="user().id === 0 || user().role === 'Admin' ? '40px' : '20px'">
-        <div class="btn-group first" role="group">
-            <input type="radio" class="btn-check" name="position" id="positionRadio1" autocomplete="off" value="Cook"
-                (change)="checkValues()" [checked]="user().position === 'Cook'" formControlName="position">
-            <label class="btn btn-outline-primary left-one" for="positionRadio1"
-                [class.disabled]="user().role === 'Admin' || user().role === 'Master'">Kuchyň</label>
-
-            <input type="radio" class="btn-check" name="position" id="positionRadio2" autocomplete="off" value="Driver"
-                (change)="checkValues()" [checked]="user().position === 'Driver'" formControlName="position">
-            <label class="btn btn-outline-primary right-one" for="positionRadio2"
-                [class.disabled]="user().role === 'Admin' || user().role === 'Master'">Řidič</label>
+            @if (user().id === 0) {
+            <div class="mt-4">
+                <input type="password" placeholder="Heslo" autocomplete="no" id="password" formControlName="password"
+                    [readonly]="user().id > 0" [class.shake]="passwordCanShake()" (focus)="onInputFocus()"
+                    (blur)="onInputBlur()">
+                <div class="blockError">
+                    <div class="error"
+                        [style.display]="(password?.touched && password?.hasError('required') || password?.untouched && password?.dirty && password?.hasError('required')) ? 'block' : 'none'">
+                        * Heslo je povinný údaj</div>
+                    <div class="error" [style.display]="password?.hasError('maxlength') ? 'block' : 'none'">
+                        * Prosím pouze 14 znaků</div>
+                </div>
+            </div>
+            }
         </div>
 
-        <div class="btn-group second" role="group">
-            <input type="radio" class="btn-check" name="destination" id="destinationRadio1" autocomplete="off"
-                (change)="checkValues()" [checked]="user().destination === 'F-M'" value="F-M"
-                formControlName="destination">
-            <label class="btn btn-outline-primary left-one" for="destinationRadio1"
-                [class.disabled]="user().role === 'Admin' || user().role === 'Master'">F-M</label>
+        <div class="col-6">
 
-            <input type="radio" class="btn-check" name="destination" id="destinationRadio2" autocomplete="off"
-                (change)="checkValues()" [checked]="user().destination === 'OVA'" value="OVA"
-                formControlName="destination">
-            <label class="btn btn-outline-primary right-one" for="destinationRadio2"
-                [class.disabled]="user().role === 'Admin' || user().role === 'Master'">OVA</label>
+            <div class="btn-group selectors" role="group">
+                <input type="radio" class="btn-check" name="role" id="btnrole1" autocomplete="off" value="Admin"
+                    (change)="checkValues()" formControlName="role">
+                <label class="btn btn-outline-primary left-one" for="btnrole1" [class.disabled]="isRoleDisabled()"
+                    style="width: 33%;">Admin</label>
+
+                <input type="radio" class="btn-check" name="role" id="btnrole2" autocomplete="off" value="Master"
+                    (change)="checkValues()" formControlName="role">
+                <label class="btn btn-outline-primary center-one" for="btnrole2" style="width: 33%;"
+                    [class.disabled]="isRoleDisabled()">Master</label>
+
+                <input type="radio" class="btn-check" name="role" id="btnrole3" autocomplete="off" value="User"
+                    (change)="checkValues()" formControlName="role">
+                <label class="btn btn-outline-primary right-one" for="btnrole3" style="width: 33%;"
+                    [class.disabled]="isRoleDisabled()">User</label>
+            </div>
+
+            <div class="btn-group mt-4 twoRadio" role="group">
+                <input type="radio" class="btn-check" name="position" id="positionRadio1" autocomplete="off"
+                    value="Cook" (change)="checkValues()" formControlName="position">
+                <label class="btn btn-outline-primary left-one" for="positionRadio1"
+                    [class.disabled]="isRoleDisabled()">Kuchyň</label>
+
+                <input type="radio" class="btn-check" name="position" id="positionRadio2" autocomplete="off"
+                    value="Driver" (change)="checkValues()" formControlName="position">
+                <label class="btn btn-outline-primary right-one" for="positionRadio2"
+                    [class.disabled]="isRoleDisabled()">Řidič</label>
+            </div>
+
+            <div class="btn-group mt-4 twoRadio" role="group">
+                <input type="radio" class="btn-check" name="destination" id="destinationRadio1" autocomplete="off"
+                    (change)="checkValues()" value="F-M" formControlName="destination">
+                <label class="btn btn-outline-primary left-one" for="destinationRadio1"
+                    [class.disabled]="isRoleDisabled()">F-M</label>
+
+                <input type="radio" class="btn-check" name="destination" id="destinationRadio2" autocomplete="off"
+                    (change)="checkValues()" value="OVA" formControlName="destination">
+                <label class="btn btn-outline-primary right-one" for="destinationRadio2"
+                    [class.disabled]="isRoleDisabled()">OVA</label>
+            </div>
+
+            <div class="btn-group mt-4 twoRadio" role="group">
+                <input type="radio" class="btn-check" name="isActive" id="isActiveRadio1" autocomplete="off"
+                    (change)="checkValues()" [value]="true" formControlName="isActive">
+                <label class="btn btn-outline-primary left-one" [class.disabled]="isRoleDisabled()"
+                    for="isActiveRadio1">Aktivní</label>
+
+                <input type="radio" class="btn-check" name="isActive" id="isActiveRadio2" autocomplete="off"
+                    (change)="checkValues()" [value]="false" formControlName="isActive">
+                <label class="btn btn-outline-primary right-one" for="isActiveRadio2"
+                    [class.disabled]="isRoleDisabled()">Neaktivní</label>
+            </div>
         </div>
     </div>
-
-    <div class="active-delete">
-        @if (user().role === 'User' ) {
-        <input type="radio" class="btn-check" name="isActive" id="isActive" (change)="changeIsActive()"
-            formControlName="isActive">
-        @if (activeUser()) {
-        <label class="checked btn isActive" for="isActive"><i class="bi bi-heart-fill"></i></label>
-        } @else {
-        <label class="btn isActive" for="isActive"><i class="bi bi-sign-stop-fill"></i></label>
-        }
-        }
-
-        @if (user().id > 0 && user().role !== 'Admin') {
-        <button type="button" class="btn delete" (click)="onDelete()"
-            [ngStyle]="{'margin-left' : user().role === 'User' ? '15px' : ''}"><i class="bi bi-trash"></i></button>
-        }
+    <div class="row mt-4 mb-4">
+        <div class="col-6 inline">
+            @if (user().id === 0) {
+            <button class="w-100 cancel" (click)="onGoBack()"><i class="bi bi-x"></i>&nbsp;Zpět</button>
+            } @else {
+            <button class="w-50 cancel me-1" (click)="onGoBack()"><i class="bi bi-x"></i>&nbsp;Zpět</button>
+            <button class="w-50 cancel ms-1" (click)="onDelete()"><i class="bi bi-trash"></i>&nbsp;Smazat</button>
+            }
+        </div>
+        <div class="col-6">
+            @if (!isLoading()) {
+            <button type="submit" class="btn submit w-100" (click)="onSubmit()"
+                [disabled]="userForm.invalid || nothingChanged">{{
+                user().id === 0 ? 'Přidat' : 'Upravit' }}</button>
+            } @else {
+            <button class="btn submit loading w-100" type="button">
+                <span class="spinner-border spinner-border-sm text-white me-1" aria-hidden="true"></span>
+                {{ actionText() }}
+            </button>
+            }
+        </div>
     </div>
-    @if (!isLoading()) {
-    <button type="submit" class="btn submit" (click)="onSubmit()" [disabled]="userForm.invalid || nothingChanged">{{
-        user().id === 0 ? 'Přidat' : 'Upravit' }}</button>
-    } @else {
-    <button class="btn submit" type="button" disabled>
-        <span class="spinner-border spinner-border-sm text-white me-1" aria-hidden="true"></span>
-        {{ actionText() }}
-    </button>
-    }
 </form>

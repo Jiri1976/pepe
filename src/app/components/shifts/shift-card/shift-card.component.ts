@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, computed, DestroyRef, inject, model, output, signal, ViewChild } from '@angular/core';
+import { Component, computed, DestroyRef, inject, input, model, output, signal, ViewChild } from '@angular/core';
 import { tap } from 'rxjs';
 import { InitShift } from '../../../models/shifts/initShift.interface';
 import { Shift } from '../../../models/shifts/shift.interface';
@@ -10,8 +10,8 @@ import { ErrorHandlingService } from '../../../services/error-handling.service';
 import { ShiftService } from '../../../services/shift.service';
 import { ShiftCard } from '../../../models/shifts/shiftCard.interface';
 import { ShiftFormComponent } from "../shift-form/shift-form.component";
-import { trigger, transition, animate, style } from '@angular/animations';
 import { ShiftsComponent } from '../../../pages/shifts/shifts.component';
+import { PageAnimation } from '../../../animations/page.animation';
 
 @Component({
   selector: 'app-shift-card',
@@ -19,17 +19,7 @@ import { ShiftsComponent } from '../../../pages/shifts/shifts.component';
   templateUrl: './shift-card.component.html',
   styleUrl: './shift-card.component.scss',
   animations: [
-    trigger('fadeOut', [
-      transition(':leave', [
-        animate('500ms ease-out', style({ opacity: 0 })),
-      ]),
-    ]),
-    trigger('fadeIn', [
-      transition(':enter', [
-        style({ opacity: 0 }),
-        animate('600ms ease-in', style({ opacity: 1 })),
-      ])
-    ]),
+    PageAnimation
   ]
 })
 export class ShiftCardComponent {
@@ -47,6 +37,7 @@ export class ShiftCardComponent {
   formVisible = computed(() => this.shiftService.shiftFormVisible());
   updatedCard = output<ShiftCard>();
   pdfLoading = signal(false);
+  currentIndex = input.required<number>();
   @ViewChild(ShiftFormComponent) shiftFormComponent: any;
 
   onUpdateShift(shift: Shift) {
@@ -66,30 +57,6 @@ export class ShiftCardComponent {
 
   onCloseShiftForm() {
     this.shiftService.shiftFormVisible.set(false);
-  }
-
-  onAddShift() {
-    this.shiftService.setMonthYear(this.shiftCard()!.monthYear);
-    let _shift: Shift = {
-      id: 0,
-      shiftCardId: this.shiftCard()!.id,
-      userId: this.shiftCard()!.userId,
-      date: '',
-      from: '11:00',
-      to: '22:00',
-      hours: '',
-      perso: ''
-    }
-
-    if (this.isPastCard()) {
-      _shift.date = `01.${this.shiftCard()!.monthYear.substring(0, 2)}.${this.shiftCard()!.monthYear.substring(2, 6)}`;
-    } else {
-      let day = new Date().getDate() < 10 ? '0' + new Date().getDate() : (new Date().getDate()).toString();
-      _shift.date = `${day}.${this.shiftCard()!.monthYear.substring(0, 2)}.${this.shiftCard()!.monthYear.substring(2, 6)}`;
-      _shift.to = this.isFridayOrSaturday(_shift.date) ? '23:00' : '22:00';
-    }
-    this.shiftService.setSelectedShift(_shift);
-    this.shiftService.shiftFormVisible.set(true);
   }
 
   onUpdate(shift: Shift) {
@@ -113,6 +80,7 @@ export class ShiftCardComponent {
                 this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
               } else if (response.isSuccess) {
                 this.cardLoading.set(false);
+                this.shiftComponent.currentIndex.set(this.currentIndex());
                 this.shiftComponent.onReset();
                 this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Karta byla smazána!' });
               }
@@ -147,6 +115,7 @@ export class ShiftCardComponent {
         } else if (response.isSuccess) {
           this.shiftFormComponent.loading.set(false);
           this.shiftService.shiftFormVisible.set(false);
+          this.shiftComponent.currentIndex.set(this.currentIndex());
           this.shiftComponent.onReset();
           this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Směna byla smazána!' });
         }
@@ -181,6 +150,7 @@ export class ShiftCardComponent {
         } else if (response.isSuccess) {
           this.shiftFormComponent.loading.set(false);
           this.shiftService.shiftFormVisible.set(false);
+          this.shiftComponent.currentIndex.set(this.currentIndex());
           this.shiftComponent.onReset();
           this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Směna byla uložena!' });
         }
@@ -288,14 +258,6 @@ export class ShiftCardComponent {
         break;
     }
     return converted;
-  }
-
-  private isFridayOrSaturday(date: string) {
-    var day = new Date(parseInt(date.split('.')[2]), parseInt(date.split('.')[1]) - 1, parseInt(date.split('.')[0]));
-    if (day.getDay() == 5 || day.getDay() == 6) {
-      return true;
-    }
-    return false;
   }
 
   private handleError = (errorRes: HttpErrorResponse) => {

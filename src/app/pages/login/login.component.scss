@@ -121,6 +121,7 @@
 }
 
 .submit.loading:disabled {
+    opacity: 1;
     background: #24355A;
     color: #fff !important;
 }

@@ -28,7 +28,7 @@
 
     .settings-button {
         position: absolute;
-        top: 10px;
+        top: 5px;
         right: 10px;
         border: none;
         background: #fff;
@@ -39,10 +39,34 @@
         align-items: center;
         height: 28px;
         width: 28px;
-        transition: .3s;
+        color: #24355A;
+        transition: all .2s ease-in-out;
     }
 
     .settings-button:hover {
-        background: #cecece;
+        background: #24355A;
+        color: #fff;
+    }
+
+    .delete-button {
+        position: absolute;
+        bottom: 5px;
+        right: 10px;
+        border: none;
+        background: #fff;
+        border-radius: 50%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 28px;
+        width: 28px;
+        color: #24355A;
+        transition: all .2s ease-in-out;
+    }
+
+    .delete-button:hover {
+        background: #F53B57;
+        color: #fff;
     }
 }

@@ -11,8 +11,7 @@ import { ConfirmComponent } from '../../components/confirm/confirm.component';
 import { ErrorHandlingService } from '../../services/error-handling.service';
 import { WarehouseItemsComponent } from "../../components/warehouse/warehouse-items/warehouse-items.component";
 import { WarehouseItem } from '../../models/warehouse/warehouse-item.interface';
-import { CalendarModule } from 'primeng/calendar';
-
+import { Calendar, CalendarModule } from 'primeng/calendar';
 import { DatePickerModule } from 'primeng/datepicker';
 import { WarehouseUnitsComponent } from '../../components/warehouse/warehouse-units/warehouse-units.component';
 import { WarehouseCard } from '../../models/warehouse/warehouse-card.interface';
@@ -20,6 +19,7 @@ import { WarehouseNavComponent } from "../../components/warehouse/warehouse-nav/
 import { ConfirmService } from '../../services/confirm.service';
 import { PageAnimation } from '../../animations/page.animation';
 import { MasterAddComponent } from '../../components/warehouse/master-add/master-add.component';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-warehouse',
@@ -33,7 +33,8 @@ import { MasterAddComponent } from '../../components/warehouse/master-add/master
     WarehouseItemsComponent,
     WarehouseUnitsComponent,
     WarehouseNavComponent,
-    MasterAddComponent
+    MasterAddComponent,
+    FormsModule
   ],
   templateUrl: './warehouse.component.html',
   styleUrl: './warehouse.component.scss',
@@ -63,9 +64,11 @@ export class WarehouseComponent {
   cards = signal<WarehouseCard[]>([]);
   pdfLoading = signal(false);
   masterAddVisible = signal(false);
-
+  @ViewChild('calendar', { static: false }) calendar!: Calendar;
   @ViewChild(WarehouseUnitsComponent) warehouseUnits: any;
   @ViewChild(WarehouseItemsComponent) warehouseItems: any;
+  defaultDate = new Date(new Date().getFullYear(), new Date().getMonth());
+  maxDate: Date = new Date(new Date().getFullYear(), new Date().getMonth());
 
   onShowItems() {
     this.reorderedItems.set([]);
@@ -79,7 +82,8 @@ export class WarehouseComponent {
     this.unitsActive.set(true);
   }
 
-  onSelectMonth(date: string) {
+  onSelectMonth() {
+    let date = this.calendar.value;
     this.warehouseUnits.monthYear.set(this.MONTHS_NUM[new Date(date).getMonth()] + new Date(date).getFullYear());
     this.calendarText.set(this.MONTHS_NAMES[new Date(date).getMonth()] + ' ' + new Date(date).getFullYear().toString().substring(2));
     this.warehouseUnits.uploadCards();
@@ -91,21 +95,29 @@ export class WarehouseComponent {
     this.warehouseUnits.uploadCards();
   }
 
+  toggleCalendar() {
+    if (this.calendar) {
+      if (this.calendar.overlayVisible) {
+        this.calendar.hideOverlay();
+        this.calendar.cd.detectChanges();
+      } else {
+        this.calendar.showOverlay();
+        this.calendar.cd.detectChanges();
+      }
+    }
+  }
+
   onSave() {
     if (this.reorderedItems().length > 0) {
-      this.warehouseItems.isLoading.set(true);
       const subscription = this.warehouseService.reorderWarehouseItems(this.reorderedItems()).pipe(
         tap(response => {
           if (response === null) {
-            this.warehouseItems.isLoading.set(false);
             this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
           } else if (response.isSuccess === false) {
-            this.warehouseItems.isLoading.set(false);
             this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
           } else if (response.isSuccess) {
             this.warehouseService.setItems(response.result);
             this.reorderedItems.set([]);
-            this.warehouseItems.isLoading.set(false);
             this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Pořadí položek bylo změněno.' });
           }
         }),

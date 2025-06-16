@@ -113,13 +113,58 @@ p-dialog.create-unit {
 .proposal-calendar {
     p-datepicker {
         .p-datepicker-panel.p-component {
-            left: 35px !important;
+            left: 10px !important;
         }
 
         .p-datepicker.p-component {
 
             input {
                 display: none;
+            }
+
+            .p-datepicker-panel.p-component {
+                .p-datepicker-month-view {
+                    .p-datepicker-month.p-datepicker-month-selected {
+                        background: #24355A !important;
+                    }
+                }
+
+                .p-datepicker-calendar-container {
+                    .p-datepicker-calendar {
+                        .p-datepicker-header {
+                            p-button {
+                                .p-button-text {
+                                    color: #24355A !important;
+                                }
+                            }
+
+                            p-button:hover {
+                                .p-button-text {
+                                    background: #24355A;
+                                    color: #fff !important;
+                                    border: none;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                .p-datepicker-year-view {
+                    span.p-datepicker-year.p-datepicker-year-selected {
+                        background: #24355A !important;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.warehouse-calendar,
+.shifts-calendar {
+    p-datepicker {
+        .p-datepicker.p-component {
+            input {
+                display: none !important;
             }
 
             .p-datepicker-panel.p-component {
@@ -195,6 +240,7 @@ p-datepicker {
                 width: 256px;
                 text-align: end;
                 background: #fff;
+                font-size: 0.9rem;
             }
 
             .p-datepicker-panel.p-component {
@@ -253,6 +299,7 @@ p-datepicker {
                 width: 256px;
                 text-align: end;
                 background: #fff;
+                font-size: 0.9rem;
             }
 
             .p-datepicker-panel.p-component {
@@ -298,6 +345,7 @@ p-datepicker {
                 width: 256px;
                 text-align: end;
                 background: #fff;
+                font-size: 0.9rem;
             }
 
             .p-datepicker-panel.p-component {
