@@ -1,6 +1,5 @@
 <div class="container">
     @if (!isLoading()) {
-    <!-- @if (cards().length > 0) { -->
     <div class="unit-card" @fadeIn>
         @if (cards().length > 0) {
         <swiper-container #swiperRef effect="cards" grab-cursor="true" (swiperinit)="onSwiperInit($event)">
@@ -18,33 +17,17 @@
                     </div>
                     <div class="col-4">
                         @for(unit of card.units | slice:0:11; track $index) {
-                        <div class="row w-100 mt-1" (click)="checkDate(unit.date) ? onSelectUnit(unit) : null"
-                            [ngClass]="checkDate(unit.date) ? 'dateValid' : ''" [class.today]="isToday(unit.date)"
-                            [class.old]="isOlderThanToday(unit.date) && user().role === 'Master' && !isToday(unit.date)">
-                            <div class="col first">{{unit.date}}</div>
-                            <div class="col second">{{unit.amount !== null ? unit.amount : ''}}</div>
-                        </div>
+                        <app-warehouse-input [unit]="unit" [user]="user()" [card]="card" />
                         }
                     </div>
                     <div class="col-4">
                         @for(unit of card.units | slice:11:22; track $index) {
-                        <div class="row w-100 mt-1" (click)="checkDate(unit.date) ? onSelectUnit(unit) : null"
-                            [ngClass]="checkDate(unit.date) ? 'dateValid' : ''" [class.today]="isToday(unit.date)"
-                            [class.old]="isOlderThanToday(unit.date) && user().role === 'Master'  && !isToday(unit.date)">
-                            <div class="col first">{{unit.date}}</div>
-                            <div class="col second">{{unit.amount !== null ? unit.amount : ''}}</div>
-                        </div>
+                        <app-warehouse-input [unit]="unit" [user]="user()" [card]="card" />
                         }
                     </div>
                     <div class="col-4">
                         @for(unit of card.units | slice:22:card.units.length; track $index) {
-
-                        <div class="row w-100 mt-1" (click)="checkDate(unit.date) ? onSelectUnit(unit) : null"
-                            [ngClass]="checkDate(unit.date) ? 'dateValid' : ''" [class.today]="isToday(unit.date)"
-                            [class.old]="isOlderThanToday(unit.date) && user().role === 'Master'  && !isToday(unit.date)">
-                            <div class="col first">{{unit.date}}</div>
-                            <div class="col second">{{unit.amount !== null ? unit.amount : ''}}</div>
-                        </div>
+                        <app-warehouse-input [unit]="unit" [user]="user()" [card]="card" />
                         }
 
                         @switch (card.units.length) {
@@ -102,10 +85,7 @@
             <h4>Chybí položky pro sledování.</h4>
         </div>
         }
-
     </div>
-
-
     } @else {
     <div class="skeleton" @fadeOut>
         <div class="row unitList">
@@ -136,6 +116,4 @@
     </div>
     }
 </div>
-<app-create-update-unit [(visibleModal)]="visibleModal" [index]="selectedIndex()" [(selectedUnit)]="selectedUnit"
-    [cards]="cards()" (updated)="uploadCards()" />
 <app-items-list [items]="items" (selected)="onSelectItem($event)" />

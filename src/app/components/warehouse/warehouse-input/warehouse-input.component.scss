@@ -1,0 +1,114 @@
+.line {
+    color: #24355A;
+    border: 1px solid #24355A;
+    border-radius: 5px;
+    margin: 3px 0 !important;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 28px;
+
+    .column {
+        padding: 3px 12px;
+    }
+
+    .column.first {
+        width: 100px;
+        text-align: left !important;
+        font-size: 0.9rem;
+        display: flex;
+        flex-direction: column;
+        color: #24355A;
+        font-weight: 500;
+        align-items: center;
+        height: 100%;
+    }
+
+    .column.second {
+        width: 150px;
+        padding: 0;
+        justify-content: space-between;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        input,
+        input:active,
+        input:focus {
+            width: 80px !important;
+            font-size: 0.8rem;
+            height: 22px;
+            text-align: center;
+            border-radius: 0;
+            border: none;
+            background: #f8f8f4;
+            border-radius: 10px;
+            color: #24355A;
+            font-weight: 500;
+            outline: none;
+        }
+
+        .buttons {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 0 12px 0 10px;
+
+            .spinner-border {
+                --bs-spinner-width: 1rem;
+                --bs-spinner-height: 1rem;
+            }
+
+            button {
+                height: 20px;
+                width: 20px;
+                border-radius: 50%;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                transition: all 0.3s ease-in-out;
+
+                .bi {
+                    font-size: 0.7rem !important;
+                    font-weight: bold;
+                }
+            }
+
+            button.save-button {
+                color: #24355A;
+                border: 1px solid #24355A;
+                background: #fff;
+                padding: 0;
+            }
+
+            button.save-button:hover {
+                color: #fff;
+                background: #24355A;
+                cursor: pointer;
+            }
+
+            button.delete-button {
+                color: #F53B57;
+                border: 1px solid #F53B57;
+                background: #fff;
+                padding: 0;
+            }
+
+            button.delete-button:hover {
+                color: #fff;
+                background: #F53B57;
+                cursor: pointer;
+            }
+        }
+    }
+}
+
+.row.dateValid:hover {
+    background: #e2e2e2;
+    cursor: pointer;
+}

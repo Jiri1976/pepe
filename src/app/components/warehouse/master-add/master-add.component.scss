@@ -63,6 +63,7 @@ p-dialog {
                 margin: 10px 0;
                 border: 1px solid #24355A;
                 border-radius: 5px;
+                height: 35px;
 
                 .item-label,
                 .item-input {
@@ -74,14 +75,14 @@ p-dialog {
                     display: flex;
                     flex-direction: column;
                     width: 60%;
-                    height: 40px;
+                    height: 30px;
                     justify-content: center;
                     align-items: center;
                     transition: 0.3s;
 
                     p {
                         color: #24355A;
-                        font-weight: bold;
+                        font-weight: 500;
                         margin-bottom: 0 !important;
                         transition: 0.3s;
                     }
@@ -91,23 +92,25 @@ p-dialog {
                     display: flex;
                     flex-direction: column;
                     width: 40%;
-                    height: 40px;
                     justify-content: center;
                     align-items: center;
                     transition: 0.3s;
+                    height: 100%;
 
-                    input {
+                    input,
+                    input:focus,
+                    input:active {
                         width: 100px;
                         text-align: center;
                         color: #24355A;
-                        border: 2px solid #24355A;
                         border-radius: 5px;
-                    }
-
-                    input:focus,
-                    input:active {
-                        border: 2px solid #24355A;
+                        font-size: 0.9rem;
+                        height: 25px;
+                        background: #f8f8f4;
+                        border-radius: 10px;
+                        border: none;
                         outline: none;
+                        font-weight: 500;
                     }
 
                     input.invalid {

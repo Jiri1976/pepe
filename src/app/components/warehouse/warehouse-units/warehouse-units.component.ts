@@ -7,33 +7,22 @@ import { ErrorHandlingService } from '../../../services/error-handling.service';
 import { WarehouseCard } from '../../../models/warehouse/warehouse-card.interface';
 import Swiper from 'swiper';
 import { CommonModule } from '@angular/common';
-import { CreateUpdateUnitComponent } from '../create-update-unit/create-update-unit.component';
 import { ItemsListComponent } from '../items-list/items-list.component';
-import { WarehouseUnit } from '../../../models/warehouse/warehouse-unit.interface';
 import { AuthService } from '../../../services/auth.service';
 import { HideElementDirective } from '../../../directives/hide-element.directive';
 import { ConfirmService } from '../../../services/confirm.service';
-import { trigger, transition, animate, style } from '@angular/animations';
+import { WarehouseInputComponent } from "../warehouse-input/warehouse-input.component";
+import { PageAnimation } from '../../../animations/page.animation';
 
 @Component({
   selector: 'app-warehouse-units',
-  imports: [CommonModule, CreateUpdateUnitComponent, ItemsListComponent, HideElementDirective],
+  imports: [CommonModule, ItemsListComponent, HideElementDirective, WarehouseInputComponent],
   templateUrl: './warehouse-units.component.html',
   styleUrl: './warehouse-units.component.scss',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
-    trigger('fadeOut', [
-      transition(':leave', [
-        animate('500ms ease-out', style({ opacity: 0 })),
-      ]),
-    ]),
-    trigger('fadeIn', [
-      transition(':enter', [
-        style({ opacity: 0 }),
-        animate('600ms ease-in', style({ opacity: 1 })),
-      ])
-    ]),
+    PageAnimation
   ]
 })
 export class WarehouseUnitsComponent implements OnInit {
@@ -50,21 +39,12 @@ export class WarehouseUnitsComponent implements OnInit {
   cards = model<WarehouseCard[]>([]);
   destination = signal<string>('F-M');
   monthYear = signal<string>(this.MONTHS_NUM[new Date().getMonth()] + new Date().getFullYear());
-  visibleModal = signal<boolean>(false);
   visibleList = computed(() => this.warehouseService.visibleList());
   items: {
     name: string;
     id: number;
   }[] = [];
   selectedIndex = signal<number>(0);
-  selectedUnit = signal<WarehouseUnit>({
-    id: 0,
-    warehouseCardId: 0,
-    warehouseItemId: 0,
-    date: '',
-    amount: undefined
-  });
-
   @ViewChild('swiperRef', { static: false }) swiperRef!: ElementRef;
 
   ngOnInit(): void {
@@ -82,40 +62,6 @@ export class WarehouseUnitsComponent implements OnInit {
         });
       }
     });
-  }
-
-  checkDate(date: string) {
-    let _date = new Date(parseInt(date.split('.')[2]), parseInt(date.split('.')[1]) - 1, parseInt(date.split('.')[0]));
-    if (_date > new Date()) {
-      return false;
-    }
-    return true;
-  }
-
-  isOlderThanToday(date: string) {
-    let _date = new Date(parseInt(date.split('.')[2]), parseInt(date.split('.')[1]) - 1, parseInt(date.split('.')[0]));
-    if (_date < new Date()) {
-      return true;
-    }
-    return false;
-  }
-
-  isToday(date: string) {
-    let d = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
-    let today = d.getDate() + "-" + (d.getMonth() + 1) + "-" + d.getFullYear();
-    let fromDate = new Date(parseInt(date.split('.')[2]), parseInt(date.split('.')[1]) - 1, parseInt(date.split('.')[0]));
-    let day = fromDate.getDate() + "-" + (fromDate.getMonth() + 1) + "-" + fromDate.getFullYear();
-    if (today === day) {
-      return true;
-    }
-    return false;
-  }
-
-  onSelectUnit(unit: any) {
-    this.swiper = this.swiperRef.nativeElement.swiper;
-    this.selectedIndex.set(this.swiper.activeIndex);
-    this.selectedUnit.set(unit);
-    this.visibleModal.set(true);
   }
 
   onSelectItem(itemId: number) {

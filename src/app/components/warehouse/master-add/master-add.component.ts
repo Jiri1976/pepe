@@ -57,7 +57,7 @@ export class MasterAddComponent implements OnInit {
     let _cards = [...this.cards()];
     controls.forEach((control: any) => {
       let warehouseItemId = control.controls['warehouseItemId'].value;
-      let value = control.controls['amount'].value;
+      let value = control.controls['amount'].value ? control.controls['amount'].value : null;
       let card = _cards.find(c => c.warehouseItemId === warehouseItemId);
       let unit = card!.units.find(u => u.date === this.todayDate);
       unit!.amount = value;

@@ -42,7 +42,6 @@
                     }
 
                     .col-4 {
-                        color: #24355A;
                         display: flex;
                         flex-direction: column;
                         justify-content: center;
@@ -64,27 +63,7 @@
 
                         .row.empty {
                             border: none;
-                        }
-
-                        .row.dateValid:hover {
-                            background: #e2e2e2;
-                            cursor: pointer;
-                        }
-
-                        .row.today {
-                            background: #24355A;
-                            color: #fff;
-                        }
-
-                        .row.today:hover {
-                            background: #1e81b0;
-                            border: 1px solid #1e81b0;
-                            color: #fff;
-                        }
-
-                        .row.old {
-                            background: #efefef;
-                            pointer-events: none !important;
+                            height: 28px;
                         }
                     }
 
@@ -129,22 +108,16 @@
     }
 
     .missig-items {
-        // grid-column: 1;
-        // grid-row: 1;
         margin: 40px 0 0 0 !important;
         display: grid;
         justify-content: center;
         flex-direction: column;
         align-items: center;
         position: absolute;
-        // height: 500px;
-
 
         h4 {
             color: #24355A;
             font-weight: bold !important;
-            // margin-top: 10% !important;
-            // font-size: 1.5rem;
         }
     }
 
