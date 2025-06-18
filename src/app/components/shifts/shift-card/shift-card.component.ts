@@ -12,6 +12,7 @@ import { ShiftCard } from '../../../models/shifts/shiftCard.interface';
 import { ShiftFormComponent } from "../shift-form/shift-form.component";
 import { ShiftsComponent } from '../../../pages/shifts/shifts.component';
 import { PageAnimation } from '../../../animations/page.animation';
+import { FastPageAnimation } from '../../../animations/fast-page.animation';
 
 @Component({
   selector: 'app-shift-card',
@@ -19,7 +20,8 @@ import { PageAnimation } from '../../../animations/page.animation';
   templateUrl: './shift-card.component.html',
   styleUrl: './shift-card.component.scss',
   animations: [
-    PageAnimation
+    PageAnimation,
+    FastPageAnimation
   ]
 })
 export class ShiftCardComponent {

@@ -28,6 +28,8 @@
         </div>
         }
 
+
+
         @if(!selectedProposal().delete) {
         <button type="button" class="btn delete" (click)="onDelete()"
             [style.visibility]="masterAdd() ? 'hidden' : ''"><i class="bi bi-trash"></i></button>
@@ -40,5 +42,29 @@
         } @else {
         <button type="submit" class="btn submit" (click)="onUpdate()" [disabled]="proposalForm.invalid">Přidat</button>
         }
+
+
+        <!-- <div class="row mt-4 mb-4">
+        <div class="col-6 inline">
+            @if (user().id === 0) {
+            <button class="w-100 cancel" (click)="onGoBack()"><i class="bi bi-x"></i>&nbsp;Zpět</button>
+            } @else {
+            <button class="w-50 cancel me-1" (click)="onGoBack()"><i class="bi bi-x"></i>&nbsp;Zpět</button>
+            <button class="w-50 cancel ms-1" (click)="onDelete()"><i class="bi bi-trash"></i>&nbsp;Smazat</button>
+            }
+        </div>
+        <div class="col-6">
+            @if (!isLoading()) {
+            <button type="submit" class="btn submit w-100" (click)="onSubmit()"
+                [disabled]="userForm.invalid || nothingChanged">{{
+                user().id === 0 ? 'Přidat' : 'Upravit' }}</button>
+            } @else {
+            <button class="btn submit loading w-100" type="button">
+                <span class="spinner-border spinner-border-sm text-white me-1" aria-hidden="true"></span>
+                {{ actionText() }}
+            </button>
+            }
+        </div> 
+    </div>-->
     </form>
 </p-dialog>

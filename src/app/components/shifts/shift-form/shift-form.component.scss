@@ -25,7 +25,8 @@
     background: #fff;
     margin-bottom: 40px;
 
-    #addBtn {
+    #addBtn,
+    #loadingBtn {
         color: #fff;
         background: #24355A;
         height: 30px;
@@ -39,9 +40,9 @@
         font-size: 13px;
     }
 
-    #addBtn:disabled {
-        background: #1e81b0;
-        border: 2px solid #1e81b0;
+    #loadingBtn.loading {
+        background: #24355A;
+        pointer-events: none;
     }
 
     .row {

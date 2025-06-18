@@ -104,13 +104,14 @@ p-dialog {
                         text-align: center;
                         color: #24355A;
                         border-radius: 5px;
-                        font-size: 0.9rem;
+                        font-size: 0.8rem;
                         height: 25px;
                         background: #f8f8f4;
-                        border-radius: 10px;
+                        border-radius: 5px;
                         border: none;
                         outline: none;
                         font-weight: 500;
+                        border: 1px solid #24355A;
                     }
 
                     input.invalid {
