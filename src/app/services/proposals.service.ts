@@ -209,8 +209,16 @@ export class ProposalsService {
     }
 
     setTime(proposal: SelectedProposal) {
-        this.timeFrom.set(new Date(parseInt(proposal.date.split('.')[2]), parseInt(proposal.date.split('.')[1]) - 1, parseInt(proposal.date.split('.')[0]), parseInt(proposal.from?.split(':')[0]!), parseInt(proposal.from?.split(':')[1]!)));
-        this.timeTo.set(new Date(parseInt(proposal.date.split('.')[2]), parseInt(proposal.date.split('.')[1]) - 1, parseInt(proposal.date.split('.')[0]), parseInt(proposal.to?.split(':')[0]!), parseInt(proposal.to?.split(':')[1]!)));
+        if (proposal.from === 'F-M' || proposal.from === 'OVA') {
+            this.timeFrom.set(new Date(parseInt(proposal.date.split('.')[2]), parseInt(proposal.date.split('.')[1]) - 1, parseInt(proposal.date.split('.')[0]), 11, 0));
+            this.timeTo.set(new Date(parseInt(proposal.date.split('.')[2]), parseInt(proposal.date.split('.')[1]) - 1, parseInt(proposal.date.split('.')[0]), parseInt(proposal.to?.split(':')[0]!), parseInt(proposal.to?.split(':')[1]!)));
+        }
+        else {
+            this.timeFrom.set(new Date(parseInt(proposal.date.split('.')[2]), parseInt(proposal.date.split('.')[1]) - 1, parseInt(proposal.date.split('.')[0]), parseInt(proposal.from?.split(':')[0]!), parseInt(proposal.from?.split(':')[1]!)));
+            this.timeTo.set(new Date(parseInt(proposal.date.split('.')[2]), parseInt(proposal.date.split('.')[1]) - 1, parseInt(proposal.date.split('.')[0]), parseInt(proposal.to?.split(':')[0]!), parseInt(proposal.to?.split(':')[1]!)));
+        }
+
+
     }
 
     uploadPDF(pdfCard: ProposalsPDF, role: string) {

@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, model, OnInit } from '@angular/core';
+import { Component, computed, effect, inject, input, model, OnInit, signal } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { ProposalsService } from '../../../services/proposals.service';
@@ -6,7 +6,6 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NotificationComponent } from "../../notification/notification.component";
 import { DateValidator } from '../../../helpers/proposal-times.validator';
-import { AlertService } from '../../../services/alert.service';
 
 @Component({
   selector: 'app-update-proposal',
@@ -16,14 +15,14 @@ import { AlertService } from '../../../services/alert.service';
     DatePickerModule,
     FormsModule,
     ReactiveFormsModule,
-    NotificationComponent
+    NotificationComponent,
   ],
   templateUrl: './update-proposal.component.html',
   styleUrl: './update-proposal.component.scss'
 })
 export class UpdateProposalComponent implements OnInit {
   private proposalsService = inject(ProposalsService);
-  private alertService = inject(AlertService);
+  destination = input.required<string>();
   updateVisible = model<boolean>(false);
   selectedProposal = computed(() => this.proposalsService.selectedProposal());
   assignments = computed(() => this.proposalsService.assignments());
@@ -31,6 +30,7 @@ export class UpdateProposalComponent implements OnInit {
   selectedProposalTimeTo = computed(() => this.proposalsService.timeTo());
   proposalForm!: FormGroup;
   masterAdd = model(false);
+  errorMessage = signal<string | null>(null);
 
   get timeFrom() {
     return this.proposalForm.get('timeFrom');
@@ -51,62 +51,92 @@ export class UpdateProposalComponent implements OnInit {
     });
   });
 
-  onUpdate() {
-    if (this.selectedProposal().from === 'F-M' || this.selectedProposal().from === 'OVA') {
-      this.onDelete();
-      return;
-    }
-    this.updateVisible.set(false);
+  onClearErrorMessage() {
+    this.errorMessage.set(null);
+  }
+
+  onUpdate(shiftType?: string) {
     let isFridaySaturday = this.isFridayOrSaturday(this.selectedProposal().date);
     let hoursFrom = new Date(this.timeFrom?.value).getHours() < 10 ? '0' + new Date(this.timeFrom?.value).getHours() : new Date(this.timeFrom?.value).getHours();
     let minutesFrom = new Date(this.timeFrom?.value).getMinutes() < 10 ? '0' + new Date(this.timeFrom?.value).getMinutes() : new Date(this.timeFrom?.value).getMinutes();
     let hoursTo = new Date(this.timeTo?.value).getHours() < 10 ? '0' + new Date(this.timeTo?.value).getHours() : new Date(this.timeTo?.value).getHours();
     let minutesTo = new Date(this.timeTo?.value).getMinutes() < 10 ? '0' + new Date(this.timeTo?.value).getMinutes() : new Date(this.timeTo?.value).getMinutes();
+    if (shiftType === 'W') {
+      hoursFrom = '11';
+      minutesFrom = '00';
+      hoursTo = isFridaySaturday ? '23' : '22';
+      minutesTo = '00';
+    } else if (shiftType === 'M') {
+      hoursFrom = '11';
+      minutesFrom = '00';
+      hoursTo = '17';
+      minutesTo = '00';
+    } else if (shiftType === 'A') {
+      hoursFrom = '17';
+      minutesFrom = '00';
+      hoursTo = isFridaySaturday ? '23' : '22';
+      minutesTo = '00';
+    }
 
     if (parseInt(hoursFrom.toString()) < 11) {
-      this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Směna musí začínat v 11:00.' });
+      this.errorMessage.set('Směna musí začínat v 11:00.');
       return;
     }
 
     if (isFridaySaturday) {
       if (parseInt(hoursTo.toString()) === 23 && (parseInt(minutesTo.toString()) > 0)) {
-        this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Směna musí končit ve 23:00.' });
+        this.errorMessage.set('Směna musí končit ve 23:00.');
         return;
       }
     }
 
     if (!isFridaySaturday) {
       if (parseInt(hoursTo.toString()) > 22 || (parseInt(hoursTo.toString()) === 22 && (parseInt(minutesTo.toString()) > 0))) {
-        this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Směna musí končit ve 22:00.' });
+        this.errorMessage.set('Směna musí končit ve 22:00.');
         return;
       }
     }
 
+    this.updateVisible.set(false);
     let _assignments = { ...this.assignments() };
     let assignment: any = _assignments[this.selectedProposal().x][this.selectedProposal().y];
 
-    if (Object.keys(assignment).length > 0) {
+    if (assignment.length > 0) {
       assignment[0].from = `${hoursFrom}:${minutesFrom}`;
       assignment[0].to = `${hoursTo}:${minutesTo}`;
     } else {
       let newAssignment: any = { name: 'W', from: `${hoursFrom}:${minutesFrom}`, to: `${hoursTo}:${minutesTo}` };
       _assignments[this.selectedProposal().x][this.selectedProposal().y] = [newAssignment];
-      assignment = newAssignment;
+      assignment = _assignments[this.selectedProposal().x][this.selectedProposal().y]
     }
+
+    assignment[0].name = '';
 
     if (isFridaySaturday) {
       if (parseInt(hoursFrom.toString()) === 11 && (parseInt(minutesFrom.toString()) === 0) && parseInt(hoursTo.toString()) === 23) {
         assignment[0].name = 'W';
       }
-      if (parseInt(hoursFrom.toString()) === 11 && (parseInt(minutesFrom.toString()) === 0) && parseInt(hoursTo.toString()) < 23) {
-        assignment[0].name = '';
+      if (parseInt(hoursFrom.toString()) === 11 && (parseInt(minutesFrom.toString()) === 0) && parseInt(hoursTo.toString()) === 17) {
+        assignment[0].name = 'M';
       }
       if (parseInt(hoursFrom.toString()) === 17 && (parseInt(minutesFrom.toString()) === 0) && parseInt(hoursTo.toString()) === 23) {
         assignment[0].name = 'A';
       }
-      if (parseInt(hoursFrom.toString()) === 17 && (parseInt(minutesFrom.toString()) === 0) && parseInt(hoursTo.toString()) < 23) {
-        assignment[0].name = '';
+    } else {
+      if (parseInt(hoursFrom.toString()) === 11 && (parseInt(minutesFrom.toString()) === 0) && parseInt(hoursTo.toString()) === 22) {
+        assignment[0].name = 'W';
       }
+      if (parseInt(hoursFrom.toString()) === 11 && (parseInt(minutesFrom.toString()) === 0) && parseInt(hoursTo.toString()) === 17) {
+        assignment[0].name = 'M';
+      }
+      if (parseInt(hoursFrom.toString()) === 17 && (parseInt(minutesFrom.toString()) === 0) && parseInt(hoursTo.toString()) === 22) {
+        assignment[0].name = 'A';
+      }
+    }
+
+    if (shiftType === 'OVA' || shiftType === 'F-M') {
+      assignment[0].from = this.destination();
+      assignment[0].to = isFridaySaturday ? '23:00' : '22:00';
     }
     this.proposalsService.updateAssigments(_assignments);
     this.proposalsService.setProposals();

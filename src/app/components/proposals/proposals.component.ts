@@ -110,6 +110,7 @@ export class ProposalsComponent {
     let proposal = { name: assignment[0].name, x: x, y: y, date: date, user: user, from: assignment[0].from, to: assignment[0].to, delete: false };
     if (proposal.from === 'OVA' || proposal.from === 'F-M') {
       proposal.delete = true;
+      proposal.to = this.isFridayOrSaturday(date) ? '23:00' : '22:00';
     }
     this.proposalsService.setSelectedProposal(proposal);
     this.proposalsService.setTime(proposal);

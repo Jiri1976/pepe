@@ -13,43 +13,64 @@ p-dialog {
 }
 
 form {
-    border: 2px solid #24355A;
-    padding: 10px;
     width: 100%;
-    border-radius: 10px;
+    margin-bottom: 25px;
 
-    .submit,
+    .buttons-line {
+        display: flex;
+        justify-content: center;
+    }
+
+    .error {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        width: 90%;
+        height: 30px;
+
+        p {
+            padding: 0;
+            font-weight: bold;
+            color: #F53B57;
+            margin: 0;
+        }
+    }
+
     .delete {
         color: #fff;
         height: 40px;
-        position: relative;
     }
 
     .submit {
         background: #24355A;
-        border: 2px solid #24355A;
-        outline: 10px solid #fff;
-        width: calc(50% - 30px);
-        margin: 0 20px -20px 0;
-        float: right;
+        border: 1px solid #24355A;
+        color: #fff;
         font-weight: 800;
-        font-size: 0.7em;
-        letter-spacing: 1.8pt;
-        text-transform: uppercase;
+        font-size: 0.9em;
         cursor: pointer;
-        top: -10px;
-        left: 0px;
         opacity: 1;
-        margin-bottom: 1px;
     }
 
     .submit:disabled {
         background: #1e81b0;
-        border: 2px solid #1e81b0;
+        border: 1px solid #1e81b0;
     }
 
-    .delete {
+    .cancel {
         background: #F53B57;
+        border: 1px solid #F53B57;
+        color: #fff;
+        font-weight: 800;
+        font-size: 0.9em;
+        cursor: pointer;
+        opacity: 1;
+    }
+
+    .delete,
+    .whole,
+    .destination {
         font-weight: bold;
         width: 30px;
         height: 30px;
@@ -59,11 +80,10 @@ form {
         justify-content: center;
         align-items: center;
         transition: 0.3s;
-        border: none;
-        outline: none;
-        top: 15px;
-        left: -15px;
-        outline: 5px solid #fff;
+        margin: 0 10px;
+        font-size: 1rem;
+        font-weight: bold;
+        color: #fff;
 
         .bi {
             font-size: 1rem;
@@ -71,13 +91,67 @@ form {
         }
     }
 
-    .delete:hover {
-        background: #e60b2c;
-        border-color: #e60b2c;
+    .delete {
+        background: #F53B57;
 
         .bi {
-            transform: scale(0.8);
+            font-size: 1rem;
+            transition: 0.3s;
         }
+    }
+
+    .whole {
+        background: #009900;
+    }
+
+    .destination {
+        background: #000000;
+        font-size: 0.7rem;
+    }
+
+    .morning,
+    .afternoon {
+        width: 30px;
+        height: 30px;
+        border-radius: 5px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        font-size: 0.7rem;
+        color: #fff;
+        font-weight: bold;
+        margin: 0 10px;
+
+        .upper {
+            position: relative;
+            top: 13px;
+            left: -6px;
+        }
+
+        .divider {
+            position: relative;
+            rotate: 30deg;
+        }
+
+        .lower {
+            position: relative;
+            bottom: 11px;
+            right: -6px;
+        }
+    }
+
+    .morning:hover,
+    .afternoon:hover {
+        cursor: pointer;
+    }
+
+    .morning {
+        background: #ff8800;
+    }
+
+    .afternoon {
+        background: #cc0000;
     }
 
     .title {
@@ -92,42 +166,8 @@ form {
     }
 }
 
-#focus {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid #F53B57;
-    width: 30px;
-    height: 30px;
-    border-radius: 5px;
-    position: absolute;
-    float: right;
-    top: 35px;
-    right: 15px;
-    background: #F53B57;
-    color: white;
-    outline: 5px solid #fff;
-    cursor: pointer;
-    transition: 0.3s;
-
-    .bi {
-        font-size: 2rem;
-        transition: 0.3s;
-    }
-}
-
-#focus:hover {
-    background: #e60b2c;
-    border-color: #e60b2c;
-
-    .bi {
-        transform: scale(0.6);
-    }
-}
-
 h1 {
-    font-size: 1rem;
+    font-size: 1.2rem;
     color: #24355A;
     font-weight: bold;
 }

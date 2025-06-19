@@ -12,6 +12,8 @@ import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
 import { AuthUser } from '../../../models/auth-user.interface';
 import { ConfirmService } from '../../../services/confirm.service';
+import { WarehouseComponent } from '../../../pages/warehouse/warehouse.component';
+import { WarehouseUnitsComponent } from '../warehouse-units/warehouse-units.component';
 
 @Component({
   selector: 'app-warehouse-input',
@@ -20,6 +22,7 @@ import { ConfirmService } from '../../../services/confirm.service';
   styleUrl: './warehouse-input.component.scss'
 })
 export class WarehouseInputComponent {
+  private warehouseUnitsComponent = inject(WarehouseUnitsComponent);
   private confirmService = inject(ConfirmService);
   private warehouseService = inject(WarehouseService);
   private errorHandlingService = inject(ErrorHandlingService);
@@ -65,8 +68,9 @@ export class WarehouseInputComponent {
                   this.isLoading.set(false);
                   this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
                 } else if (response.isSuccess) {
-                  this.isLoading.set(false);
                   this.amount?.setValue(_selectedUnit?.amount);
+                  this.warehouseUnitsComponent.uploadCards();
+                  this.isLoading.set(false);
                   this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Položka byla vynulována!' });
                 }
               }),
@@ -98,6 +102,7 @@ export class WarehouseInputComponent {
           } else if (response.isSuccess) {
             this.isLoading.set(false);
             this.amount?.setValue(_selectedUnit?.amount);
+            this.warehouseUnitsComponent.uploadCards();
             this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Položka byla uložena!' });
           }
         }),

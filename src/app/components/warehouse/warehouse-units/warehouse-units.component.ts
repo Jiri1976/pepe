@@ -116,6 +116,10 @@ export class WarehouseUnitsComponent implements OnInit {
     this.confirmService.confirm(`Opravdu chceš smazat kartu ${card?.warehouseItemName}?`)
       .then((confirmed) => {
         if (confirmed) {
+          let index = this.cards().findIndex(c => c.id === id);
+          if (index !== -1) {
+            this.selectedIndex.set(index);
+          }
           this.isLoading.set(true);
           const subscription = this.warehouseService.deleteWarehouseCard(id).pipe(
             tap(response => {
