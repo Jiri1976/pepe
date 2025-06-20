@@ -1,0 +1,74 @@
+ .skeleton {
+     grid-column: 1;
+     grid-row: 1;
+     display: flex;
+     justify-content: center;
+     flex-direction: column;
+     width: 100%;
+     position: relative;
+
+     .title {
+         font-size: 1.5rem;
+         font-weight: bold;
+         color: #cecece;
+     }
+
+     table.empty {
+         min-width: 1300px;
+         margin-top: 110px;
+         background: linear-gradient(90deg,
+                 #eee 25%,
+                 #fff 50%,
+                 #eee 75%);
+         background-size: 400% 100%;
+         animation: shimmer 2s infinite linear;
+         border-radius: 10px;
+
+         th,
+         td {
+             border: 1px solid #ccc;
+             min-width: 40px !important;
+             height: 40px !important;
+             text-align: center;
+             position: relative;
+         }
+
+         th {
+             .head-cell {
+                 display: flex;
+                 flex-direction: column;
+                 justify-content: center;
+
+                 .head-cell-date {
+                     font-size: 0.8rem;
+                 }
+
+                 .head-cell-week-day {
+                     font-size: 0.7rem;
+                 }
+             }
+         }
+
+         th.user-name {
+             min-width: 150px !important;
+         }
+
+         th:not(.user-name) {
+             background-color: var(--background-color-head);
+         }
+
+         td.user-name-cell {
+             background-color: var(--background-color-user)
+         }
+     }
+ }
+
+ @keyframes shimmer {
+     0% {
+         background-position: -200% 0;
+     }
+
+     100% {
+         background-position: 200% 0;
+     }
+ }

@@ -1,4 +1,4 @@
-<div class="shift-assignment-container" [style]="`--margin-top: ${loggedUser.role === 'Master' ? '4rem' : '6rem'}`">
+<div class="shift-assignment-container">
     @if(!proposalsLoading()) {
 
     @if (isUnsavedPassedCard() && proposalCard().id === 0 && users().length > 0) {
@@ -7,39 +7,6 @@
 
     @if(users().length > 0) {
     <div class="wrapper">
-        @if (!isUnsavedPassedCard()) {
-        <div class="shift-pool" hide>
-            <div cdkDropList id="shift-pool" [cdkDropListData]="wShifts()" [cdkDropListConnectedTo]="dropListIds()"
-                class="shift-list" (cdkDropListDropped)="onDrop($event, '')">
-                @for(shift of wShifts(); track $index) {
-                <div cdkDrag class="shift-block whole">X</div>
-                }
-            </div>
-            <div cdkDropList id="shift-pool" [cdkDropListData]="mShifts()" [cdkDropListConnectedTo]="dropListIds()"
-                class="shift-list" (cdkDropListDropped)="onDrop($event, '')">
-                @for(shift of mShifts(); track $index) {
-                <div cdkDrag class="shift-block morning">
-                    <proposal-button timeFrom="11" timeTo="17" />
-                </div>
-                }
-            </div>
-            <div cdkDropList id="shift-pool" [cdkDropListData]="aShifts()" [cdkDropListConnectedTo]="dropListIds()"
-                class="shift-list" (cdkDropListDropped)="onDrop($event, '')">
-                @for(shift of aShifts(); track $index) {
-                <div cdkDrag class="shift-block afternoon">
-                    <proposal-button timeFrom="17" timeTo="22" />
-                </div>
-                }
-            </div>
-            <div cdkDropList id="shift-pool" [cdkDropListData]="destShifts()" [cdkDropListConnectedTo]="dropListIds()"
-                class="shift-list" (cdkDropListDropped)="onDrop($event, '')">
-                @for(shift of destShifts(); track $index) {
-                <div cdkDrag class="shift-block dest">{{ destShifts()[0].from }}</div>
-                }
-            </div>
-        </div>
-        }
-
         <div class="user-days-table">
             <table
                 [style]="`--min-width-table: ${proposalCard().proposalDays.length * 40 + 'px'} --margin-top-table: ${isUnsavedPassedCard() ? '30px' : ''}`">
@@ -65,25 +32,21 @@
                     <tr>
                         <td class="user-name-cell"
                             [style]="`--background-color-user: ${user.position === 'Cook' ? '#f9f9f9' : '#fff' }`"
-                            [class.last-cook]="userIndex === cookCount() - 1">{{
+                            [class.last-cook]="(userIndex === cookCount() - 1) && (users().length !== cookCount())">{{
                             user.name }}
                         </td>
 
                         @for(day of proposalCard().proposalDays; track $index; let i = $index) {
-                        <td cdkDropList [id]="'cell-' + user.id + '-' + i" [cdkDropListData]="assignments()[user.id][i]"
-                            (cdkDropListDropped)="onDrop($event, 'cell-' + user.id + '-' + i)" class="drop-zone"
-                            [cdkDropListConnectedTo]="dropListIds()"
-                            [class.disabled]="assignments()[user.id][i].length > 0"
+                        <td class="drop-zone"
                             [style]="`--background-color-dropzone: ${isFridayOrSaturday(day.date) ? '#f9f9f9' : '#fff' }`"
-                            [class.last-cook]="userIndex === cookCount() - 1"
-                            (click)="onAdd(user.id, i, day.date, user.name)">
+                            [class.last-cook]="(userIndex === cookCount() - 1) && (users().length !== cookCount())"
+                            [class.disabled]="isPassedTime(day.date)" (click)="onAdd(user.id, i, day.date, user.name)">
                             @for(shift of assignments()[user.id][i]; track $index; let j = $index) {
-                            <div cdkDrag [cdkDragDisabled]="isPassedTime(day.date)"
-                                [cdkDragData]="assignments()[user.id][i]" class="assigned-shift"
-                                (click)="(!isPassedTime(day.date) || (loggedUser.role === 'Admin')) && onUpdateProposal(user.id, i, day.date, user.name)">
+                            <div class="assigned-shift"
+                                (click)="!isPassedTime(day.date) && onUpdateProposal(user.id, i, day.date, user.name)">
                                 @if(shift.from === '11:00' && (shift.to === '22:00' || shift.to === '23:00')) {
                                 @if (isFridayOrSaturday(day.date) && (shift.to !== '23:00')) {
-                                <div cdkDrag class="shift-block custom">
+                                <div class="shift-block custom">
                                     <custom-proposal-button [timeFrom]="shift.from" [timeTo]="shift.to" />
                                 </div>
                                 } @else {
@@ -97,22 +60,22 @@
                                 }
                                 @else if(shift.from === '17:00' && (shift.to === '22:00' || shift.to === '23:00')) {
                                 @if (isFridayOrSaturday(day.date) && (shift.to !== '23:00')) {
-                                <div cdkDrag class="shift-block custom">
+                                <div class="shift-block custom">
                                     <custom-proposal-button [timeFrom]="shift.from" [timeTo]="shift.to" />
                                 </div>
                                 } @else {
-                                <div cdkDrag class="shift-block afternoon">
+                                <div class="shift-block afternoon">
                                     <proposal-button timeFrom="17" [timeTo]="shift.to.split(':')[0]" />
                                 </div>
                                 }
                                 }
                                 @else if(shift.from === 'F-M' || shift.from === 'OVA') {
-                                <div cdkDrag class="shift-block dest">
-                                    <div class="shift-block dest">{{ destShifts()[0].from }}</div>
+                                <div class="shift-block dest">
+                                    <div class="shift-block dest">{{ shift.from }}</div>
                                 </div>
                                 }
                                 @else {
-                                <div cdkDrag class="shift-block custom">
+                                <div class="shift-block custom">
                                     <custom-proposal-button [timeFrom]="shift.from" [timeTo]="shift.to" />
                                 </div>
                                 }
@@ -124,8 +87,7 @@
                     }
                 </tbody>
             </table>
-            <app-update-proposal [(updateVisible)]="updateVisible" [(masterAdd)]="masterAdd"
-                [destination]="destination()" />
+            <app-update-proposal [(updateVisible)]="updateVisible" [destination]="destination()" />
         </div>
     </div>
     }
@@ -135,39 +97,6 @@
     }
     }
     } @else {
-    <div class="skeleton">
-        <table class="empty">
-            <thead>
-                <tr>
-                    <th class="user-name"></th>
-                    @for(day of emptyDays; track $index) {
-                    <th>
-                        <div class="head-cell">
-                            <div class="head-cell-date">
-
-                            </div>
-                            <div class="head-cell-week-day">
-
-                            </div>
-                        </div>
-                    </th>
-                    }
-                </tr>
-            </thead>
-            <tbody>
-                @for(user of emptyUsers; track $index) {
-                <tr>
-                    <td class="user-name-cell">
-                    </td>
-
-                    @for(day of emptyDays; track $index; let i = $index) {
-                    <td>
-                    </td>
-                    }
-                </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+    <app-proposal-skeleton />
     }
 </div>

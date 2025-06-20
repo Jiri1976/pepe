@@ -29,7 +29,6 @@ export class UpdateProposalComponent implements OnInit {
   selectedProposalTimeFrom = computed(() => this.proposalsService.timeFrom());
   selectedProposalTimeTo = computed(() => this.proposalsService.timeTo());
   proposalForm!: FormGroup;
-  masterAdd = model(false);
   errorMessage = signal<string | null>(null);
 
   get timeFrom() {
@@ -135,7 +134,7 @@ export class UpdateProposalComponent implements OnInit {
     }
 
     if (shiftType === 'OVA' || shiftType === 'F-M') {
-      assignment[0].from = this.destination();
+      assignment[0].from = this.destination() === 'F-M' ? 'OVA' : 'F-M';
       assignment[0].to = isFridaySaturday ? '23:00' : '22:00';
     }
     this.proposalsService.updateAssigments(_assignments);

@@ -54,12 +54,7 @@ export class ProposalsService {
     calendarTitle = signal<string>(this.MONTHS_NAMES[new Date().getMonth()] + ' ' + new Date().getFullYear().toString().substring(2));
     users = signal<{ id: number, userId: number, name: string, position: string }[]>([]);
     shifts = signal<{ id: number; name: string, from: string, to: string }[]>([]);
-    wShifts = signal<{ id: number; name: string, from: string, to: string }[]>([]);
-    mShifts = signal<{ id: number; name: string, from: string, to: string }[]>([]);
-    aShifts = signal<{ id: number; name: string, from: string, to: string }[]>([]);
-    destShifts = signal<{ id: number; name: string, from: string, to: string }[]>([]);
     assignments = signal<{ [userId: number]: { [day: number]: any[] } }>({});
-    dropListIds = signal<string[]>([]);
     timeFrom = signal<Date>(new Date());
     timeTo = signal<Date>(new Date());
     isSaving = signal(false);
@@ -300,8 +295,6 @@ export class ProposalsService {
                     this.proposalCard.set(response.result);
                     this.filterUsers();
                     this.initializeUsers();
-                    this.generateShifts();
-                    this.getConnectedDropLists();
 
                     if (this.proposalCard().id !== 0) {
                         this.setAssigmentsFromSavedProposals();
@@ -328,16 +321,6 @@ export class ProposalsService {
             }
         }
         this.nothingChanged.set(changed)
-    }
-
-    private getConnectedDropLists() {
-        const dropListIds = ['shift-pool'];
-        this.users().forEach((user) => {
-            this.proposalCard().proposalDays.forEach((day, index) => {
-                dropListIds.push(`cell-${user.id}-${index}`);
-            });
-        });
-        this.dropListIds.set(dropListIds);
     }
 
     private filterUsers() {
@@ -402,25 +385,6 @@ export class ProposalsService {
             }
         }
         this.users.set(users);
-    }
-
-    private generateShifts() {
-        let shiftId = 1;
-        let _wShifts = [];
-        let _mShifts = [];
-        let _aShifts = [];
-        let _destShifts = [];
-        for (let i = 0; i < this.proposalCard().proposalDays.length * this.users().length; i++) {
-            _wShifts.push({ id: shiftId, name: `W`, from: '11:00', to: '' });
-            _mShifts.push({ id: shiftId, name: `M`, from: '11:00', to: '17:00' });
-            _aShifts.push({ id: shiftId, name: `A`, from: '17:00', to: '' });
-            _destShifts.push({ id: shiftId, name: `D`, from: this.proposalCard().destination === 'F-M' ? 'OVA' : 'F-M', to: '' });
-            shiftId += 1;
-        }
-        this.wShifts.set(_wShifts);
-        this.mShifts.set(_mShifts);
-        this.aShifts.set(_aShifts);
-        this.destShifts.set(_destShifts);
     }
 
     private initializeAssignments() {

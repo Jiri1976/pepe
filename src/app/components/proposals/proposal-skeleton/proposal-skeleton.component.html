@@ -1,0 +1,32 @@
+<div class="skeleton">
+    <table class="empty">
+        <thead>
+            <tr>
+                <th class="user-name"></th>
+                @for(day of emptyDays; track $index) {
+                <th>
+                    <div class="head-cell">
+                        <div class="head-cell-date">
+                        </div>
+                        <div class="head-cell-week-day">
+                        </div>
+                    </div>
+                </th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @for(user of emptyUsers; track $index) {
+            <tr>
+                <td class="user-name-cell">
+                </td>
+
+                @for(day of emptyDays; track $index; let i = $index) {
+                <td>
+                </td>
+                }
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
