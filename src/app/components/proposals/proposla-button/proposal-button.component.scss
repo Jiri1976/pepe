@@ -1,16 +1,15 @@
 .block {
-    height: 30px;
-    width: 30px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     font-weight: bold;
+    font-size: 0.6rem;
 
     .upper {
         position: relative;
-        top: 13px;
-        left: -6px;
+        top: 11px;
+        left: -5px;
     }
 
     .divider {
@@ -20,7 +19,7 @@
 
     .lower {
         position: relative;
-        bottom: 11px;
-        right: -6px;
+        bottom: 8px;
+        right: -5px;
     }
 }
