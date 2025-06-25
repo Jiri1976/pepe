@@ -487,7 +487,12 @@ p-toast {
 
                 .p-toast-message-content {
                     .p-toast-message-text {
-                        gap: 0rem !important
+                        gap: 0rem !important;
+
+                        .p-toast-detail {
+                            font-size: 1rem;
+                            font-weight: 600;
+                        }
                     }
                 }
             }

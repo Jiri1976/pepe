@@ -1,6 +1,7 @@
 <p-dialog [modal]="true" [visible]="masterAddVisible()" [style]="{ width: '35rem' }">
     <div class="wrapper">
         <div id="focus" (click)="onClose()"><i class="bi bi-x"></i></div>
+        <div class="today">{{ todayDate }}</div>
         <form autocomplete="off" id="form" [formGroup]="warehouseForm">
             <div formArrayName="items">
                 @for(item of items.controls; track item; let i = $index) {
