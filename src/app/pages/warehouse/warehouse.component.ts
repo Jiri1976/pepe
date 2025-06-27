@@ -21,6 +21,9 @@ import { PageAnimation } from '../../animations/page.animation';
 import { MasterAddComponent } from '../../components/warehouse/master-add/master-add.component';
 import { FormsModule } from '@angular/forms';
 
+import * as signalR from '@microsoft/signalr';
+import { environment } from '../../../environments/environment';
+
 @Component({
   selector: 'app-warehouse',
   imports: [
@@ -43,7 +46,8 @@ import { FormsModule } from '@angular/forms';
     PageAnimation
   ]
 })
-export class WarehouseComponent {
+export class WarehouseComponent implements OnDestroy {
+  private PEPE_HUB = environment.PEPE_HUB;
   private MONTHS_NAMES = ["LED", "ÚNO", "BŘE", "DUB", "KVĚ", "ČER", "ČRV", "SRP", "ZÁŘ", "ŘÍJ", "LIS", "PRO"];
   private MONTHS_NUM = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
   private authService = inject(AuthService);
@@ -52,6 +56,7 @@ export class WarehouseComponent {
   private destroyRef = inject(DestroyRef);
   private errorHandlingService = inject(ErrorHandlingService);
   private confirmService = inject(ConfirmService);
+  private hubUser: string = '';
   user = computed(() => this.authService.user());
   selectedUnit = computed(() => this.warehouseService.selectedUnit());
   unitHeaderTitle = '';
@@ -69,6 +74,69 @@ export class WarehouseComponent {
   @ViewChild(WarehouseItemsComponent) warehouseItems: any;
   defaultDate = new Date(new Date().getFullYear(), new Date().getMonth());
   maxDate: Date = new Date(new Date().getFullYear(), new Date().getMonth());
+  token = this.authService.getToken();
+  connectedUsers: string[] = [];
+
+  connection = new signalR.HubConnectionBuilder()
+    .withUrl(this.PEPE_HUB, {
+      accessTokenFactory: () => this.token!
+    })
+    .configureLogging(signalR.LogLevel.Error)
+    .withAutomaticReconnect()
+    .build();
+
+  constructor() {
+    this.start();
+    this.connection.on("ConnectedUser", (users: any) => {
+      this.connectedUsers = users;
+    });
+
+    this.connection.on("SendWarehouseCards", (user: string, cards: WarehouseCard[], isUpdate: boolean, destination: string, messageTime: string) => {
+      const hours = new Date(messageTime).getHours();
+      const minutes = new Date(messageTime).getMinutes() < 10 ? `0${new Date(messageTime).getMinutes()}` : new Date(messageTime).getMinutes();
+
+      if (isUpdate && user !== this.hubUser && this.user().role === 'Admin') {
+        if (destination === this.destination()) {
+          this.onReloadCards();
+        }
+        this.alertService.setAlert({ severity: 'info', summary: 'Info', detail: `${hours}:${minutes} Data pro ${destination} aktualizoval ${user.split('-')[0]}.` });
+      } else if (isUpdate && user !== this.hubUser && this.user().role === 'Master') {
+        if (destination === this.user().destination) {
+          this.onReloadCards();
+          this.alertService.setAlert({ severity: 'info', summary: 'Info', detail: `${hours}:${minutes} Data pro ${destination} aktualizoval ${user.split('-')[0]}.` });
+        }
+      }
+    });
+  }
+  ngOnDestroy(): void {
+    this.leaveChat();
+  }
+
+  public async start() {
+    this.hubUser = `${this.user().name}-${Date.parse(new Date().toISOString())}`;
+    try {
+      await this.connection.start();
+      await this.joinRoom(this.hubUser, 'warehouse');
+    } catch (error) {
+      this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Nepodařilo se navázat spojení s hubem.' });
+    }
+  }
+
+  public async joinRoom(user: string, room: string) {
+    return this.connection.invoke("JoinRoom", { user, room })
+  }
+
+  public async sendMessage(message: string) {
+    return this.connection.invoke("SendMessage", message)
+  }
+
+  public async sendCards(cards: WarehouseCard[], destination: string, isUpdating: boolean) {
+    return this.connection.invoke("SendWarehouseCards", cards, destination, isUpdating)
+  }
+
+  public async leaveChat() {
+    return this.connection.stop();
+  }
 
   onShowItems() {
     this.reorderedItems.set([]);

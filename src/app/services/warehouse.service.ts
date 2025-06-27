@@ -19,6 +19,7 @@ export class WarehouseService {
     warehouseCard = signal<WarehouseCard>({ id: 0, warehouseItemId: 0, warehouseItemName: '', monthYear: '', monthYearName: '', destination: '', units: [] });
     selectedUnit = signal<WarehouseUnit>({ id: 0, warehouseCardId: 0, warehouseItemId: 0, date: '', amount: 0 });
     visibleList = signal(false);
+    isUpdating = signal(false);
 
     setComponent(comp: WarehouseItemsComponent) {
         this.compRef.next(comp);

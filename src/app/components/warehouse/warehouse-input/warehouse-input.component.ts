@@ -33,10 +33,12 @@ export class WarehouseInputComponent {
   isLoading = signal(false);
   unit = input.required<WarehouseUnit>();
   user = input.required<AuthUser>();
+  selectedIndex!: number;
   submitAction = signal<'add' | 'delete' | null>(null);
 
   ngOnInit() {
     this.initializedItemForm();
+    this.selectedIndex = this.warehouseUnitsComponent.cards().indexOf(this.card());
   }
 
   get amount() {
@@ -69,6 +71,7 @@ export class WarehouseInputComponent {
                   this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
                 } else if (response.isSuccess) {
                   this.amount?.setValue(_selectedUnit?.amount);
+                  this.warehouseService.isUpdating.set(true);
                   this.warehouseUnitsComponent.uploadCards();
                   this.isLoading.set(false);
                   this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Položka byla vynulována!' });
@@ -102,6 +105,8 @@ export class WarehouseInputComponent {
           } else if (response.isSuccess) {
             this.isLoading.set(false);
             this.amount?.setValue(_selectedUnit?.amount);
+            this.warehouseService.isUpdating.set(true);
+            this.warehouseUnitsComponent.selectedIndex.set(this.selectedIndex);
             this.warehouseUnitsComponent.uploadCards();
             this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Položka byla uložena!' });
           }

@@ -18,7 +18,7 @@ export class AlertComponent {
   constructor() {
     effect(() => {
       if (this.alert().summary !== '') {
-        this.messageService.add({ key: 'confirm', severity: this.alert().severity, detail: this.alert().detail });
+        this.messageService.add({ key: 'confirm', severity: this.alert().severity, detail: this.alert().detail, sticky: this.alert().severity === 'info' });
       }
     });
   }

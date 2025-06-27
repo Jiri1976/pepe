@@ -13,6 +13,7 @@ import { HideElementDirective } from '../../../directives/hide-element.directive
 import { ConfirmService } from '../../../services/confirm.service';
 import { WarehouseInputComponent } from "../warehouse-input/warehouse-input.component";
 import { PageAnimation } from '../../../animations/page.animation';
+import { WarehouseComponent } from '../../../pages/warehouse/warehouse.component';
 
 @Component({
   selector: 'app-warehouse-units',
@@ -34,6 +35,7 @@ export class WarehouseUnitsComponent implements OnInit {
   private errorHandlingService = inject(ErrorHandlingService);
   private swiper!: Swiper;
   private confirmService = inject(ConfirmService);
+  private warehouseComponent = inject(WarehouseComponent);
   user = computed(() => this.authService.user());
   isLoading = signal(false);
   cards = model<WarehouseCard[]>([]);
@@ -91,6 +93,10 @@ export class WarehouseUnitsComponent implements OnInit {
         } else if (response.isSuccess) {
           if (response.result.length > 0) {
             this.cards.set(response.result);
+            this.warehouseComponent.sendCards(response.result, this.destination(), this.warehouseService.isUpdating());
+            if (this.warehouseService.isUpdating()) {
+              this.warehouseService.isUpdating.set(false);
+            }
             this.getItems();
             setTimeout(() => {
               this.swiper = this.swiperRef.nativeElement.swiper;
