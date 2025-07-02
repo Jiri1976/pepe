@@ -108,8 +108,9 @@ export class WarehouseComponent implements OnDestroy {
       }
     });
   }
+
   ngOnDestroy(): void {
-    this.leaveChat();
+    this.leaveRoom();
   }
 
   public async start() {
@@ -123,19 +124,35 @@ export class WarehouseComponent implements OnDestroy {
   }
 
   public async joinRoom(user: string, room: string) {
-    return this.connection.invoke("JoinRoom", { user, room })
+    try {
+      return this.connection.invoke("JoinRoom", { user, room });
+    } catch (error) {
+      console.log('JOIN ROOM ERROR: ', error);
+    }
   }
 
   public async sendMessage(message: string) {
-    return this.connection.invoke("SendMessage", message)
+    try {
+      return this.connection.invoke("SendMessage", message);
+    } catch (error) {
+      console.log('SEND MESSAGE ERROR: ', error);
+    }
   }
 
   public async sendCards(cards: WarehouseCard[], destination: string, isUpdating: boolean) {
-    return this.connection.invoke("SendWarehouseCards", cards, destination, isUpdating)
+    try {
+      return this.connection.invoke("SendWarehouseCards", cards, destination, isUpdating);
+    } catch (error) {
+      console.log('SEND CARDS ERROR: ', error);
+    }
   }
 
-  public async leaveChat() {
-    return this.connection.stop();
+  public async leaveRoom() {
+    try {
+      return this.connection.stop();
+    } catch (error) {
+      console.log('LEAVE CHAT ERROR: ', error);
+    }
   }
 
   onShowItems() {

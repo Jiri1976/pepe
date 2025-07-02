@@ -499,3 +499,13 @@ p-toast {
         }
     }
 }
+
+p-card {
+
+    .p-card.p-component {
+        .p-card-body {
+            min-height: 270px !important;
+            padding: 0 !important;
+        }
+    }
+}

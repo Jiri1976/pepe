@@ -1,4 +1,112 @@
 <div class="container text-center">
+    <div class="row mb-5">
+        @if (user().role === 'Admin' || (user().role === 'Master' && user().destination === 'F-M')) {
+        <div class="col">
+            <div class="proposal" routerLink="/plans">
+                <p-card>
+                    <p class="m-0 title top">
+                        Frýdek-Místek
+                    </p>
+                    @if (!loading()) {
+                    <p class="subtitle">
+                        KUCHYŇ
+                    </p>
+                    @if (fmCooks().length > 0) {
+                    @for(cook of fmCooks(); track $index) {
+                    <div class="row user">
+                        <div class="col" style="min-width: 155px;">{{ cook.userName }}</div>
+                        <div class="col" style="min-width: 190px;">{{ cook.userSurname }}</div>
+                        <div class="col" style="min-width: 10px;"><i class="bi bi-clock"></i></div>
+                        <div class="col" style="min-width: 65px;">{{ cook.from }}</div>
+                        <div class="col" style="min-width: 65px;">{{ cook.to }}</div>
+                    </div>
+                    }
+                    } @else {
+                    <p class="no-shifts">Směny nejsou naplánovány</p>
+                    }
+
+                    <p class="subtitle">
+                        ROZVOZ
+                    </p>
+                    @if (fmDrivers().length > 0) {
+                    @for(driver of fmDrivers(); track $index) {
+                    <div class="row user">
+                        <div class="col" style="min-width: 155px;">{{ driver.userName }}</div>
+                        <div class="col" style="min-width: 190px;">{{ driver.userSurname }}</div>
+                        <div class="col" style="min-width: 10px;"><i class="bi bi-clock"></i></div>
+                        <div class="col" style="min-width: 65px;">{{ driver.from }}</div>
+                        <div class="col" style="min-width: 65px;">{{ driver.to }}</div>
+                    </div>
+                    }
+                    }@else {
+                    <p class="no-shifts">Směny nejsou naplánovány</p>
+                    }
+                    }
+                    @else {
+                    <p class="loading-proposal"></p>
+                    }
+                    <p class="m-0 title bottom">
+                        {{ day }}.{{ month }}.{{ year }}
+                    </p>
+                </p-card>
+            </div>
+        </div>
+        }
+
+        @if (user().role === 'Admin' || (user().role === 'Master' && user().destination === 'OVA')) {
+        <div class="col">
+            <div class="proposal" routerLink="/plans">
+                <p-card>
+                    <p class="m-0 title top">
+                        Ostrava
+                    </p>
+                    @if (!loading()) {
+                    <p class="subtitle">
+                        KUCHYŇ
+                    </p>
+                    @if (ovaCooks().length > 0) {
+                    @for(cook of ovaCooks(); track $index) {
+                    <div class="row user">
+                        <div class="col" style="min-width: 155px;">{{ cook.userName }}</div>
+                        <div class="col" style="min-width: 190px;">{{ cook.userSurname }}</div>
+                        <div class="col" style="min-width: 10px;"><i class="bi bi-clock"></i></div>
+                        <div class="col" style="min-width: 65px;">{{ cook.from }}</div>
+                        <div class="col" style="min-width: 65px;">{{ cook.to }}</div>
+                    </div>
+                    }
+                    } @else {
+                    <p class="no-shifts">Směny nejsou naplánovány</p>
+                    }
+
+                    <p class="subtitle">
+                        ROZVOZ
+                    </p>
+                    @if (ovaDrivers().length > 0) {
+                    @for(driver of ovaDrivers(); track $index) {
+                    <div class="row user">
+                        <div class="col" style="min-width: 155px;">{{ driver.userName }}</div>
+                        <div class="col" style="min-width: 190px;">{{ driver.userSurname }}</div>
+                        <div class="col" style="min-width: 10px;"><i class="bi bi-clock"></i></div>
+                        <div class="col" style="min-width: 65px;">{{ driver.from }}</div>
+                        <div class="col" style="min-width: 65px;">{{ driver.to }}</div>
+                    </div>
+                    }
+                    }@else {
+                    <p class="no-shifts">Směny nejsou naplánovány</p>
+                    }
+                    }
+                    @else {
+                    <p class="loading-proposal"></p>
+                    }
+                    <p class="m-0 title bottom">
+                        {{ day }}.{{ month }}.{{ year }}
+                    </p>
+                </p-card>
+            </div>
+        </div>
+        }
+    </div>
+
     <div class="row">
         <div class="col" hide>
             <div class="category" routerLink="/users">

@@ -73,6 +73,12 @@ export class ProposalsService {
         return this.http.get<Response>(url, httpOptions);
     }
 
+    getProposalsOverview() {
+        const url = this.BASE_ROUTE + `Proposals/GetProposalsOverview`;
+        return this.http.get<Response>(url);
+    }
+
+
     deleteProposalCard(cardId: number) {
         let httpOptions = {
             headers: new HttpHeaders({
