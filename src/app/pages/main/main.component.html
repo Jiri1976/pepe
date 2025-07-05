@@ -2,7 +2,7 @@
     <div class="row mb-5">
         @if (user().role === 'Admin' || (user().role === 'Master' && user().destination === 'F-M')) {
         <div class="col">
-            <div class="proposal" routerLink="/plans">
+            <div class="proposal" (click)="onGoToFMPlans()">
                 <p-card>
                     <p class="m-0 title top">
                         Frýdek-Místek
@@ -55,7 +55,7 @@
 
         @if (user().role === 'Admin' || (user().role === 'Master' && user().destination === 'OVA')) {
         <div class="col">
-            <div class="proposal" routerLink="/plans">
+            <div class="proposal" (click)="onGoToOvaPlans()">
                 <p-card>
                     <p class="m-0 title top">
                         Ostrava

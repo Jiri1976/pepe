@@ -1,6 +1,5 @@
-import { Component, computed, DestroyRef, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, computed, DestroyRef, inject, signal, ViewChild } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
-
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { CalendarModule, Calendar } from 'primeng/calendar';
@@ -34,14 +33,14 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     OverlayModule,
     ProposalsNavComponent,
     DragDropModule
-],
+  ],
   templateUrl: './plans.component.html',
   styleUrl: './plans.component.scss',
   animations: [
     PageAnimation
   ]
 })
-export class PlansComponent implements OnInit {
+export class PlansComponent {
   private MONTHS_NUM = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
   private authService = inject(AuthService);
   private proposalsService = inject(ProposalsService);
@@ -51,7 +50,6 @@ export class PlansComponent implements OnInit {
   private errorHandlingService = inject(ErrorHandlingService);
   defaultDate = new Date(new Date().getFullYear(), new Date().getMonth());
   maxDate: Date = new Date(new Date().getFullYear(), new Date().getMonth());
-  loggedUser = this.authService.getUser();
   proposalCard = computed(() => this.proposalsService.proposalCard());
   isLoading = computed(() => this.proposalsService.isProposalLoading());
   user = computed(() => this.authService.user());
@@ -60,14 +58,6 @@ export class PlansComponent implements OnInit {
   assignments = computed(() => this.proposalsService.assignments());
   pdfLoading = signal(false);
   @ViewChild('calendar', { static: false }) calendar!: Calendar;
-
-  ngOnInit(): void {
-    if (this.loggedUser.role === 'Admin') {
-      this.proposalsService.destination.set('F-M');
-    } else {
-      this.proposalsService.destination.set(this.loggedUser.destination);
-    }
-  }
 
   toggleCalendar() {
     if (this.calendar) {

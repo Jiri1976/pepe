@@ -59,6 +59,7 @@ export class ProposalsService {
     timeTo = signal<Date>(new Date());
     isSaving = signal(false);
     cookCount = signal<number>(0);
+    updateHub = signal(false);
 
     getProposalsByMonthAndDestination() {
         let httpOptions = {
@@ -107,6 +108,7 @@ export class ProposalsService {
                     }
                     this.uploadedCard = structuredClone(this.proposalCard());
                     this.checkNothingChanged();
+                    this.updateHub.set(true);
                     this.isSaving.set(false);
                 }
             })

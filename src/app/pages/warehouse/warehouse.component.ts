@@ -56,7 +56,6 @@ export class WarehouseComponent implements OnDestroy {
   private destroyRef = inject(DestroyRef);
   private errorHandlingService = inject(ErrorHandlingService);
   private confirmService = inject(ConfirmService);
-  private hubUser: string = '';
   user = computed(() => this.authService.user());
   selectedUnit = computed(() => this.warehouseService.selectedUnit());
   unitHeaderTitle = '';
@@ -75,7 +74,7 @@ export class WarehouseComponent implements OnDestroy {
   defaultDate = new Date(new Date().getFullYear(), new Date().getMonth());
   maxDate: Date = new Date(new Date().getFullYear(), new Date().getMonth());
   token = this.authService.getToken();
-  connectedUsers: string[] = [];
+  hubUser = `${this.user().name}`;
 
   connection = new signalR.HubConnectionBuilder()
     .withUrl(this.PEPE_HUB, {
@@ -87,9 +86,6 @@ export class WarehouseComponent implements OnDestroy {
 
   constructor() {
     this.start();
-    this.connection.on("ConnectedUser", (users: any) => {
-      this.connectedUsers = users;
-    });
 
     this.connection.on("SendWarehouseCards", (user: string, cards: WarehouseCard[], isUpdate: boolean, destination: string, messageTime: string) => {
       const hours = new Date(messageTime).getHours();
@@ -99,11 +95,11 @@ export class WarehouseComponent implements OnDestroy {
         if (destination === this.destination()) {
           this.onReloadCards();
         }
-        this.alertService.setAlert({ severity: 'info', summary: 'Info', detail: `${hours}:${minutes} Data pro ${destination} aktualizoval ${user.split('-')[0]}.` });
+        this.alertService.setAlert({ severity: 'info', summary: 'Info', detail: `${hours}:${minutes} Data pro ${destination} aktualizoval ${user}.` });
       } else if (isUpdate && user !== this.hubUser && this.user().role === 'Master') {
         if (destination === this.user().destination) {
           this.onReloadCards();
-          this.alertService.setAlert({ severity: 'info', summary: 'Info', detail: `${hours}:${minutes} Data pro ${destination} aktualizoval ${user.split('-')[0]}.` });
+          this.alertService.setAlert({ severity: 'info', summary: 'Info', detail: `${hours}:${minutes} Data pro ${destination} aktualizoval ${user}.` });
         }
       }
     });
@@ -114,7 +110,6 @@ export class WarehouseComponent implements OnDestroy {
   }
 
   public async start() {
-    this.hubUser = `${this.user().name}-${Date.parse(new Date().toISOString())}`;
     try {
       await this.connection.start();
       await this.joinRoom(this.hubUser, 'warehouse');

@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { ProposalsService } from '../../services/proposals.service';
 import { AuthService } from '../../services/auth.service';
 import { ProposalButtonComponent } from "./proposla-button/proposal-button.component";
@@ -6,6 +6,10 @@ import { UpdateProposalComponent } from "./update-proposal/update-proposal.compo
 import { CustomProposalButtonComponent } from "./custom-proposal-button/custom-proposal-button.component";
 import { PageAnimation } from '../../animations/page.animation';
 import { ProposalSkeletonComponent } from "./proposal-skeleton/proposal-skeleton.component";
+import { AlertService } from '../../services/alert.service';
+
+import * as signalR from '@microsoft/signalr';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-proposals',
@@ -22,7 +26,9 @@ import { ProposalSkeletonComponent } from "./proposal-skeleton/proposal-skeleton
   ]
 })
 export class ProposalsComponent {
+  private PEPE_HUB = environment.PEPE_HUB;
   private authService = inject(AuthService);
+  private alertService = inject(AlertService);
   proposalsService = inject(ProposalsService);
   loggedUser = this.authService.getUser();
   destination = computed(() => this.proposalsService.destination());
@@ -36,9 +42,80 @@ export class ProposalsComponent {
   monthYear = computed(() => this.proposalsService.monthYear());
   updateVisible = signal(false);
   cookCount = computed(() => this.proposalsService.cookCount());
+  hubUser = `${this.loggedUser.name}`;
+  token = this.authService.getToken();
+  updateHub = computed(() => this.proposalsService.updateHub());
+
+  hubEffect = effect(() => {
+    if (this.updateHub()) {
+      this.updateProposals(this.destination(), true);
+    }
+  })
+
+  connection = new signalR.HubConnectionBuilder()
+    .withUrl(this.PEPE_HUB, {
+      accessTokenFactory: () => this.token!
+    })
+    .configureLogging(signalR.LogLevel.Error)
+    .withAutomaticReconnect()
+    .build();
+
+  constructor() {
+    this.start();
+    this.connection.on("UpdateProposals", (user: string, isUpdate: boolean, destination: string, messageTime: string) => {
+      const hours = new Date(messageTime).getHours();
+      const minutes = new Date(messageTime).getMinutes() < 10 ? `0${new Date(messageTime).getMinutes()}` : new Date(messageTime).getMinutes();
+
+      if (isUpdate && user !== this.hubUser && this.loggedUser.role === 'Admin') {
+        if (destination === this.destination()) {
+          this.proposalsService.uploadProposals();
+        }
+        this.alertService.setAlert({ severity: 'info', summary: 'Info', detail: `${hours}:${minutes} Rozpis pro ${destination} aktualizoval ${user}.` });
+      } else if (isUpdate && user !== this.hubUser && this.loggedUser.role === 'Master') {
+        if (destination === this.destination()) {
+          this.proposalsService.uploadProposals();
+          this.alertService.setAlert({ severity: 'info', summary: 'Info', detail: `${hours}:${minutes} Rozpis pro ${destination} aktualizoval ${user}.` });
+        }
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.proposalsService.uploadProposals();
+  }
+
+  public async start() {
+    try {
+      await this.connection.start();
+      await this.joinRoom(this.hubUser, 'proposals');
+    } catch (error) {
+      this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Nepodařilo se navázat spojení s hubem.' });
+    }
+  }
+
+  public async joinRoom(user: string, room: string) {
+    try {
+      return this.connection.invoke("JoinRoom", { user, room });
+    } catch (error) {
+      console.log('PROPOSALS - JOIN ROOM ERROR: ', error);
+    }
+  }
+
+  public async updateProposals(destination: string, isUpdating: boolean) {
+    try {
+      this.proposalsService.updateHub.set(false);
+      return this.connection.invoke("UpdateProposals", destination, isUpdating);
+    } catch (error) {
+      console.log('PROPOSALS - UPDATE PROPOSALS ERROR: ', error);
+    }
+  }
+
+  public async leaveRoom() {
+    try {
+      return this.connection.stop();
+    } catch (error) {
+      console.log('PROPOSALS - LEAVE CHAT ERROR: ', error);
+    }
   }
 
   isFridayOrSaturday(date: string) {
@@ -104,5 +181,9 @@ export class ProposalsComponent {
     this.proposalsService.setSelectedProposal(proposal);
     this.proposalsService.setTime(proposal);
     this.updateVisible.set(true);
+  }
+
+  ngOnDestroy(): void {
+    this.leaveRoom();
   }
 }

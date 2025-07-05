@@ -73,10 +73,11 @@ export class MasterAddComponent implements OnInit {
           this.isLoading.set(false);
           this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
         } else if (response.isSuccess) {
+          this.warehouseService.isUpdating.set(true);
           this.warehouseComponent.onReloadCards();
           this.isLoading.set(false);
-          this.masterAddVisible.set(false);
           this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Karty byly aktualizovány.' });
+          this.masterAddVisible.set(false);
         }
       }),
 
@@ -88,7 +89,6 @@ export class MasterAddComponent implements OnInit {
     this.destroyRef.onDestroy(() => {
       subscription.unsubscribe();
     });
-
   }
 
   private getItems() {
