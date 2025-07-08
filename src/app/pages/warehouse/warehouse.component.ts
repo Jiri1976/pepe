@@ -95,11 +95,19 @@ export class WarehouseComponent implements OnDestroy {
         if (destination === this.destination()) {
           this.onReloadCards();
         }
-        this.alertService.setAlert({ severity: 'info', summary: 'Info', detail: `${hours}:${minutes} Data pro ${destination} aktualizoval ${user}.` });
+        this.alertService.setAlert({ severity: 'info', summary: 'Info', detail: `${hours}:${minutes} Sklad pro ${destination} aktualizoval ${user}.` });
       } else if (isUpdate && user !== this.hubUser && this.user().role === 'Master') {
         if (destination === this.user().destination) {
           this.onReloadCards();
-          this.alertService.setAlert({ severity: 'info', summary: 'Info', detail: `${hours}:${minutes} Data pro ${destination} aktualizoval ${user}.` });
+          if (!this.masterAddVisible()) {
+            this.alertService.setAlert({ severity: 'info', summary: 'Info', detail: `${hours}:${minutes} Sklad pro ${destination} aktualizoval ${user}.` });
+          }
+          if (this.masterAddVisible()) {
+            this.masterAddVisible.set(false);
+            // setTimeout(() => {
+            //   this.masterAddVisible.set(true);
+            // }, 600);
+          }
         }
       }
     });
@@ -262,6 +270,7 @@ export class WarehouseComponent implements OnDestroy {
                 this.warehouseUnits.isLoading.set(false);
                 this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
               } else {
+                this.warehouseService.isUpdating.set(true);
                 this.warehouseUnits.uploadCards();
               }
             })

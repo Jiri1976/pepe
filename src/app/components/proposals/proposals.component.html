@@ -7,88 +7,87 @@
 
     @if(users().length > 0) {
     <div class="wrapper">
-        <div class="user-days-table">
-            <table
-                [style]="`--min-width-table: ${proposalCard().proposalDays.length * 40 + 'px'} --margin-top-table: ${isUnsavedPassedCard() ? '30px' : ''}`">
-                <thead>
-                    <tr>
-                        <th class="user-name"></th>
-                        @for(day of proposalCard().proposalDays; track $index) {
-                        <th [style]="`--background-color-head: ${isFridayOrSaturday(day.date) ? '#f9f9f9' : '#fff'}`">
-                            <div class="head-cell">
-                                <div class="head-cell-date">
-                                    {{ day.date.split('.')[0] }}
-                                </div>
-                                <div class="head-cell-week-day">
-                                    {{dayOfWeek(day.date)}}
-                                </div>
-                            </div>
-                        </th>
-                        }
-                    </tr>
-                </thead>
-                <tbody>
-                    @for(user of users(); track $index; let userIndex = $index) {
-                    <tr>
-                        <td class="user-name-cell"
-                            [style]="`--background-color-user: ${user.position === 'Cook' ? '#f9f9f9' : '#fff' }`"
-                            [class.last-cook]="(userIndex === cookCount() - 1) && (users().length !== cookCount())">{{
-                            user.name }}
-                        </td>
 
-                        @for(day of proposalCard().proposalDays; track $index; let i = $index) {
-                        <td class="drop-zone"
-                            [style]="`--background-color-dropzone: ${isFridayOrSaturday(day.date) ? '#f9f9f9' : '#fff' }`"
-                            [class.last-cook]="(userIndex === cookCount() - 1) && (users().length !== cookCount())"
-                            [class.disabled]="isPassedTime(day.date)" (click)="onAdd(user.id, i, day.date, user.name)">
-                            @for(shift of assignments()[user.id][i]; track $index; let j = $index) {
-                            <div class="assigned-shift"
-                                (click)="!isPassedTime(day.date) && onUpdateProposal(user.id, i, day.date, user.name)">
-                                @if(shift.from === '11:00' && (shift.to === '22:00' || shift.to === '23:00')) {
-                                @if (isFridayOrSaturday(day.date) && (shift.to !== '23:00')) {
-                                <div class="shift-block custom">
-                                    <custom-proposal-button [timeFrom]="shift.from" [timeTo]="shift.to" />
-                                </div>
-                                } @else {
-                                <div class="shift-block whole">X</div>
-                                }
-                                }
-                                @else if(shift.from === '11:00' && shift.to === '17:00') {
-                                <div class="shift-block morning">
-                                    <proposal-button timeFrom="11" timeTo="17" />
-                                </div>
-                                }
-                                @else if(shift.from === '17:00' && (shift.to === '22:00' || shift.to === '23:00')) {
-                                @if (isFridayOrSaturday(day.date) && (shift.to !== '23:00')) {
-                                <div class="shift-block custom">
-                                    <custom-proposal-button [timeFrom]="shift.from" [timeTo]="shift.to" />
-                                </div>
-                                } @else {
-                                <div class="shift-block afternoon">
-                                    <proposal-button timeFrom="17" [timeTo]="shift.to.split(':')[0]" />
-                                </div>
-                                }
-                                }
-                                @else if(shift.from === 'F-M' || shift.from === 'OVA') {
-                                <div class="shift-block dest">
-                                    <div class="shift-block dest">{{ shift.from }}</div>
-                                </div>
-                                }
-                                @else {
-                                <div class="shift-block custom">
-                                    <custom-proposal-button [timeFrom]="shift.from" [timeTo]="shift.to" />
-                                </div>
-                                }
+        <div class="table"
+            [style]="`--min-width-table: ${proposalCard().proposalDays.length * 40 + 'px'} --margin-top-table: ${isUnsavedPassedCard() ? '30px' : ''}`">
+            <div class="table-head">
+                <div class="user-name"></div>
+                @for(day of proposalCard().proposalDays; track $index) {
+                <th>
+                    <div class="cell"
+                        [style]="`--background-color-head: ${isFridayOrSaturday(day.date) ? '#E9E9E9' : '#fff'}`">
+                        <div class="cell-date">
+                            {{ day.date.split('.')[0] }}
+                        </div>
+                        <div class="cell-week-day">
+                            {{dayOfWeek(day.date)}}
+                        </div>
+                    </div>
+                </th>
+                }
+            </div>
+
+            <div class="body">
+                @for(user of users(); track $index; let userIndex = $index) {
+                <div class="table-row">
+                    <div class="user-name-cell"
+                        [style]="`--background-color-user: ${user.position === 'Cook' ? '#E9E9E9' : '#fff' }`"
+                        [class.last-cook]="(userIndex === cookCount() - 1) && (users().length !== cookCount())">{{
+                        user.name }}
+                    </div>
+
+                    @for(day of proposalCard().proposalDays; track $index; let i = $index) {
+                    <th class="drop-zone"
+                        [style]="`--background-color-dropzone: ${isFridayOrSaturday(day.date) ? '#E9E9E9' : '#fff' }`"
+                        [class.last-cook]="(userIndex === cookCount() - 1) && (users().length !== cookCount())"
+                        [class.disabled]="isPassedTime(day.date)" (click)="onAdd(user.id, i, day.date, user.name)">
+                        @for(shift of assignments()[user.id][i]; track $index; let j = $index) {
+                        <div class="assigned-shift"
+                            (click)="!isPassedTime(day.date) && onUpdateProposal(user.id, i, day.date, user.name)">
+                            @if(shift.from === '11:00' && (shift.to === '22:00' || shift.to === '23:00')) {
+                            @if (isFridayOrSaturday(day.date) && (shift.to !== '23:00')) {
+                            <div class="shift-block custom">
+                                <custom-proposal-button [timeFrom]="shift.from" [timeTo]="shift.to" />
+                            </div>
+                            } @else {
+                            <div class="shift-block whole">X</div>
+                            }
+                            }
+                            @else if(shift.from === '11:00' && shift.to === '17:00') {
+                            <div class="shift-block morning">
+                                <proposal-button timeFrom="11" timeTo="17" />
                             </div>
                             }
-                        </td>
+                            @else if(shift.from === '17:00' && (shift.to === '22:00' || shift.to === '23:00')) {
+                            @if (isFridayOrSaturday(day.date) && (shift.to !== '23:00')) {
+                            <div class="shift-block custom">
+                                <custom-proposal-button [timeFrom]="shift.from" [timeTo]="shift.to" />
+                            </div>
+                            } @else {
+                            <div class="shift-block afternoon">
+                                <proposal-button timeFrom="17" [timeTo]="shift.to.split(':')[0]" />
+                            </div>
+                            }
+                            }
+                            @else if(shift.from === 'F-M' || shift.from === 'OVA') {
+                            <div class="shift-block dest">
+                                <div class="shift-block dest">{{ shift.from === 'F-M' ? 'FM' : 'OVA'}}</div>
+                            </div>
+                            }
+                            @else {
+                            <div class="shift-block custom">
+                                <custom-proposal-button [timeFrom]="shift.from" [timeTo]="shift.to" />
+                            </div>
+                            }
+                        </div>
                         }
-                    </tr>
+                    </th>
                     }
-                </tbody>
-            </table>
-            <app-update-proposal [(updateVisible)]="updateVisible" [destination]="destination()" />
+                </div>
+                }
+            </div>
         </div>
+        <app-update-proposal [(updateVisible)]="updateVisible" [destination]="destination()" />
     </div>
     }
 

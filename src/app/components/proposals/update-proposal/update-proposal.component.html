@@ -15,12 +15,10 @@
             <button type="button" class="btn whole" (click)="onUpdate('W')">X</button>
             <div class="morning" (click)="onUpdate('M')">
                 <div class="upper">11</div>
-                <div class="divider">/</div>
                 <div class="lower">17</div>
             </div>
             <div class="afternoon" (click)="onUpdate('A')">
                 <div class="upper">17</div>
-                <div class="divider">/</div>
                 <div class="lower">22</div>
             </div>
             <button type="button" class="btn destination" (click)="onUpdate(destination())">{{ destination() === 'F-M' ?
@@ -45,12 +43,12 @@
         </div>
 
         <div class="row mt-5">
-            <div class="col-6">
-                <button type="button" class="btn w-100 cancel" (click)="updateVisible.set(false)"><i
+            <div class="col-6 right">
+                <button type="button" class="btn cancel" (click)="updateVisible.set(false)"><i
                         class="bi bi-x"></i>&nbsp;Zpět</button>
             </div>
             <div class="col-6">
-                <button type="submit" class="btn submit w-100" (click)="onUpdate()" [disabled]="proposalForm.invalid"><i
+                <button type="submit" class="btn submit" (click)="onUpdate()" [disabled]="proposalForm.invalid"><i
                         class="bi bi-pencil-square"></i>&nbsp;Upravit</button>
             </div>
         </div>

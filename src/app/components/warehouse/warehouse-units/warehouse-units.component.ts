@@ -91,12 +91,12 @@ export class WarehouseUnitsComponent implements OnInit {
           this.isLoading.set(false);
           this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
         } else if (response.isSuccess) {
+          this.warehouseComponent.sendCards(response.result, this.destination(), this.warehouseService.isUpdating());
+          if (this.warehouseService.isUpdating()) {
+            this.warehouseService.isUpdating.set(false);
+          }
           if (response.result.length > 0) {
             this.cards.set(response.result);
-            this.warehouseComponent.sendCards(response.result, this.destination(), this.warehouseService.isUpdating());
-            if (this.warehouseService.isUpdating()) {
-              this.warehouseService.isUpdating.set(false);
-            }
             this.getItems();
             setTimeout(() => {
               this.swiper = this.swiperRef.nativeElement.swiper;
@@ -136,38 +136,7 @@ export class WarehouseUnitsComponent implements OnInit {
                 this.isLoading.set(false);
                 this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
               } else {
-                this.uploadCards();
-              }
-            })
-          ).subscribe({
-            error: error => this.handleError(error)
-          });
-
-          this.destroyRef.onDestroy(() => {
-            subscription.unsubscribe();
-          });
-        }
-      });
-  }
-
-  onDeleteCards() {
-    if (this.cards().length === 0) {
-      this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Chybí karty.' });
-      return;
-    }
-    this.confirmService.confirm(`Opravdu smazat karty za ${this.cards()[0].monthYearName}?`)
-      .then((confirmed) => {
-        if (confirmed) {
-          this.isLoading.set(true);
-          const subscription = this.warehouseService.deleteWarehouseCards(this.monthYear(), this.destination()).pipe(
-            tap(response => {
-              if (response === null) {
-                this.isLoading.set(false);
-                this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
-              } else if (response.isSuccess === false) {
-                this.isLoading.set(false);
-                this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
-              } else {
+                this.warehouseService.isUpdating.set(true);
                 this.uploadCards();
               }
             })
@@ -192,5 +161,4 @@ export class WarehouseUnitsComponent implements OnInit {
     this.isLoading.set(false);
     return this.errorHandlingService.handleError(errorRes);
   };
-
 }

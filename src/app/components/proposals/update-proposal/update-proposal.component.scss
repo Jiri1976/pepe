@@ -39,6 +39,7 @@ form {
     }
 
     .submit {
+        width: 100px;
         background: #24355A;
         border: 1px solid #24355A;
         color: #fff;
@@ -55,6 +56,7 @@ form {
     }
 
     .cancel {
+        width: 100px;
         background: #F53B57;
         border: 1px solid #F53B57;
         color: #fff;
@@ -71,7 +73,7 @@ form {
         font-weight: bold;
         width: 30px;
         height: 30px;
-        border-radius: 5px;
+        border-radius: 50%;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -109,7 +111,7 @@ form {
     .afternoon {
         width: 30px;
         height: 30px;
-        border-radius: 5px;
+        border-radius: 50%;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -122,19 +124,20 @@ form {
 
         .upper {
             position: relative;
-            top: 13px;
-            left: -6px;
-        }
-
-        .divider {
-            position: relative;
-            rotate: 30deg;
+            top: 3px;
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            justify-content: center;
         }
 
         .lower {
             position: relative;
-            bottom: 11px;
-            right: -6px;
+            bottom: 2px;
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            justify-content: center;
         }
     }
 
@@ -160,6 +163,13 @@ form {
         margin-top: 10px;
         justify-content: center;
         width: 100%;
+    }
+
+    .row {
+        .col-6.right {
+            display: flex;
+            justify-content: right;
+        }
     }
 }
 

@@ -3,23 +3,24 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    font-weight: bold;
-    font-size: 0.6rem;
+    font-weight: 600;
+    font-size: 0.9rem;
 
     .upper {
         position: relative;
-        top: 11px;
-        left: -5px;
-    }
-
-    .divider {
-        position: relative;
-        rotate: 30deg;
+        top: 3px;
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        justify-content: center;
     }
 
     .lower {
         position: relative;
-        bottom: 8px;
-        right: -5px;
+        bottom: 2px;
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        justify-content: center;
     }
 }
