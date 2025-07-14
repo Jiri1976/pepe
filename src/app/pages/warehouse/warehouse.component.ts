@@ -14,15 +14,14 @@ import { WarehouseItem } from '../../models/warehouse/warehouse-item.interface';
 import { Calendar, CalendarModule } from 'primeng/calendar';
 import { DatePickerModule } from 'primeng/datepicker';
 import { WarehouseUnitsComponent } from '../../components/warehouse/warehouse-units/warehouse-units.component';
-import { WarehouseCard } from '../../models/warehouse/warehouse-card.interface';
 import { WarehouseNavComponent } from "../../components/warehouse/warehouse-nav/warehouse-nav.component";
-import { ConfirmService } from '../../services/confirm.service';
 import { PageAnimation } from '../../animations/page.animation';
 import { MasterAddComponent } from '../../components/warehouse/master-add/master-add.component';
 import { FormsModule } from '@angular/forms';
 
 import * as signalR from '@microsoft/signalr';
 import { environment } from '../../../environments/environment';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-warehouse',
@@ -33,11 +32,10 @@ import { environment } from '../../../environments/environment';
     ButtonModule,
     InputTextModule,
     ConfirmComponent,
-    WarehouseItemsComponent,
-    WarehouseUnitsComponent,
     WarehouseNavComponent,
     MasterAddComponent,
-    FormsModule
+    FormsModule,
+    RouterOutlet
   ],
   templateUrl: './warehouse.component.html',
   styleUrl: './warehouse.component.scss',
@@ -55,19 +53,16 @@ export class WarehouseComponent implements OnDestroy {
   private alertService = inject(AlertService);
   private destroyRef = inject(DestroyRef);
   private errorHandlingService = inject(ErrorHandlingService);
-  private confirmService = inject(ConfirmService);
   user = computed(() => this.authService.user());
   selectedUnit = computed(() => this.warehouseService.selectedUnit());
   unitHeaderTitle = '';
   visible: boolean = false;
-  warehouseItemsVisible = signal(false);
   reorderedItems = signal<WarehouseItem[]>([]);
   calendarText = signal<string>(this.MONTHS_NAMES[new Date().getMonth()] + ' ' + new Date().getFullYear().toString().substring(2));
-  unitsActive = signal(true);
-  destination = signal<string>('F-M');
-  cards = signal<WarehouseCard[]>([]);
+  destination = computed(() => this.warehouseService.destination());
+  cards = computed(() => this.warehouseService.cards());
   pdfLoading = signal(false);
-  masterAddVisible = signal(false);
+  masterAddVisible = computed(() => this.warehouseService.masterAddVisible());
   @ViewChild('calendar', { static: false }) calendar!: Calendar;
   @ViewChild(WarehouseUnitsComponent) warehouseUnits: any;
   @ViewChild(WarehouseItemsComponent) warehouseItems: any;
@@ -87,28 +82,42 @@ export class WarehouseComponent implements OnDestroy {
   constructor() {
     this.start();
 
-    this.connection.on("SendWarehouseCards", (user: string, cards: WarehouseCard[], isUpdate: boolean, destination: string, messageTime: string) => {
+    this.connection.on("SendWarehouseCards", (user: string, isUpdate: boolean, destination: string, messageTime: string, updateItems: boolean) => {
       const hours = new Date(messageTime).getHours();
       const minutes = new Date(messageTime).getMinutes() < 10 ? `0${new Date(messageTime).getMinutes()}` : new Date(messageTime).getMinutes();
 
-      if (isUpdate && user !== this.hubUser && this.user().role === 'Admin') {
-        if (destination === this.destination()) {
-          this.onReloadCards();
+      if (isUpdate && user !== this.hubUser && this.user().role === 'Admin' && !updateItems) {
+        if (!updateItems) {
+          if (destination === this.destination()) {
+            this.warehouseService.reloadCards.set(true);
+          }
+          this.alertService.setAlert({ severity: 'info', summary: 'Info', detail: `${hours}:${minutes} Sklad pro ${destination} upraven - ${user}.` });
         }
-        this.alertService.setAlert({ severity: 'info', summary: 'Info', detail: `${hours}:${minutes} Sklad pro ${destination} aktualizoval ${user}.` });
-      } else if (isUpdate && user !== this.hubUser && this.user().role === 'Master') {
-        if (destination === this.user().destination) {
-          this.onReloadCards();
+      }
+
+      if (!isUpdate && user !== this.hubUser && this.user().role === 'Admin' && updateItems) {
+        this.alertService.setAlert({ severity: 'info', summary: 'Info', detail: `${hours}:${minutes} Skladové položky upraveny - ${user}.` });
+        this.warehouseService.reloadCards.set(true);
+      }
+
+      if (isUpdate && user !== this.hubUser && this.user().role === 'Master' && !updateItems) {
+        if (destination === this.user().destination && !updateItems) {
+          this.warehouseService.reloadCards.set(true);
           if (!this.masterAddVisible()) {
-            this.alertService.setAlert({ severity: 'info', summary: 'Info', detail: `${hours}:${minutes} Sklad pro ${destination} aktualizoval ${user}.` });
+            this.alertService.setAlert({ severity: 'info', summary: 'Info', detail: `${hours}:${minutes} Sklad pro ${destination} upraven - ${user}.` });
           }
           if (this.masterAddVisible()) {
-            this.masterAddVisible.set(false);
-            // setTimeout(() => {
-            //   this.masterAddVisible.set(true);
-            // }, 600);
+            this.warehouseService.masterAddVisible.set(false);
           }
         }
+      }
+
+      if (!isUpdate && user !== this.hubUser && this.user().role === 'Master' && updateItems) {
+        if (this.masterAddVisible()) {
+          this.warehouseService.masterAddVisible.set(false);
+        }
+        this.warehouseService.reloadCards.set(true);
+        this.alertService.setAlert({ severity: 'info', summary: 'Info', detail: `${hours}:${minutes} Skladové položky upraveny - ${user}.` });
       }
     });
   }
@@ -142,9 +151,9 @@ export class WarehouseComponent implements OnDestroy {
     }
   }
 
-  public async sendCards(cards: WarehouseCard[], destination: string, isUpdating: boolean) {
+  public async sendCards(destination: string, isUpdating: boolean, updateItems: boolean) {
     try {
-      return this.connection.invoke("SendWarehouseCards", cards, destination, isUpdating);
+      return this.connection.invoke("SendWarehouseCards", destination, isUpdating, updateItems);
     } catch (error) {
       console.log('SEND CARDS ERROR: ', error);
     }
@@ -158,29 +167,11 @@ export class WarehouseComponent implements OnDestroy {
     }
   }
 
-  onShowItems() {
-    this.reorderedItems.set([]);
-    this.warehouseItemsVisible.set(true)
-    this.unitsActive.set(false);
-  }
-
-  onShowUnits() {
-    this.reorderedItems.set([]);
-    this.warehouseItemsVisible.set(false);
-    this.unitsActive.set(true);
-  }
-
   onSelectMonth() {
     let date = this.calendar.value;
-    this.warehouseUnits.monthYear.set(this.MONTHS_NUM[new Date(date).getMonth()] + new Date(date).getFullYear());
+    this.warehouseService.monthYear.set(this.MONTHS_NUM[new Date(date).getMonth()] + new Date(date).getFullYear());
     this.calendarText.set(this.MONTHS_NAMES[new Date(date).getMonth()] + ' ' + new Date(date).getFullYear().toString().substring(2));
-    this.warehouseUnits.uploadCards();
-  }
-
-  onSelectDestination(destination: string) {
-    this.destination.set(destination);
-    this.warehouseUnits.destination.set(destination);
-    this.warehouseUnits.uploadCards();
+    this.warehouseService.reloadCards.set(true);
   }
 
   toggleCalendar() {
@@ -192,28 +183,6 @@ export class WarehouseComponent implements OnDestroy {
         this.calendar.showOverlay();
         this.calendar.cd.detectChanges();
       }
-    }
-  }
-
-  onSave() {
-    if (this.reorderedItems().length > 0) {
-      const subscription = this.warehouseService.reorderWarehouseItems(this.reorderedItems()).pipe(
-        tap(response => {
-          if (response === null) {
-            this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
-          } else if (response.isSuccess === false) {
-            this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
-          } else if (response.isSuccess) {
-            this.warehouseService.setItems(response.result);
-            this.reorderedItems.set([]);
-            this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Pořadí položek bylo změněno.' });
-          }
-        }),
-      ).subscribe({
-        error: (error) => this.handleError(error),
-      });
-
-      this.destroyRef.onDestroy(() => subscription.unsubscribe());
     }
   }
 
@@ -250,48 +219,6 @@ export class WarehouseComponent implements OnDestroy {
 
       this.destroyRef.onDestroy(() => subscription.unsubscribe());
     }
-  }
-
-  onDeleteCards(destination: string) {
-    if (this.cards().length === 0) {
-      this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Chybí karty.' });
-      return;
-    }
-    this.confirmService.confirm(`Opravdu smazat karty za ${this.cards()[0].monthYearName}?`)
-      .then((confirmed) => {
-        if (confirmed) {
-          this.warehouseUnits.isLoading.set(true);
-          const subscription = this.warehouseService.deleteWarehouseCards(this.cards()[0].monthYear, destination).pipe(
-            tap(response => {
-              if (response === null) {
-                this.warehouseUnits.isLoading.set(false);
-                this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
-              } else if (response.isSuccess === false) {
-                this.warehouseUnits.isLoading.set(false);
-                this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
-              } else {
-                this.warehouseService.isUpdating.set(true);
-                this.warehouseUnits.uploadCards();
-              }
-            })
-          ).subscribe({
-            error: error => this.handleError(error)
-          });
-
-          this.destroyRef.onDestroy(() => {
-            subscription.unsubscribe();
-          });
-        }
-      });
-  }
-
-  onReloadCards() {
-    this.warehouseUnits.uploadCards();
-  }
-
-  onReloadItems() {
-    this.reorderedItems.set([]);
-    this.warehouseItems.uploadItems();
   }
 
   private handleError = (errorRes: HttpErrorResponse) => {

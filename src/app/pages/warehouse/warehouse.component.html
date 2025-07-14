@@ -1,21 +1,15 @@
 <div class="sidenav">
-    <app-warehouse-nav [(unitsActive)]="unitsActive" [(warehouseItemsVisible)]="warehouseItemsVisible"
-        [(calendarText)]="calendarText" [(destination)]="destination" [(pdfLoading)]="pdfLoading"
-        [(reorderedItems)]="reorderedItems" @fadeIn />
+    <app-warehouse-nav [(calendarText)]="calendarText" [(pdfLoading)]="pdfLoading" @fadeIn />
 </div>
 <div class="warehouse-calendar">
     <p-datepicker #calendar name="deadline" [(ngModel)]="defaultDate" view="month" dateFormat="mm-yy"
         [readonlyInput]="true" [maxDate]="maxDate" (onSelect)="onSelectMonth()" />
 </div>
 <div class="box">
-    @if (warehouseItemsVisible()) {
-    <app-warehouse-items [(reorderedItems)]="reorderedItems" />
-    }
-    @if (unitsActive()) {
-    <app-warehouse-units [(cards)]="cards" />
-    }
     @if (masterAddVisible()) {
-    <app-master-add [(masterAddVisible)]="masterAddVisible" [cards]="cards()" />
+    <app-master-add [cards]="cards()" />
     }
 </div>
+
+<router-outlet />
 <app-confirm />

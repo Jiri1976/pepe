@@ -1,10 +1,9 @@
-import { ChangeDetectionStrategy, Component, computed, CUSTOM_ELEMENTS_SCHEMA, DestroyRef, ElementRef, inject, model, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, DestroyRef, effect, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { WarehouseService } from '../../../services/warehouse.service';
 import { AlertService } from '../../../services/alert.service';
 import { tap } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ErrorHandlingService } from '../../../services/error-handling.service';
-import { WarehouseCard } from '../../../models/warehouse/warehouse-card.interface';
 import Swiper from 'swiper';
 import { CommonModule } from '@angular/common';
 import { ItemsListComponent } from '../items-list/items-list.component';
@@ -21,13 +20,11 @@ import { WarehouseComponent } from '../../../pages/warehouse/warehouse.component
   templateUrl: './warehouse-units.component.html',
   styleUrl: './warehouse-units.component.scss',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     PageAnimation
   ]
 })
 export class WarehouseUnitsComponent implements OnInit {
-  private MONTHS_NUM = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
   private warehouseService = inject(WarehouseService);
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
@@ -38,9 +35,11 @@ export class WarehouseUnitsComponent implements OnInit {
   private warehouseComponent = inject(WarehouseComponent);
   user = computed(() => this.authService.user());
   isLoading = signal(false);
-  cards = model<WarehouseCard[]>([]);
-  destination = signal<string>('F-M');
-  monthYear = signal<string>(this.MONTHS_NUM[new Date().getMonth()] + new Date().getFullYear());
+  reloadCards = computed(() => this.warehouseService.reloadCards());
+  deleteCards = computed(() => this.warehouseService.deleteCards());
+  cards = computed(() => this.warehouseService.cards());
+  destination = computed(() => this.warehouseService.destination());
+  monthYear = computed(() => this.warehouseService.monthYear());
   visibleList = computed(() => this.warehouseService.visibleList());
   items: {
     name: string;
@@ -49,9 +48,19 @@ export class WarehouseUnitsComponent implements OnInit {
   selectedIndex = signal<number>(0);
   @ViewChild('swiperRef', { static: false }) swiperRef!: ElementRef;
 
+
+  reload = effect(() => {
+    if (this.reloadCards()) {
+      this.uploadCards();
+    }
+    if (this.deleteCards()) {
+      this.onDeleteCards();
+    }
+  });
+
   ngOnInit(): void {
     if (this.user().role === 'Master') {
-      this.destination.set(this.user().destination);
+      this.warehouseService.destination.set(this.user().destination);
     }
     this.uploadCards();
   }
@@ -80,8 +89,9 @@ export class WarehouseUnitsComponent implements OnInit {
 
   uploadCards() {
     this.isLoading.set(true);
+    this.warehouseService.reloadCards.set(false);
     this.items = [];
-    this.cards.set([]);
+    this.warehouseService.cards.set([]);
     const subscription = this.warehouseService.getWarehouseCards(this.monthYear(), this.destination()).pipe(
       tap(response => {
         if (response === null) {
@@ -91,12 +101,12 @@ export class WarehouseUnitsComponent implements OnInit {
           this.isLoading.set(false);
           this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
         } else if (response.isSuccess) {
-          this.warehouseComponent.sendCards(response.result, this.destination(), this.warehouseService.isUpdating());
+          this.warehouseComponent.sendCards(this.destination(), this.warehouseService.isUpdating(), false);
           if (this.warehouseService.isUpdating()) {
             this.warehouseService.isUpdating.set(false);
           }
           if (response.result.length > 0) {
-            this.cards.set(response.result);
+            this.warehouseService.cards.set(response.result);
             this.getItems();
             setTimeout(() => {
               this.swiper = this.swiperRef.nativeElement.swiper;
@@ -128,6 +138,40 @@ export class WarehouseUnitsComponent implements OnInit {
           }
           this.isLoading.set(true);
           const subscription = this.warehouseService.deleteWarehouseCard(id).pipe(
+            tap(response => {
+              if (response === null) {
+                this.isLoading.set(false);
+                this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+              } else if (response.isSuccess === false) {
+                this.isLoading.set(false);
+                this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+              } else {
+                this.warehouseService.isUpdating.set(true);
+                this.uploadCards();
+              }
+            })
+          ).subscribe({
+            error: error => this.handleError(error)
+          });
+
+          this.destroyRef.onDestroy(() => {
+            subscription.unsubscribe();
+          });
+        }
+      });
+  }
+
+  private onDeleteCards() {
+    this.warehouseService.deleteCards.set(false);
+    if (this.cards().length === 0) {
+      this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Chybí karty.' });
+      return;
+    }
+    this.confirmService.confirm(`Opravdu smazat karty za ${this.cards()[0].monthYearName}?`)
+      .then((confirmed) => {
+        if (confirmed) {
+          this.isLoading.set(true);
+          const subscription = this.warehouseService.deleteWarehouseCards(this.cards()[0].monthYear, this.destination()).pipe(
             tap(response => {
               if (response === null) {
                 this.isLoading.set(false);

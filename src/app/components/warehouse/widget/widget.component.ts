@@ -4,8 +4,8 @@ import { CdkDrag, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
 import { WarehouseItem } from '../../../models/warehouse/warehouse-item.interface';
 import { WarehouseService } from '../../../services/warehouse.service';
 import { WidgetAddComponent } from "../widget-add/widget-add.component";
-import { trigger, transition, animate, style } from '@angular/animations';
 import { WarehouseItemsComponent } from '../warehouse-items/warehouse-items.component';
+import { FastPageAnimation } from '../../../animations/fast-page.animation';
 
 @Component({
   selector: 'app-widget',
@@ -13,17 +13,7 @@ import { WarehouseItemsComponent } from '../warehouse-items/warehouse-items.comp
   templateUrl: './widget.component.html',
   styleUrl: './widget.component.scss',
   animations: [
-    trigger('fadeOut', [
-      transition(':leave', [
-        animate('300ms ease-out', style({ opacity: 0 })),
-      ]),
-    ]),
-    trigger('fadeIn', [
-      transition(':enter', [
-        style({ opacity: 0 }),
-        animate('400ms ease-in', style({ opacity: 1 })),
-      ])
-    ]),
+    FastPageAnimation
   ]
 })
 export class WidgetComponent {

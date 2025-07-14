@@ -36,7 +36,28 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/warehouse/warehouse.component').then(m => m.WarehouseComponent),
         canMatch: [AdminMasterGuard],
         title: 'Sklad',
-        data: { animation: 'warehouse', role: ['Admin', 'Master'] }
+        data: { animation: 'warehouse', role: ['Admin', 'Master'] },
+        children: [
+            {
+                path: '',
+                loadComponent: () => import('./components/warehouse/warehouse-units/warehouse-units.component').then(m => m.WarehouseUnitsComponent),
+                canMatch: [AdminMasterGuard],
+                data: { animation: 'warehouse', role: ['Admin', 'Master'] },
+            },
+            {
+                path: 'warehouse-overview',
+                loadComponent: () => import('./components/warehouse/warehouse-overview/warehouse-overview.component').then(m => m.WarehouseOverviewComponent),
+                canMatch: [AdminMasterGuard],
+                data: { animation: 'overview', role: ['Admin', 'Master'] },
+            },
+            {
+                path: 'warehouse-items',
+                loadComponent: () => import('./components/warehouse/warehouse-items/warehouse-items.component').then(m => m.WarehouseItemsComponent),
+                title: 'Skladové položky',
+                canMatch: [AdminGuard],
+                data: { animation: 'warehouse-items', role: 'Admin' }
+            }
+        ]
     },
     {
         path: 'shifts',

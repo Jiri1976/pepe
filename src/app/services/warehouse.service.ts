@@ -12,6 +12,7 @@ import { WarehouseItemsComponent } from "../components/warehouse/warehouse-items
     providedIn: 'root'
 })
 export class WarehouseService {
+    private MONTHS_NUM = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
     private http = inject(HttpClient);
     private BASE_ROUTE = environment.WAREHOUSE_PATH;
     private compRef = new BehaviorSubject<WarehouseItemsComponent | null>(null);
@@ -20,6 +21,13 @@ export class WarehouseService {
     selectedUnit = signal<WarehouseUnit>({ id: 0, warehouseCardId: 0, warehouseItemId: 0, date: '', amount: 0 });
     visibleList = signal(false);
     isUpdating = signal(false);
+    cards = signal<WarehouseCard[]>([]);
+    reloadItems = signal(false);
+    reloadCards = signal(false);
+    monthYear = signal<string>(this.MONTHS_NUM[new Date().getMonth()] + new Date().getFullYear());
+    destination = signal<string>('F-M');
+    deleteCards = signal(false);
+    masterAddVisible = signal(false);
 
     setComponent(comp: WarehouseItemsComponent) {
         this.compRef.next(comp);

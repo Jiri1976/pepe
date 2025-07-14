@@ -1,14 +1,16 @@
 <div class="container" cdkDrag (cdkDragMoved)="onDragMoved(item())" (cdkDragEnded)="onDragEnded($event)">
     @if (item().id > 0) {
-    <button class="settings-button" (click)="onUpdate()"><i class="bi bi-gear"></i></button>
-    <button class="delete-button" (click)="onDelete()"><i class="bi bi-trash"></i></button>
     <p>{{item().name}}</p>
+    <div class="buttons">
+        <button class="settings-button" (click)="onUpdate()"><i class="bi bi-pencil-square"></i></button>
+        <button class="delete-button" (click)="onDelete()"><i class="bi bi-trash"></i></button>
+    </div>
     } @else {
-    <app-widget-add [item]="item()" @fadeIn @fadeOut />
+    <app-widget-add [item]="item()" @fastIn @fastOut />
     }
 
     @if (updateVisible()) {
-    <app-widget-update [(updateVisible)]="updateVisible" [item]="item()" @fadeIn @fadeOut />
+    <app-widget-update [(updateVisible)]="updateVisible" [item]="item()" @fastIn @fastOut />
     }
     <div *cdkDragPlaceholder></div>
 </div>

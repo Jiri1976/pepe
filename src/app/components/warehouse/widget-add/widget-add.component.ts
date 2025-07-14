@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, inject, input, signal } from '@angular/core';
+import { Component, computed, DestroyRef, ElementRef, inject, input, signal, viewChild } from '@angular/core';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { WarehouseItem } from '../../../models/warehouse/warehouse-item.interface';
 import { WarehouseService } from '../../../services/warehouse.service';
@@ -25,12 +25,24 @@ export class WidgetAddComponent {
   items = computed(() => this.warehouseService.items());
   isLoading = signal<boolean>(false);
   item = input.required<WarehouseItem>();
+  inputField = viewChild<ElementRef>('input');
+
+  get name() {
+    return this.itemForm.get('name');
+  }
 
   ngOnInit() {
     this.initializedItemForm();
   }
 
+  ngAfterViewInit() {
+    this.inputField()?.nativeElement.focus();
+  }
+
   onSave() {
+    if (this.name?.value === '') {
+      return;
+    }
     const newItem: WarehouseItem = {
       id: 0,
       name: this.itemForm.get('name')?.value,
@@ -51,6 +63,7 @@ export class WidgetAddComponent {
           let _items = [newItem, ...this.items()];
           _items = _items.filter(i => i.id !== 0);
           this.warehouseService.setItems(_items);
+          this.warehouseItemsComp.sendCards('F-M', false, true);
           this.isLoading.set(false);
           this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Položka byla uložena!' });
         }
@@ -78,7 +91,6 @@ export class WidgetAddComponent {
         value: '',
         disabled: false
       }, [
-        Validators.required,
         Validators.maxLength(30)
       ]
       )

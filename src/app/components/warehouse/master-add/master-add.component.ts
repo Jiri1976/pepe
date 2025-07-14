@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, input, model, OnInit, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, input, OnInit, signal } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { WarehouseCard } from '../../../models/warehouse/warehouse-card.interface';
@@ -8,7 +8,6 @@ import { map } from 'rxjs';
 import { ErrorHandlingService } from '../../../services/error-handling.service';
 import { WarehouseService } from '../../../services/warehouse.service';
 import { AlertService } from '../../../services/alert.service';
-import { WarehouseComponent } from '../../../pages/warehouse/warehouse.component';
 
 @Component({
   selector: 'app-master-add',
@@ -21,8 +20,7 @@ export class MasterAddComponent implements OnInit {
   private warehouseService = inject(WarehouseService);
   private alertService = inject(AlertService);
   private destroyRef = inject(DestroyRef);
-  private warehouseComponent = inject(WarehouseComponent);
-  masterAddVisible = model(false);
+  masterAddVisible = computed(() => this.warehouseService.masterAddVisible());
   cards = input.required<WarehouseCard[]>();
   warehouseItems: {
     name: string;
@@ -46,7 +44,7 @@ export class MasterAddComponent implements OnInit {
   }
 
   onClose() {
-    this.masterAddVisible.set(false);
+    this.warehouseService.masterAddVisible.set(false);
   }
 
   onSave() {
@@ -74,10 +72,10 @@ export class MasterAddComponent implements OnInit {
           this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
         } else if (response.isSuccess) {
           this.warehouseService.isUpdating.set(true);
-          this.warehouseComponent.onReloadCards();
+          this.warehouseService.reloadCards.set(true);
           this.isLoading.set(false);
           this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Karty byly aktualizovány.' });
-          this.masterAddVisible.set(false);
+          this.warehouseService.masterAddVisible.set(false);
         }
       }),
 

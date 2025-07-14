@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, inject, input, model, signal } from '@angular/core';
+import { Component, computed, DestroyRef, ElementRef, inject, input, model, signal, viewChild } from '@angular/core';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { WarehouseItem } from '../../../models/warehouse/warehouse-item.interface';
 import { tap } from 'rxjs';
@@ -7,6 +7,7 @@ import { ErrorHandlingService } from '../../../services/error-handling.service';
 import { WarehouseService } from '../../../services/warehouse.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NotificationComponent } from "../../notification/notification.component";
+import { WarehouseItemsComponent } from '../warehouse-items/warehouse-items.component';
 
 @Component({
   selector: 'app-widget-update',
@@ -19,14 +20,24 @@ export class WidgetUpdateComponent {
   private errorHandlingService = inject(ErrorHandlingService);
   private alertService = inject(AlertService);
   private destroyRef = inject(DestroyRef);
+  private warehouseItemsComp = inject(WarehouseItemsComponent);
   itemForm!: FormGroup;
   item = input.required<WarehouseItem>();
   updateVisible = model<boolean>(false);
   isLoading = signal<boolean>(false);
   items = computed(() => this.warehouseService.items());
+  inputField = viewChild<ElementRef>('input');
+
+  get name() {
+    return this.itemForm.get('name');
+  }
 
   ngOnInit() {
     this.initializedItemForm();
+  }
+
+  ngAfterViewInit() {
+    this.inputField()?.nativeElement.focus();
   }
 
   onClose() {
@@ -35,6 +46,10 @@ export class WidgetUpdateComponent {
   }
 
   onSave() {
+    if (this.name?.value === '') {
+      return;
+    }
+
     const newItem: WarehouseItem = {
       id: this.item().id,
       name: this.itemForm.get('name')?.value,
@@ -56,6 +71,7 @@ export class WidgetUpdateComponent {
           updatedItem!.name = this.itemForm.get('name')?.value;
           this.warehouseService.setItems(_items);
           this.updateVisible.set(false);
+          this.warehouseItemsComp.sendCards('F-M', false, true);
           this.isLoading.set(false);
           this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Položka byla upravena!' });
         }

@@ -1,33 +1,31 @@
-<div class="menu" [style.--height]="loggedUser.role === 'Master' ? '105px' : ''">
+<div class="menu">
     <ul>
-        <li hide style="--x: 0; --y: -150;;" class="first" (click)="plansComponent.toggleCalendar()"
-            [class.disabled]="users().length === 0">
+        <li hide class="first" (click)="plansComponent.toggleCalendar()" [class.disabled]="users().length === 0">
             <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
                 <i class="bi bi-calendar"></i>
                 <p>{{ calendarTitle() }}</p>
             </a>
         </li>
 
-        <li hide style="--x: 0; --y: -100;" (click)="plansComponent.onChangeDestination('F-M')">
+        <li hide (click)="plansComponent.onChangeDestination('F-M')">
             <a [style.--background]="destination() === 'F-M' ? '#24355A' : '#1e81b0'" [style.--color]="'#fff'">
                 <p>F-M</p>
             </a>
         </li>
 
-        <li hide style="--x: 0; --y: -50;" (click)="plansComponent.onChangeDestination('OVA')">
+        <li hide (click)="plansComponent.onChangeDestination('OVA')">
             <a [style.--background]="destination() === 'OVA' ? '#24355A' : '#1e81b0'" [style.--color]="'#fff'">
                 <p>OVA</p>
             </a>
         </li>
 
-        <li hide style="--x: 0; --y: 0;" (click)="plansComponent.onReset()" [class.disabled]="users().length === 0">
+        <li hide (click)="plansComponent.onReset()" [class.disabled]="users().length === 0">
             <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
                 <i class="bi bi-arrow-clockwise"></i>
             </a>
         </li>
 
-        <li hide style="--x: 0; --y: 50;" (click)="plansComponent.onSave()"
-            [class.disabled]="plansComponent.nothingChanched()">
+        <li hide (click)="plansComponent.onSave()" [class.disabled]="plansComponent.nothingChanched()">
             <a [style.--background]="'#05C46B'" [style.--color]="'#fff'">
                 @if (!isSaving()) {
                 <i class="bi bi-floppy"></i>
@@ -39,15 +37,13 @@
             </a>
         </li>
 
-        <li hide style="--x: 0; --y: 100;" (click)="plansComponent.onDelete()"
-            [class.disabled]="plansComponent.proposalCard().id === 0">
+        <li hide (click)="plansComponent.onDelete()" [class.disabled]="plansComponent.proposalCard().id === 0">
             <a [style.--background]="'#F53B57'" [style.--color]="'#fff'">
                 <i class="bi bi-trash"></i>
             </a>
         </li>
 
-        <li hide style="--x: 0; --y: 150;" [class.disabled]="plansComponent.proposalCard().id === 0"
-            (click)="plansComponent.onOpenPDF()">
+        <li hide [class.disabled]="plansComponent.proposalCard().id === 0" (click)="plansComponent.onOpenPDF()">
             <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
                 @if (!pdfLoading()) {
                 <i class="bi bi-filetype-pdf"></i>
@@ -59,15 +55,13 @@
             </a>
         </li>
 
-        <li hideAdmin style="--x: 0; --y: 25;" (click)="plansComponent.onReset()"
-            [class.disabled]="users().length === 0">
+        <li hideAdmin (click)="plansComponent.onReset()" [class.disabled]="users().length === 0">
             <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
                 <i class="bi bi-arrow-clockwise"></i>
             </a>
         </li>
 
-        <li hideAdmin style="--x: 0; --y: -25;" (click)="plansComponent.onSave()"
-            [class.disabled]="plansComponent.nothingChanched()">
+        <li hideAdmin (click)="plansComponent.onSave()" [class.disabled]="plansComponent.nothingChanched()">
             <a [style.--background]="'#05C46B'" [style.--color]="'#fff'">
                 <i class="bi bi-floppy"></i>
             </a>

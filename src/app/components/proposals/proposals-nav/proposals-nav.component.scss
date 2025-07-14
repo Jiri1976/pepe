@@ -5,28 +5,29 @@
 }
 
 .menu {
-    position: relative;
+    left: 10px;
+    bottom: 10px;
+    position: fixed;
     width: 55px;
-    height: var(--height, 350px);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     border-radius: 10px;
+    background: #fff;
     box-shadow: 0 3px 10px 2px rgba(0, 0, 0, 0.2);
+    transition: 0.2s;
+
+    ul {
+        margin: 0;
+        padding: 0;
+    }
 }
 
 .menu li {
+    margin: 10px 0;
     list-style: none;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    display: flex;
-    flex-direction: column;
-    align-items: center !important;
-    justify-content: center !important;
-    transform: translate(calc(-50% + 1px * var(--x)),
-            calc(-50% + 1px * var(--y)));
+    transition: 0.3s;
     border-radius: 10px;
     box-shadow: none !important;
     border: 1px solid var(--border);

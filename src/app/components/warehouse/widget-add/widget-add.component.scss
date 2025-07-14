@@ -17,13 +17,11 @@
     .container {
         display: flex;
         flex-direction: row;
-        justify-content: left;
+        justify-content: space-between;
         align-items: center;
         position: relative;
-        height: 70px;
         width: 400px;
-        padding: 32px;
-        box-sizing: border-box;
+        padding: 10px 20px;
         border-radius: inherit;
         overflow: hidden;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -32,7 +30,6 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            align-items: center;
             width: 100%;
         }
 
@@ -42,15 +39,12 @@
 
         .notify {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            z-index: 9;
+            top: 4px;
+            right: 50px;
+            z-index: 99;
         }
 
         .save-button {
-            position: absolute;
-            top: 10px;
-            right: 10px;
             border: none;
             background: #fff;
             border-radius: 50%;
@@ -61,7 +55,6 @@
             height: 28px;
             width: 28px;
             color: #24355A;
-            // border: 1px solid #24355A;
             outline: 5px solid #fff;
             z-index: 9;
             transition: all .3s ease-in-out;
@@ -74,9 +67,6 @@
         }
 
         .delete-button {
-            position: absolute;
-            top: 10px;
-            left: 10px;
             border: none;
             background: #fff;
             border-radius: 50%;
@@ -87,9 +77,6 @@
             height: 28px;
             width: 28px;
             color: #24355A;
-            ;
-            // border: 1px solid #F53B57;
-            outline: 5px solid #fff;
             z-index: 9;
             transition: all .3s ease-in-out;
         }
@@ -100,19 +87,12 @@
         }
 
         input {
-            position: relative;
-            top: -3px;
+            padding: 6px 0px;
             width: 270px;
-            font-size: 0.9rem;
-            height: 30px;
-            border-bottom: 2px solid #24355A;
-            border-top: 0;
-            border-left: 0;
-            border-right: 0;
+            border: none !important;
             outline: none;
             color: #24355A;
             border-radius: 0;
-            padding: 6px 6px;
         }
 
         input:active,
@@ -138,8 +118,9 @@
         .error {
             font-size: 0.7rem;
             position: absolute;
-            bottom: 3px;
+            bottom: -3px;
             color: red;
+            font-weight: 600;
         }
 
         .spinner {
@@ -148,6 +129,11 @@
             justify-content: center;
             align-items: center;
             width: 100%;
+
+            .spinner-border {
+                --bs-spinner-width: 1.5rem;
+                --bs-spinner-height: 1.5rem;
+            }
 
             .text-secondary {
                 --bs-text-opacity: 1;

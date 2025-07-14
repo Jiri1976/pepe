@@ -56,6 +56,10 @@ form {
     }
 
     .cancel {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
         width: 100px;
         background: #F53B57;
         border: 1px solid #F53B57;
