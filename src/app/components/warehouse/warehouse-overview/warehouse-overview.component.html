@@ -1,1 +1,26 @@
-<p>warehouse-overview works!</p>
+<div class="wrapper">
+    @if (cards().length > 0) {
+    <!-- <div class="table" [style]="`--min-width-table: ${days.length * 40 + 'px'}`"> -->
+    <div class="table">
+        <div class="table-head">
+            <div class="first-head-cell">{{cards()[0].monthYearName}}</div>
+            @for (day of days; track $index) {
+            <div class="head-cell">{{$index + 1}}.</div>
+            }
+        </div>
+
+        <div class="body">
+            @for(item of items; track $index) {
+            <div class="table-row">
+                <!-- <th scope="row">{{ item }}</th> -->
+                <div class="first-table-cell">{{ item }}</div>
+                @for (day of days; track $index) {
+                <div class="cell">1000</div>
+                }
+            </div>
+            }
+        </div>
+    </div>
+    }
+
+</div>

@@ -23,12 +23,12 @@ export class WarehouseNavComponent {
   loggedUser = this.authService.getUser();
   warehouseComp = inject(WarehouseComponent);
   isOpened = signal(true);
-  unitsActive = signal(true);
   calendarText = model('');
   destination = computed(() => this.warehouseService.destination());
   pdfLoading = model(false);
   items = computed(() => this.warehouseService.items());
   cards = computed(() => this.warehouseService.cards());
+  warehouseNav = computed(() => this.warehouseService.warehouseNav());
 
   onShowList() {
     this.warehouseService.visibleList.set(true);
@@ -47,12 +47,10 @@ export class WarehouseNavComponent {
   }
 
   onShowItems() {
-    this.unitsActive.set(false);
     this.router.navigate(['warehouse', 'warehouse-items']);
   }
 
   onShowUnits() {
-    this.unitsActive.set(true);
     this.router.navigate(['warehouse']);
   }
 
@@ -67,5 +65,9 @@ export class WarehouseNavComponent {
 
   onReloadCards() {
     this.warehouseService.reloadCards.set(true);
+  }
+
+  onShowBoard() {
+    this.router.navigate(['warehouse', 'warehouse-overview'])
   }
 }

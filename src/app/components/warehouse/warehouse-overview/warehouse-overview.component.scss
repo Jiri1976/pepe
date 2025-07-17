@@ -1,0 +1,102 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+}
+
+.wrapper {
+    margin-top: 80px;
+
+    .table {
+        .table-head {
+            display: flex;
+            flex-direction: row;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+
+            .first-head-cell {
+                min-width: 150px !important;
+                margin-right: 10px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: start;
+                border: 1px solid #24355A;
+                background: #24355A;
+                color: #fff;
+                padding: 8px;
+                border-radius: 5px;
+                font-weight: 700;
+                height: 35px !important;
+            }
+
+            .head-cell {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                border: 1px solid #24355A;
+                background: #24355A;
+                color: #fff;
+                padding: 8px;
+                border-radius: 5px;
+                font-weight: 700;
+                width: 35px !important;
+                height: 35px !important;
+                margin-right: 2px;
+            }
+        }
+
+
+        .body {
+            .table-row {
+                display: flex;
+                flex-direction: row;
+                margin: 5px 0;
+
+                .first-table-cell {
+                    height: 35px;
+                    width: 150px !important;
+                    border: 1px solid #1e81b0;
+                    border-radius: 5px;
+                    margin-right: 10px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    overflow: hidden;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    border: 1px solid #1e81b0;
+                    background: #1e81b0;
+                    color: #fff;
+                    font-size: 0.9rem;
+                    font-weight: 700;
+                }
+
+                .cell {
+                    width: 35px !important;
+                    height: 35px !important;
+                    border: 1px solid #666;
+                    padding: 0 !important;
+                    border-radius: 5px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    margin-right: 2px;
+                    font-size: 0.7rem;
+                    transition: 0.2s;
+                }
+
+                .cell:hover {
+                    cursor: pointer;
+                    background: #1e81b0;
+                    border: 1px solid #1e81b0;
+                    color: #fff;
+                }
+            }
+        }
+    }
+}

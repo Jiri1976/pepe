@@ -1,12 +1,6 @@
-@if (unitsActive()) {
+@if (warehouseNav() === 'units' || warehouseNav() === 'board') {
 <div class="menu" @fadeIn @fadeOut>
     <ul>
-        <li (click)="onShowUnits()" hide [class.no-action]="unitsActive()">
-            <a [style.--background]="unitsActive() ? '#24355A' : '#1e81b0'" [style.--color]="'#fff'">
-                <i class="bi bi-house"></i>
-            </a>
-        </li>
-
         <li (click)="onReloadCards()" @fadeIn @fadeOut [class.disabled]="this.cards().length === 0">
             <a [style.--background]="'#24355A'" [style.--color]="'#fff'" [style.--color]="'#fff'">
                 <i class="bi bi-arrow-clockwise"></i>
@@ -35,11 +29,13 @@
             </a>
         </li>
 
+        @if (warehouseNav() !== 'board') {
         <li (click)="onShowList()" @fadeIn @fadeOut hide [class.disabled]="this.cards().length === 0">
             <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
                 <i class="bi bi-list-check"></i>
             </a>
         </li>
+        }
 
         <li (click)="warehouseComp.onOpenPDF()" @fadeIn @fadeOut hide [class.disabled]="this.cards().length === 0">
             <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
@@ -59,9 +55,21 @@
             </a>
         </li>
 
+        <li (click)="onShowBoard()" [class.no-action]="warehouseNav() === 'board'">
+            <a [style.--background]="warehouseNav() === 'board' ? '#24355A' : '#1e81b0'" [style.--color]="'#fff'">
+                <i class="bi bi-table"></i>
+            </a>
+        </li>
+
         <li (click)="onShowItems()" hide>
-            <a [style.--background]="!unitsActive() ? '#24355A' : '#1e81b0'" [style.--color]="'#fff'">
+            <a [style.--background]="'#1e81b0'" [style.--color]="'#fff'">
                 <i class="bi bi-list-ul"></i>
+            </a>
+        </li>
+
+        <li (click)="onShowUnits()" hide [class.no-action]="warehouseNav() === 'units'">
+            <a [style.--background]="warehouseNav() === 'units' ? '#24355A' : '#1e81b0'" [style.--color]="'#fff'">
+                <i class="bi bi-house"></i>
             </a>
         </li>
 
@@ -78,15 +86,11 @@
         </li>
     </ul>
 </div>
-} @else {
+}
+
+@if (warehouseNav() === 'items') {
 <div class="menu" @fadeIn @fadeOut>
     <ul>
-        <li (click)="onShowUnits()" hide>
-            <a [style.--background]="unitsActive() ? '#24355A' : '#1e81b0'" [style.--color]="'#fff'">
-                <i class="bi bi-house"></i>
-            </a>
-        </li>
-
         <li (click)="onReloadItems()" @fadeIn @fadeOut [class.disabled]="items().length === 0">
             <a [style.--background]="'#24355A'" [style.--color]="'#fff'" [style.--color]="'#fff'">
                 <i class="bi bi-arrow-clockwise"></i>
@@ -99,9 +103,21 @@
             </a>
         </li>
 
-        <li hide [class.no-action]="!unitsActive()">
-            <a [style.--background]="!unitsActive() ? '#24355A' : '#1e81b0'" [style.--color]="'#fff'">
+        <li (click)="onShowBoard()">
+            <a [style.--background]="'#1e81b0'" [style.--color]="'#fff'">
+                <i class="bi bi-table"></i>
+            </a>
+        </li>
+
+        <li hide class="no-action">
+            <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
                 <i class="bi bi-list-ul"></i>
+            </a>
+        </li>
+
+        <li (click)="onShowUnits()" hide>
+            <a [style.--background]="'#1e81b0'" [style.--color]="'#fff'">
+                <i class="bi bi-house"></i>
             </a>
         </li>
     </ul>

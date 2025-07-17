@@ -28,6 +28,7 @@ export class WarehouseService {
     destination = signal<string>('F-M');
     deleteCards = signal(false);
     masterAddVisible = signal(false);
+    warehouseNav = signal<'units' | 'items' | 'board'>('units');
 
     setComponent(comp: WarehouseItemsComponent) {
         this.compRef.next(comp);

@@ -16,7 +16,7 @@
     border-radius: 10px;
     background: #fff;
     box-shadow: 0 3px 10px 2px rgba(0, 0, 0, 0.2);
-    transition: 0.2s;
+    transition: 0.1s;
 
     ul {
         margin: 0;
@@ -28,7 +28,6 @@
 .menu li {
     margin: 10px 0;
     list-style: none;
-    transition: 0.3s;
     border-radius: 10px;
     box-shadow: none !important;
     border: 1px solid var(--border);

@@ -61,6 +61,7 @@ export class WarehouseItemsComponent implements OnInit {
   });
 
   ngOnInit() {
+    this.warehouseService.warehouseNav.set('items');
     this.uploadItems();
   }
 

@@ -59,6 +59,7 @@ export class WarehouseUnitsComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.warehouseService.warehouseNav.set('units');
     if (this.user().role === 'Master') {
       this.warehouseService.destination.set(this.user().destination);
     }
