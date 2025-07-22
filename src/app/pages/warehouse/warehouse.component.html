@@ -5,11 +5,5 @@
     <p-datepicker #calendar name="deadline" [(ngModel)]="defaultDate" view="month" dateFormat="mm-yy"
         [readonlyInput]="true" [maxDate]="maxDate" (onSelect)="onSelectMonth()" />
 </div>
-<div class="box">
-    @if (masterAddVisible()) {
-    <app-master-add [cards]="cards()" />
-    }
-</div>
-
 <router-outlet />
 <app-confirm />

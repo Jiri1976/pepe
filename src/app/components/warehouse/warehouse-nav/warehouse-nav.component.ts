@@ -42,16 +42,12 @@ export class WarehouseNavComponent {
     this.warehouseService.callOnAddItem();
   }
 
-  onOpenMasterAdd() {
-    this.warehouseService.masterAddVisible.set(true);
-  }
-
   onShowItems() {
     this.router.navigate(['warehouse', 'warehouse-items']);
   }
 
   onShowUnits() {
-    this.router.navigate(['warehouse']);
+    this.router.navigate(['warehouse', 'warehouse-units']);
   }
 
   onReloadItems() {
@@ -68,6 +64,6 @@ export class WarehouseNavComponent {
   }
 
   onShowBoard() {
-    this.router.navigate(['warehouse', 'warehouse-overview'])
+    this.router.navigate(['warehouse']);
   }
 }

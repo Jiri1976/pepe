@@ -55,8 +55,8 @@
             </a>
         </li>
 
-        <li (click)="onShowBoard()" [class.no-action]="warehouseNav() === 'board'">
-            <a [style.--background]="warehouseNav() === 'board' ? '#24355A' : '#1e81b0'" [style.--color]="'#fff'">
+        <li (click)="onShowUnits()" [class.no-action]="warehouseNav() === 'units'">
+            <a [style.--background]="warehouseNav() === 'units' ? '#24355A' : '#1e81b0'" [style.--color]="'#fff'">
                 <i class="bi bi-table"></i>
             </a>
         </li>
@@ -67,23 +67,19 @@
             </a>
         </li>
 
-        <li (click)="onShowUnits()" hide [class.no-action]="warehouseNav() === 'units'">
-            <a [style.--background]="warehouseNav() === 'units' ? '#24355A' : '#1e81b0'" [style.--color]="'#fff'">
+        <li (click)="onShowBoard()" [class.no-action]="warehouseNav() === 'board'">
+            <a [style.--background]="warehouseNav() === 'board' ? '#24355A' : '#1e81b0'" [style.--color]="'#fff'">
                 <i class="bi bi-house"></i>
             </a>
         </li>
 
+        @if (warehouseNav() !== 'board') {
         <li (click)="onShowList()" hideAdmin [class.disabled]="this.cards().length === 0">
             <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
                 <i class="bi bi-list-ul"></i>
             </a>
         </li>
-
-        <li hideAdmin (click)="onOpenMasterAdd()" [class.disabled]="this.cards().length === 0">
-            <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
-                <i class="bi bi-plus"></i>
-            </a>
-        </li>
+        }
     </ul>
 </div>
 }
@@ -103,7 +99,7 @@
             </a>
         </li>
 
-        <li (click)="onShowBoard()">
+        <li (click)="onShowUnits()" hide>
             <a [style.--background]="'#1e81b0'" [style.--color]="'#fff'">
                 <i class="bi bi-table"></i>
             </a>
@@ -115,7 +111,7 @@
             </a>
         </li>
 
-        <li (click)="onShowUnits()" hide>
+        <li (click)="onShowBoard()">
             <a [style.--background]="'#1e81b0'" [style.--color]="'#fff'">
                 <i class="bi bi-house"></i>
             </a>

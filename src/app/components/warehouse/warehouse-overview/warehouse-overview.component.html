@@ -4,8 +4,13 @@
         @if (cards().length > 0) {
         <div class="table">
             <div class="table-head">
-                <div class="first-head-cell">{{cards()[0].monthYearName}}</div>
-                @for (day of days; track $index) {
+                <div class="first-head-cell">
+                    {{cards()[0].monthYearName}}
+                    <div class="destination">
+                        {{ destination()}}
+                    </div>
+                </div>
+                @for (day of days(); track $index) {
                 <div class="head-cell">{{$index + 1}}.</div>
                 }
             </div>
@@ -13,8 +18,8 @@
             <div class="body">
                 @for(card of cards(); track $index; let x = $index) {
                 <div class="table-row">
-                    <div class="first-table-cell">{{ items[x] }}</div>
-                    @for (day of days; track $index; let y = $index) {
+                    <div class="first-table-cell">{{ items()[x] }}</div>
+                    @for (day of days(); track $index; let y = $index) {
                     <div class="cell">
                         @if (overviewCard()!.lines[x].days[y].amount === 'L') {
                         <div class="spinner">
@@ -24,7 +29,7 @@
                         </div>
                         } @else {
                         <input [value]="overviewCard()!.lines[x].days[y].amount" (change)="onChangeInput(x, y, $event)"
-                            [disabled]="isUpdating()" />
+                            [disabled]="isUpdating() || isDisabled(card.units[y].date)" />
                         }
                     </div>
                     }
@@ -35,6 +40,27 @@
         }
     </div>
     } @else {
-    <app-warehouse-empty-overview @fadeIn @fadeOut />
+    <div class="skeleton" @fadeIn @fadeOut>
+        <div class="empty-table">
+            <div class="empty-table-head">
+                <div class="empty-first-head-cell"></div>
+                @for (day of emptyDays; track $index) {
+                <div class="empty-head-cell"></div>
+                }
+            </div>
+
+            <div class="empty-body">
+                @for(card of emptyCards; track $index) {
+                <div class="empty-table-row">
+                    <div class="empty-first-table-cell"></div>
+                    @for (day of emptyDays; track $index) {
+                    <div class="empty-cell">
+                    </div>
+                    }
+                </div>
+                }
+            </div>
+        </div>
+    </div>
     }
 </div>

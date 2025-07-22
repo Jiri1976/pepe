@@ -40,15 +40,17 @@ export const routes: Routes = [
         children: [
             {
                 path: '',
-                loadComponent: () => import('./components/warehouse/warehouse-units/warehouse-units.component').then(m => m.WarehouseUnitsComponent),
-                canMatch: [AdminMasterGuard],
-                data: { animation: 'warehouse', role: ['Admin', 'Master'] },
-            },
-            {
-                path: 'warehouse-overview',
                 loadComponent: () => import('./components/warehouse/warehouse-overview/warehouse-overview.component').then(m => m.WarehouseOverviewComponent),
+                title: 'Celkový přehled',
                 canMatch: [AdminMasterGuard],
                 data: { animation: 'overview', role: ['Admin', 'Master'] },
+            },
+            {
+                path: 'warehouse-units',
+                loadComponent: () => import('./components/warehouse/warehouse-units/warehouse-units.component').then(m => m.WarehouseUnitsComponent),
+                title: 'Jednotlivé položky',
+                canMatch: [AdminMasterGuard],
+                data: { animation: 'units', role: ['Admin', 'Master'] },
             },
             {
                 path: 'warehouse-items',

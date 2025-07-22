@@ -27,7 +27,6 @@ export class WarehouseService {
     monthYear = signal<string>(this.MONTHS_NUM[new Date().getMonth()] + new Date().getFullYear());
     destination = signal<string>('F-M');
     deleteCards = signal(false);
-    masterAddVisible = signal(false);
     warehouseNav = signal<'units' | 'items' | 'board'>('units');
 
     setComponent(comp: WarehouseItemsComponent) {

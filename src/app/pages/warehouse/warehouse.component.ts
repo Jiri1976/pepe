@@ -16,7 +16,6 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { WarehouseUnitsComponent } from '../../components/warehouse/warehouse-units/warehouse-units.component';
 import { WarehouseNavComponent } from "../../components/warehouse/warehouse-nav/warehouse-nav.component";
 import { PageAnimation } from '../../animations/page.animation';
-import { MasterAddComponent } from '../../components/warehouse/master-add/master-add.component';
 import { FormsModule } from '@angular/forms';
 
 import * as signalR from '@microsoft/signalr';
@@ -33,7 +32,6 @@ import { RouterOutlet } from '@angular/router';
     InputTextModule,
     ConfirmComponent,
     WarehouseNavComponent,
-    MasterAddComponent,
     FormsModule,
     RouterOutlet
   ],
@@ -62,7 +60,6 @@ export class WarehouseComponent implements OnDestroy {
   destination = computed(() => this.warehouseService.destination());
   cards = computed(() => this.warehouseService.cards());
   pdfLoading = signal(false);
-  masterAddVisible = computed(() => this.warehouseService.masterAddVisible());
   @ViewChild('calendar', { static: false }) calendar!: Calendar;
   @ViewChild(WarehouseUnitsComponent) warehouseUnits: any;
   @ViewChild(WarehouseItemsComponent) warehouseItems: any;
@@ -103,19 +100,10 @@ export class WarehouseComponent implements OnDestroy {
       if (isUpdate && user !== this.hubUser && this.user().role === 'Master' && !updateItems) {
         if (destination === this.user().destination && !updateItems) {
           this.warehouseService.reloadCards.set(true);
-          if (!this.masterAddVisible()) {
-            this.alertService.setAlert({ severity: 'info', summary: 'Info', detail: `${hours}:${minutes} Sklad pro ${destination} upraven - ${user}.` });
-          }
-          if (this.masterAddVisible()) {
-            this.warehouseService.masterAddVisible.set(false);
-          }
         }
       }
 
       if (!isUpdate && user !== this.hubUser && this.user().role === 'Master' && updateItems) {
-        if (this.masterAddVisible()) {
-          this.warehouseService.masterAddVisible.set(false);
-        }
         this.warehouseService.reloadCards.set(true);
         this.alertService.setAlert({ severity: 'info', summary: 'Info', detail: `${hours}:${minutes} Skladové položky upraveny - ${user}.` });
       }
