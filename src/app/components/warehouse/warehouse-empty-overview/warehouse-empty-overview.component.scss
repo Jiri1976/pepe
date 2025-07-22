@@ -1,0 +1,97 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    position: fixed;
+    margin-top: 80px;
+}
+
+.wrapper {
+    grid-column: 1;
+    grid-row: 1;
+
+    .table {
+        .table-head {
+            display: flex;
+            flex-direction: row;
+            margin-bottom: 10px;
+
+            .first-head-cell {
+                min-width: 150px !important;
+                margin-right: 10px;
+                border: 1px solid #666;
+                border-radius: 5px;
+                height: 35px !important;
+                background: linear-gradient(90deg,
+                        #eee 25%,
+                        #fff 50%,
+                        #eee 75%);
+                background-size: 400% 100%;
+                animation: shimmer 2s infinite linear;
+            }
+
+            .head-cell {
+                border: 1px solid #666;
+                border-radius: 5px;
+                width: 35px !important;
+                height: 35px !important;
+                margin-right: 2px;
+                background: linear-gradient(90deg,
+                        #eee 25%,
+                        #fff 50%,
+                        #eee 75%);
+                background-size: 400% 100%;
+                animation: shimmer 2s infinite linear;
+            }
+        }
+
+
+        .body {
+            .table-row {
+                display: flex;
+                flex-direction: row;
+                margin: 5px 0;
+
+                .first-table-cell {
+                    height: 35px;
+                    width: 150px !important;
+                    border: 1px solid #666;
+                    border-radius: 5px;
+                    margin-right: 10px;
+                    background: linear-gradient(90deg,
+                            #eee 25%,
+                            #fff 50%,
+                            #eee 75%);
+                    background-size: 400% 100%;
+                    animation: shimmer 2s infinite linear;
+                }
+
+                .cell {
+                    width: 35px !important;
+                    height: 35px !important;
+                    border: 1px solid #666;
+                    border-radius: 5px;
+                    margin-right: 2px;
+                    background: linear-gradient(90deg,
+                            #eee 25%,
+                            #fff 50%,
+                            #eee 75%);
+                    background-size: 400% 100%;
+                    animation: shimmer 2s infinite linear;
+                }
+            }
+        }
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}

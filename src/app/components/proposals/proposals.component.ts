@@ -89,7 +89,7 @@ export class ProposalsComponent {
       await this.connection.start();
       await this.joinRoom(this.hubUser, 'proposals');
     } catch (error) {
-      this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Nepodařilo se navázat spojení s hubem.' });
+      this.alertService.setAlert({ severity: 'warn', summary: 'Warn', detail: 'Nepodařilo se navázat spojení s hubem.' });
     }
   }
 

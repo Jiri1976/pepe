@@ -1,0 +1,22 @@
+<div class="wrapper">
+    <div class="table">
+        <div class="table-head">
+            <div class="first-head-cell"></div>
+            @for (day of days; track $index) {
+            <div class="head-cell"></div>
+            }
+        </div>
+
+        <div class="body">
+            @for(card of cards; track $index; let x = $index) {
+            <div class="table-row">
+                <div class="first-table-cell"></div>
+                @for (day of days; track $index; let y = $index) {
+                <div class="cell">
+                </div>
+                }
+            </div>
+            }
+        </div>
+    </div>
+</div>

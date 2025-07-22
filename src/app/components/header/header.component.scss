@@ -22,6 +22,53 @@
         font-weight: bold;
     }
 
+    .dropdown {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+
+        .bellnoti {
+            .bell {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                width: 30px;
+                height: 30px;
+                margin-right: 2rem;
+                margin-top: 5px;
+
+                .bi {
+                    font-size: 1.3rem
+                }
+            }
+
+            .noti {
+                position: absolute;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                border: 1px solid #24355A;
+                background: #24355A;
+                color: #fff;
+                top: 0px;
+                left: 15px;
+                font-size: 0.6rem;
+                padding: 3px;
+            }
+        }
+
+        .bellnoti:hover {
+            cursor: pointer;
+        }
+    }
+
     .dropdown-toggle {
         background: #fff;
         border: 1px solid #bdb9b9;

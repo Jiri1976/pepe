@@ -1,26 +1,40 @@
-<div class="wrapper">
-    @if (cards().length > 0) {
-    <!-- <div class="table" [style]="`--min-width-table: ${days.length * 40 + 'px'}`"> -->
-    <div class="table">
-        <div class="table-head">
-            <div class="first-head-cell">{{cards()[0].monthYearName}}</div>
-            @for (day of days; track $index) {
-            <div class="head-cell">{{$index + 1}}.</div>
-            }
-        </div>
-
-        <div class="body">
-            @for(item of items; track $index) {
-            <div class="table-row">
-                <!-- <th scope="row">{{ item }}</th> -->
-                <div class="first-table-cell">{{ item }}</div>
+<div class="block">
+    @if (!uploadingCards()) {
+    <div class="wrapper" @fadeIn @fadeOut>
+        @if (cards().length > 0) {
+        <div class="table">
+            <div class="table-head">
+                <div class="first-head-cell">{{cards()[0].monthYearName}}</div>
                 @for (day of days; track $index) {
-                <div class="cell">1000</div>
+                <div class="head-cell">{{$index + 1}}.</div>
                 }
             </div>
-            }
-        </div>
-    </div>
-    }
 
+            <div class="body">
+                @for(card of cards(); track $index; let x = $index) {
+                <div class="table-row">
+                    <div class="first-table-cell">{{ items[x] }}</div>
+                    @for (day of days; track $index; let y = $index) {
+                    <div class="cell">
+                        @if (overviewCard()!.lines[x].days[y].amount === 'L') {
+                        <div class="spinner">
+                            <div class="spinner-border text-secondary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                        } @else {
+                        <input [value]="overviewCard()!.lines[x].days[y].amount" (change)="onChangeInput(x, y, $event)"
+                            [disabled]="isUpdating()" />
+                        }
+                    </div>
+                    }
+                </div>
+                }
+            </div>
+        </div>
+        }
+    </div>
+    } @else {
+    <app-warehouse-empty-overview @fadeIn @fadeOut />
+    }
 </div>
