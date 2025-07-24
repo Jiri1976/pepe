@@ -12,7 +12,6 @@ import { HideElementDirective } from '../../../directives/hide-element.directive
 import { ConfirmService } from '../../../services/confirm.service';
 import { WarehouseInputComponent } from "../warehouse-input/warehouse-input.component";
 import { PageAnimation } from '../../../animations/page.animation';
-import { WarehouseComponent } from '../../../pages/warehouse/warehouse.component';
 
 @Component({
   selector: 'app-warehouse-units',
@@ -25,6 +24,7 @@ import { WarehouseComponent } from '../../../pages/warehouse/warehouse.component
   ]
 })
 export class WarehouseUnitsComponent implements OnInit {
+  private MONTHS_NUM = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
   private warehouseService = inject(WarehouseService);
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
@@ -32,7 +32,6 @@ export class WarehouseUnitsComponent implements OnInit {
   private errorHandlingService = inject(ErrorHandlingService);
   private swiper!: Swiper;
   private confirmService = inject(ConfirmService);
-  private warehouseComponent = inject(WarehouseComponent);
   user = computed(() => this.authService.user());
   isLoading = signal(false);
   reloadCards = computed(() => this.warehouseService.reloadCards());
@@ -59,6 +58,7 @@ export class WarehouseUnitsComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.warehouseService.monthYear.set(this.MONTHS_NUM[new Date().getMonth()] + new Date().getFullYear());
     this.warehouseService.warehouseNav.set('units');
     if (this.user().role === 'Master') {
       this.warehouseService.destination.set(this.user().destination);
@@ -102,7 +102,7 @@ export class WarehouseUnitsComponent implements OnInit {
           this.isLoading.set(false);
           this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
         } else if (response.isSuccess) {
-          this.warehouseComponent.sendCards(this.destination(), this.warehouseService.isUpdating(), false);
+          this.warehouseService.sendCards(this.destination(), this.warehouseService.isUpdating(), false);
           if (this.warehouseService.isUpdating()) {
             this.warehouseService.isUpdating.set(false);
           }

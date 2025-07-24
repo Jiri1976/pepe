@@ -1,0 +1,13 @@
+<article @fastIn @fastOut>
+    @for (notification of notifications(); track $index) {
+    <div class="main">
+        <div class="text">
+            {{ notification }}
+        </div>
+        <div class="action">
+            <button (click)="removeNotification($index)"><i class="bi bi-x-circle"></i></button>
+        </div>
+    </div>
+    }
+    <button (click)="closeModal()" class="closeBtn">Zavřít</button>
+</article>

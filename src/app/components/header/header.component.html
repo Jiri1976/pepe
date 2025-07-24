@@ -5,14 +5,16 @@
         </a>
 
         <div class="dropdown">
-            <!-- <div class="bellnoti">
+            @if(notifications().length > 0) {
+            <div class="bellnoti" (click)="onOpenNotifications()">
                 <div class="bell">
                     <i class="bi bi-bell"></i>
                 </div>
-                <div class="noti">2</div>
-            </div> -->
+                <div class="noti">{{ notifications().length }}</div>
+            </div>
+            }
 
-            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+            <button id="toggle-btn" class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
                 aria-expanded="false">
                 {{user().name }} - {{ user().role }}
             </button>

@@ -63,7 +63,7 @@ export class WidgetAddComponent {
           let _items = [newItem, ...this.items()];
           _items = _items.filter(i => i.id !== 0);
           this.warehouseService.setItems(_items);
-          this.warehouseItemsComp.sendCards('F-M', false, true);
+          this.warehouseService.sendCards('F-M', false, true);
           this.isLoading.set(false);
           this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Položka byla uložena!' });
         }

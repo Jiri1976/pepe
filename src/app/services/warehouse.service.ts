@@ -1,4 +1,4 @@
-import { inject, Injectable, signal } from "@angular/core";
+import { effect, inject, Injectable, signal } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { environment } from "../../environments/environment";
 import { Response } from '../models/response.interface';
@@ -8,14 +8,19 @@ import { WarehouseCard } from "../models/warehouse/warehouse-card.interface";
 import { BehaviorSubject, Observable } from "rxjs";
 import { WarehouseItemsComponent } from "../components/warehouse/warehouse-items/warehouse-items.component";
 
+import * as signalR from '@microsoft/signalr';
+import { AlertService } from "./alert.service";
+
 @Injectable({
     providedIn: 'root'
 })
 export class WarehouseService {
+    private PEPE_HUB = environment.PEPE_HUB;
     private MONTHS_NUM = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
     private http = inject(HttpClient);
     private BASE_ROUTE = environment.WAREHOUSE_PATH;
     private compRef = new BehaviorSubject<WarehouseItemsComponent | null>(null);
+    private alertService = inject(AlertService);
     items = signal<WarehouseItem[]>([]);
     warehouseCard = signal<WarehouseCard>({ id: 0, warehouseItemId: 0, warehouseItemName: '', monthYear: '', monthYearName: '', destination: '', units: [] });
     selectedUnit = signal<WarehouseUnit>({ id: 0, warehouseCardId: 0, warehouseItemId: 0, date: '', amount: 0 });
@@ -28,6 +33,87 @@ export class WarehouseService {
     destination = signal<string>('F-M');
     deleteCards = signal(false);
     warehouseNav = signal<'units' | 'items' | 'board'>('units');
+    numberOfDays = signal<number>(31);
+    userRole = signal<string>('');
+    userName = signal<string>('');
+    userDestination = signal<string>('');
+    token = signal<string>('');
+    hubUser = `${this.userName()}`;
+
+    connection = new signalR.HubConnectionBuilder()
+        .withUrl(this.PEPE_HUB, {
+            accessTokenFactory: () => this.token()!
+        })
+        .configureLogging(signalR.LogLevel.Error)
+        .withAutomaticReconnect()
+        .build();
+
+    userEffect = effect(() => {
+        if (this.userName() !== '') {
+            this.hubUser = `${this.userName()}`;
+            this.start();
+            this.connection.off("SendWarehouseCards");
+            this.connection.on("SendWarehouseCards", (user: string, isUpdate: boolean, destination: string, messageTime: string, updateItems: boolean) => {
+                const hours = new Date(messageTime).getHours();
+                const minutes = new Date(messageTime).getMinutes() < 10 ? `0${new Date(messageTime).getMinutes()}` : new Date(messageTime).getMinutes();
+
+                if (isUpdate && user !== this.hubUser && this.userRole() === 'Admin' && !updateItems) {
+                    if (destination === this.destination()) {
+                        this.reloadCards.set(true);
+                    }
+                    this.alertService.checkNotifications(`${hours}:${minutes} Sklad pro ${destination} upraven - ${user}.`, `Sklad pro ${destination} upraven - ${user}`);
+                }
+
+                if (isUpdate && user !== this.hubUser && this.userRole() === 'Master' && !updateItems && this.userDestination() === destination) {
+                    this.reloadCards.set(true);
+                    this.alertService.checkNotifications(`${hours}:${minutes} Skladové položky upraveny - ${user}.`, `Skladové položky upraveny - ${user}`);
+                }
+
+                if (!isUpdate && user !== this.hubUser && this.userRole() === 'Admin' && updateItems) {
+                    this.reloadCards.set(true);
+                    this.alertService.checkNotifications(`${hours}:${minutes} Skladové položky upraveny - ${user}.`, `Skladové položky upraveny - ${user}`);
+                }
+
+                if (!isUpdate && user !== this.hubUser && this.userRole() === 'Master' && updateItems) {
+                    this.reloadCards.set(true);
+                    this.alertService.checkNotifications(`${hours}:${minutes} Skladové položky upraveny - ${user}.`, `Skladové položky upraveny - ${user}`);
+                }
+            });
+        }
+    });
+
+    constructor() {
+        const token = localStorage.getItem('token');
+        const localStorageUserName = localStorage.getItem('userName');
+        const localStorageUserRole = localStorage.getItem('userRole');
+        const localStorageUserDestination = localStorage.getItem('userDestination');
+        if (token && localStorageUserName && localStorageUserRole && localStorageUserDestination) {
+            this.token.set(token);
+            this.userDestination.set(localStorageUserDestination);
+            this.userRole.set(localStorageUserRole);
+            this.userName.set(localStorageUserName);
+        }
+
+        window.addEventListener('beforeunload', () => {
+            this.leaveRoom();
+        });
+    }
+
+    async sendCards(destination: string, isUpdating: boolean, updateItems: boolean) {
+        try {
+            return this.connection.invoke("SendWarehouseCards", destination, isUpdating, updateItems);
+        } catch (error) {
+            console.log('WAREHOUSE SEND CARDS ERROR: ', error);
+        }
+    }
+
+    async leaveRoom() {
+        try {
+            return this.connection.stop();
+        } catch (error) {
+            console.log('WAREHOUSE LEAVE CHAT ERROR: ', error);
+        }
+    }
 
     setComponent(comp: WarehouseItemsComponent) {
         this.compRef.next(comp);
@@ -121,5 +207,29 @@ export class WarehouseService {
     deleteWarehouseCards(monthYear: string, destination: string) {
         const url = this.BASE_ROUTE + `Warehouse/deleteWarehouseCards?monthYear=${monthYear}&destination=${destination}`;
         return this.http.delete<Response>(url);
+    }
+
+    private async start() {
+        try {
+            if (this.connection.state !== signalR.HubConnectionState.Disconnected) {
+                await this.leaveRoom();
+            }
+            await this.connection.start();
+            await this.joinRoom(this.hubUser, 'warehouse');
+        } catch (error) {
+            this.alertService.setAlert({
+                severity: 'warn',
+                summary: 'Warn',
+                detail: 'Nepodařilo se navázat spojení s hubem.'
+            });
+        }
+    }
+
+    private async joinRoom(user: string, room: string) {
+        try {
+            return this.connection.invoke("JoinRoom", { user, room });
+        } catch (error) {
+            console.log('WAREHOUSE JOIN ROOM ERROR: ', error);
+        }
     }
 }

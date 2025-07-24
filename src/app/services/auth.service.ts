@@ -6,6 +6,7 @@ import { jwtDecode } from 'jwt-decode';
 import { AuthUser } from '../models/auth-user.interface';
 import { Router } from '@angular/router';
 import { WarehouseService } from './warehouse.service';
+import { AlertService } from './alert.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +18,7 @@ export class AuthService {
   private tokenExpirationTimer: any;
   private initialUser: AuthUser = { name: '', email: '', role: '', destination: '', token: '', expiresIn: '' };
   private warehouseService = inject(WarehouseService);
+  private alertService = inject(AlertService);
 
   user = signal<AuthUser>(this.initialUser);
   firstRun = true;
@@ -47,10 +49,16 @@ export class AuthService {
   };
 
   logout() {
+    localStorage.removeItem('notifications');
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('userDestination');
+    localStorage.removeItem('token');
+    this.alertService.notifications.set([]);
     this.warehouseService.items.set([]);
     this.warehouseService.selectedUnit.set({ id: 0, warehouseCardId: 0, warehouseItemId: 0, date: '', amount: 0 });
     this.warehouseService.warehouseCard.set({ id: 0, warehouseItemId: 0, warehouseItemName: '', monthYear: '', monthYearName: '', destination: '', units: [] });
-    localStorage.removeItem('token');
+    this.warehouseService.leaveRoom();
     this.user.set(this.initialUser);
     this.firstRun = true;
     this.router.navigate(['login']);
@@ -58,8 +66,6 @@ export class AuthService {
 
   autoLogout(expirationDuration: number) {
     this.tokenExpirationTimer = setTimeout(() => {
-      localStorage.removeItem('token');
-      this.user.set(this.initialUser);
       this.logout();
     }, expirationDuration);
   }

@@ -100,6 +100,12 @@
                         font-size: 0.7rem;
                         transition: 0.2s;
 
+                        .input-success {
+                            border: 2px solid #1e81b0;
+                            box-shadow: 0 0 5px #1e81b0;
+                            transition: border 0.3s, box-shadow 0.3s;
+                        }
+
                         .spinner {
                             width: 35px !important;
                             height: 35px !important;
@@ -132,6 +138,10 @@
                             transition: 0.2s;
                             font-weight: 600;
                             color: #666;
+                        }
+
+                        input.master {
+                            border: 2px solid #24355A;
                         }
 
                         input:active,

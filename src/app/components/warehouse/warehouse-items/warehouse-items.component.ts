@@ -11,10 +11,6 @@ import { ConfirmService } from '../../../services/confirm.service';
 import { WarehouseItem } from '../../../models/warehouse/warehouse-item.interface';
 import { PageAnimation } from '../../../animations/page.animation';
 
-import * as signalR from '@microsoft/signalr';
-import { environment } from '../../../../environments/environment';
-import { AuthService } from '../../../services/auth.service';
-
 @Component({
   selector: 'app-warehouse-items',
   imports: [WidgetComponent, CdkDropList, CdkDropListGroup],
@@ -25,13 +21,11 @@ import { AuthService } from '../../../services/auth.service';
   ]
 })
 export class WarehouseItemsComponent implements OnInit {
-  private PEPE_HUB = environment.PEPE_HUB;
   private errorHandlingService = inject(ErrorHandlingService);
   private destroyRef = inject(DestroyRef);
   private warehouseService = inject(WarehouseService);
   private alertService = inject(AlertService);
   private confirmService = inject(ConfirmService);
-  private authService = inject(AuthService);
   dashboard = viewChild.required<ElementRef>('dashboard');
   isLoading = signal(false);
   items = computed(() => this.warehouseService.items());
@@ -41,18 +35,6 @@ export class WarehouseItemsComponent implements OnInit {
   isDragged = signal(false);
   reorderedItems = model<WarehouseItem[]>([]);
   reloadItems = computed(() => this.warehouseService.reloadItems());
-  user = computed(() => this.authService.user());
-
-  token = this.authService.getToken();
-  hubUser = `${this.user().name}`;
-
-  connection = new signalR.HubConnectionBuilder()
-    .withUrl(this.PEPE_HUB, {
-      accessTokenFactory: () => this.token!
-    })
-    .configureLogging(signalR.LogLevel.Error)
-    .withAutomaticReconnect()
-    .build();
 
   reload = effect(() => {
     if (this.reloadItems()) {
@@ -67,58 +49,6 @@ export class WarehouseItemsComponent implements OnInit {
 
   ngAfterViewInit() {
     this.warehouseService.setComponent(this);
-  }
-
-  constructor() {
-    this.start();
-
-    this.connection.on("SendWarehouseCards", (user: string, isUpdate: boolean, destination: string, messageTime: string, updateItems: boolean) => {
-      const hours = new Date(messageTime).getHours();
-      const minutes = new Date(messageTime).getMinutes() < 10 ? `0${new Date(messageTime).getMinutes()}` : new Date(messageTime).getMinutes();
-
-      if (!isUpdate && user !== this.hubUser && this.user().role === 'Admin' && updateItems) {
-        this.warehouseService.reloadCards.set(true);
-        this.uploadItems();
-        this.alertService.setAlert({ severity: 'info', summary: 'Info', detail: `${hours}:${minutes} Skladové položky upraveny - ${user}.` });
-      }
-    });
-  }
-
-  ngOnDestroy(): void {
-    this.leaveRoom();
-  }
-
-  public async start() {
-    try {
-      await this.connection.start();
-      await this.joinRoom(this.hubUser, 'warehouse');
-    } catch (error) {
-      this.alertService.setAlert({ severity: 'warn', summary: 'Warn', detail: 'Nepodařilo se navázat spojení s hubem.' });
-    }
-  }
-
-  public async joinRoom(user: string, room: string) {
-    try {
-      return this.connection.invoke("JoinRoom", { user, room });
-    } catch (error) {
-      console.log('JOIN ROOM ERROR: ', error);
-    }
-  }
-
-  public async sendCards(destination: string, isUpdating: boolean, updateItems: boolean) {
-    try {
-      return this.connection.invoke("SendWarehouseCards", destination, isUpdating, updateItems);
-    } catch (error) {
-      console.log('SEND CARDS ERROR: ', error);
-    }
-  }
-
-  public async leaveRoom() {
-    try {
-      return this.connection.stop();
-    } catch (error) {
-      console.log('LEAVE CHAT ERROR: ', error);
-    }
   }
 
   onAddItem() {
@@ -158,7 +88,7 @@ export class WarehouseItemsComponent implements OnInit {
           } else if (response.isSuccess) {
             this.warehouseService.setItems(response.result);
             this.reorderedItems.set([]);
-            this.sendCards('F-M', false, true);
+            this.warehouseService.sendCards('F-M', false, true);
             this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Pořadí položek bylo změněno.' });
           }
         }),
@@ -199,7 +129,7 @@ export class WarehouseItemsComponent implements OnInit {
                 let removed_items = _items.filter(i => i.id !== item.id);
                 this.warehouseService.setItems(removed_items);
                 this.isDroppedToDelete.set(false);
-                this.sendCards('F-M', false, true);
+                this.warehouseService.sendCards('F-M', false, true);
                 this.isLoading.set(false);
                 this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: response.result });
               }

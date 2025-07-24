@@ -6,6 +6,7 @@ import { AlertService } from '../../services/alert.service';
 import { ErrorHandlingService } from '../../services/error-handling.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { WarehouseService } from '../../services/warehouse.service';
 
 @Component({
   selector: 'app-login',
@@ -16,6 +17,7 @@ import { Router } from '@angular/router';
 })
 export class LoginComponent implements OnInit {
   private authService = inject(AuthService);
+  private warehouseService = inject(WarehouseService);
   private destroyRef = inject(DestroyRef);
   private alertService = inject(AlertService);
   private errorHandlingService = inject(ErrorHandlingService);
@@ -24,6 +26,9 @@ export class LoginComponent implements OnInit {
   form!: FormGroup;
 
   ngOnInit() {
+    this.warehouseService.leaveRoom();
+    localStorage.removeItem('notifications');
+    this.alertService.notifications.set([]);
     this.initForm();
   }
 
@@ -52,6 +57,13 @@ export class LoginComponent implements OnInit {
           this.authService.setUserDetail(response.result);
           this.isLoading.set(false);
           this.router.navigate(['main']);
+          this.warehouseService.userName.set(this.authService.user().name);
+          this.warehouseService.userRole.set(this.authService.user().role);
+          this.warehouseService.userDestination.set(this.authService.user().destination);
+          this.warehouseService.token.set(this.authService.getToken()!);
+          localStorage.setItem('userRole', this.authService.user().role);
+          localStorage.setItem('userName', this.authService.user().name);
+          localStorage.setItem('userDestination', this.authService.user().destination);
         }
       })
     ).subscribe({

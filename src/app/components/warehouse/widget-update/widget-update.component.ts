@@ -71,7 +71,7 @@ export class WidgetUpdateComponent {
           updatedItem!.name = this.itemForm.get('name')?.value;
           this.warehouseService.setItems(_items);
           this.updateVisible.set(false);
-          this.warehouseItemsComp.sendCards('F-M', false, true);
+          this.warehouseService.sendCards('F-M', false, true);
           this.isLoading.set(false);
           this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Položka byla upravena!' });
         }

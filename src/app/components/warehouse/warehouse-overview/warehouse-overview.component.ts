@@ -31,6 +31,7 @@ interface OverviewCard {
   ]
 })
 export class WarehouseOverviewComponent implements OnInit {
+  private MONTHS_NUM = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
   private errorHandlingService = inject(ErrorHandlingService);
   private warehouseService = inject(WarehouseService);
   private alertService = inject(AlertService);
@@ -49,9 +50,11 @@ export class WarehouseOverviewComponent implements OnInit {
   reloadCards = computed(() => this.warehouseService.reloadCards());
   deleteCards = computed(() => this.warehouseService.deleteCards());
   emptyCards = Array(10);
-  emptyDays = Array(31);
+  emptyDays = computed(() => Array(this.warehouseService.numberOfDays()));
+  highlightedInputs = new Set<string>();
 
   ngOnInit(): void {
+    this.warehouseService.monthYear.set(this.MONTHS_NUM[new Date().getMonth()] + new Date().getFullYear());
     this.warehouseService.warehouseNav.set('board');
     this.getCards();
   }
@@ -67,10 +70,18 @@ export class WarehouseOverviewComponent implements OnInit {
 
   onChangeInput(x: number, y: number, event: any) {
     const reg = new RegExp('^[0-9]+$');
-    const value = event.srcElement.value;
-    if (!reg.test(value)) {
+    if (!reg.test((event.target as HTMLInputElement).value)) {
       return;
     }
+
+    const key = `${x}-${y}`;
+    this.highlightedInputs.add(key);
+
+    setTimeout(() => {
+      this.highlightedInputs.delete(key);
+    }, 1000);
+
+    const value = parseInt((event.target as HTMLInputElement).value);
     if (this.isDisabled(this.cards()[x].units[y].date)) {
       this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Pole nelze aktualizovat!' });
       return;
@@ -86,19 +97,20 @@ export class WarehouseOverviewComponent implements OnInit {
     const subscription = this.warehouseService.createUpdateWarehouseCard(updatingCard).pipe(
       tap(response => {
         if (response === null) {
-          _card!.lines[x].days[y].amount = value;
+          _card!.lines[x].days[y].amount = value.toString();
           this.overviewCard.set(_card);
           this.isUpdating.set(false);
           this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
         } else if (response.isSuccess === false) {
-          _card!.lines[x].days[y].amount = value;
+          _card!.lines[x].days[y].amount = value.toString();
           this.overviewCard.set(_card);
           this.isUpdating.set(false);
           this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
         } else if (response.isSuccess) {
-          _card!.lines[x].days[y].amount = value;
+          _card!.lines[x].days[y].amount = value.toString();
           this.overviewCard.set(_card);
           this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Položka byla aktualizována!' });
+          this.warehouseService.sendCards(this.destination(), true, false);
           this.isUpdating.set(false);
         }
       }),
@@ -136,23 +148,29 @@ export class WarehouseOverviewComponent implements OnInit {
   }
 
   isDisabled(date: string) {
-    let day = parseInt(date.split('.')[0]);
-    let today = new Date().getDate();
+    const day = parseInt(date.split('.')[0]);
+    const month = parseInt(date.split('.')[1]) - 1;
+    const year = parseInt(date.split('.')[2])
+    const today = new Date().getDate();
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
 
     if (this.loggedUser.role === 'Master') {
-      if (day < today) {
-        return true;
-      }
-      if (day === today) {
+      if (day === today && month === currentMonth && year === currentYear) {
         return false;
       }
+      return true;
     }
 
-    if (day > today) {
+    if (day > today && month === currentMonth && year === currentYear) {
       return true;
     }
 
     return false;
+  }
+
+  onBlur(event: any) {
+    event.preventDefault();
   }
 
   private onDeleteCards() {

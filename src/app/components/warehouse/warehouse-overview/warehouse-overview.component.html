@@ -28,8 +28,11 @@
                             </div>
                         </div>
                         } @else {
-                        <input [value]="overviewCard()!.lines[x].days[y].amount" (change)="onChangeInput(x, y, $event)"
-                            [disabled]="isUpdating() || isDisabled(card.units[y].date)" />
+                        <input [value]="overviewCard()!.lines[x].days[y].amount"
+                            (keydown.enter)="onChangeInput(x, y, $event)"
+                            [disabled]="isUpdating() || isDisabled(card.units[y].date)"
+                            [class.input-success]="highlightedInputs.has(x + '-' + y)"
+                            [class.master]="loggedUser.role === 'Master' && !isDisabled(card.units[y].date)" />
                         }
                     </div>
                     }
@@ -44,7 +47,7 @@
         <div class="empty-table">
             <div class="empty-table-head">
                 <div class="empty-first-head-cell"></div>
-                @for (day of emptyDays; track $index) {
+                @for (day of emptyDays(); track $index) {
                 <div class="empty-head-cell"></div>
                 }
             </div>
@@ -53,7 +56,7 @@
                 @for(card of emptyCards; track $index) {
                 <div class="empty-table-row">
                     <div class="empty-first-table-cell"></div>
-                    @for (day of emptyDays; track $index) {
+                    @for (day of emptyDays(); track $index) {
                     <div class="empty-cell">
                     </div>
                     }

@@ -1,5 +1,4 @@
-import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, DestroyRef, inject, OnDestroy, signal, ViewChild } from '@angular/core';
-import { AuthService } from '../../services/auth.service';
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, DestroyRef, inject, signal, ViewChild } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
@@ -17,9 +16,6 @@ import { WarehouseUnitsComponent } from '../../components/warehouse/warehouse-un
 import { WarehouseNavComponent } from "../../components/warehouse/warehouse-nav/warehouse-nav.component";
 import { PageAnimation } from '../../animations/page.animation';
 import { FormsModule } from '@angular/forms';
-
-import * as signalR from '@microsoft/signalr';
-import { environment } from '../../../environments/environment';
 import { RouterOutlet } from '@angular/router';
 
 @Component({
@@ -42,16 +38,13 @@ import { RouterOutlet } from '@angular/router';
     PageAnimation
   ]
 })
-export class WarehouseComponent implements OnDestroy {
-  private PEPE_HUB = environment.PEPE_HUB;
+export class WarehouseComponent {
   private MONTHS_NAMES = ["LED", "ÚNO", "BŘE", "DUB", "KVĚ", "ČER", "ČRV", "SRP", "ZÁŘ", "ŘÍJ", "LIS", "PRO"];
   private MONTHS_NUM = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
-  private authService = inject(AuthService);
   private warehouseService = inject(WarehouseService);
   private alertService = inject(AlertService);
   private destroyRef = inject(DestroyRef);
   private errorHandlingService = inject(ErrorHandlingService);
-  user = computed(() => this.authService.user());
   selectedUnit = computed(() => this.warehouseService.selectedUnit());
   unitHeaderTitle = '';
   visible: boolean = false;
@@ -65,99 +58,11 @@ export class WarehouseComponent implements OnDestroy {
   @ViewChild(WarehouseItemsComponent) warehouseItems: any;
   defaultDate = new Date(new Date().getFullYear(), new Date().getMonth());
   maxDate: Date = new Date(new Date().getFullYear(), new Date().getMonth());
-  token = this.authService.getToken();
-  hubUser = `${this.user().name}`;
-
-  connection = new signalR.HubConnectionBuilder()
-    .withUrl(this.PEPE_HUB, {
-      accessTokenFactory: () => this.token!
-    })
-    .configureLogging(signalR.LogLevel.Error)
-    .withAutomaticReconnect()
-    .build();
-
-  constructor() {
-    this.start();
-
-    this.connection.on("SendWarehouseCards", (user: string, isUpdate: boolean, destination: string, messageTime: string, updateItems: boolean) => {
-      const hours = new Date(messageTime).getHours();
-      const minutes = new Date(messageTime).getMinutes() < 10 ? `0${new Date(messageTime).getMinutes()}` : new Date(messageTime).getMinutes();
-
-      if (isUpdate && user !== this.hubUser && this.user().role === 'Admin' && !updateItems) {
-        if (!updateItems) {
-          if (destination === this.destination()) {
-            this.warehouseService.reloadCards.set(true);
-          }
-          this.alertService.setAlert({ severity: 'info', summary: 'Info', detail: `${hours}:${minutes} Sklad pro ${destination} upraven - ${user}.` });
-        }
-      }
-
-      if (!isUpdate && user !== this.hubUser && this.user().role === 'Admin' && updateItems) {
-        this.alertService.setAlert({ severity: 'info', summary: 'Info', detail: `${hours}:${minutes} Skladové položky upraveny - ${user}.` });
-        this.warehouseService.reloadCards.set(true);
-      }
-
-      if (isUpdate && user !== this.hubUser && this.user().role === 'Master' && !updateItems) {
-        if (destination === this.user().destination && !updateItems) {
-          this.warehouseService.reloadCards.set(true);
-        }
-      }
-
-      if (!isUpdate && user !== this.hubUser && this.user().role === 'Master' && updateItems) {
-        this.warehouseService.reloadCards.set(true);
-        this.alertService.setAlert({ severity: 'info', summary: 'Info', detail: `${hours}:${minutes} Skladové položky upraveny - ${user}.` });
-      }
-    });
-  }
-
-  ngOnDestroy(): void {
-    this.leaveRoom();
-  }
-
-  public async start() {
-    try {
-      await this.connection.start();
-      await this.joinRoom(this.hubUser, 'warehouse');
-    } catch (error) {
-      this.alertService.setAlert({ severity: 'warn', summary: 'Warn', detail: 'Nepodařilo se navázat spojení s hubem.' });
-    }
-  }
-
-  public async joinRoom(user: string, room: string) {
-    try {
-      return this.connection.invoke("JoinRoom", { user, room });
-    } catch (error) {
-      console.log('JOIN ROOM ERROR: ', error);
-    }
-  }
-
-  public async sendMessage(message: string) {
-    try {
-      return this.connection.invoke("SendMessage", message);
-    } catch (error) {
-      console.log('SEND MESSAGE ERROR: ', error);
-    }
-  }
-
-  public async sendCards(destination: string, isUpdating: boolean, updateItems: boolean) {
-    try {
-      return this.connection.invoke("SendWarehouseCards", destination, isUpdating, updateItems);
-    } catch (error) {
-      console.log('SEND CARDS ERROR: ', error);
-    }
-  }
-
-  public async leaveRoom() {
-    try {
-      return this.connection.stop();
-    } catch (error) {
-      console.log('LEAVE CHAT ERROR: ', error);
-    }
-  }
 
   onSelectMonth() {
     let date = this.calendar.value;
     this.warehouseService.monthYear.set(this.MONTHS_NUM[new Date(date).getMonth()] + new Date(date).getFullYear());
+    this.warehouseService.numberOfDays.set(new Date(new Date(date).getFullYear(), new Date(date).getMonth(), 0).getDate());
     this.calendarText.set(this.MONTHS_NAMES[new Date(date).getMonth()] + ' ' + new Date(date).getFullYear().toString().substring(2));
     this.warehouseService.reloadCards.set(true);
   }

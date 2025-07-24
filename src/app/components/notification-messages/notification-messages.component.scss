@@ -1,0 +1,63 @@
+:host-context(cdk-dialog-container) {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 0.375em;
+    background-color: #fff;
+    filter: drop-shadow(0 0 2em rgba(#000, 0.5));
+    padding: 0 2em 2em;
+}
+
+article {
+    width: 500px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .main {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        border: 1px solid #24355A;
+        border-radius: 5px;
+        background: #24355A;
+        color: #fff;
+        margin: 10px;
+        padding: 5px 10px;
+
+        .text {
+            width: 80%;
+        }
+
+        .action {
+            width: 20%;
+            text-align: right;
+
+            button {
+                background: transparent !important;
+                border: none !important;
+                outline: none;
+
+                .bi {
+                    color: #F97316;
+                    font-weight: bold;
+                    font-size: 1.2rem;
+                }
+            }
+        }
+    }
+
+    .closeBtn {
+        margin-top: 20px;
+        border: 1px solid #24355A;
+        border-radius: 5px;
+        background: #24355A;
+        color: #fff;
+        width: 100px;
+        height: 40px;
+    }
+}
