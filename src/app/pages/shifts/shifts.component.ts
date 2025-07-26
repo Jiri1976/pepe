@@ -1,6 +1,5 @@
 import { Component, DestroyRef, inject, OnInit, signal, ViewChild, CUSTOM_ELEMENTS_SCHEMA, ElementRef, computed, effect } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
-
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { ConfirmComponent } from '../../components/confirm/confirm.component';
@@ -9,7 +8,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from '../../services/alert.service';
 import { tap } from 'rxjs';
 import { ErrorHandlingService } from '../../services/error-handling.service';
-import { SelectUserComponent } from '../../components/shifts/select-user/select-user.component';
 import { ShiftCard } from '../../models/shifts/shiftCard.interface';
 import { ShiftCardComponent } from '../../components/shifts/shift-card/shift-card.component';
 import Swiper from 'swiper';
@@ -26,7 +24,6 @@ import { Shift } from '../../models/shifts/shift.interface';
     ConfirmComponent,
     DialogModule,
     ButtonModule,
-    SelectUserComponent,
     ShiftCardComponent,
     ShiftsNavComponent,
     CalendarModule,
@@ -55,8 +52,8 @@ export class ShiftsComponent implements OnInit {
   loggedUser = this.authService.getUser();
   destination = signal(this.loggedUser.role === 'Master' ? this.loggedUser.destination : 'F-M');
   isLoading = signal(false);
-  visibleModal = signal(false);
-  users = signal<{ userName: string, userId: number }[]>([]);
+  users = computed(() => this.shiftService.users());
+  selectedUserId = computed(() => this.shiftService.selectedUserId());
   cards = signal<ShiftCard[]>([]);
   currentIndex = signal<number>(0);
   calendarText = signal<string>(this.MONTHS_NAMES[new Date().getMonth()] + ' ' + new Date().getFullYear().toString().substring(2));
@@ -86,6 +83,10 @@ export class ShiftsComponent implements OnInit {
         }, 100);
       }
     }
+
+    if (this.selectedUserId() > -1) {
+      this.onSelectUser(this.selectedUserId());
+    }
   })
 
   onSwiperInit(event: any) {
@@ -102,18 +103,6 @@ export class ShiftsComponent implements OnInit {
     let cardForUpdate = _cards.find(c => c.userId === updatedCard.userId);
     cardForUpdate = updatedCard;
     this.cards.set(_cards);
-  }
-
-  openModal() {
-    if (!this.formShiftVisible()) {
-      this.visibleModal.set(true);
-    }
-  }
-
-  onSelectUser(userId: number) {
-    this.swiper = this.swiperRef.nativeElement.swiper;
-    let index = this.users().findIndex(u => u.userId === userId);
-    this.swiper.slideTo(index);
   }
 
   onSlideChange(event: Event) {
@@ -247,6 +236,13 @@ export class ShiftsComponent implements OnInit {
     return false;
   }
 
+  private onSelectUser(userId: number) {
+    this.swiper = this.swiperRef.nativeElement.swiper;
+    let index = this.users().findIndex(u => u.userId === userId);
+    this.swiper.slideTo(index);
+    this.shiftService.selectedUserId.set(-1);
+  }
+
   private isFridayOrSaturday(date: string) {
     var day = new Date(parseInt(date.split('.')[2]), parseInt(date.split('.')[1]) - 1, parseInt(date.split('.')[0]));
     if (day.getDay() == 5 || day.getDay() == 6) {
@@ -270,13 +266,13 @@ export class ShiftsComponent implements OnInit {
               a.user.localeCompare(b.user)
             );
             let _users = _cards.map((card: any) => { return { userName: card.user, userId: card.userId } });
-            this.users.set(_users);
+            this.shiftService.users.set(_users);
             this.cards.set(_cards);
             setTimeout(() => {
               this.slideToCard(this.currentIndex());
             }, 100)
           } else {
-            this.users.set([]);
+            this.shiftService.users.set([]);
             this.cards.set([]);
           }
           this.isLoading.set(false);

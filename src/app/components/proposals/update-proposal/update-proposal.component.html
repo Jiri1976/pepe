@@ -1,14 +1,7 @@
-<p-dialog [modal]="true" [visible]="updateVisible()" [style]="{ width: '25rem' }">
+<div class="wrapper">
     <form autocomplete="off" id="form" [formGroup]="proposalForm">
         <div class="title">
-            @if ((timeFrom?.hasError('required') || proposalForm.hasError('invalidTime') ||
-            timeTo?.hasError('required')) && !selectedProposal().delete)
-            {
-            <app-notification [notify]="true" [width]="'35px'" [height]="'35px'" />
-            }
-            @else {
             <h1>{{ `${selectedProposal().user} - ${selectedProposal().date}` }}</h1>
-            }
         </div>
 
         <div class="row mt-1 mb-4 buttons-line">
@@ -44,7 +37,7 @@
 
         <div class="row mt-5">
             <div class="col-6 right">
-                <button type="button" class="btn cancel" (click)="updateVisible.set(false)"><i
+                <button type="button" class="btn cancel" (click)="onClose()"><i
                         class="bi bi-arrow-left-circle"></i>&nbsp;Zpět</button>
             </div>
             <div class="col-6">
@@ -53,4 +46,4 @@
             </div>
         </div>
     </form>
-</p-dialog>
+</div>

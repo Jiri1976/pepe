@@ -12,7 +12,6 @@ import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
 import { AuthUser } from '../../../models/auth-user.interface';
 import { ConfirmService } from '../../../services/confirm.service';
-import { WarehouseComponent } from '../../../pages/warehouse/warehouse.component';
 import { WarehouseUnitsComponent } from '../warehouse-units/warehouse-units.component';
 
 @Component({
@@ -106,7 +105,7 @@ export class WarehouseInputComponent {
             this.isLoading.set(false);
             this.amount?.setValue(_selectedUnit?.amount);
             this.warehouseService.isUpdating.set(true);
-            this.warehouseUnitsComponent.selectedIndex.set(this.selectedIndex);
+            this.warehouseService.selectedIndex.set(this.selectedIndex);
             this.warehouseUnitsComponent.uploadCards();
             this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Položka byla uložena!' });
           }

@@ -1,12 +1,8 @@
-import { Component, input, InputSignal, model, output } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
-
-
-interface Users {
-  userName: string;
-  userId: number;
-}
+import { DialogRef } from '@angular/cdk/dialog';
+import { ShiftService } from '../../../services/shift.service';
 
 @Component({
   selector: 'app-select-user',
@@ -15,12 +11,16 @@ interface Users {
   styleUrl: './select-user.component.scss'
 })
 export class SelectUserComponent {
-  visibleModal = model<boolean>(false);
-  users: InputSignal<Users[]> = input.required<Users[]>();
-  selected = output<number>();
+  private shiftService = inject(ShiftService);
+  private dialogRef = inject(DialogRef, { optional: true });
+  users = computed(() => this.shiftService.users());
 
   onSelectUser(userId: number) {
-    this.visibleModal.set(false)
-    this.selected.emit(userId);
+    this.shiftService.selectedUserId.set(userId);
+    this.dialogRef?.close();
+  }
+
+  onClose() {
+    this.dialogRef?.close();
   }
 }

@@ -207,7 +207,8 @@ p-dialog.create-unit {
 p-datepicker {
     span {
         input {
-            position: absolute !important;
+            right: 0px;
+            position: relative !important;
             top: -300px !important;
             border: 2px solid #fff;
         }
@@ -498,4 +499,8 @@ p-toast {
             }
         }
     }
+}
+
+.cdk-overlay-container {
+    z-index: 9999;
 }

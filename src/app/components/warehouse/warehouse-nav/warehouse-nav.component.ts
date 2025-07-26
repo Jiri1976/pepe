@@ -6,6 +6,8 @@ import { HideWhenAdminDirective } from '../../../directives/hide-when-admin.dire
 import { AuthService } from '../../../services/auth.service';
 import { PageAnimation } from '../../../animations/page.animation';
 import { Router } from '@angular/router';
+import { Dialog } from '@angular/cdk/dialog';
+import { ItemsListComponent } from '../items-list/items-list.component';
 
 @Component({
   selector: 'app-warehouse-nav',
@@ -20,6 +22,7 @@ export class WarehouseNavComponent {
   private authService = inject(AuthService);
   private warehouseService = inject(WarehouseService);
   private router = inject(Router);
+  private dialog = inject(Dialog)
   loggedUser = this.authService.getUser();
   warehouseComp = inject(WarehouseComponent);
   isOpened = signal(true);
@@ -31,7 +34,7 @@ export class WarehouseNavComponent {
   warehouseNav = computed(() => this.warehouseService.warehouseNav());
 
   onShowList() {
-    this.warehouseService.visibleList.set(true);
+    this.dialog.open(ItemsListComponent, { disableClose: false });
   }
 
   onDeleteCards() {

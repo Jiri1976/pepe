@@ -1,15 +1,16 @@
-p-dialog {
-    .p-dialog-mask {
-        .p-dialog.p-component {
-            .p-dialog-header {
-                .p-dialog-header-actions {
-                    .p-dialog-close-button {
-                        display: none !important;
-                    }
-                }
-            }
-        }
-    }
+:host-context(cdk-dialog-container) {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 0.375em;
+    background-color: #fff;
+    filter: drop-shadow(0 0 2em rgba(#000, 0.5));
+    padding: 2em 2em 2em;
+}
+
+.select-item {
+    width: 25rem;
 
     .close,
     .item {
@@ -62,6 +63,7 @@ p-dialog {
             height: 40px;
             width: 120px;
             transform: 0.3s;
+            box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
         }
 
         .closeBtn:active {

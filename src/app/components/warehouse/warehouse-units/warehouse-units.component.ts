@@ -6,7 +6,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ErrorHandlingService } from '../../../services/error-handling.service';
 import Swiper from 'swiper';
 import { CommonModule } from '@angular/common';
-import { ItemsListComponent } from '../items-list/items-list.component';
 import { AuthService } from '../../../services/auth.service';
 import { HideElementDirective } from '../../../directives/hide-element.directive';
 import { ConfirmService } from '../../../services/confirm.service';
@@ -15,7 +14,7 @@ import { PageAnimation } from '../../../animations/page.animation';
 
 @Component({
   selector: 'app-warehouse-units',
-  imports: [CommonModule, ItemsListComponent, HideElementDirective, WarehouseInputComponent],
+  imports: [CommonModule, HideElementDirective, WarehouseInputComponent],
   templateUrl: './warehouse-units.component.html',
   styleUrl: './warehouse-units.component.scss',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -39,14 +38,9 @@ export class WarehouseUnitsComponent implements OnInit {
   cards = computed(() => this.warehouseService.cards());
   destination = computed(() => this.warehouseService.destination());
   monthYear = computed(() => this.warehouseService.monthYear());
-  visibleList = computed(() => this.warehouseService.visibleList());
-  items: {
-    name: string;
-    id: number;
-  }[] = [];
-  selectedIndex = signal<number>(0);
+  selectedListItemId = computed(() => this.warehouseService.selectedListItemId());
+  selectedIndex = computed(() => this.warehouseService.selectedIndex());
   @ViewChild('swiperRef', { static: false }) swiperRef!: ElementRef;
-
 
   reload = effect(() => {
     if (this.reloadCards()) {
@@ -54,6 +48,9 @@ export class WarehouseUnitsComponent implements OnInit {
     }
     if (this.deleteCards()) {
       this.onDeleteCards();
+    }
+    if (this.selectedListItemId() > -1) {
+      this.onSelectItem(this.selectedListItemId());
     }
   });
 
@@ -76,22 +73,9 @@ export class WarehouseUnitsComponent implements OnInit {
     });
   }
 
-  onSelectItem(itemId: number) {
-    if (itemId === -1) {
-      this.warehouseService.visibleList.set(false);
-      return;
-    }
-    this.warehouseService.visibleList.set(false);
-    this.swiper = this.swiperRef.nativeElement.swiper;
-
-    let index = this.cards().findIndex(u => u.warehouseItemId === itemId);
-    this.swiper.slideTo(index);
-  }
-
   uploadCards() {
     this.isLoading.set(true);
     this.warehouseService.reloadCards.set(false);
-    this.items = [];
     this.warehouseService.cards.set([]);
     const subscription = this.warehouseService.getWarehouseCards(this.monthYear(), this.destination()).pipe(
       tap(response => {
@@ -108,7 +92,6 @@ export class WarehouseUnitsComponent implements OnInit {
           }
           if (response.result.length > 0) {
             this.warehouseService.cards.set(response.result);
-            this.getItems();
             setTimeout(() => {
               this.swiper = this.swiperRef.nativeElement.swiper;
               this.swiper.slideTo(this.selectedIndex());
@@ -135,7 +118,7 @@ export class WarehouseUnitsComponent implements OnInit {
         if (confirmed) {
           let index = this.cards().findIndex(c => c.id === id);
           if (index !== -1) {
-            this.selectedIndex.set(index);
+            this.warehouseService.selectedIndex.set(index);
           }
           this.isLoading.set(true);
           const subscription = this.warehouseService.deleteWarehouseCard(id).pipe(
@@ -160,6 +143,16 @@ export class WarehouseUnitsComponent implements OnInit {
           });
         }
       });
+  }
+
+  private onSelectItem(itemId: number) {
+    if (itemId === -1) {
+      return;
+    }
+    this.warehouseService.selectedListItemId.set(-1);
+    this.swiper = this.swiperRef.nativeElement.swiper;
+    let index = this.cards().findIndex(u => u.warehouseItemId === itemId);
+    this.swiper.slideTo(index);
   }
 
   private onDeleteCards() {
@@ -194,12 +187,6 @@ export class WarehouseUnitsComponent implements OnInit {
           });
         }
       });
-  }
-
-  private getItems() {
-    this.cards().forEach(card => {
-      this.items.push({ name: card.warehouseItemName, id: card.warehouseItemId });
-    });
   }
 
   private handleError = (errorRes: HttpErrorResponse) => {

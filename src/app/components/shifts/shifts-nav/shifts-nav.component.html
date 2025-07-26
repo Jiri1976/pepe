@@ -13,7 +13,7 @@
             </a>
         </li>
 
-        <li hide (click)="shiftsComponent.openModal()" [class.disabled]="disabled()">
+        <li hide (click)="openModal()" [class.disabled]="disabled()">
             <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
                 <i class="bi bi-people"></i>
             </a>
@@ -63,7 +63,7 @@
             </a>
         </li>
 
-        <li hideAdmin (click)="shiftsComponent.openModal()" [class.disabled]="disabled()">
+        <li hideAdmin (click)="openModal()" [class.disabled]="disabled()">
             <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
                 <i class="bi bi-people"></i>
             </a>

@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject } from '@angular/core';
 import { ProposalsService } from '../../services/proposals.service';
 import { AuthService } from '../../services/auth.service';
 import { ProposalButtonComponent } from "./proposla-button/proposal-button.component";
@@ -7,6 +7,7 @@ import { CustomProposalButtonComponent } from "./custom-proposal-button/custom-p
 import { PageAnimation } from '../../animations/page.animation';
 import { ProposalSkeletonComponent } from "./proposal-skeleton/proposal-skeleton.component";
 import { AlertService } from '../../services/alert.service';
+import { Dialog } from '@angular/cdk/dialog';
 
 import * as signalR from '@microsoft/signalr';
 import { environment } from '../../../environments/environment';
@@ -15,7 +16,6 @@ import { environment } from '../../../environments/environment';
   selector: 'app-proposals',
   imports: [
     ProposalButtonComponent,
-    UpdateProposalComponent,
     CustomProposalButtonComponent,
     ProposalSkeletonComponent
   ],
@@ -29,6 +29,7 @@ export class ProposalsComponent {
   private PEPE_HUB = environment.PEPE_HUB;
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
+  private dialog = inject(Dialog)
   proposalsService = inject(ProposalsService);
   loggedUser = this.authService.getUser();
   destination = computed(() => this.proposalsService.destination());
@@ -40,7 +41,6 @@ export class ProposalsComponent {
   shifts = computed(() => this.proposalsService.shifts());
   assignments = computed(() => this.proposalsService.assignments());
   monthYear = computed(() => this.proposalsService.monthYear());
-  updateVisible = signal(false);
   cookCount = computed(() => this.proposalsService.cookCount());
   hubUser = `${this.loggedUser.name}`;
   token = this.authService.getToken();
@@ -144,7 +144,7 @@ export class ProposalsComponent {
     }
     this.proposalsService.setSelectedProposal(proposal);
     this.proposalsService.setTime(proposal);
-    this.updateVisible.set(true);
+    this.dialog.open(UpdateProposalComponent, { disableClose: false });
   }
 
   isUnsavedPassedCard() {
@@ -180,7 +180,7 @@ export class ProposalsComponent {
     let proposal = { name: 'W', x: userId, y: index, date: date, user: user, from: '11:00', to: this.isFridayOrSaturday(date) ? '23:00' : '22:00', delete: false };
     this.proposalsService.setSelectedProposal(proposal);
     this.proposalsService.setTime(proposal);
-    this.updateVisible.set(true);
+    this.dialog.open(UpdateProposalComponent, { disableClose: false });
   }
 
   ngOnDestroy(): void {

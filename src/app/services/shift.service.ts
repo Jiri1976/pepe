@@ -26,6 +26,8 @@ export class ShiftService {
     selectedShift = signal<InitShift>(this.initialShift);
     cardShiftMonthYear = signal<string>('');
     shiftFormVisible = signal(false);
+    users = signal<{ userName: string, userId: number }[]>([]);
+    selectedUserId = signal<number>(-1);
 
     setMonthYear(monthYear: string) {
         this.monthYear.set(monthYear);

@@ -1,10 +1,10 @@
-<p-dialog class="select-user" [modal]="true" [visible]="visibleModal()" [style]="{ width: '25rem' }">
+<div class="select-user">
     @for(user of users(); track user.userId) {
     <div class="user" (click)="onSelectUser(user.userId)">
         <p>{{ user.userName }}</p>
     </div>
     }
     <div class="close">
-        <button class="closeBtn" (click)="visibleModal.set(false)">Zavřít</button>
+        <button class="closeBtn" (click)="onClose()">Zavřít</button>
     </div>
-</p-dialog>
+</div>

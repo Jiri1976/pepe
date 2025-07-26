@@ -4,6 +4,8 @@ import { ShiftsComponent } from '../../../pages/shifts/shifts.component';
 import { HideElementDirective } from '../../../directives/hide-element.directive';
 import { AuthService } from '../../../services/auth.service';
 import { HideWhenAdminDirective } from '../../../directives/hide-when-admin.directive';
+import { Dialog } from '@angular/cdk/dialog';
+import { SelectUserComponent } from '../select-user/select-user.component';
 
 @Component({
   selector: 'app-shifts-nav',
@@ -14,10 +16,18 @@ import { HideWhenAdminDirective } from '../../../directives/hide-when-admin.dire
 export class ShiftsNavComponent {
   private shiftService = inject(ShiftService);
   private authService = inject(AuthService);
+  private dialog = inject(Dialog)
   shiftsComponent = inject(ShiftsComponent);
   calendarText = model('');
   destination = model('');
   pdfOn = model(false);
   loggedUser = this.authService.getUser();
   disabled = computed(() => this.shiftService.shiftFormVisible() || this.shiftsComponent.isLoading());
+  formShiftVisible = computed(() => this.shiftService.shiftFormVisible());
+
+  openModal() {
+    if (!this.formShiftVisible()) {
+      this.dialog.open(SelectUserComponent, { disableClose: false });
+    }
+  }
 }

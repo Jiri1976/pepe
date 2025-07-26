@@ -1,11 +1,11 @@
-import { Component, computed, effect, inject, input, model, OnInit, signal } from '@angular/core';
+import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { ProposalsService } from '../../../services/proposals.service';
 import { DatePickerModule } from 'primeng/datepicker';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { NotificationComponent } from "../../notification/notification.component";
 import { DateValidator } from '../../../helpers/proposal-times.validator';
+import { DialogRef } from '@angular/cdk/dialog';
 
 @Component({
   selector: 'app-update-proposal',
@@ -14,16 +14,15 @@ import { DateValidator } from '../../../helpers/proposal-times.validator';
     ButtonModule,
     DatePickerModule,
     FormsModule,
-    ReactiveFormsModule,
-    NotificationComponent,
+    ReactiveFormsModule
   ],
   templateUrl: './update-proposal.component.html',
   styleUrl: './update-proposal.component.scss'
 })
 export class UpdateProposalComponent implements OnInit {
   private proposalsService = inject(ProposalsService);
-  destination = input.required<string>();
-  updateVisible = model<boolean>(false);
+  private dialogRef = inject(DialogRef, { optional: true });
+  destination = computed(() => this.proposalsService.destination());
   selectedProposal = computed(() => this.proposalsService.selectedProposal());
   assignments = computed(() => this.proposalsService.assignments());
   selectedProposalTimeFrom = computed(() => this.proposalsService.timeFrom());
@@ -96,7 +95,7 @@ export class UpdateProposalComponent implements OnInit {
       }
     }
 
-    this.updateVisible.set(false);
+    this.dialogRef?.close();
     let _assignments = { ...this.assignments() };
     let assignment: any = _assignments[this.selectedProposal().x][this.selectedProposal().y];
 
@@ -142,11 +141,15 @@ export class UpdateProposalComponent implements OnInit {
   }
 
   onDelete() {
-    this.updateVisible.set(false)
+    this.dialogRef?.close();
     let assignments = { ...this.assignments() };
     assignments[this.selectedProposal().x][this.selectedProposal().y] = [];
     this.proposalsService.assignments.set(assignments);
     this.proposalsService.setProposals();
+  }
+
+  onClose() {
+    this.dialogRef?.close();
   }
 
   private isFridayOrSaturday(date: string) {

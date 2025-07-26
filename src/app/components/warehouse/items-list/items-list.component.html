@@ -1,4 +1,4 @@
-<p-dialog class="select-item" [modal]="true" [visible]="visible()" [style]="{ width: '25rem' }">
+<div class="select-item">
     @for(item of items(); track item.id) {
     <div class="item" (click)="onSelectItem(item.id)">
         <p>{{ item.name }}</p>
@@ -7,4 +7,4 @@
     <div class="close">
         <button class="closeBtn" (click)="onSelectItem(-1)">Zavřít</button>
     </div>
-</p-dialog>
+</div>

@@ -1,8 +1,8 @@
-
-import { Component, computed, inject, input, output } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { WarehouseService } from '../../../services/warehouse.service';
+import { DialogRef } from '@angular/cdk/dialog';
 
 @Component({
   selector: 'app-items-list',
@@ -10,16 +10,38 @@ import { WarehouseService } from '../../../services/warehouse.service';
   templateUrl: './items-list.component.html',
   styleUrl: './items-list.component.scss'
 })
-export class ItemsListComponent {
+export class ItemsListComponent implements OnInit {
   private warehouseService = inject(WarehouseService);
-  visible = computed(() => this.warehouseService.visibleList());
-  items = input.required<{
+  private dialogRef = inject(DialogRef, { optional: true });
+  cards = computed(() => this.warehouseService.cards());
+  items = signal<{
     name: string;
     id: number;
-  }[]>();
-  selected = output<number>();
+  }[]>([]);
+
+  ngOnInit(): void {
+    this.getItems();
+  }
 
   onSelectItem(itemId: number) {
-    this.selected.emit(itemId);
+    this.warehouseService.selectedListItemId.set(itemId);
+    this.dialogRef?.close();
+  }
+
+  protected closeModal() {
+    this.dialogRef?.close();
+  }
+
+  private getItems() {
+    if (this.cards().length > 0) {
+      let _items: {
+        name: string;
+        id: number;
+      }[] = [];
+      this.cards().forEach(card => {
+        _items.push({ name: card.warehouseItemName, id: card.warehouseItemId });
+      });
+      this.items.set(_items);
+    }
   }
 }
