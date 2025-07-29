@@ -1,12 +1,11 @@
 <div class="box">
     @if (!isLoading()) {
 
-    @if (!edit()) {
     <div class="users" @fadeIn @fadeOut>
         <div class="row">
             @if(filteredUsers().length > 0) {
             @for(user of filteredUsers(); track $index) {
-            <app-user-item [user]="user" (selectedId)="editUser($event)" />
+            <app-user-item [user]="user" />
             }
 
             @for(i of getEmptyLines(); track $index) {
@@ -17,14 +16,6 @@
             }
         </div>
     </div>
-    }
-
-    @if (edit()) {
-    <div class="edit-div" @fadeIn @fadeOut>
-        <app-user (back)="goBack()" (deletedUser)="onRemoveUser($event)" (createdUser)="onCreate($event)"
-            (updatedUser)="onUpdateUser($event)" />
-    </div>
-    }
 
     } @else {
     <div class="skeleton" @fadeOut>
@@ -38,14 +29,11 @@
     </div>
     }
 
-    <app-users-nav [(edit)]="edit" [(filter)]="filter" [(role)]="role" [(selectedList)]="selectedList" @fadeIn
-        @fadeOut />
+    <app-users-nav @fadeIn @fadeOut />
 
-    @if (filteredUsers().length > 0 && !edit()) {
+    @if (filteredUsers().length > 0) {
     <div class="pagination-div" @fadeIn @fadeOut>
-        <app-user-pagination (pageSelected)="onSelectPage($event)" [users]="filteredUsers()"
-            [currentPage]="currentPage()" [hasNextPage]="hasNextPage()" [hasPreviousPage]="hasPreviousPage()"
-            [lastPage]="lastPage()" />
+        <app-user-pagination />
     </div>
     }
 

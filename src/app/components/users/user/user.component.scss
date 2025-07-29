@@ -1,3 +1,14 @@
+:host-context(cdk-dialog-container) {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 0.375em;
+    background-color: #fff;
+    filter: drop-shadow(0 0 2em rgba(#000, 0.5));
+    padding: 2em 2em 2em;
+}
+
 form {
     // border: 2px solid #d1d5db;
     padding: 0 10px 0px 40px;

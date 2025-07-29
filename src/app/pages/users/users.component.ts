@@ -1,5 +1,4 @@
 import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
-import { UserComponent } from '../../components/users/user/user.component';
 import { UserItemComponent } from '../../components/users/user-item/user-item.component';
 import { GetUserDTO } from '../../models/users/getUserDTO.interface';
 import { UserPaginationComponent } from '../../components/users/user-pagination/user-pagination.component';
@@ -16,7 +15,6 @@ import { PageAnimation } from '../../animations/page.animation';
 @Component({
   selector: 'app-users',
   imports: [
-    UserComponent,
     UserItemComponent,
     UserPaginationComponent,
     ConfirmComponent,
@@ -31,24 +29,17 @@ import { PageAnimation } from '../../animations/page.animation';
 })
 export class UsersComponent implements OnInit {
   private usersService = inject(UsersService);
-  private perPage = 10;
   private errorHandlingService = inject(ErrorHandlingService);
   private alertService = inject(AlertService);
   private destroyRef = inject(DestroyRef);
-  private PER_PAGE = 10;
   isLoading = signal(false);
   users = computed(() => this.usersService.users());
-  filter = signal<'All' | 'F-M' | 'OVA'>('All');
-  role = signal<'User' | 'Master' | 'Admin'>('User');
-  selectedList = signal<number>(6);
-  currentPage = signal<number>(1);
-  filteredUsers = signal<GetUserDTO[]>([]);
-  hasNextPage = signal<boolean>(false);
-  hasPreviousPage = signal<boolean>(false);
-  lastPage = signal<number>(1);
-  edit = signal(false);
+  filteredUsers = computed(() => this.usersService.filteredUsers());
 
   ngOnInit() {
+    this.usersService.filter.set('All');
+    this.usersService.role.set('User');
+    this
     this.isLoading.set(true);
     const subscription = this.usersService.getUsers(true).pipe(
       tap(response => {
@@ -60,7 +51,7 @@ export class UsersComponent implements OnInit {
         } else {
           let _users = this.sortUsers(response.result)
           this.usersService.setUsers(_users);
-          this.filteredUsers.set(this.filterUsers(_users));
+          this.usersService.filteredUsers.set(this.usersService.filterUsers(_users))
         }
       }),
       tap({
@@ -70,106 +61,6 @@ export class UsersComponent implements OnInit {
     this.destroyRef.onDestroy(() => {
       subscription.unsubscribe();
     });
-  }
-
-  filterUsers(users: GetUserDTO[]) {
-    this.hasNextPage.set(this.PER_PAGE * this.currentPage() < users.length);
-    this.hasPreviousPage.set(this.currentPage() > 1);
-    this.lastPage.set(Math.ceil(users.length / this.PER_PAGE));
-    return users.slice((this.currentPage() - 1) * this.perPage, this.perPage * this.currentPage());
-  }
-
-  onCreate(user: GetUserDTO) {
-    let _users = this.usersService.storedUsers();
-    _users = this.sortUsers(_users);
-    this.usersService.setUsers(_users);
-    this.filteredUsers.set(this.filterUsers(_users));
-    this.onSelectList(this.selectedList());
-  }
-
-  onSelectList(value: number, pageNumber?: number) {
-    this.selectedList.set(value);
-    if (!pageNumber) {
-      this.currentPage.set(1);
-    } else {
-      this.currentPage.set(pageNumber);
-    }
-    if (value === 1) {
-      this.filter.set('F-M');
-      let _users = this.users().filter(i => this.role() === 'Admin' ? i.role === this.role() : i.destination === this.filter() && i.role === this.role());
-      this.filteredUsers.set(this.filterUsers(_users));
-    } else if (value === 2) {
-      this.filter.set('OVA');
-      let _users = this.users().filter(i => this.role() === 'Admin' ? i.role === this.role() : i.destination === this.filter() && i.role === this.role());
-      this.filteredUsers.set(this.filterUsers(_users));
-    } else if (value === 3) {
-      this.role.set('User');
-      let _users = this.users().filter(i => this.filter() === 'All' ? i.role === this.role() : i.destination === this.filter() && i.role === this.role());
-      this.filteredUsers.set(this.filterUsers(_users));
-    } else if (value === 4) {
-      this.role.set('Master');
-      let _users = this.users().filter(i => this.filter() === 'All' ? i.role === this.role() : i.destination === this.filter() && i.role === this.role());
-      this.filteredUsers.set(this.filterUsers(_users));
-    } else if (value === 5) {
-      this.role.set('Admin');
-      let _users = this.users().filter(i => i.role === this.role());
-      this.filteredUsers.set(this.filterUsers(_users));
-    } else if (value === 6) {
-      this.filter.set('All');
-      let _users = [...this.users()];
-      this.filteredUsers.set(this.filterUsers(_users));
-    }
-  }
-
-  open() {
-    if (this.edit()) {
-      this.usersService.resetUser();
-    } else {
-      this.usersService.clearUser();
-    }
-    this.edit.set(!this.edit());
-  }
-
-  close() {
-    this.usersService.clearUser();
-    this.edit.set(false);
-  }
-
-  goBack() {
-    this.usersService.clearUser();
-    this.close();
-  }
-
-  editUser(id: number) {
-    this.usersService.setUser(this.users().find(u => u.id === id)!);
-    this.edit.set(true);
-  }
-
-  onSelectPage(selectedPage: number) {
-    this.currentPage.set(selectedPage);
-    this.onSelectList(this.selectedList(), this.currentPage());
-  }
-
-  onRemoveUser(id: number) {
-    let _users = [...this.users()];
-    _users = _users.filter((user) => user.id !== id);
-    this.usersService.setUsers(_users);
-    this.onSelectList(this.selectedList());
-    this.usersService.clearUser();
-  }
-
-  onUpdateUser(_user: GetUserDTO) {
-    let _users = [...this.users()];
-    _users = _users.map(user => {
-      if (user.id === _user.id) {
-        return { ...user, name: _user.name, surname: _user.surname, email: _user.email, role: _user.role, destination: _user.destination, position: _user.position, isActive: _user.isActive };
-      } else {
-        return user;
-      }
-    });
-    _users = this.sortUsers(_users);
-    this.usersService.setUsers(_users);
-    this.filteredUsers.set(this.filterUsers(_users));
   }
 
   getEmptyLines() {

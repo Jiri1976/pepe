@@ -218,11 +218,13 @@ export class WarehouseService {
             await this.connection.start();
             await this.joinRoom(this.hubUser, 'warehouse');
         } catch (error) {
-            this.alertService.setAlert({
-                severity: 'warn',
-                summary: 'Warn',
-                detail: 'Nepodařilo se navázat spojení s hubem.'
-            });
+            // this.alertService.setAlert({
+            //     severity: 'warn',
+            //     summary: 'Warn',
+            //     detail: 'Nepodařilo se navázat spojení s hubem.'
+            // });
+            console.log('WAREHOUSE SERVICE - Nepodařilo se navázat spojení s hubem.');
+
         }
     }
 

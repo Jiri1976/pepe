@@ -1,5 +1,5 @@
-import { Component, input, output } from '@angular/core';
-import { GetUserDTO } from '../../../models/users/getUserDTO.interface';
+import { Component, computed, inject, output } from '@angular/core';
+import { UsersService } from '../../../services/users.service';
 
 @Component({
   selector: 'app-user-pagination',
@@ -8,14 +8,17 @@ import { GetUserDTO } from '../../../models/users/getUserDTO.interface';
   styleUrl: './user-pagination.component.scss'
 })
 export class UserPaginationComponent {
+  private usersService = inject(UsersService);
   pageSelected = output<number>();
-  currentPage = input.required<number>();
-  hasPreviousPage = input.required<boolean>();
-  hasNextPage = input.required<boolean>();
-  users = input.required<GetUserDTO[]>();
-  lastPage = input.required<number>();;
+  currentPage = computed(() => this.usersService.currentPage());
+  selectedList = computed(() => this.usersService.selectedList());
+  hasNextPage = computed(() => this.usersService.hasNextPage());
+  hasPreviousPage = computed(() => this.usersService.hasPreviousPage());
+  lastPage = computed(() => this.usersService.lastPage());
+  users = computed(() => this.usersService.filteredUsers());
 
   setPage(page: number) {
-    this.pageSelected.emit(page);
+    this.usersService.currentPage.set(page);
+    this.usersService.selectList(this.selectedList(), page);
   }
 }

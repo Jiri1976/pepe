@@ -1,16 +1,15 @@
-import { Component, computed, DestroyRef, inject, model, OnInit, output, signal, ViewChild } from '@angular/core';
+import { Component, computed, DestroyRef, inject, model, OnInit, signal } from '@angular/core';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from '../../../services/alert.service';
 import { ConvertToGetUserDTO, ConvertToUserDTO } from '../../../helpers/conversions';
-import { GetUserDTO } from '../../../models/users/getUserDTO.interface';
 import { ErrorHandlingService } from '../../../services/error-handling.service';
 import { ConfirmService } from '../../../services/confirm.service';
 import { concatMap, of } from 'rxjs';
 import { UsersService } from '../../../services/users.service';
 import { CommonModule } from '@angular/common';
 import { CheckBoxesValidator } from '../../../helpers/user-checkboxes.validation';
-import { UserItemComponent } from '../user-item/user-item.component';
+import { DialogRef } from '@angular/cdk/dialog';
 
 @Component({
   selector: 'app-user',
@@ -25,19 +24,15 @@ export class UserComponent implements OnInit {
   private alertService = inject(AlertService);
   private errorHandlingService = inject(ErrorHandlingService);
   private confirmService = inject(ConfirmService);
-  back = output<boolean>();
+  private dialogRef = inject(DialogRef, { optional: true });
   user = computed(() => this.usersService.user());
   nothingChanged = true;
-  deletedUser = output<number>();
-  createdUser = output<GetUserDTO>();
-  updatedUser = output<GetUserDTO>();
   isLoading = signal(false);
   userForm!: FormGroup;
   inputsFocused = signal(false);
   activeUser = signal(true);
   actionText = signal('');
   lineHeight = model<string>('40px');
-  userVisible = model(false);
 
   get name() {
     return this.userForm.get('name');
@@ -76,11 +71,7 @@ export class UserComponent implements OnInit {
   }
 
   onGoBack() {
-    //this.initializedUserForm();
-    this.back.emit(true);
-    //this.usersService.callOnClose();
-    // this.userVisible.set(false);
-    // this.lineHeight.set('40px');
+    this.dialogRef?.close();
   }
 
   onSubmit() {
@@ -114,7 +105,7 @@ export class UserComponent implements OnInit {
             this.usersService.addUser(getUserDTO);
             this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: `Úspěšně přidán - ${userDTO.name} ${userDTO.surname}` });
             this.userForm.reset();
-            this.createdUser.emit(getUserDTO);
+            this.usersService.onCreate(getUserDTO);
             this.onGoBack();
           }
           return of();
@@ -137,6 +128,7 @@ export class UserComponent implements OnInit {
         _user.role = this.user().role;
         _user.destination = this.user().destination;
         _user.position = this.user().position;
+        _user.isActive = true;
       }
 
       this.isLoading.set(true);
@@ -155,7 +147,7 @@ export class UserComponent implements OnInit {
           } else if (response.isSuccess) {
             this.userForm.enable();
             this.usersService.setUser(getUserDTO);
-            this.updatedUser.emit(getUserDTO);
+            this.usersService.onUpdateUser(getUserDTO);
             this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: response.result });
             this.usersService.updateAllAfterUpdate(getUserDTO);
             this.onGoBack();
@@ -194,8 +186,7 @@ export class UserComponent implements OnInit {
                 this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
               } else if (response.isSuccess) {
                 this.userForm.enable();
-                this.deletedUser.emit(this.user().id);
-                this.usersService.removeUser(userId);
+                this.usersService.onRemoveUser(this.user().id);
                 this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: `Uživatel byl úspěšně smazán.` });
                 this.onGoBack();
               }
@@ -249,22 +240,9 @@ export class UserComponent implements OnInit {
     this.nothingChanged = name && surname && email && role && position && destination && isActive;
   }
 
-  // notificate() {
-  //   let nameIsFalse = (this.name?.touched && this.name?.hasError('required') || this.name?.untouched && this.name?.dirty && this.name?.hasError('required') || this.name?.hasError('maxlength'));
-  //   let surnameIFalse = (this.surname?.touched && this.surname?.hasError('required') || this.surname?.untouched && this.surname?.dirty && this.surname?.hasError('required') || this.surname?.hasError('maxlength'));
-  //   let emailIsFalse = (this.email?.touched && this.email?.hasError('required') || (this.email?.touched && this.email?.hasError('email')));
-  //   let passwordIsFalse = (this.password?.touched && this.password?.hasError('required') || this.password?.untouched && this.password?.dirty && this.password?.hasError('required') || this.password?.hasError('maxlength'));
-
-  //   return nameIsFalse ||
-  //     surnameIFalse ||
-  //     emailIsFalse ||
-  //     passwordIsFalse;
-  // }
-
   nameCanShake() {
     return this.name?.touched &&
-      this.name?.hasError('required') ||
-      this.name?.untouched &&
+      this.name?.hasError('required') &&
       this.name?.dirty &&
       this.name?.hasError('required') ||
       this.name?.hasError('maxlength');
@@ -310,8 +288,11 @@ export class UserComponent implements OnInit {
   }
 
   isRoleDisabled(): boolean {
-    const role = this.user().role;
-    return role === 'Admin' || role === 'Master';
+    return this.user().role !== 'User';
+  }
+
+  ngOnDestroy() {
+    this.usersService.clearUser();
   }
 
   private initializedUserForm() {
@@ -370,7 +351,6 @@ export class UserComponent implements OnInit {
       this.userForm.get('position')?.disable();
       this.userForm.get('isActive')?.disable();
     }
-
     this.activeUser.set(this.user().isActive);
   }
 

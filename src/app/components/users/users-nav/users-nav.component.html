@@ -1,45 +1,45 @@
 <div class="menu">
     <ul>
-        <li [class.disabled]="edit()">
-            <a (click)="createUpdate()" [style.--background]="'#24355A'" [style.--color]="'#fff'">
+        <li>
+            <a (click)="createUser()" [style.--background]="'#24355A'" [style.--color]="'#fff'">
                 <i class="bi bi-person-add"></i>
             </a>
         </li>
-        <li [class.disabled]="edit()">
-            <a (click)="usersComp.onSelectList(1)" [style.--background]="filter() === 'F-M' ? '#24355A' : '#1e81b0'"
+        <li>
+            <a (click)="selectList(1)" [style.--background]="filter() === 'F-M' ? '#24355A' : '#1e81b0'"
                 [style.--color]="'#fff'">
                 <p>F-M</p>
             </a>
         </li>
-        <li [class.disabled]="edit()">
-            <a (click)="usersComp.onSelectList(2)" [style.--background]="filter() === 'OVA' ? '#24355A' : '#1e81b0'"
+        <li>
+            <a (click)="selectList(2)" [style.--background]="filter() === 'OVA' ? '#24355A' : '#1e81b0'"
                 [style.--color]="'#fff'">
                 <p>OVA</p>
             </a>
         </li>
-        <li [class.disabled]="edit()">
-            <a (click)="usersComp.onSelectList(3)"
+        <li>
+            <a (click)="selectList(3)"
                 [style.--background]="role() === 'User' && (selectedList() === 3 || selectedList() === 1 || selectedList() === 2) ? '#24355A' : '#1e81b0'"
                 [style.--color]="'#fff'">
                 <p>U</p>
             </a>
         </li>
-        <li [class.disabled]="edit()">
-            <a (click)="usersComp.onSelectList(4)"
+        <li>
+            <a (click)="selectList(4)"
                 [style.--background]="role() === 'Master' && (selectedList() === 4 || selectedList() === 1 || selectedList() === 2) ? '#24355A' : '#1e81b0'"
                 [style.--color]="'#fff'">
                 <p>M</p>
             </a>
         </li>
-        <li [class.disabled]="edit()">
-            <a (click)="usersComp.onSelectList(5)"
+        <li>
+            <a (click)="selectList(5)"
                 [style.--background]="role() === 'Admin' && (selectedList() === 5 || selectedList() === 1 || selectedList() === 2) ? '#24355A' : '#1e81b0'"
                 [style.--color]="'#fff'">
                 <p>A</p>
             </a>
         </li>
-        <li [class.disabled]="edit()">
-            <a (click)="usersComp.onSelectList(6)" [style.--background]="filter() === 'All' ? '#24355A' : '#1e81b0'"
+        <li>
+            <a (click)="selectList(6)" [style.--background]="filter() === 'All' ? '#24355A' : '#1e81b0'"
                 [style.--color]="'#fff'">
                 <p>VŠE</p>
             </a>

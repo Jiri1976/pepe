@@ -12,8 +12,11 @@
                     formControlName="name" (input)="checkValues()" placeholder="Jméno" autocomplete="no"
                     (focus)="onInputFocus()" (blur)="onInputBlur()">
                 <div class="blockError">
+                    <!-- <div class="error"
+                        [style.display]="(name?.touched && name?.hasError('required')  || name?.untouched && name?.dirty && name?.hasError('required')) ? 'block' : 'none'">
+                        * Jméno je povinný údaj</div> -->
                     <div class="error"
-                        [style.display]="(name?.touched && name?.hasError('required') || name?.untouched && name?.dirty && name?.hasError('required')) ? 'block' : 'none'">
+                        [style.display]="name?.touched && name?.dirty && name?.hasError('required') ? 'block' : 'none'">
                         * Jméno je povinný údaj</div>
                     <div class="error" [style.display]="name?.hasError('maxlength') ? 'block' : 'none'">
                         * Prosím pouze 15 znaků</div>
@@ -122,10 +125,12 @@
     <div class="row mt-4 mb-4">
         <div class="col-6 inline">
             @if (user().id === 0) {
-            <button class="w-100 cancel" (click)="onGoBack()"><i class="bi bi-x"></i>&nbsp;Zpět</button>
+            <button class="w-100 cancel" (click)="onGoBack()" type="button"><i class="bi bi-x"></i>&nbsp;Zpět</button>
             } @else {
-            <button class="w-50 cancel me-1" (click)="onGoBack()"><i class="bi bi-x"></i>&nbsp;Zpět</button>
-            <button class="w-50 cancel ms-1" (click)="onDelete()"><i class="bi bi-trash"></i>&nbsp;Smazat</button>
+            <button class="w-50 cancel me-1" (click)="onGoBack()" type="button"><i
+                    class="bi bi-x"></i>&nbsp;Zpět</button>
+            <button class="w-50 cancel ms-1" (click)="onDelete()" type="button"><i
+                    class="bi bi-trash"></i>&nbsp;Smazat</button>
             }
         </div>
         <div class="col-6">

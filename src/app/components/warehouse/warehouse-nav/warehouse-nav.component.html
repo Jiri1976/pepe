@@ -30,7 +30,7 @@
         </li>
 
         @if (warehouseNav() !== 'board') {
-        <li (click)="onShowList()" @fadeIn @fadeOut hide [class.disabled]="this.cards().length === 0">
+        <li (click)="onShowList()" hide [class.disabled]="this.cards().length === 0">
             <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
                 <i class="bi bi-list-check"></i>
             </a>
