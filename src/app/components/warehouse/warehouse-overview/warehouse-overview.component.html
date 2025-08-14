@@ -10,9 +10,14 @@
                         {{ destination()}}
                     </div>
                 </div>
-                @for (day of days(); track $index) {
+                <!-- @for (day of days(); track $index) {
                 <div class="head-cell">{{$index + 1}}.</div>
+                } -->
+
+                @for (unit of cards()[0].units; track $index) {
+                <div [class]="isToday(unit.date) ? 'today-head-cell' : 'head-cell'">{{$index + 1}}.</div>
                 }
+
             </div>
 
             <div class="body">

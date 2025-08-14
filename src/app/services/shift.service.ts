@@ -2,7 +2,7 @@ import { inject, Injectable, signal } from "@angular/core";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { environment } from "../../environments/environment";
 import { Response } from '../models/response.interface';
-import { GetUserDTO } from "../models/users/getUserDTO.interface";
+import { GetUser } from "../models/users/getUser.interface";
 import { Shift } from "../models/shifts/shift.interface";
 import { InitShift } from "../models/shifts/initShift.interface";
 import { AuthService } from "./auth.service";
@@ -47,7 +47,7 @@ export class ShiftService {
         this.selectedShift.set(initShift);
     }
 
-    getUserShiftCard(monthYear: string, user: GetUserDTO) {
+    getUserShiftCard(monthYear: string, user: GetUser) {
         let data = {
             monthYear: monthYear,
             user: {

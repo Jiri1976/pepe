@@ -8,13 +8,13 @@
         </li>
 
         <li hide (click)="plansComponent.onChangeDestination('F-M')">
-            <a [style.--background]="destination() === 'F-M' ? '#24355A' : '#1e81b0'" [style.--color]="'#fff'">
+            <a [style.--background]="destination() === 'F-M' ? '#24355A' : '#0EA5E9'" [style.--color]="'#fff'">
                 <p>F-M</p>
             </a>
         </li>
 
         <li hide (click)="plansComponent.onChangeDestination('OVA')">
-            <a [style.--background]="destination() === 'OVA' ? '#24355A' : '#1e81b0'" [style.--color]="'#fff'">
+            <a [style.--background]="destination() === 'OVA' ? '#24355A' : '#0EA5E9'" [style.--color]="'#fff'">
                 <p>OVA</p>
             </a>
         </li>
@@ -38,7 +38,7 @@
         </li>
 
         <li hide (click)="plansComponent.onDelete()" [class.disabled]="plansComponent.proposalCard().id === 0">
-            <a [style.--background]="'#F53B57'" [style.--color]="'#fff'">
+            <a [style.--background]="'#EF4444'" [style.--color]="'#fff'">
                 <i class="bi bi-trash"></i>
             </a>
         </li>

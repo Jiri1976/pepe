@@ -1,20 +1,23 @@
-import { Component, computed, DestroyRef, inject, model, OnInit, signal } from '@angular/core';
-import { FormGroup, FormControl, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { Component, computed, DestroyRef, ElementRef, inject, OnInit, signal, viewChild } from '@angular/core';
+import { FormGroup, FormControl, Validators, ReactiveFormsModule, FormsModule, FormArray } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from '../../../services/alert.service';
-import { ConvertToGetUserDTO, ConvertToUserDTO } from '../../../helpers/conversions';
 import { ErrorHandlingService } from '../../../services/error-handling.service';
 import { ConfirmService } from '../../../services/confirm.service';
 import { concatMap, of } from 'rxjs';
 import { UsersService } from '../../../services/users.service';
 import { CommonModule } from '@angular/common';
-import { CheckBoxesValidator } from '../../../helpers/user-checkboxes.validation';
 import { DialogRef } from '@angular/cdk/dialog';
+import { FieldsetModule } from 'primeng/fieldset';
+import { CheckboxModule } from 'primeng/checkbox';
+import { UserDestination } from '../../../models/users/userDestination.interface';
+import { UserPosition } from '../../../models/users/userPosition.interface';
+import { CheckBoxesValidator } from '../../../helpers/user-checkboxes.validation';
 
 @Component({
   selector: 'app-user',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, FieldsetModule, CheckboxModule],
   templateUrl: './user.component.html',
   styleUrl: './user.component.scss'
 })
@@ -26,13 +29,12 @@ export class UserComponent implements OnInit {
   private confirmService = inject(ConfirmService);
   private dialogRef = inject(DialogRef, { optional: true });
   user = computed(() => this.usersService.user());
-  nothingChanged = true;
   isLoading = signal(false);
   userForm!: FormGroup;
-  inputsFocused = signal(false);
-  activeUser = signal(true);
   actionText = signal('');
-  lineHeight = model<string>('40px');
+  inputField = viewChild<ElementRef>('input');
+  imagePicker = viewChild<ElementRef<HTMLInputElement>>('imagePicker');
+  selectedImage: string | null = null;
 
   get name() {
     return this.userForm.get('name');
@@ -50,28 +52,64 @@ export class UserComponent implements OnInit {
     return this.userForm.get('password');
   }
 
-  get role() {
-    return this.userForm.get('role');
-  }
-
-  get position() {
-    return this.userForm.get('position');
-  }
-
-  get destination() {
-    return this.userForm.get('destination');
-  }
-
   get isActive() {
     return this.userForm.get('isActive');
+  }
+
+  get image() {
+    return this.userForm.get('image');
   }
 
   ngOnInit(): void {
     this.initializedUserForm();
   }
 
+  ngAfterViewInit() {
+    setTimeout(() => {
+      this.inputField()?.nativeElement.blur();
+      this.name?.markAsUntouched();
+    });
+  }
+
   onGoBack() {
     this.dialogRef?.close();
+  }
+
+  selectImage() {
+    this.imagePicker()?.nativeElement.click();
+  }
+
+  onFileSelected(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (file) {
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+
+      if (!allowedTypes.includes(file.type)) {
+        this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Nepovolený formát! Povoleny jsou pouze JPG, PNG, GIF, nebo WEBP.' });
+        this.imagePicker()!.nativeElement.value = '';
+        return;
+      }
+
+      if (file.size > 2 * 1024 * 1024) {
+        this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Soubor je příliš velký! Maximální velikost je 2 MB.' });
+        this.imagePicker()!.nativeElement.value = '';
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.selectedImage = reader.result as string;
+        this.image?.setValue(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  removeImage(event: MouseEvent) {
+    event.stopPropagation();
+    this.selectedImage = null;
+    this.imagePicker()!.nativeElement.value = '';
+    this.image?.setValue(this.user().image !== '' ? this.user().image : null);
   }
 
   onSubmit() {
@@ -79,40 +117,63 @@ export class UserComponent implements OnInit {
       return;
     }
 
-    if (this.user().id === 0) {
-      let _user = this.userForm.value;
-      _user.id = this.user().id;
-      _user.nick = _user.name!.substring(0, 1) + _user.surname!.substring(0, 1);
-      this.isLoading.set(true);
-      this.actionText.set('Přidávám...');
-      this.userForm.disable();
-      const userDTO = ConvertToUserDTO(_user);
+    this.isLoading.set(true);
+    this.userForm.disable();
+    let _user = this.userForm.value;
+    _user.id = this.user().id;
+    _user.nick = _user.name!.substring(0, 1) + _user.surname!.substring(0, 1);
 
-      const subscription = this.usersService.createUser(userDTO).pipe(
+    let fmPositions = this.getPositions(0);
+    let ovaPositions = this.getPositions(1);
+
+    _user.destinations[0].id = this.user().destinations[0].id;
+    _user.destinations[0].userId = this.user().id;
+    _user.destinations[0].destination = this.user().destinations[0].destination;
+
+    _user.destinations[1].id = this.user().destinations[1].id;
+    _user.destinations[1].userId = this.user().id;
+    _user.destinations[1].destination = this.user().destinations[1].destination;
+
+    _user.destinations[0].positions[0].position = (fmPositions.at(0)).get('position')?.value ? 'Cook' : '';
+    _user.destinations[0].positions[0].userDestinationId = (this.destinations.at(0)).get('id')?.value;
+    _user.destinations[0].positions[0].id = (fmPositions.at(0)).get('id')?.value;
+
+    _user.destinations[0].positions[1].position = (fmPositions.at(1)).get('position')?.value ? 'Driver' : '';
+    _user.destinations[0].positions[1].userDestinationId = (this.destinations.at(0)).get('id')?.value;
+    _user.destinations[0].positions[1].id = (fmPositions.at(1)).get('id')?.value;
+
+    _user.destinations[1].positions[0].position = (ovaPositions.at(0)).get('position')?.value ? 'Cook' : '';
+    _user.destinations[1].positions[0].userDestinationId = (this.destinations.at(1)).get('id')?.value;
+    _user.destinations[1].positions[0].id = (ovaPositions.at(0)).get('id')?.value;
+
+    _user.destinations[1].positions[1].position = (ovaPositions.at(1)).get('position')?.value ? 'Driver' : '';
+    _user.destinations[1].positions[1].userDestinationId = (this.destinations.at(1)).get('id')?.value;
+    _user.destinations[1].positions[1].id = (ovaPositions.at(1)).get('id')?.value;
+
+    if (this.user().id === 0) {
+      this.actionText.set('Přidávám...');
+
+      const subscription = this.usersService.createUser(_user).pipe(
         concatMap(response => {
           this.isLoading.set(false);
           if (response === null) {
-            this.userForm.enable();
             this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
           } else if (response.isSuccess === false) {
-            this.userForm.enable();
             this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
           } else if (response.isSuccess) {
-            userDTO.id = response.result;
-            userDTO.password = '';
-            const getUserDTO = ConvertToGetUserDTO(userDTO);
-            this.usersService.setUser(getUserDTO);
-            this.usersService.addUser(getUserDTO);
-            this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: `Úspěšně přidán - ${userDTO.name} ${userDTO.surname}` });
+            _user.id = response.result;
+            _user.password = '';
+            this.usersService.setUser(_user);
+            this.usersService.addUser(_user);
+            this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: `Úspěšně přidán - ${_user.name} ${_user.surname}` });
             this.userForm.reset();
-            this.usersService.onCreate(getUserDTO);
             this.onGoBack();
           }
           return of();
         }),
       ).subscribe({
         next: () => {
-
+          this.userForm.enable();
         },
         error: error => this.handleError(error)
       });
@@ -121,21 +182,12 @@ export class UserComponent implements OnInit {
         subscription.unsubscribe();
       });
     } else {
-      let _user = this.userForm.value;
-      _user.id = this.user().id;
-      _user.nick = _user.name!.substring(0, 1) + _user.surname!.substring(0, 1);
       if (this.user().role === 'Admin' || this.user().role === 'Master') {
         _user.role = this.user().role;
-        _user.destination = this.user().destination;
-        _user.position = this.user().position;
         _user.isActive = true;
       }
-
-      this.isLoading.set(true);
       this.actionText.set('Upravuji...');
-      this.userForm.disable();
-      const getUserDTO = ConvertToGetUserDTO(_user);
-      const subscription = this.usersService.updateUser(getUserDTO).pipe(
+      const subscription = this.usersService.updateUser(_user).pipe(
         concatMap(response => {
           this.isLoading.set(false);
           if (response === null) {
@@ -146,18 +198,15 @@ export class UserComponent implements OnInit {
             this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
           } else if (response.isSuccess) {
             this.userForm.enable();
-            this.usersService.setUser(getUserDTO);
-            this.usersService.onUpdateUser(getUserDTO);
+            this.usersService.setUser(_user);
+            this.usersService.onUpdateUser(_user);
             this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: response.result });
-            this.usersService.updateAllAfterUpdate(getUserDTO);
             this.onGoBack();
           }
           return of();
         }),
       ).subscribe({
-        next: () => {
-
-        },
+        next: () => { },
         error: error => this.handleError(error)
       });
 
@@ -176,7 +225,6 @@ export class UserComponent implements OnInit {
           this.userForm.disable();
           const subscription = this.usersService.deleteUser(this.user().id).pipe(
             concatMap(response => {
-              let userId = this.user().id;
               this.isLoading.set(false);
               if (response === null) {
                 this.userForm.enable();
@@ -206,43 +254,33 @@ export class UserComponent implements OnInit {
       });
   }
 
-  checkValues() {
-    let name = true;
-    let surname = true;
-    let email = true;
-    let role = true;
-    let position = true;
-    let destination = true;
-    let isActive = true;
-    if (this.user().name !== this.userForm.value.name) {
-      name = false;
-    } else { }
-    if (this.user().surname !== this.userForm.value.surname) {
-      surname = false;
-    }
-    if (this.user().email !== this.userForm.value.email) {
-      email = false;
-    }
-    if (this.user().role === 'User') {
-      if (this.user().role !== this.userForm.value.role) {
-        role = false;
-      }
-      if (this.user().position !== this.userForm.value.position) {
-        position = false;
-      }
-      if (this.user().destination !== this.userForm.value.destination) {
-        destination = false;
-      }
-      if (this.user().isActive !== this.userForm.value.isActive) {
-        isActive = false;
-      }
-    }
-    this.nothingChanged = name && surname && email && role && position && destination && isActive;
+  nothingChanged() {
+    let fmDriver = this.user()!.destinations[0].positions?.find(p => p.position === 'Driver') ? true : false;
+    let fmCook = this.user()!.destinations[0].positions?.find(p => p.position === 'Cook') ? true : false;
+
+    let ovaDriver = this.user()!.destinations[1].positions?.find(p => p.position === 'Driver') ? true : false;
+    let ovaCook = this.user()!.destinations[1].positions?.find(p => p.position === 'Cook') ? true : false;
+
+    let fmPositions = this.getPositions(0);
+    let ovaPositions = this.getPositions(1);
+
+    return (this.user().name === this.userForm.value.name) &&
+      (this.user().surname === this.userForm.value.surname) &&
+      (this.user().email === this.userForm.value.email) &&
+      (this.user().role === this.userForm.value.role) &&
+      (this.userForm.value.password === '') &&
+      (fmCook === (fmPositions.at(0)).get('position')?.value) &&
+      (fmDriver === (fmPositions.at(1)).get('position')?.value) &&
+      (ovaCook === (ovaPositions.at(0)).get('position')?.value) &&
+      (ovaDriver === (ovaPositions.at(1)).get('position')?.value) &&
+      this.user().isActive === this.isActive?.value &&
+      this.user().image === this.image?.value
   }
 
   nameCanShake() {
     return this.name?.touched &&
-      this.name?.hasError('required') &&
+      this.name?.hasError('required') ||
+      this.name?.untouched &&
       this.name?.dirty &&
       this.name?.hasError('required') ||
       this.name?.hasError('maxlength');
@@ -273,26 +311,25 @@ export class UserComponent implements OnInit {
       this.password?.hasError('maxlength');
   }
 
-  onInputFocus() {
-    this.inputsFocused.set(true);
-  }
-
-  onInputBlur() {
-    this.inputsFocused.set(false);
-  }
-
-  changeIsActive() {
-    this.activeUser.set(!this.activeUser());
-    this.userForm.get('isActive')?.setValue(this.activeUser());
-    this.checkValues();
-  }
-
   isRoleDisabled(): boolean {
-    return this.user().role !== 'User';
+    return this.user().id !== 0;
   }
 
   ngOnDestroy() {
     this.usersService.clearUser();
+  }
+
+  get destinations(): FormArray {
+    return this.userForm.get('destinations') as FormArray;
+  }
+
+  getPositions(destIndex: number): FormArray {
+    return this.destinations.at(destIndex).get('positions') as FormArray;
+  }
+
+  onCheckboxChange(destIndex: number, posIndex: number, event: any) {
+    const control = this.getPositions(destIndex).at(posIndex).get('position');
+    control?.setValue(event.checked);
   }
 
   private initializedUserForm() {
@@ -320,21 +357,17 @@ export class UserComponent implements OnInit {
       }, [Validators.required,
       Validators.email]),
       'password': new FormControl({
-        value: this.user().password === undefined || this.user().password === null ? '' : this.user().password,
-        disabled: this.user().id > 0
-      }, [Validators.required, Validators.maxLength(14)]),
+        value: '',
+        disabled: false
+      }, []),
       'role': new FormControl({
         value: this.user().role,
         disabled: false
       }, [Validators.required]),
-      'position': new FormControl({
-        value: this.user().position,
-        disabled: false
-      }, [Validators.required]),
-      'destination': new FormControl({
-        value: this.user().destination,
-        disabled: false
-      }, [Validators.required]),
+      'destinations': new FormArray([
+        this.buildDestination('F-M', this.user().destinations.find(d => d.destination === 'F-M')),
+        this.buildDestination('OVA', this.user().destinations.find(d => d.destination === 'OVA'))
+      ]),
       'nick': new FormControl({
         value: this.user().nick,
         disabled: true
@@ -342,16 +375,39 @@ export class UserComponent implements OnInit {
       'isActive': new FormControl({
         value: this.user().isActive,
         disabled: false
+      }, []),
+      'image': new FormControl({
+        value: this.user().image,
+        disabled: false
       }, [])
-    }, { validators: CheckBoxesValidator.CheckBoxesAreCheckedValidator });
+    }, { validators: CheckBoxesValidator.AtLeastOnePositionCheckedValidator });
 
-    if (this.user().role !== 'User' && this.user().id > 0) {
-      this.userForm.get('role')?.disable();
-      this.userForm.get('destination')?.disable();
-      this.userForm.get('position')?.disable();
-      this.userForm.get('isActive')?.disable();
+    if (this.user().id === 0) {
+      this.password?.setValidators([Validators.required, Validators.maxLength(14)]);
+    } else {
+      this.password?.setValidators([Validators.maxLength(14)]);
     }
-    this.activeUser.set(this.user().isActive);
+    this.password?.updateValueAndValidity();
+  }
+
+  private buildDestination(destName: 'F-M' | 'OVA', existing?: UserDestination): FormGroup {
+    return new FormGroup({
+      id: new FormControl(existing?.id || 0),
+      userId: new FormControl(existing?.userId || this.user().id),
+      destination: new FormControl(destName),
+      positions: new FormArray([
+        this.buildPosition(existing?.positions?.find(p => p.position === 'Cook')),
+        this.buildPosition(existing?.positions?.find(p => p.position === 'Driver')),
+      ])
+    });
+  }
+
+  private buildPosition(existing?: UserPosition): FormGroup {
+    return new FormGroup({
+      id: new FormControl(existing?.id || 0),
+      userDestinationId: new FormControl(existing?.userDestinationId || 0),
+      position: new FormControl(existing ? true : false),
+    });
   }
 
   private handleError = (errorRes: HttpErrorResponse) => {

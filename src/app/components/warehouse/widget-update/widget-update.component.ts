@@ -53,7 +53,6 @@ export class WidgetUpdateComponent {
     const newItem: WarehouseItem = {
       id: this.item().id,
       name: this.itemForm.get('name')?.value,
-      shortName: 'XXL',
       position: this.item().position
     }
     this.isLoading.set(true);

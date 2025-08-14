@@ -1,6 +1,5 @@
 import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { UserItemComponent } from '../../components/users/user-item/user-item.component';
-import { GetUserDTO } from '../../models/users/getUserDTO.interface';
 import { UserPaginationComponent } from '../../components/users/user-pagination/user-pagination.component';
 import { ConfirmComponent } from '../../components/confirm/confirm.component';
 import { UsersService } from '../../services/users.service';
@@ -33,7 +32,6 @@ export class UsersComponent implements OnInit {
   private alertService = inject(AlertService);
   private destroyRef = inject(DestroyRef);
   isLoading = signal(false);
-  users = computed(() => this.usersService.users());
   filteredUsers = computed(() => this.usersService.filteredUsers());
 
   ngOnInit() {
@@ -49,9 +47,8 @@ export class UsersComponent implements OnInit {
         } else if (response.isSuccess === false) {
           this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
         } else {
-          let _users = this.sortUsers(response.result)
-          this.usersService.setUsers(_users);
-          this.usersService.filteredUsers.set(this.usersService.filterUsers(_users))
+          this.usersService.setUsers(response.result);
+          this.usersService.filteredUsers.set(this.usersService.filterUsers(response.result));
         }
       }),
       tap({
@@ -69,16 +66,6 @@ export class UsersComponent implements OnInit {
       fakeArray.push(i);
     }
     return fakeArray;
-  }
-
-  private sortUsers(users: GetUserDTO[]) {
-    return users.sort((a, b) => {
-      const surnameComparison = a.surname.localeCompare(b.surname);
-      if (surnameComparison !== 0) {
-        return surnameComparison;
-      }
-      return a.name.localeCompare(b.name);
-    });
   }
 
   private handleError = (errorRes: HttpErrorResponse) => {

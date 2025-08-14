@@ -1,145 +1,151 @@
 <form autocomplete="off" id="form" [formGroup]="userForm">
-    <input type="hidden" formControlName="id" [value]="user().id" />
-    <div class="title mt-4 mb-4">
-        <h1>{{ user().id === 0 ? 'Přidat uživatele' : 'Upravit uživatele' }}</h1>
-    </div>
-
     <div class="row">
-        <div class="col-6">
+        <div class="col-4">
+            <div class="avatar" (click)="selectImage()">
+                @if (selectedImage !== null) {
+                <ng-container>
+                    <img [src]="selectedImage" alt="Selected" />
+                    <button class="remove-btn" type="button" (click)="removeImage($event)">
+                        &times;
+                    </button>
+                </ng-container>
+                } @else {
 
-            <div>
-                <input type="text" [class.shake]="nameCanShake()" id="userName" [value]="user().name"
-                    formControlName="name" (input)="checkValues()" placeholder="Jméno" autocomplete="no"
-                    (focus)="onInputFocus()" (blur)="onInputBlur()">
-                <div class="blockError">
-                    <!-- <div class="error"
-                        [style.display]="(name?.touched && name?.hasError('required')  || name?.untouched && name?.dirty && name?.hasError('required')) ? 'block' : 'none'">
-                        * Jméno je povinný údaj</div> -->
-                    <div class="error"
-                        [style.display]="name?.touched && name?.dirty && name?.hasError('required') ? 'block' : 'none'">
-                        * Jméno je povinný údaj</div>
-                    <div class="error" [style.display]="name?.hasError('maxlength') ? 'block' : 'none'">
-                        * Prosím pouze 15 znaků</div>
-                </div>
+                @if (user().image === null) {
+                <i class="bi bi-person"></i>
+                } @else {
+                <img [src]="user().image" alt="saved image" />
+                }
+                }
             </div>
-
-            <div class="mt-4">
-                <input type="text" id="userSurname" [value]="user().surname" formControlName="surname"
-                    placeholder="Příjmení" autocomplete="no" (input)="checkValues()" [class.shake]="surnameCanShake()"
-                    (focus)="onInputFocus()" (blur)="onInputBlur()">
-                <div class="blockError">
-                    <div class="error"
-                        [style.display]="(surname?.touched && surname?.hasError('required') || surname?.untouched && surname?.dirty && surname?.hasError('required')) ? 'block' : 'none'">
-                        * Příjmení je povinný údaj</div>
-                    <div class="error" [style.display]="surname?.hasError('maxlength') ? 'block' : 'none'">
-                        * Prosím pouze 20 znaků</div>
-                </div>
-            </div>
-
-            <div class="mt-4">
-                <input type="text" placeholder="Email" autocomplete="no" id="email" [value]="user().email"
-                    formControlName="email" (input)="checkValues()" [class.shake]="emailCanShake()"
-                    (focus)="onInputFocus()" (blur)="onInputBlur()">
-
-                <div class="blockError">
-                    <div class="error"
-                        [style.display]="(email?.touched && email?.hasError('required') || email?.untouched && email?.dirty && email?.hasError('required')) ? 'block' : 'none'">
-                        * Email je povinný údaj</div>
-                    <div class="error" [style.display]="email?.touched && email?.hasError('email') ? 'block' : 'none'">
-                        * Email má špatný formát</div>
-                </div>
-            </div>
-
-            @if (user().id === 0) {
-            <div class="mt-4">
-                <input type="password" placeholder="Heslo" autocomplete="no" id="password" formControlName="password"
-                    [readonly]="user().id > 0" [class.shake]="passwordCanShake()" (focus)="onInputFocus()"
-                    (blur)="onInputBlur()">
-                <div class="blockError">
-                    <div class="error"
-                        [style.display]="(password?.touched && password?.hasError('required') || password?.untouched && password?.dirty && password?.hasError('required')) ? 'block' : 'none'">
-                        * Heslo je povinný údaj</div>
-                    <div class="error" [style.display]="password?.hasError('maxlength') ? 'block' : 'none'">
-                        * Prosím pouze 14 znaků</div>
-                </div>
-            </div>
-            }
+            <input #imagePicker type="file" style="display: none;" (change)="onFileSelected($event)" accept="image/*" />
         </div>
+        <div class="col-8">
+            <div class="card flex justify-end">
+                <div class="row mt-3">
+                    <div class="col-6">
+                        <input #input type="text" [class.shake]="nameCanShake()" id="userName" [value]="user().name"
+                            formControlName="name" placeholder="Jméno" autocomplete="off">
+                        <div class="blockError">
+                            <div class="error"
+                                [style.display]="(name?.touched && name?.hasError('required')  || name?.untouched && name?.dirty && name?.hasError('required')) ? 'block' : 'none'">
+                                * Jméno je povinný údaj</div>
+                            <div class="error" [style.display]="name?.hasError('maxlength') ? 'block' : 'none'">
+                                * Prosím pouze 15 znaků</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <input type="text" id="userSurname" [value]="user().surname" formControlName="surname"
+                            placeholder="Příjmení" autocomplete="no" [class.shake]="surnameCanShake()">
+                        <div class="blockError">
+                            <div class="error"
+                                [style.display]="(surname?.touched && surname?.hasError('required') || surname?.untouched && surname?.dirty && surname?.hasError('required')) ? 'block' : 'none'">
+                                * Příjmení je povinný údaj</div>
+                            <div class="error" [style.display]="surname?.hasError('maxlength') ? 'block' : 'none'">
+                                * Prosím pouze 20 znaků</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-6">
+                        <input type="text" placeholder="Email" autocomplete="no" id="email" [value]="user().email"
+                            formControlName="email" [class.shake]="emailCanShake()">
+                        <div class="blockError">
+                            <div class="error"
+                                [style.display]="(email?.touched && email?.hasError('required') || email?.untouched && email?.dirty && email?.hasError('required')) ? 'block' : 'none'">
+                                * Email je povinný údaj</div>
+                            <div class="error"
+                                [style.display]="email?.touched && email?.hasError('email') ? 'block' : 'none'">
+                                * Email má špatný formát</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <input type="password" placeholder="Heslo" autocomplete="no" formControlName="password"
+                            [class.shake]="passwordCanShake()">
+                        <div class="blockError">
+                            <div class="error"
+                                [style.display]="(password?.touched && password?.hasError('required') || password?.untouched && password?.dirty && password?.hasError('required')) ? 'block' : 'none'">
+                                * Heslo je povinný údaj</div>
+                            <div class="error" [style.display]="password?.hasError('maxlength') ? 'block' : 'none'">
+                                * Prosím pouze 14 znaků</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row p-4">
+                    <div class="col-10 offset-1">
+                        <div class="btn-group selectors" role="group">
+                            <input type="radio" class="btn-check" name="role" id="btnrole1" autocomplete="off"
+                                value="Admin" formControlName="role">
+                            <label class="btn btn-outline-primary left-one" for="btnrole1"
+                                [class.disabled]="isRoleDisabled()" style="width: 33%;">Admin</label>
 
-        <div class="col-6">
+                            <input type="radio" class="btn-check" name="role" id="btnrole2" autocomplete="off"
+                                value="Master" formControlName="role">
+                            <label class="btn btn-outline-primary center-one" for="btnrole2" style="width: 33%;"
+                                [class.disabled]="isRoleDisabled()">Master</label>
 
-            <div class="btn-group selectors" role="group">
-                <input type="radio" class="btn-check" name="role" id="btnrole1" autocomplete="off" value="Admin"
-                    (change)="checkValues()" formControlName="role">
-                <label class="btn btn-outline-primary left-one" for="btnrole1" [class.disabled]="isRoleDisabled()"
-                    style="width: 33%;">Admin</label>
-
-                <input type="radio" class="btn-check" name="role" id="btnrole2" autocomplete="off" value="Master"
-                    (change)="checkValues()" formControlName="role">
-                <label class="btn btn-outline-primary center-one" for="btnrole2" style="width: 33%;"
-                    [class.disabled]="isRoleDisabled()">Master</label>
-
-                <input type="radio" class="btn-check" name="role" id="btnrole3" autocomplete="off" value="User"
-                    (change)="checkValues()" formControlName="role">
-                <label class="btn btn-outline-primary right-one" for="btnrole3" style="width: 33%;"
-                    [class.disabled]="isRoleDisabled()">User</label>
-            </div>
-
-            <div class="btn-group mt-4 twoRadio" role="group">
-                <input type="radio" class="btn-check" name="position" id="positionRadio1" autocomplete="off"
-                    value="Cook" (change)="checkValues()" formControlName="position">
-                <label class="btn btn-outline-primary left-one" for="positionRadio1"
-                    [class.disabled]="isRoleDisabled()">Kuchyň</label>
-
-                <input type="radio" class="btn-check" name="position" id="positionRadio2" autocomplete="off"
-                    value="Driver" (change)="checkValues()" formControlName="position">
-                <label class="btn btn-outline-primary right-one" for="positionRadio2"
-                    [class.disabled]="isRoleDisabled()">Řidič</label>
-            </div>
-
-            <div class="btn-group mt-4 twoRadio" role="group">
-                <input type="radio" class="btn-check" name="destination" id="destinationRadio1" autocomplete="off"
-                    (change)="checkValues()" value="F-M" formControlName="destination">
-                <label class="btn btn-outline-primary left-one" for="destinationRadio1"
-                    [class.disabled]="isRoleDisabled()">F-M</label>
-
-                <input type="radio" class="btn-check" name="destination" id="destinationRadio2" autocomplete="off"
-                    (change)="checkValues()" value="OVA" formControlName="destination">
-                <label class="btn btn-outline-primary right-one" for="destinationRadio2"
-                    [class.disabled]="isRoleDisabled()">OVA</label>
-            </div>
-
-            <div class="btn-group mt-4 twoRadio" role="group">
-                <input type="radio" class="btn-check" name="isActive" id="isActiveRadio1" autocomplete="off"
-                    (change)="checkValues()" [value]="true" formControlName="isActive">
-                <label class="btn btn-outline-primary left-one" [class.disabled]="isRoleDisabled()"
-                    for="isActiveRadio1">Aktivní</label>
-
-                <input type="radio" class="btn-check" name="isActive" id="isActiveRadio2" autocomplete="off"
-                    (change)="checkValues()" [value]="false" formControlName="isActive">
-                <label class="btn btn-outline-primary right-one" for="isActiveRadio2"
-                    [class.disabled]="isRoleDisabled()">Neaktivní</label>
+                            <input type="radio" class="btn-check" name="role" id="btnrole3" autocomplete="off"
+                                value="User" formControlName="role">
+                            <label class="btn btn-outline-primary right-one" for="btnrole3" style="width: 33%;"
+                                [class.disabled]="isRoleDisabled()">User</label>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="row mt-4 mb-4">
-        <div class="col-6 inline">
-            @if (user().id === 0) {
-            <button class="w-100 cancel" (click)="onGoBack()" type="button"><i class="bi bi-x"></i>&nbsp;Zpět</button>
-            } @else {
-            <button class="w-50 cancel me-1" (click)="onGoBack()" type="button"><i
-                    class="bi bi-x"></i>&nbsp;Zpět</button>
-            <button class="w-50 cancel ms-1" (click)="onDelete()" type="button"><i
-                    class="bi bi-trash"></i>&nbsp;Smazat</button>
-            }
+    <div class="row mt-3" formArrayName="destinations">
+        <div class="col-6" [formGroupName]="0">
+            <p-fieldset legend="F-M">
+                <div formArrayName="positions" class="options">
+                    <div class="flex items-center" [formGroupName]="0">
+                        <p-checkbox binary="true" formControlName="position"
+                            (onChange)="onCheckboxChange(0,0, $event)" />
+                        <label class="ml-2">Kuchař</label>
+                    </div>
+                    <div class="flex items-center" [formGroupName]="1">
+                        <p-checkbox binary="true" formControlName="position"
+                            (onChange)="onCheckboxChange(0,1, $event)" />
+                        <label class="ml-2">Řidič</label>
+                    </div>
+                </div>
+            </p-fieldset>
         </div>
-        <div class="col-6">
+        <div class="col-6" [formGroupName]="1">
+            <p-fieldset legend="OVA">
+                <div formArrayName="positions" class="options">
+                    <div class="flex items-center" [formGroupName]="0">
+                        <p-checkbox binary="true" formControlName="position"
+                            (onChange)="onCheckboxChange(1,0, $event)" />
+                        <label class="ml-2">Kuchař</label>
+                    </div>
+                    <div class="flex items-center" [formGroupName]="1">
+                        <p-checkbox binary="true" formControlName="position"
+                            (onChange)="onCheckboxChange(1,1, $event)" />
+                        <label class="ml-2">Řidič</label>
+                    </div>
+                </div>
+            </p-fieldset>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-4 offset-4 isActive">
+            <p-checkbox binary="true" formControlName="isActive" />
+            <label class="ml-2"> Aktivní </label>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-8 offset-2 buttons">
+            <button class="cancel" (click)="onGoBack()" type="button"><i class="bi bi-x"></i>&nbsp;Zpět</button>
+            @if (user().id > 1) {
+            <button class="delete" (click)="onDelete()" type="button"><i class="bi bi-trash"></i>&nbsp;Smazat</button>
+            }
             @if (!isLoading()) {
-            <button type="submit" class="btn submit w-100" (click)="onSubmit()"
-                [disabled]="userForm.invalid || nothingChanged">{{
+            <button type="submit" class="submit" (click)="onSubmit()"
+                [disabled]="userForm.invalid || nothingChanged()"><i class="bi bi-plus"></i> {{
                 user().id === 0 ? 'Přidat' : 'Upravit' }}</button>
             } @else {
-            <button class="btn submit loading w-100" type="button">
+            <button class="submit loading" type="button">
                 <span class="spinner-border spinner-border-sm text-white me-1" aria-hidden="true"></span>
                 {{ actionText() }}
             </button>

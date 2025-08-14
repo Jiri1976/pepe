@@ -8,7 +8,7 @@ import { SelectedProposal } from "../models/proposals/selectedProposal.interface
 import { UsersService } from "./users.service";
 import { concatMap, of, tap } from "rxjs";
 import { AlertService } from "./alert.service";
-import { GetUserDTO } from "../models/users/getUserDTO.interface";
+import { GetUser } from "../models/users/getUser.interface";
 import { ErrorHandlingService } from "./error-handling.service";
 import { ProposalsPDF } from "../models/proposals/proposalsPDF.interface";
 
@@ -46,9 +46,9 @@ export class ProposalsService {
     monthYear = signal<string>((new Date().getMonth() + 1).toString() + (new Date().getFullYear()).toString());
     proposalCard = signal<ProposalCard>(this.initialProposalCard);
     selectedProposal = signal<SelectedProposal>(this.initialSelectedProposal);
-    savedUsers = signal<GetUserDTO[]>([]);
+    savedUsers = signal<GetUser[]>([]);
     isProposalLoading = signal(false);
-    filteredUsers = signal<GetUserDTO[]>([]);
+    filteredUsers = signal<GetUser[]>([]);
     uploadedCard = structuredClone(this.proposalCard());
     nothingChanged = signal(true);
     calendarTitle = signal<string>(this.MONTHS_NAMES[new Date().getMonth()] + ' ' + new Date().getFullYear().toString().substring(2));
@@ -342,8 +342,8 @@ export class ProposalsService {
         let day = new Date(parseInt(_monthYear.substring(2, 6)), parseInt(_monthYear.substring(0, 2)) - 1, 1);
 
         let users: { id: number, userId: number, name: string, position: string }[] = [];
-        let cooks: GetUserDTO[] = [];
-        let drivers: GetUserDTO[] = [];
+        let cooks: GetUser[] = [];
+        let drivers: GetUser[] = [];
         let ids = this.proposalCard().proposalDays[0].proposalShifts.map(a => a.userId);
         if (day < today) {
             let _users = this.savedUsers().filter(u => ids.includes(u.id));

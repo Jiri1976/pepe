@@ -16,14 +16,14 @@
         </li>
 
         <li (click)="onSelectDestination('F-M')" @fadeIn @fadeOut hide [class.disabled]="this.cards().length === 0">
-            <a [style.--background]="destination() === 'F-M' ? '#24355A' : '#1e81b0'" [style.--color]="'#fff'"
+            <a [style.--background]="destination() === 'F-M' ? '#24355A' : '#0EA5E9'" [style.--color]="'#fff'"
                 [style.--color]="'#fff'">
                 <p>F-M</p>
             </a>
         </li>
 
         <li (click)="onSelectDestination('OVA')" @fadeIn @fadeOut hide [class.disabled]="this.cards().length === 0">
-            <a [style.--background]="destination() === 'OVA' ? '#24355A' : '#1e81b0'" [style.--color]="'#fff'"
+            <a [style.--background]="destination() === 'OVA' ? '#24355A' : '#0EA5E9'" [style.--color]="'#fff'"
                 [style.--color]="'#fff'">
                 <p>OVA</p>
             </a>
@@ -50,7 +50,7 @@
         </li>
 
         <li @fadeIn @fadeOut (click)="onDeleteCards()" hide [class.disabled]="this.cards().length === 0">
-            <a [style.--background]="'#F53B57'" [style.--color]="'#fff'">
+            <a [style.--background]="'#EF4444'" [style.--color]="'#fff'">
                 <i class="bi bi-trash"></i>
             </a>
         </li>
@@ -64,19 +64,19 @@
         }
 
         <li (click)="onShowUnits()" [class.no-action]="warehouseNav() === 'units'">
-            <a [style.--background]="warehouseNav() === 'units' ? '#24355A' : '#1e81b0'" [style.--color]="'#fff'">
+            <a [style.--background]="warehouseNav() === 'units' ? '#24355A' : '#0EA5E9'" [style.--color]="'#fff'">
                 <i class="bi bi-table"></i>
             </a>
         </li>
 
         <li (click)="onShowItems()" hide>
-            <a [style.--background]="'#1e81b0'" [style.--color]="'#fff'">
+            <a [style.--background]="'#0EA5E9'" [style.--color]="'#fff'">
                 <i class="bi bi-list-ul"></i>
             </a>
         </li>
 
         <li (click)="onShowBoard()" [class.no-action]="warehouseNav() === 'board'">
-            <a [style.--background]="warehouseNav() === 'board' ? '#24355A' : '#1e81b0'" [style.--color]="'#fff'">
+            <a [style.--background]="warehouseNav() === 'board' ? '#24355A' : '#0EA5E9'" [style.--color]="'#fff'">
                 <i class="bi bi-house"></i>
             </a>
         </li>
@@ -100,7 +100,7 @@
         </li>
 
         <li (click)="onShowUnits()" hide>
-            <a [style.--background]="'#1e81b0'" [style.--color]="'#fff'">
+            <a [style.--background]="'#0EA5E9'" [style.--color]="'#fff'">
                 <i class="bi bi-table"></i>
             </a>
         </li>
@@ -112,7 +112,7 @@
         </li>
 
         <li (click)="onShowBoard()">
-            <a [style.--background]="'#1e81b0'" [style.--color]="'#fff'">
+            <a [style.--background]="'#0EA5E9'" [style.--color]="'#fff'">
                 <i class="bi bi-house"></i>
             </a>
         </li>

@@ -169,6 +169,20 @@ export class WarehouseOverviewComponent implements OnInit {
     return false;
   }
 
+  isToday(date: string) {
+    const day = parseInt(date.split('.')[0]);
+    const month = parseInt(date.split('.')[1]) - 1;
+    const year = parseInt(date.split('.')[2])
+    const today = new Date().getDate();
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
+
+    if (day === today && month === currentMonth && year === currentYear) {
+      return true;
+    }
+    return false;
+  }
+
   onBlur(event: any) {
     event.preventDefault();
   }

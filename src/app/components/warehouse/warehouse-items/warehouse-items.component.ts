@@ -30,7 +30,7 @@ export class WarehouseItemsComponent implements OnInit {
   isLoading = signal(false);
   items = computed(() => this.warehouseService.items());
   originals: WarehouseItem[] = [];
-  selected = signal<WarehouseItem>({ id: 0, name: '', shortName: '', position: -1 });
+  selected = signal<WarehouseItem>({ id: 0, name: '', position: -1 });
   isDroppedToDelete = signal(false);
   isDragged = signal(false);
   reorderedItems = model<WarehouseItem[]>([]);
@@ -55,7 +55,6 @@ export class WarehouseItemsComponent implements OnInit {
     const newItem: WarehouseItem = {
       id: 0,
       name: '',
-      shortName: '',
       position: this.items().length + 1
     }
     let _items = [newItem, ...this.items()];

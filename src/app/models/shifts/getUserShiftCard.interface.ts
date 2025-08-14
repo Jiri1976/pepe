@@ -1,6 +1,6 @@
-import { GetUserDTO } from "../users/getUserDTO.interface";
+import { GetUser } from "../users/getUser.interface";
 
 export interface GetUserShiftCard {
     monthYear: string,
-    user: GetUserDTO
+    user: GetUser
 }

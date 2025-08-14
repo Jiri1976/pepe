@@ -3,18 +3,19 @@
     <div [class]="`col-5 ${user().isActive}`">{{ user().surname }}</div>
     <div [class]="`col-1 role ${user().role} ${user().isActive}`">{{
         user().role.substring(0,1) }}</div>
-    @if (user().position === 'Driver' && user().role === 'User') {
+
+    @if (hasPosition('Driver')) {
     <div class="col-1 pos"><img src="/car.png" alt="Car driver" /></div>
     }
-    @else if (user().position === 'Cook' && user().role === 'User') {
+
+    @if (hasPosition('Cook')) {
     <div class="col-1 pos"><img src="/chef.png" alt="Car driver" /></div>
+    @if(!hasPosition('Driver')) {
+    <div class="col-1"></div>
+    }
     }
     @else {
     <div class="col-1"></div>
-    }
-    @if (user().role !== 'Admin') {
-    <div [class]="`col-1 ${user().isActive}`">{{ user().destination === 'F-M' ? 'FM' : 'OV' }}</div>
-    } @else {
     <div class="col-1"></div>
     }
 </div>

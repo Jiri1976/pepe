@@ -1,33 +1,40 @@
 import { Injectable } from '@angular/core';
-import { AbstractControl } from '@angular/forms';
+import { AbstractControl, ValidatorFn } from '@angular/forms';
 import { ValidationErrors } from '@angular/forms';
 
 @Injectable({
     providedIn: 'root'
 })
 export class CheckBoxesValidator {
-    constructor() { }
+    public static AtLeastOnePositionCheckedValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+        const destinations = control.get('destinations') as any;
 
-    public static CheckBoxesAreCheckedValidator(control: AbstractControl): ValidationErrors | null {
-        if (!control.get('role') || !control.get('position') || !control.get('destination')) {
-            return null;
+        if (!destinations || !(destinations instanceof Array || 'length' in destinations) || destinations.length === 0) {
+            return { noDestinations: true };
         }
 
-        let name = control.get('name');
-        let surname = control.get('surname');
-        let email = control.get('email');
-        let password = control.get('password');
-        let role = control.get('role');
-        let position = control.get('position');
-        let destination = control.get('destination');
+        let atLeastOneChecked = false;
+        for (let i = 0; i < destinations.length; i++) {
+            const destinationGroup = destinations.at(i);
+            if (!destinationGroup) continue;
 
-        if (name?.invalid || surname?.invalid || email?.invalid || password?.invalid) {
-            return null;
+            const positions = destinationGroup.get('positions');
+            if (!positions || !('length' in positions)) continue;
+
+            for (let j = 0; j < positions.length; j++) {
+                const positionGroup = positions.at(j);
+                if (!positionGroup) continue;
+
+                const positionValue = positionGroup.get('position')?.value;
+
+                if (positionValue) {
+                    atLeastOneChecked = true;
+                    break;
+                }
+            }
+            if (atLeastOneChecked) break;
         }
 
-        if (role?.hasError('required') || position?.hasError('required') || destination?.hasError('required')) {
-            return { checkBoxesInvalid: true };
-        }
-        return null;
-    }
+        return atLeastOneChecked ? null : { noPositionsSelected: true };
+    };
 }

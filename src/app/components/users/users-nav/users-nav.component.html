@@ -1,46 +1,40 @@
 <div class="menu">
     <ul>
-        <li>
-            <a (click)="createUser()" [style.--background]="'#24355A'" [style.--color]="'#fff'">
+        <li [style.--background]="'#24355A'">
+            <a (click)="createUser()">
                 <i class="bi bi-person-add"></i>
             </a>
         </li>
-        <li>
-            <a (click)="selectList(1)" [style.--background]="filter() === 'F-M' ? '#24355A' : '#1e81b0'"
-                [style.--color]="'#fff'">
+        <li [style.--background]="filter() === 'F-M' ? '#24355A' : 'rgba(0, 0, 0, 0.2)'">
+            <a (click)="selectList(1)">
                 <p>F-M</p>
             </a>
         </li>
-        <li>
-            <a (click)="selectList(2)" [style.--background]="filter() === 'OVA' ? '#24355A' : '#1e81b0'"
-                [style.--color]="'#fff'">
+        <li [style.--background]="filter() === 'OVA' ? '#24355A' : 'rgba(0, 0, 0, 0.2)'">
+            <a (click)="selectList(2)">
                 <p>OVA</p>
             </a>
         </li>
-        <li>
-            <a (click)="selectList(3)"
-                [style.--background]="role() === 'User' && (selectedList() === 3 || selectedList() === 1 || selectedList() === 2) ? '#24355A' : '#1e81b0'"
-                [style.--color]="'#fff'">
+        <li
+            [style.--background]="role() === 'User' && (selectedList() === 3 || selectedList() === 1 || selectedList() === 2) ? '#24355A' : 'rgba(0, 0, 0, 0.2)'">
+            <a (click)="selectList(3)">
                 <p>U</p>
             </a>
         </li>
-        <li>
-            <a (click)="selectList(4)"
-                [style.--background]="role() === 'Master' && (selectedList() === 4 || selectedList() === 1 || selectedList() === 2) ? '#24355A' : '#1e81b0'"
-                [style.--color]="'#fff'">
+        <li
+            [style.--background]="role() === 'Master' && (selectedList() === 4 || selectedList() === 1 || selectedList() === 2) ? '#24355A' : 'rgba(0, 0, 0, 0.2)'">
+            <a (click)="selectList(4)">
                 <p>M</p>
             </a>
         </li>
-        <li>
-            <a (click)="selectList(5)"
-                [style.--background]="role() === 'Admin' && (selectedList() === 5 || selectedList() === 1 || selectedList() === 2) ? '#24355A' : '#1e81b0'"
-                [style.--color]="'#fff'">
+        <li
+            [style.--background]="role() === 'Admin' && (selectedList() === 5 || selectedList() === 1 || selectedList() === 2) ? '#24355A' : 'rgba(0, 0, 0, 0.2)'">
+            <a (click)="selectList(5)">
                 <p>A</p>
             </a>
         </li>
-        <li>
-            <a (click)="selectList(6)" [style.--background]="filter() === 'All' ? '#24355A' : '#1e81b0'"
-                [style.--color]="'#fff'">
+        <li [style.--background]="filter() === 'All' ? '#24355A' : 'rgba(0, 0, 0, 0.2)'">
+            <a (click)="selectList(6)">
                 <p>VŠE</p>
             </a>
         </li>
