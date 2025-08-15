@@ -10,5 +10,5 @@ export interface User {
     destinations: UserDestination[],
     nick: string,
     isActive: boolean,
-    image?: string
+    image: string | null
 }

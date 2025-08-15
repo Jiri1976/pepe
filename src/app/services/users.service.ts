@@ -14,7 +14,7 @@ export class UsersService {
     private BASE_ROUTE = environment.AUTHENTICATION_PATH;
     private initialUserDestinationFM: UserDestination = { id: 0, userId: 0, destination: 'F-M', positions: [] };
     private initialUserDestinationOVA: UserDestination = { id: 0, userId: 0, destination: 'OVA', positions: [] };
-    private initialUser: User = { id: 0, name: '', surname: '', email: '', password: "", role: 'User', destinations: [this.initialUserDestinationFM, this.initialUserDestinationOVA], nick: '', isActive: true };
+    private initialUser: User = { id: 0, name: '', surname: '', email: '', password: "", role: 'User', destinations: [this.initialUserDestinationFM, this.initialUserDestinationOVA], nick: '', isActive: true, image: null };
     users = signal<User[]>([]);
     user = signal<User>(this.initialUser);
     selectedList = signal<number>(6);
@@ -57,19 +57,19 @@ export class UsersService {
         }
         if (value === 1) {
             this.filter.set('F-M');
-            let _users = this.users().filter(u => this.role() === 'Admin' ? u.role === this.role() : ((u.destinations[0].destination === this.filter() && u.destinations[0]?.positions?.length! > 0) || (u.destinations[1].destination === this.filter() && u.destinations[1]?.positions?.length! > 0)) && u.role === this.role());
+            let _users = this.users().filter(u => this.role() === 'Admin' ? u.role === this.role() : ((u.destinations[0].destination === this.filter() && u.destinations[0]?.positions?.length! > 0 && u.role === this.role()) || (u.destinations[1].destination === this.filter() && u.destinations[1]?.positions?.length! > 0 && u.role === this.role())));
             this.filteredUsers.set(this.filterUsers(_users));
         } else if (value === 2) {
             this.filter.set('OVA');
-            let _users = this.users().filter(u => this.role() === 'Admin' ? u.role === this.role() : ((u.destinations[0].destination === this.filter() && u.destinations[0]?.positions?.length! > 0) || (u.destinations[1].destination === this.filter() && u.destinations[1]?.positions?.length! > 0)) && u.role === this.role());
+            let _users = this.users().filter(u => this.role() === 'Admin' ? u.role === this.role() : ((u.destinations[0].destination === this.filter() && u.destinations[0]?.positions?.length! > 0 && u.role === this.role()) || (u.destinations[1].destination === this.filter() && u.destinations[1]?.positions?.length! > 0 && u.role === this.role())));
             this.filteredUsers.set(this.filterUsers(_users));
         } else if (value === 3) {
             this.role.set('User');
-            let _users = this.users().filter(u => this.filter() === 'All' ? u.role === this.role() : ((u.destinations[0].destination === this.filter() && u.destinations[0]?.positions?.length! > 0) || (u.destinations[1].destination === this.filter() && u.destinations[1]?.positions?.length! > 0)) && u.role === this.role());
+            let _users = this.users().filter(u => this.filter() === 'All' ? u.role === this.role() : ((u.destinations[0].destination === this.filter() && u.destinations[0]?.positions?.length! > 0 && u.role === this.role()) || (u.destinations[1].destination === this.filter() && u.destinations[1]?.positions?.length! > 0 && u.role === this.role())));
             this.filteredUsers.set(this.filterUsers(_users));
         } else if (value === 4) {
             this.role.set('Master');
-            let _users = this.users().filter(u => this.filter() === 'All' ? u.role === this.role() : ((u.destinations[0].destination === this.filter() && u.destinations[0]?.positions?.length! > 0) || (u.destinations[1].destination === this.filter() && u.destinations[1]?.positions?.length! > 0)) && u.role === this.role());
+            let _users = this.users().filter(u => this.filter() === 'All' ? u.role === this.role() : ((u.destinations[0].destination === this.filter() && u.destinations[0]?.positions?.length! > 0 && u.role === this.role()) || (u.destinations[1].destination === this.filter() && u.destinations[1]?.positions?.length! > 0 && u.role === this.role())));
             this.filteredUsers.set(this.filterUsers(_users));
         } else if (value === 5) {
             this.role.set('Admin');

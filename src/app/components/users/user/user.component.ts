@@ -404,9 +404,9 @@ export class UserComponent implements OnInit {
 
   private buildPosition(existing?: UserPosition): FormGroup {
     return new FormGroup({
-      id: new FormControl(existing?.id || 0),
+      id: new FormControl({ value: existing?.id || 0, disabled: true }),
       userDestinationId: new FormControl(existing?.userDestinationId || 0),
-      position: new FormControl(existing ? true : false),
+      position: new FormControl({ value: existing ? true : false, disabled: this.user().role !== 'User' }),
     });
   }
 
