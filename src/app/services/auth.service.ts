@@ -87,7 +87,7 @@ export class AuthService {
     this.user.set(_user);
   }
 
-  getUser() {
+  getUser(): AuthUser {
     const user = { ...this.user() };
     return user;
   }

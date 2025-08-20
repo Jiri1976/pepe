@@ -205,6 +205,7 @@ export class ShiftsComponent implements OnInit {
       id: 0,
       shiftCardId: card.id,
       userId: card.userId,
+      position: card.userPosition,
       date: '',
       from: '11:00',
       to: '22:00',

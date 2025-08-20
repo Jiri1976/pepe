@@ -3,5 +3,10 @@ export interface InitShift {
     date: Date,
     from: Date,
     to: Date,
-    perso?: string
+    perso?: string,
+    position: string,
+    createdAt?: string,
+    createdBy?: string,
+    updatedAt?: string,
+    updatedBy?: string
 }

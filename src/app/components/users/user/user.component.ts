@@ -4,7 +4,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from '../../../services/alert.service';
 import { ErrorHandlingService } from '../../../services/error-handling.service';
 import { ConfirmService } from '../../../services/confirm.service';
-import { concatMap, of } from 'rxjs';
+import { concatMap, map, of } from 'rxjs';
 import { UsersService } from '../../../services/users.service';
 import { CommonModule } from '@angular/common';
 import { DialogRef } from '@angular/cdk/dialog';
@@ -58,6 +58,10 @@ export class UserComponent implements OnInit {
 
   get image() {
     return this.userForm.get('image');
+  }
+
+  get destinations(): FormArray {
+    return this.userForm.get('destinations') as FormArray;
   }
 
   ngOnInit(): void {
@@ -317,10 +321,6 @@ export class UserComponent implements OnInit {
 
   ngOnDestroy() {
     this.usersService.clearUser();
-  }
-
-  get destinations(): FormArray {
-    return this.userForm.get('destinations') as FormArray;
   }
 
   getPositions(destIndex: number): FormArray {

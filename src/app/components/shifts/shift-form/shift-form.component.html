@@ -79,6 +79,58 @@
                 </div>
             </div>
         </div>
+
+        @if (selectedShift().id > 0 && loggedUser().role === 'Admin') {
+        <div class="row">
+            <div class="col-6">
+                <div class="label mt-2">
+                    <label class="font-semibold w-6rem">Zapsal</label>
+                </div>
+                <div>
+                    <div class="card flex justify-content-center">
+                        <input [placeholder]="selectedShift().createdBy" disabled />
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="label mt-2">
+                    <label class="font-semibold w-6rem">Čas zápisu</label>
+                </div>
+                <div>
+                    <div class="card flex justify-content-center">
+                        <input [placeholder]="getTime(selectedShift().createdAt!)" disabled />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (selectedShift().updatedBy !== null) {
+        <div class="row">
+            <div class="col-6">
+                <div class="label">
+                    <label class="font-semibold w-6rem">Upravil</label>
+                </div>
+                <div>
+                    <div class="card flex justify-content-center">
+                        <input [placeholder]="selectedShift().updatedBy" disabled />
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="label">
+                    <label class="font-semibold w-6rem">Čas úpravy</label>
+                </div>
+                <div>
+                    <div class="card flex justify-content-center">
+                        <input [placeholder]="getTime(selectedShift().updatedAt!)" disabled />
+                    </div>
+                </div>
+            </div>
+        </div>
+        }
+
+        }
+
         <div class="row">
             <div class="col-6 inline">
                 @if (selectedShift().id === 0) {

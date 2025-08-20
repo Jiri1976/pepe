@@ -11,7 +11,8 @@
     @if(!isLoading()) {
     @if (cards().length > 0) {
     <div class="shift-card" @fadeIn>
-        <swiper-container #swiperRef effect="cards" grab-cursor="true" (swiperinit)="onSwiperInit($event)">
+        <swiper-container #swiperRef effect="cards" grab-cursor="true" (swiperinit)="onSwiperInit($event)"
+            (swiperslidechange)="onSlideChange($event)">
             @for(card of cards(); track $index) {
             <swiper-slide>
                 <app-shift-card [shiftCard]="card" (updatedCard)="onCardUpdate($event)" [currentIndex]="$index" />

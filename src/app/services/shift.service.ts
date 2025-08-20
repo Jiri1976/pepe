@@ -19,7 +19,8 @@ export class ShiftService {
         date: new Date(),
         from: new Date(),
         to: new Date(),
-        perso: ''
+        perso: '',
+        position: ''
     };
     private authService = inject(AuthService);
     monthYear = signal<string>('');
@@ -42,7 +43,12 @@ export class ShiftService {
             date: date,
             from: from,
             to: to,
-            perso: shift.perso ? shift.perso : ''
+            perso: shift.perso ? shift.perso : '',
+            position: shift.position,
+            createdAt: shift.createdAt,
+            createdBy: shift.createdBy,
+            updatedAt: shift.updatedAt,
+            updatedBy: shift.updatedBy
         }
         this.selectedShift.set(initShift);
     }

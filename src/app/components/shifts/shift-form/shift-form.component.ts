@@ -11,6 +11,7 @@ import { ConfirmService } from '../../../services/confirm.service';
 import { Shift } from '../../../models/shifts/shift.interface';
 import { DatePickerModule } from 'primeng/datepicker';
 import { OverlayModule } from 'primeng/overlay';
+import { AuthUser } from '../../../models/auth-user.interface';
 
 @Component({
   selector: 'app-shift-form',
@@ -32,6 +33,7 @@ import { OverlayModule } from 'primeng/overlay';
 export class ShiftFormComponent implements OnInit {
   private shiftService = inject(ShiftService);
   private confirmService = inject(ConfirmService);
+  loggedUser = input.required<AuthUser>();
   shiftForm!: FormGroup;
   selectedShift = computed(() => this.shiftService.selectedShift());
   persoError = false;
@@ -268,6 +270,12 @@ export class ShiftFormComponent implements OnInit {
       && (new Date(this.timeFrom?.value).getMinutes() === new Date(this.timeTo?.value).getMinutes()));
   }
 
+  getTime(date: string) {
+    let _date = date.split('T')[0];
+    let time = date.split('T')[1].substring(0, 5);
+    return `${_date.split('-')[2]}.${_date.split('-')[1]}.${_date.split('-')[0]} ${time}`;
+  }
+
   private convertToShift() {
     let hoursFrom = new Date(this.timeFrom.value).getHours() < 10 ? '0' + new Date(this.timeFrom.value).getHours() : new Date(this.timeFrom.value).getHours();
     let minutesFrom = new Date(this.timeFrom.value).getMinutes() < 10 ? '0' + new Date(this.timeFrom.value).getMinutes() : new Date(this.timeFrom.value).getMinutes();
@@ -283,6 +291,7 @@ export class ShiftFormComponent implements OnInit {
       id: initialShift.id,
       shiftCardId: 0,
       userId: 0,
+      position: this.selectedShift().position,
       date: day + '.' + month + '.' + year,
       from: hoursFrom.toString() + ':' + minutesFrom.toString(),
       to: hoursTo.toString() + ':' + minutesTo.toString(),

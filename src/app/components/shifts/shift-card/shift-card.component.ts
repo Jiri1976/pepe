@@ -52,7 +52,8 @@ export class ShiftCardComponent {
       date: date,
       from: from,
       to: to,
-      perso: shift.perso
+      perso: shift.perso,
+      position: shift.position
     }
     this.shiftService.selectedShift.set(_shift);
   }

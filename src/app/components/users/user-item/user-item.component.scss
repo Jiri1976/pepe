@@ -73,6 +73,19 @@
         background-color: #838282;
         color: #fff;
     }
+
+    .loading {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        .spinner-border {
+            height: 25px;
+            width: 25px;
+            color: #24355A !important;
+        }
+    }
 }
 
 .line:hover {

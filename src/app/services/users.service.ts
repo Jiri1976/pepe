@@ -102,6 +102,11 @@ export class UsersService {
         return this.http.post<Response>(url, _user);
     }
 
+    getUser(userId: number) {
+        const url = this.BASE_ROUTE + `authentication/GetUser/${userId}`;
+        return this.http.get<Response>(url);
+    }
+
     updateUser(user: User) {
         const url = this.BASE_ROUTE + `authentication/Update`;
         return this.http.post<Response>(url, user);
