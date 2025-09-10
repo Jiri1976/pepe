@@ -7,58 +7,76 @@
      width: 100%;
      position: relative;
 
-     .title {
-         font-size: 1.5rem;
-         font-weight: bold;
-         color: #cecece;
-     }
-
-     table.empty {
-         min-width: 1300px;
+     .table {
+         display: flex;
+         flex-direction: column;
          margin-top: 90px;
-         background: linear-gradient(90deg,
-                 #eee 25%,
-                 #fff 50%,
-                 #eee 75%);
-         background-size: 400% 100%;
-         animation: shimmer 2s infinite linear;
-         //  border-radius: 10px;
 
-         th,
-         td {
-             border: 1px solid #ccc;
-             min-width: 35px !important;
-             height: 35px !important;
-             text-align: center;
-             position: relative;
-         }
+         .table-head {
+             display: flex;
+             flex-direction: row;
+             margin-bottom: 10px;
 
-         th {
-             .head-cell {
-                 display: flex;
-                 flex-direction: column;
-                 justify-content: center;
+             .user-name {
+                 min-width: 150px !important;
+                 margin-right: 10px;
+                 border: 1px solid #666;
+                 border-radius: 5px;
+                 background: linear-gradient(90deg,
+                         #eee 25%,
+                         #fff 50%,
+                         #eee 75%);
+                 background-size: 400% 100%;
+                 animation: shimmer 2s infinite linear;
+             }
 
-                 .head-cell-date {
-                     font-size: 0.8rem;
-                 }
-
-                 .head-cell-week-day {
-                     font-size: 0.7rem;
-                 }
+             .cell {
+                 border: 1px solid #666;
+                 border-radius: 5px;
+                 background: linear-gradient(90deg,
+                         #eee 25%,
+                         #fff 50%,
+                         #eee 75%);
+                 background-size: 400% 100%;
+                 animation: shimmer 2s infinite linear;
+                 width: 35px !important;
+                 height: 35px !important;
              }
          }
 
-         th.user-name {
-             min-width: 150px !important;
-         }
+         .body {
+             .table-row {
+                 display: flex;
+                 flex-direction: row;
+                 margin: 5px 0;
 
-         th:not(.user-name) {
-             background-color: var(--background-color-head);
-         }
+                 .user-name {
+                     min-width: 150px !important;
+                     margin-right: 10px;
+                     border: 1px solid #666;
+                     border-radius: 5px;
+                     background: linear-gradient(90deg,
+                             #eee 25%,
+                             #fff 50%,
+                             #eee 75%);
+                     background-size: 400% 100%;
+                     animation: shimmer 2s infinite linear;
+                 }
 
-         td.user-name-cell {
-             background-color: var(--background-color-user)
+                 .drop-zone {
+                     width: 35px !important;
+                     height: 35px !important;
+                     border: 1px solid #666;
+                     margin-right: 2px;
+                     border-radius: 5px;
+                     background: linear-gradient(90deg,
+                             #eee 25%,
+                             #fff 50%,
+                             #eee 75%);
+                     background-size: 400% 100%;
+                     animation: shimmer 2s infinite linear;
+                 }
+             }
          }
      }
  }

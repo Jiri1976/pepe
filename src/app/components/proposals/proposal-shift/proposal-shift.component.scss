@@ -1,0 +1,78 @@
+:host {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.shift {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-weight: 500;
+    color: #fff;
+    font-size: 1.3rem;
+    padding: 0px !important;
+    width: 35px !important;
+    height: 35px !important;
+    border-radius: 5px;
+}
+
+.shift.whole {
+    background: #05C46B;
+}
+
+.shift.dest {
+    font-size: 0.8rem;
+    background: #000;
+    font-weight: 600;
+}
+
+.shift.morning {
+    background: #ff8800;
+}
+
+.shift.afternoon {
+    background: #cc0000;
+}
+
+.shift.custom {
+    background: #666;
+    font-weight: 600;
+    font-size: 0.7rem;
+
+    .upper {
+        margin-top: 6px;
+    }
+
+    .lower {
+        margin-bottom: 6px;
+    }
+}
+
+.shift.morning,
+.shift.afternoon {
+    font-weight: 600;
+    font-size: 0.9rem;
+
+    .upper {
+        position: relative;
+        top: 3px;
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .lower {
+        position: relative;
+        bottom: 2px;
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        justify-content: center;
+    }
+}

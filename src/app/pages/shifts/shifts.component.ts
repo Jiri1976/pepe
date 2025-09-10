@@ -39,7 +39,7 @@ import { Shift } from '../../models/shifts/shift.interface';
 })
 export class ShiftsComponent implements OnInit {
   private swiper!: Swiper;
-  private MONTHS = ["LEDEN", "ÚNOR", "BŘEZEN", "DUBEN", "KVĚTEN", "ČERVEN", "ČRVENEC", "SRPEN", "ZÁŘÍ", "ŘÍJEN", "LISTOPAD", "PROSINEC"];
+  private MONTHS = ["LEDEN", "ÚNOR", "BŘEZEN", "DUBEN", "KVĚTEN", "ČERVEN", "ČERVENEC", "SRPEN", "ZÁŘÍ", "ŘÍJEN", "LISTOPAD", "PROSINEC"];
   private MONTHS_NAMES = ["LED", "ÚNO", "BŘE", "DUB", "KVĚ", "ČER", "ČRV", "SRP", "ZÁŘ", "ŘÍJ", "LIS", "PRO"];
   private MONTHS_NUM = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
   private authService = inject(AuthService);
@@ -181,8 +181,10 @@ export class ShiftsComponent implements OnInit {
   }
 
   onReset() {
-    const swiper = (this.swiperRef.nativeElement as any).swiper;
-    swiper.allowTouchMove = true;
+    if (this.cards().length > 0) {
+      const swiper = (this.swiperRef.nativeElement as any).swiper;
+      swiper.allowTouchMove = true;
+    }
     this.getCards();
   }
 
@@ -206,6 +208,7 @@ export class ShiftsComponent implements OnInit {
       shiftCardId: card.id,
       userId: card.userId,
       position: card.userPosition,
+      destination: card.destination,
       date: '',
       from: '11:00',
       to: '22:00',
@@ -237,6 +240,14 @@ export class ShiftsComponent implements OnInit {
     return false;
   }
 
+  missingCardsMessage() {
+    if (this.isPastCard()) {
+      return `Směny pro ${this.MONTHS[parseInt(this.monthYear().substring(0, 2)) - 1].toLowerCase()} ${this.monthYear().substring(2, 6)} nejsou uloženy.`;
+    } else {
+      return `Chybí uživatelé na pobočce - ${this.destination()}.`;
+    }
+  }
+
   private onSelectUser(userId: number) {
     this.swiper = this.swiperRef.nativeElement.swiper;
     let index = this.users().findIndex(u => u.userId === userId);
@@ -257,16 +268,27 @@ export class ShiftsComponent implements OnInit {
     const subscription = this.shiftService.getUsersShiftCards(this.monthYear(), this.destination()).pipe(
       tap(response => {
         if (response === null) {
+          this.isLoading.set(false);
           this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
         } else if (response.isSuccess === false) {
+          this.isLoading.set(false);
           this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
         } else if (response.isSuccess === true) {
-          const result = response.result;
-          if (result.length > 0) {
-            let _cards = result.sort((a: any, b: any) =>
-              a.user.localeCompare(b.user)
-            );
-            let _users = _cards.map((card: any) => { return { userName: card.user, userId: card.userId } });
+          const _cards = response.result;
+          if (_cards.length > 0) {
+            // let _cards = result.sort((a: any, b: any) =>
+            //   a.user.localeCompare(b.user)
+            // );
+            let _users = _cards.map((card: any) => {
+              let userName = card.userName + " " + card.userSurname;
+              console.log(userName);
+
+              return {
+                userName: userName,
+                userId: card.userId,
+                position: card.userPosition
+              }
+            });
             this.shiftService.users.set(_users);
             this.cards.set(_cards);
             setTimeout(() => {

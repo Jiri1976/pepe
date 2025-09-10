@@ -107,17 +107,26 @@
                 animation: shake 0.82s cubic-bezier(.36, .07, .19, .97) both;
             }
 
-            .cancel {
+            .cancel,
+            .delete {
                 height: 30px;
                 display: flex;
                 flex-direction: row;
                 justify-content: center;
                 align-items: center;
-                border: 1px solid #EF4444;
                 color: #fff;
-                background: #EF4444;
                 border-radius: 5px;
                 font-weight: bold;
+            }
+
+            .cancel {
+                border: 1px solid #F97316;
+                background: #F97316;
+            }
+
+            .delete {
+                border: 1px solid #EF4444;
+                background: #EF4444;
             }
 
             .btn {

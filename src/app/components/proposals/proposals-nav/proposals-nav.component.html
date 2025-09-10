@@ -1,9 +1,8 @@
 <div class="menu">
     <ul>
-        <li hide class="first" (click)="plansComponent.toggleCalendar()" [class.disabled]="users().length === 0">
+        <li hide class="first" (click)="plansComponent.toggleCalendar()">
             <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
                 <i class="bi bi-calendar"></i>
-                <p>{{ calendarTitle() }}</p>
             </a>
         </li>
 
@@ -19,9 +18,27 @@
             </a>
         </li>
 
-        <li hide (click)="plansComponent.onReset()" [class.disabled]="users().length === 0">
+        <li hide (click)="plansComponent.onReset()">
             <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
                 <i class="bi bi-arrow-clockwise"></i>
+            </a>
+        </li>
+
+        <li hide (click)="plansComponent.onOpenPDF()" [class.disabled]="plansComponent.planCard()?.users?.length === 0">
+            <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
+                @if (!pdfLoading()) {
+                <i class="bi bi-filetype-pdf"></i>
+                } @else {
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                }
+            </a>
+        </li>
+
+        <li hide (click)="plansComponent.onDelete()" [class.disabled]="plansComponent.planCard()?.users?.length === 0">
+            <a [style.--background]="'#EF4444'" [style.--color]="'#fff'">
+                <i class="bi bi-trash"></i>
             </a>
         </li>
 
@@ -37,25 +54,7 @@
             </a>
         </li>
 
-        <li hide (click)="plansComponent.onDelete()" [class.disabled]="plansComponent.proposalCard().id === 0">
-            <a [style.--background]="'#EF4444'" [style.--color]="'#fff'">
-                <i class="bi bi-trash"></i>
-            </a>
-        </li>
-
-        <li hide [class.disabled]="plansComponent.proposalCard().id === 0" (click)="plansComponent.onOpenPDF()">
-            <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
-                @if (!pdfLoading()) {
-                <i class="bi bi-filetype-pdf"></i>
-                } @else {
-                <div class="spinner-border" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                }
-            </a>
-        </li>
-
-        <li hideAdmin (click)="plansComponent.onReset()" [class.disabled]="users().length === 0">
+        <li hideAdmin (click)="plansComponent.onReset()">
             <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
                 <i class="bi bi-arrow-clockwise"></i>
             </a>

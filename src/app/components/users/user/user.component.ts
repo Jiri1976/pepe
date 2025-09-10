@@ -94,8 +94,8 @@ export class UserComponent implements OnInit {
         return;
       }
 
-      if (file.size > 2 * 1024 * 1024) {
-        this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Soubor je příliš velký! Maximální velikost je 2 MB.' });
+      if (file.size > 1 * 1024 * 1024) {
+        this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Soubor je příliš velký! Maximální velikost je 1 MB.' });
         this.imagePicker()!.nativeElement.value = '';
         return;
       }

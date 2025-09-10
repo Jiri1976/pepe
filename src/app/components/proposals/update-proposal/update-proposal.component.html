@@ -1,7 +1,10 @@
 <div class="wrapper">
     <form autocomplete="off" id="form" [formGroup]="proposalForm">
         <div class="title">
-            <h1>{{ `${selectedProposal().user} - ${selectedProposal().date}` }}</h1>
+            <h1>{{ `${selectedProposal()?.userName} ${selectedProposal()?.userSurname?.substring(0,1)}. -
+                ${selectedProposal()?.position === 'Diver' ? 'řidič' : 'kuchyň'}
+                -
+                ${selectedProposal()?.proposalDate}` }}</h1>
         </div>
 
         <div class="row mt-1 mb-4 buttons-line">
@@ -12,9 +15,10 @@
             </div>
             <div class="afternoon" (click)="onUpdate('A')">
                 <div class="upper">17</div>
-                <div class="lower">22</div>
+                <div class="lower">{{ isFridayOrSaturday(selectedProposal()?.proposalDate!) ? '23' : '22' }}</div>
             </div>
-            <button type="button" class="btn destination" (click)="onUpdate(destination())">{{ destination() === 'F-M' ?
+            <button type="button" class="btn destination" (click)="onUpdate(proposalsService.destination())">{{
+                proposalsService.destination() === 'F-M' ?
                 'OVA' : 'F-M'}}</button>
             <button type="button" class="btn delete" (click)="onDelete()"><i class="bi bi-trash"></i></button>
         </div>

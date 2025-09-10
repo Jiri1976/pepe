@@ -7,6 +7,7 @@ import { AuthUser } from '../models/auth-user.interface';
 import { Router } from '@angular/router';
 import { WarehouseService } from './warehouse.service';
 import { AlertService } from './alert.service';
+import { DialogRef } from '@angular/cdk/dialog';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +20,7 @@ export class AuthService {
   private initialUser: AuthUser = { name: '', email: '', role: '', destination: '', token: '', expiresIn: '' };
   private warehouseService = inject(WarehouseService);
   private alertService = inject(AlertService);
+  private dialogRef = inject(DialogRef, { optional: true });
 
   user = signal<AuthUser>(this.initialUser);
   firstRun = true;
@@ -49,6 +51,7 @@ export class AuthService {
   };
 
   logout() {
+    this.dialogRef?.close();
     localStorage.removeItem('notifications');
     localStorage.removeItem('userRole');
     localStorage.removeItem('userName');
@@ -57,7 +60,7 @@ export class AuthService {
     this.alertService.notifications.set([]);
     this.warehouseService.items.set([]);
     this.warehouseService.selectedUnit.set({ id: 0, warehouseCardId: 0, warehouseItemId: 0, date: '', amount: 0 });
-    this.warehouseService.warehouseCard.set({ id: 0, warehouseItemId: 0, warehouseItemName: '', monthYear: '', monthYearName: '', destination: '', units: [] });
+    this.warehouseService.warehouseCard.set({ id: 0, warehouseItemId: 0, warehouseItemName: '', monthYear: '', monthYearName: '', destination: '', position: 0, units: [] });
     this.warehouseService.leaveRoom();
     this.user.set(this.initialUser);
     this.firstRun = true;

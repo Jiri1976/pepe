@@ -1,86 +1,43 @@
-<div class="shift-assignment-container">
+<div class="proposals">
     @if(!proposalsLoading()) {
 
-    @if (isUnsavedPassedCard() && proposalCard().id === 0 && users().length > 0) {
+    @if (isUnsavedPassedCard()) {
     <h4>{{ unsavedProposalCardErrorText }}</h4>
     } @else {
 
-    @if(users().length > 0) {
+    @if(planCard()?.users?.length === 0)
+    {
+    <h4>Chybí evidovaní pracovníci na pobočce - {{planCard()?.destination }}</h4>
+    } @else {
     <div class="wrapper">
-
-        <div class="table"
-            [style]="`--min-width-table: ${proposalCard().proposalDays.length * 40 + 'px'} --margin-top-table: ${isUnsavedPassedCard() ? '30px' : ''}`">
+        <div class="table" proposalTableStyle [countOfDays]="planCard()!.countOfDays"
+            [isUnsavedPassedCard]="isUnsavedPassedCard()">
             <div class="table-head">
-                <div class="user-name"></div>
-                @for(day of proposalCard().proposalDays; track $index) {
+                <div class="user-name">{{ planCard()?.monthYearName }}</div>
+                @for(shift of planCard()!.users[0]!.shifts; track $index) {
                 <th>
-                    <div class="cell"
-                        [style]="`--background-color-head: ${isFridayOrSaturday(day.date) ? '#E9E9E9' : '#fff'}`">
+                    <div class="cell" [setBackground]="isWeekend(shift.proposalDate)">
                         <div class="cell-date">
-                            {{ day.date.split('.')[0] }}
+                            {{ shift.proposalDate.split('.')[0] }}
                         </div>
                         <div class="cell-week-day">
-                            {{dayOfWeek(day.date)}}
+                            {{ dayOfWeek(`${shift.proposalDate}`) }}
                         </div>
                     </div>
                 </th>
                 }
             </div>
-
             <div class="body">
-                @for(user of users(); track $index; let userIndex = $index) {
+                @for(user of planCard()?.users; track $index; let i = $index) {
                 <div class="table-row">
-                    <div class="user-name-cell"
-                        [style]="`--background-color-user: ${user.position === 'Cook' ? '#E9E9E9' : '#fff' }`"
-                        [class.last-cook]="(userIndex === cookCount() - 1) && (users().length !== cookCount())">{{
-                        user.name }}
+                    <div class="user-name-cell" [setBackground]="user.position === 'Cook'">
+                        {{`${user.name} ${user.surname.substring(0,1)}.`}}
                     </div>
 
-                    @for(day of proposalCard().proposalDays; track $index; let i = $index) {
-                    <th class="drop-zone"
-                        [style]="`--background-color-dropzone: ${isFridayOrSaturday(day.date) ? '#E9E9E9' : '#fff' }`"
-                        [class.last-cook]="(userIndex === cookCount() - 1) && (users().length !== cookCount())"
-                        [class.disabled]="isPassedTime(day.date)" (click)="onAdd(user.id, i, day.date, user.name)">
-                        @for(shift of assignments()[user.id][i]; track $index; let j = $index) {
-                        <div class="assigned-shift"
-                            (click)="!isPassedTime(day.date) && onUpdateProposal(user.id, i, day.date, user.name)">
-                            @if(shift.from === '11:00' && (shift.to === '22:00' || shift.to === '23:00')) {
-                            @if (isFridayOrSaturday(day.date) && (shift.to !== '23:00')) {
-                            <div class="shift-block custom">
-                                <custom-proposal-button [timeFrom]="shift.from" [timeTo]="shift.to" />
-                            </div>
-                            } @else {
-                            <div class="shift-block whole">X</div>
-                            }
-                            }
-                            @else if(shift.from === '11:00' && shift.to === '17:00') {
-                            <div class="shift-block morning">
-                                <proposal-button timeFrom="11" timeTo="17" />
-                            </div>
-                            }
-                            @else if(shift.from === '17:00' && (shift.to === '22:00' || shift.to === '23:00')) {
-                            @if (isFridayOrSaturday(day.date) && (shift.to !== '23:00')) {
-                            <div class="shift-block custom">
-                                <custom-proposal-button [timeFrom]="shift.from" [timeTo]="shift.to" />
-                            </div>
-                            } @else {
-                            <div class="shift-block afternoon">
-                                <proposal-button timeFrom="17" [timeTo]="shift.to.split(':')[0]" />
-                            </div>
-                            }
-                            }
-                            @else if(shift.from === 'F-M' || shift.from === 'OVA') {
-                            <div class="shift-block dest">
-                                <div class="shift-block dest">{{ shift.from === 'F-M' ? 'FM' : 'OVA'}}</div>
-                            </div>
-                            }
-                            @else {
-                            <div class="shift-block custom">
-                                <custom-proposal-button [timeFrom]="shift.from" [timeTo]="shift.to" />
-                            </div>
-                            }
-                        </div>
-                        }
+                    @for(shift of user.shifts; track $index; let j = $index) {
+                    <th class="drop-zone" [setBackground]="isWeekend(shift.proposalDate)"
+                        [disabledClass]="isPassedTime(shift.proposalDate)" (click)="onCreateUpdateProposal(i, j)">
+                        <app-proposal-shift [shift]="shift" />
                     </th>
                     }
                 </div>
@@ -88,10 +45,6 @@
             </div>
         </div>
     </div>
-    }
-
-    @else {
-    <h4>Chybí evidovaní pracovníci na pobočce - {{destination()}}</h4>
     }
     }
     } @else {

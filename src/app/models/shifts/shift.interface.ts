@@ -3,6 +3,7 @@ export interface Shift {
     shiftCardId: number,
     userId: number,
     position: string,
+    destination: string,
     date: string,
     from?: string,
     to?: string,

@@ -1,7 +1,8 @@
 <div class="select-user">
     @for(user of users(); track user.userId) {
     <div class="user" (click)="onSelectUser(user.userId)">
-        <p>{{ user.userName }}</p>
+        <p>{{ user.userName }} - {{ user.position === 'Driver' ? 'řidič' : user.position === 'Cook' ? 'kuchyň' : ''}}
+        </p>
     </div>
     }
     <div class="close">

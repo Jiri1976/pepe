@@ -5,6 +5,7 @@ export interface InitShift {
     to: Date,
     perso?: string,
     position: string,
+    destination: string,
     createdAt?: string,
     createdBy?: string,
     updatedAt?: string,

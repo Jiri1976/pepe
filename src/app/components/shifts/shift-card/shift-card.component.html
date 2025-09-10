@@ -6,7 +6,11 @@
                 <b>{{convertMonthYear(shiftCard()!.monthYear)}}</b>
             </div>
             <div class="center">
-                <b>{{shiftCard()!.user}} - {{ shiftCard()?.userPosition === 'Driver' ? 'Řidič' : 'Kuchyň' }}</b>
+                @let userName = shiftCard()?.userName + " " + shiftCard()?.userSurname;
+                <!-- <b>{{shiftCard()!.userName }} {{shiftCard()!.userSurname }} - {{ shiftCard()?.userPosition === 'Driver'
+                    ? 'Řidič' : 'Kuchyň' }}</b> -->
+                <b>{{ userName }} - {{ shiftCard()?.userPosition === 'Driver'
+                    ? 'Řidič' : 'Kuchyň' }}</b>
             </div>
 
             <div class="left">
@@ -81,6 +85,8 @@
 </div>
 
 @if (formVisible()) {
+@let userName = shiftCard()?.userName + " " + shiftCard()?.userSurname;
+
 <app-shift-form @fastIn @fastOut (closeShiftForm)="onCloseShiftForm()" (shiftForSave)="onSave($event)"
-    (shiftForDelete)="onDeleteShift($event)" [userName]="shiftCard()?.user" [loggedUser]="loggedUser" />
+    (shiftForDelete)="onDeleteShift($event)" [userName]="userName" [loggedUser]="loggedUser" />
 }

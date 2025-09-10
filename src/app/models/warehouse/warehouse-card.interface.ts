@@ -7,5 +7,6 @@ export interface WarehouseCard {
     monthYear: string,
     monthYearName: string,
     destination: string,
+    position: number,
     units: WarehouseUnit[]
 }

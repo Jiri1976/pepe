@@ -1,4 +1,4 @@
-.shift-assignment-container {
+.proposals {
     height: 100%;
     display: grid;
     flex-direction: column;
@@ -29,6 +29,18 @@
                 .user-name {
                     min-width: 150px !important;
                     margin-right: 10px;
+                    border: 1px solid #666;
+                    background: #666;
+                    color: #fff;
+                    border-radius: 5px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    overflow: hidden;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    font-weight: bold;
                 }
 
                 .cell {
@@ -38,7 +50,7 @@
                     border: 1px solid #666;
                     padding: 0 8px;
                     border-radius: 5px;
-                    background-color: var(--background-color-head);
+                    background-color: var(--background-color);
                     width: 35px !important;
                     height: 35px !important;
 
@@ -63,7 +75,7 @@
                     .user-name-cell {
                         height: 35px;
                         width: 150px !important;
-                        background-color: var(--background-color-user);
+                        background-color: var(--background-color);
                         border: 1px solid #666;
                         border-radius: 5px;
                         margin-right: 10px;
@@ -85,44 +97,10 @@
                         flex-direction: column;
                         justify-content: center;
                         margin-right: 2px;
-                        background-color: var(--background-color-dropzone);
-                    }
-
-                    .drop-zone:not(.disabled):hover {
-                        cursor: pointer;
-                    }
-
-                    .drop-zone.last-cook {
-                        margin-bottom: 15px;
+                        background-color: var(--background-color);
                     }
                 }
             }
         }
     }
-}
-
-.shift-block {
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    font-weight: 500;
-    color: #000;
-    font-size: 1.3rem;
-}
-
-.shift-block.dest {
-    padding: 0px !important;
-    font-size: 0.8rem;
-    color: #000;
-    font-weight: 600;
-}
-
-.assigned-shift {
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
 }

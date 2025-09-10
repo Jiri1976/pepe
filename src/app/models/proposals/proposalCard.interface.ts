@@ -1,9 +1,11 @@
-import { ProposalDay } from "./proposalDay.interface";
+import { ProposalShift } from "./proposalShift.interface";
+import { ProposalUser } from "./proposalUser.interface";
 
 export interface ProposalCard {
-    id: number,
     monthYear: string,
     monthYearName: string;
     destination: string,
-    proposalDays: ProposalDay[]
+    countOfDays: number;
+    users: ProposalUser[];
+    inactiveUsers: ProposalUser[];
 }

@@ -94,7 +94,7 @@
             </div>
             <div class="col-6">
                 <div class="label mt-2">
-                    <label class="font-semibold w-6rem">Čas zápisu</label>
+                    <label class="font-semibold w-6rem">Zapsáno</label>
                 </div>
                 <div>
                     <div class="card flex justify-content-center">
@@ -118,7 +118,7 @@
             </div>
             <div class="col-6">
                 <div class="label">
-                    <label class="font-semibold w-6rem">Čas úpravy</label>
+                    <label class="font-semibold w-6rem">Upraveno</label>
                 </div>
                 <div>
                     <div class="card flex justify-content-center">
@@ -137,7 +137,7 @@
                 <button class="w-100 cancel" (click)="onHideForm()"><i class="bi bi-x"></i>&nbsp;Zpět</button>
                 } @else {
                 <button class="w-50 cancel me-1" (click)="onHideForm()"><i class="bi bi-x"></i>&nbsp;Zpět</button>
-                <button class="w-50 cancel ms-1" (click)="onDelete()"><i class="bi bi-trash"></i>&nbsp;Smazat</button>
+                <button class="w-50 delete ms-1" (click)="onDelete()"><i class="bi bi-trash"></i>&nbsp;Smazat</button>
                 }
             </div>
             <div class="col-6">

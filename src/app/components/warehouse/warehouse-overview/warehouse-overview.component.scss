@@ -181,6 +181,22 @@
                 }
             }
         }
+
+        .empty-item {
+            grid-column: 1;
+            grid-row: 1;
+            margin: 5% 0 0 0;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+            position: absolute;
+
+            h4 {
+                color: #24355A;
+                font-weight: bold;
+            }
+        }
     }
 
     .skeleton {

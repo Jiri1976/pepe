@@ -34,20 +34,6 @@ export class DateValidator {
             const hoursTo = toDate.getHours().toString().padStart(2, '0');
             const minutesTo = toDate.getMinutes().toString().padStart(2, '0');
 
-            // if (parseInt(hoursFrom, 10) < 11) {
-            //     return { invalidTime: true };
-            // }
-
-            // if (day === 5 || day === 6) {
-            //     if (parseInt(hoursTo, 10) > 23 || (parseInt(hoursTo, 10) === 23 && parseInt(minutesTo, 10) > 0)) {
-            //         return { invalidTime: true };
-            //     }
-            // } else {
-            //     if (parseInt(hoursTo, 10) > 22 || (parseInt(hoursTo, 10) === 22 && parseInt(minutesTo, 10) > 0)) {
-            //         return { invalidTime: true };
-            //     }
-            // }
-
             if ((hoursFrom + ':' + minutesFrom) >= (hoursTo + ':' + minutesTo)) {
                 return { invalidTime: true };
             }

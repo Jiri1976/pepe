@@ -14,7 +14,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from '../../services/alert.service';
 import { tap } from 'rxjs';
 import { ErrorHandlingService } from '../../services/error-handling.service';
-import { ProposalsPDF, ShiftPDF, UserPDF } from '../../models/proposals/proposalsPDF.interface';
 import { ProposalsNavComponent } from "../../components/proposals/proposals-nav/proposals-nav.component";
 import { PageAnimation } from '../../animations/page.animation';
 import { DragDropModule } from '@angular/cdk/drag-drop';
@@ -50,12 +49,10 @@ export class PlansComponent {
   private errorHandlingService = inject(ErrorHandlingService);
   defaultDate = new Date(new Date().getFullYear(), new Date().getMonth());
   maxDate: Date = new Date(new Date().getFullYear(), new Date().getMonth());
-  proposalCard = computed(() => this.proposalsService.proposalCard());
+  planCard = computed(() => this.proposalsService.planCard());
   isLoading = computed(() => this.proposalsService.isProposalLoading());
   user = computed(() => this.authService.user());
-  users = computed(() => this.proposalsService.users());
   nothingChanched = computed(() => this.proposalsService.nothingChanged());
-  assignments = computed(() => this.proposalsService.assignments());
   pdfLoading = signal(false);
   @ViewChild('calendar', { static: false }) calendar!: Calendar;
 
@@ -72,10 +69,16 @@ export class PlansComponent {
   }
 
   onSelectMonth() {
-    let date = this.calendar.value;
-    let monthYear = this.MONTHS_NUM[new Date(date).getMonth()] + new Date(date).getFullYear();
-    this.proposalsService.monthYear.set(monthYear);
-    this.proposalsService.uploadProposals();
+    if (!this.nothingChanched()) {
+      this.confirmService.confirm('Nejsou uloženy změny, chceš pokračovat?')
+        .then((confirmed) => {
+          if (confirmed) {
+            this.selectMonth();
+          }
+        });
+    } else {
+      this.selectMonth();
+    }
   }
 
   onChangeDestination(destination: string) {
@@ -97,7 +100,7 @@ export class PlansComponent {
   }
 
   onDelete() {
-    this.confirmService.confirm('Opravdu chceš smazat kartu s návrhy směn?')
+    this.confirmService.confirm(`Odstranit plán směn pro - ${this.planCard()?.monthYearName.toLowerCase()}?`)
       .then((confirmed) => {
         if (confirmed) {
           this.proposalsService.onDelete();
@@ -119,9 +122,32 @@ export class PlansComponent {
   }
 
   onOpenPDF() {
+    if (!this.nothingChanched()) {
+      this.confirmService.confirm('Nejsou uloženy změny, chceš pokračovat?')
+        .then((confirmed) => {
+          if (confirmed) {
+            this.getPDF();
+          }
+        });
+    } else {
+      this.getPDF();
+    }
+  }
+
+  isPassedMonth() {
+    let today = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    let _monthYear = this.planCard()!.monthYear.length === 5 ? '0' + this.planCard()!.monthYear : this.planCard()!.monthYear;
+
+    let day = new Date(parseInt(_monthYear.substring(2, 6)), parseInt(_monthYear.substring(0, 2)) - 1, 1);
+    if (day >= today) {
+      return false;
+    }
+    return true;
+  }
+
+  private getPDF() {
     this.pdfLoading.set(true);
-    let pdfCard = this.preparePDFData();
-    const subscription = this.proposalsService.uploadPDF(pdfCard, this.user().role).pipe(
+    const subscription = this.proposalsService.uploadPDF(this.planCard()!, this.user().role).pipe(
       tap(response => {
         if (response === null) {
           this.pdfLoading.set(false);
@@ -140,7 +166,7 @@ export class PlansComponent {
           var url = window.URL.createObjectURL(blob);
           const a = document.createElement('a')
           a.href = url;
-          a.download = pdfCard.title;
+          a.download = `Směny - ${this.planCard()?.destination} - ${this.planCard()?.monthYearName.toLowerCase()}`;
           a.click();
           URL.revokeObjectURL(url);
         }
@@ -154,67 +180,17 @@ export class PlansComponent {
     });
   }
 
-  isPassedMonth() {
-    let today = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-    let _monthYear = this.proposalCard().monthYear.length === 5 ? '0' + this.proposalCard().monthYear : this.proposalCard().monthYear;
-
-    let day = new Date(parseInt(_monthYear.substring(2, 6)), parseInt(_monthYear.substring(0, 2)) - 1, 1);
-    if (day >= today) {
-      return false;
-    }
-    return true;
+  private selectMonth() {
+    let date = this.calendar.value;
+    let monthYear = this.MONTHS_NUM[new Date(date).getMonth()] + new Date(date).getFullYear();
+    this.proposalsService.monthYear.set(monthYear);
+    this.proposalsService.uploadProposals();
   }
 
   private changeDestination(destination: string) {
     this.proposalsService.isProposalLoading.set(true);
     this.proposalsService.destination.set(destination);
     this.proposalsService.uploadProposals();
-  }
-
-  private preparePDFData() {
-    let destination = this.proposalCard().destination === 'F-M' ? 'Frýdek-Místek' : 'Ostrava';
-    let MONTHS_NAMES = ["LEDEN", "ÚNOR", "BŘEZEN", "DUBEN", "KVĚTEN", "ČERVEN", "ČERVENEC", "SRPEN", "ZÁŘÍ", "ŘÍJEN", "LISTOPAD", "PROSINEC"];
-    let proposalPDF: ProposalsPDF = {
-      title: `${destination} - ${MONTHS_NAMES[parseInt(this.proposalCard().monthYear.substring(0, 2)) - 1] + ' ' + this.proposalCard().monthYear.substring(2)}`,
-      countOfDays: this.proposalCard().proposalDays.length,
-      startDay: this.proposalCard().proposalDays[0].date,
-      users: []
-    };
-
-    let card = { ...this.proposalCard() };
-    let _assigments = { ...this.assignments() }
-    for (let i = 0; i < this.users().length; i++) {
-      let user = this.users()[i];
-      let userPDF: UserPDF = {
-        name: user.name,
-        position: user.position,
-        shifts: []
-      };
-      proposalPDF.users.push(userPDF);
-      for (let j = 0; j < card.proposalDays.length; j++) {
-        let proposalDay = card.proposalDays[j];
-        let updateShift = proposalDay.proposalShifts.filter(s => s.userId === user.userId);
-        if (updateShift[0]) {
-
-          let assignment: any = _assigments[i + 1][j];
-          if (assignment[0]) {
-            let shiftPDF: ShiftPDF = {
-              from: assignment[0].from,
-              to: assignment[0].to
-            }
-            proposalPDF.users[i].shifts.push(shiftPDF);
-          } else {
-            let shiftPDF: ShiftPDF = {
-              from: null,
-              to: null
-            }
-            proposalPDF.users[i].shifts.push(shiftPDF);
-          }
-        }
-      }
-    }
-
-    return proposalPDF;
   }
 
   private handleError = (errorRes: HttpErrorResponse) => {

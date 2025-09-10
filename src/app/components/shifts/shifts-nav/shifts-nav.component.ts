@@ -26,6 +26,10 @@ export class ShiftsNavComponent {
   formShiftVisible = computed(() => this.shiftService.shiftFormVisible());
 
   openModal() {
+    if (this.shiftsComponent.cards().length === 0) {
+      return;
+    }
+
     if (!this.formShiftVisible()) {
       this.dialog.open(SelectUserComponent, { disableClose: false });
     }

@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { ProposalsService } from '../../../services/proposals.service';
@@ -20,15 +20,12 @@ import { DialogRef } from '@angular/cdk/dialog';
   styleUrl: './update-proposal.component.scss'
 })
 export class UpdateProposalComponent implements OnInit {
-  private proposalsService = inject(ProposalsService);
   private dialogRef = inject(DialogRef, { optional: true });
-  destination = computed(() => this.proposalsService.destination());
+  proposalsService = inject(ProposalsService);
   selectedProposal = computed(() => this.proposalsService.selectedProposal());
-  assignments = computed(() => this.proposalsService.assignments());
-  selectedProposalTimeFrom = computed(() => this.proposalsService.timeFrom());
-  selectedProposalTimeTo = computed(() => this.proposalsService.timeTo());
   proposalForm!: FormGroup;
   errorMessage = signal<string | null>(null);
+  planCard = computed(() => this.proposalsService.planCard());
 
   get timeFrom() {
     return this.proposalForm.get('timeFrom');
@@ -42,39 +39,16 @@ export class UpdateProposalComponent implements OnInit {
     this.initializeProposalForm();
   }
 
-  changes = effect(() => {
-    this.proposalForm.patchValue({
-      'timeFrom': this.selectedProposalTimeFrom(),
-      'timeTo': this.selectedProposalTimeTo()
-    });
-  });
-
   onClearErrorMessage() {
     this.errorMessage.set(null);
   }
 
   onUpdate(shiftType?: string) {
-    let isFridaySaturday = this.isFridayOrSaturday(this.selectedProposal().date);
+    let isFridaySaturday = this.isFridayOrSaturday(this.selectedProposal()!.proposalDate);
     let hoursFrom = new Date(this.timeFrom?.value).getHours() < 10 ? '0' + new Date(this.timeFrom?.value).getHours() : new Date(this.timeFrom?.value).getHours();
     let minutesFrom = new Date(this.timeFrom?.value).getMinutes() < 10 ? '0' + new Date(this.timeFrom?.value).getMinutes() : new Date(this.timeFrom?.value).getMinutes();
     let hoursTo = new Date(this.timeTo?.value).getHours() < 10 ? '0' + new Date(this.timeTo?.value).getHours() : new Date(this.timeTo?.value).getHours();
     let minutesTo = new Date(this.timeTo?.value).getMinutes() < 10 ? '0' + new Date(this.timeTo?.value).getMinutes() : new Date(this.timeTo?.value).getMinutes();
-    if (shiftType === 'W') {
-      hoursFrom = '11';
-      minutesFrom = '00';
-      hoursTo = isFridaySaturday ? '23' : '22';
-      minutesTo = '00';
-    } else if (shiftType === 'M') {
-      hoursFrom = '11';
-      minutesFrom = '00';
-      hoursTo = '17';
-      minutesTo = '00';
-    } else if (shiftType === 'A') {
-      hoursFrom = '17';
-      minutesFrom = '00';
-      hoursTo = isFridaySaturday ? '23' : '22';
-      minutesTo = '00';
-    }
 
     if (parseInt(hoursFrom.toString()) < 11) {
       this.errorMessage.set('Směna musí začínat v 11:00.');
@@ -95,64 +69,56 @@ export class UpdateProposalComponent implements OnInit {
       }
     }
 
-    this.dialogRef?.close();
-    let _assignments = { ...this.assignments() };
-    let assignment: any = _assignments[this.selectedProposal().x][this.selectedProposal().y];
+    this.onClose();
 
-    if (assignment.length > 0) {
-      assignment[0].from = `${hoursFrom}:${minutesFrom}`;
-      assignment[0].to = `${hoursTo}:${minutesTo}`;
-    } else {
-      let newAssignment: any = { name: 'W', from: `${hoursFrom}:${minutesFrom}`, to: `${hoursTo}:${minutesTo}` };
-      _assignments[this.selectedProposal().x][this.selectedProposal().y] = [newAssignment];
-      assignment = _assignments[this.selectedProposal().x][this.selectedProposal().y]
+    if (shiftType === 'W') {
+      hoursFrom = '11';
+      minutesFrom = '00';
+      hoursTo = isFridaySaturday ? '23' : '22';
+      minutesTo = '00';
+    } else if (shiftType === 'M') {
+      hoursFrom = '11';
+      minutesFrom = '00';
+      hoursTo = '17';
+      minutesTo = '00';
+    } else if (shiftType === 'A') {
+      hoursFrom = '17';
+      minutesFrom = '00';
+      hoursTo = isFridaySaturday ? '23' : '22';
+      minutesTo = '00';
     }
 
-    assignment[0].name = '';
-
-    if (isFridaySaturday) {
-      if (parseInt(hoursFrom.toString()) === 11 && (parseInt(minutesFrom.toString()) === 0) && parseInt(hoursTo.toString()) === 23) {
-        assignment[0].name = 'W';
-      }
-      if (parseInt(hoursFrom.toString()) === 11 && (parseInt(minutesFrom.toString()) === 0) && parseInt(hoursTo.toString()) === 17) {
-        assignment[0].name = 'M';
-      }
-      if (parseInt(hoursFrom.toString()) === 17 && (parseInt(minutesFrom.toString()) === 0) && parseInt(hoursTo.toString()) === 23) {
-        assignment[0].name = 'A';
-      }
-    } else {
-      if (parseInt(hoursFrom.toString()) === 11 && (parseInt(minutesFrom.toString()) === 0) && parseInt(hoursTo.toString()) === 22) {
-        assignment[0].name = 'W';
-      }
-      if (parseInt(hoursFrom.toString()) === 11 && (parseInt(minutesFrom.toString()) === 0) && parseInt(hoursTo.toString()) === 17) {
-        assignment[0].name = 'M';
-      }
-      if (parseInt(hoursFrom.toString()) === 17 && (parseInt(minutesFrom.toString()) === 0) && parseInt(hoursTo.toString()) === 22) {
-        assignment[0].name = 'A';
-      }
-    }
+    let _users = [...this.planCard()!.users!];
 
     if (shiftType === 'OVA' || shiftType === 'F-M') {
-      assignment[0].from = this.destination() === 'F-M' ? 'OVA' : 'F-M';
-      assignment[0].to = isFridaySaturday ? '23:00' : '22:00';
+      _users[this.proposalsService.selectedUserIndex()]!.shifts[this.proposalsService.selectedShiftIndex()].from = this.proposalsService.destination() === 'F-M' ? 'OVA' : 'F-M';
+      _users[this.proposalsService.selectedUserIndex()]!.shifts[this.proposalsService.selectedShiftIndex()].to = isFridaySaturday ? '23:00' : '22:00';
+    } else {
+      _users![this.proposalsService.selectedUserIndex()]!.shifts[this.proposalsService.selectedShiftIndex()].from = `${hoursFrom}:${minutesFrom}`;
+      _users![this.proposalsService.selectedUserIndex()]!.shifts[this.proposalsService.selectedShiftIndex()].to = `${hoursTo}:${minutesTo}`;
     }
-    this.proposalsService.updateAssigments(_assignments);
-    this.proposalsService.setProposals();
+
+    this.proposalsService.planCard.update(c => ({ ...c!, users: _users }));
+    this.proposalsService.checkNothingChanged();
+
   }
 
   onDelete() {
-    this.dialogRef?.close();
-    let assignments = { ...this.assignments() };
-    assignments[this.selectedProposal().x][this.selectedProposal().y] = [];
-    this.proposalsService.assignments.set(assignments);
-    this.proposalsService.setProposals();
+    let _users = [...this.planCard()!.users!];
+    _users![this.proposalsService.selectedUserIndex()]!.shifts[this.proposalsService.selectedShiftIndex()].from = null;
+    _users![this.proposalsService.selectedUserIndex()]!.shifts[this.proposalsService.selectedShiftIndex()].to = null;
+
+    this.proposalsService.planCard.update(c => ({ ...c!, users: [] }));
+    this.proposalsService.planCard.update(c => ({ ...c!, users: _users }));
+    this.proposalsService.checkNothingChanged();
+    this.onClose();
   }
 
   onClose() {
     this.dialogRef?.close();
   }
 
-  private isFridayOrSaturday(date: string) {
+  isFridayOrSaturday(date: string) {
     var day = new Date(parseInt(date.split('.')[2]), parseInt(date.split('.')[1]) - 1, parseInt(date.split('.')[0]));
     if (day.getDay() == 5 || day.getDay() == 6) {
       return true;
@@ -163,13 +129,32 @@ export class UpdateProposalComponent implements OnInit {
   private initializeProposalForm() {
     this.proposalForm = new FormGroup({
       'timeFrom': new FormControl({
-        value: this.selectedProposalTimeFrom(),
+        value: this.setTimeFrom(),
         disabled: false,
       }, [Validators.required]),
       'timeTo': new FormControl({
-        value: this.selectedProposalTimeTo(),
+        value: this.setTimeTo(),
         disabled: false
       }, [Validators.required,])
     }, { validators: DateValidator.ProposalTimesValidator });
+  }
+
+  private setTimeFrom() {
+    if (this.selectedProposal()!.from === null) {
+      return null;
+    }
+    if (this.selectedProposal()!.from === 'F-M' || this.selectedProposal()!.from === 'OVA') {
+      return new Date(parseInt(this.selectedProposal()!.proposalDate.split('.')[2]), parseInt(this.selectedProposal()!.proposalDate.split('.')[1]) - 1, parseInt(this.selectedProposal()!.proposalDate.split('.')[0]), 11, 0);
+    }
+    else {
+      return new Date(parseInt(this.selectedProposal()!.proposalDate.split('.')[2]), parseInt(this.selectedProposal()!.proposalDate.split('.')[1]) - 1, parseInt(this.selectedProposal()!.proposalDate.split('.')[0]), parseInt(this.selectedProposal()!.from?.split(':')[0]!), parseInt(this.selectedProposal()!.from?.split(':')[1]!));
+    }
+  }
+
+  private setTimeTo() {
+    if (this.selectedProposal()!.to === null) {
+      return null;
+    }
+    return new Date(parseInt(this.selectedProposal()!.proposalDate.split('.')[2]), parseInt(this.selectedProposal()!.proposalDate.split('.')[1]) - 1, parseInt(this.selectedProposal()!.proposalDate.split('.')[0]), parseInt(this.selectedProposal()!.to?.split(':')[0]!), parseInt(this.selectedProposal()!.to?.split(':')[1]!));
   }
 }

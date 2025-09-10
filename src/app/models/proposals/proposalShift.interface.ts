@@ -1,10 +1,13 @@
 export interface ProposalShift {
     id: number,
-    proposalDayId: number,
+    monthYear: string,
+    proposalDate: string,
     userId: number,
     userName: string,
     userSurname: string,
-    userNick: string,
-    from: string,
-    to: string
+    position: string,
+    destination: string,
+    listOrder: number,
+    from: string | null,
+    to: string | null
 }

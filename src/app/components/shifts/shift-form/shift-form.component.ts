@@ -292,6 +292,7 @@ export class ShiftFormComponent implements OnInit {
       shiftCardId: 0,
       userId: 0,
       position: this.selectedShift().position,
+      destination: this.selectedShift().destination,
       date: day + '.' + month + '.' + year,
       from: hoursFrom.toString() + ':' + minutesFrom.toString(),
       to: hoursTo.toString() + ':' + minutesTo.toString(),

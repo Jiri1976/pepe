@@ -19,6 +19,5 @@ export class ProposalsNavComponent {
   calendarTitle = computed(() => this.proposalsService.calendarTitle());
   destination = computed(() => this.proposalsService.destination());
   pdfLoading = model(false);
-  users = computed(() => this.proposalsService.users());
   isSaving = computed(() => this.proposalsService.isSaving());
 }

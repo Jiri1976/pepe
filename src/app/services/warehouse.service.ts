@@ -22,7 +22,7 @@ export class WarehouseService {
     private compRef = new BehaviorSubject<WarehouseItemsComponent | null>(null);
     private alertService = inject(AlertService);
     items = signal<WarehouseItem[]>([]);
-    warehouseCard = signal<WarehouseCard>({ id: 0, warehouseItemId: 0, warehouseItemName: '', monthYear: '', monthYearName: '', destination: '', units: [] });
+    warehouseCard = signal<WarehouseCard>({ id: 0, warehouseItemId: 0, warehouseItemName: '', monthYear: '', monthYearName: '', destination: '', position: 0, units: [] });
     selectedUnit = signal<WarehouseUnit>({ id: 0, warehouseCardId: 0, warehouseItemId: 0, date: '', amount: 0 });
     selectedListItemId = signal<number>(-1);
     selectedIndex = signal<number>(0);

@@ -11,7 +11,6 @@
             [class.disabled]="this.cards().length === 0">
             <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
                 <i class="bi bi-calendar"></i>
-                <p>{{ calendarText() }}</p>
             </a>
         </li>
 
@@ -28,14 +27,6 @@
                 <p>OVA</p>
             </a>
         </li>
-
-        @if (warehouseNav() !== 'board') {
-        <li (click)="onShowList()" hide [class.disabled]="this.cards().length === 0">
-            <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
-                <i class="bi bi-list-check"></i>
-            </a>
-        </li>
-        }
 
         <li (click)="warehouseComp.onOpenPDF()" @fadeIn @fadeOut hide [class.disabled]="this.cards().length === 0">
             <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
@@ -56,12 +47,26 @@
         </li>
 
         @if (warehouseNav() !== 'board') {
+        <li (click)="onShowList()" hide [class.disabled]="this.cards().length === 0">
+            <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
+                <i class="bi bi-list-check"></i>
+            </a>
+        </li>
+
         <li (click)="onShowList()" hideAdmin [class.disabled]="this.cards().length === 0">
             <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
                 <i class="bi bi-list-ul"></i>
             </a>
         </li>
         }
+
+        <!-- @if (warehouseNav() !== 'board') {
+        <li (click)="onShowList()" hideAdmin [class.disabled]="this.cards().length === 0">
+            <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
+                <i class="bi bi-list-ul"></i>
+            </a>
+        </li>
+        } -->
 
         <li (click)="onShowUnits()" [class.no-action]="warehouseNav() === 'units'">
             <a [style.--background]="warehouseNav() === 'units' ? '#24355A' : '#0EA5E9'" [style.--color]="'#fff'">

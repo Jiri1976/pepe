@@ -53,7 +53,8 @@ export class ShiftCardComponent {
       from: from,
       to: to,
       perso: shift.perso,
-      position: shift.position
+      position: shift.position,
+      destination: shift.destination
     }
     this.shiftService.selectedShift.set(_shift);
   }
@@ -191,7 +192,7 @@ export class ShiftCardComponent {
           var url = window.URL.createObjectURL(blob);
           const a = document.createElement('a')
           a.href = url;
-          a.download = `${this.shiftCard()?.user} - ${this.convertMonthYear(this.shiftCard()!.monthYear)} - ${this.shiftComponent.destination()}.pdf`;
+          a.download = `${this.shiftCard()?.userName} ${this.shiftCard()?.userSurname} - ${this.convertMonthYear(this.shiftCard()!.monthYear)} - ${this.shiftComponent.destination()}.pdf`;
           a.click();
           URL.revokeObjectURL(url);
         }

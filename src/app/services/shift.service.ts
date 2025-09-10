@@ -20,14 +20,15 @@ export class ShiftService {
         from: new Date(),
         to: new Date(),
         perso: '',
-        position: ''
+        position: '',
+        destination: ''
     };
     private authService = inject(AuthService);
     monthYear = signal<string>('');
     selectedShift = signal<InitShift>(this.initialShift);
     cardShiftMonthYear = signal<string>('');
     shiftFormVisible = signal(false);
-    users = signal<{ userName: string, userId: number }[]>([]);
+    users = signal<{ userName: string, userId: number, position: string }[]>([]);
     selectedUserId = signal<number>(-1);
 
     setMonthYear(monthYear: string) {
@@ -45,6 +46,7 @@ export class ShiftService {
             to: to,
             perso: shift.perso ? shift.perso : '',
             position: shift.position,
+            destination: shift.destination,
             createdAt: shift.createdAt,
             createdBy: shift.createdBy,
             updatedAt: shift.updatedAt,
@@ -74,6 +76,9 @@ export class ShiftService {
     }
 
     createUpdateShift(shift: Shift) {
+        console.log('createupdateshifty');
+
+        // const url = this.BASE_ROUTE + `shifts/CreateUpdateShift?destination=${}`;
         const url = this.BASE_ROUTE + `shifts/CreateUpdateShift`;
         return this.http.post<Response>(url, shift);
     }
@@ -89,12 +94,8 @@ export class ShiftService {
     }
 
     getUsersShiftCards(monthYear: string, destination: string) {
-        const url = this.BASE_ROUTE + 'shifts/GetUsersShiftCards';
-        const model = {
-            monthYear,
-            destination
-        }
-        return this.http.post<Response>(url, model);
+        const url = this.BASE_ROUTE + `shifts/GetUsersShiftCards?monthYear=${monthYear}&destination=${destination}`;
+        return this.http.get<Response>(url);
     }
 
     generatePDF(card: ShiftCard, destination: string) {

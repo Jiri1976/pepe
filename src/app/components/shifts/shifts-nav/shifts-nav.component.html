@@ -1,43 +1,42 @@
 <div class="menu">
     <ul>
-        <li hide (click)="shiftsComponent.onAddShift()" [class.disabled]="disabled()">
+        <li hide (click)="shiftsComponent.onAddShift()" [class.disabled]="shiftsComponent.cards().length === 0">
             <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
                 <i class="bi bi-plus"></i>
             </a>
         </li>
 
-        <li hide class="first" (click)="shiftsComponent.toggleCalendar()" [class.disabled]="disabled()">
+        <li hide class="first" (click)="shiftsComponent.toggleCalendar()">
             <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
                 <i class="bi bi-calendar"></i>
-                <p>{{ calendarText() }}</p>
             </a>
         </li>
 
-        <li hide (click)="openModal()" [class.disabled]="disabled()">
+        <li hide (click)="openModal()" [class.disabled]="shiftsComponent.cards().length === 0">
             <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
                 <i class="bi bi-people"></i>
             </a>
         </li>
 
-        <li hide (click)="shiftsComponent.onReset()" [class.disabled]="disabled()">
+        <li hide (click)="shiftsComponent.onReset()">
             <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
                 <i class="bi bi-arrow-clockwise"></i>
             </a>
         </li>
 
-        <li hide (click)="shiftsComponent.onSelectDestination('F-M')" [class.disabled]="disabled()">
+        <li hide (click)="shiftsComponent.onSelectDestination('F-M')">
             <a [style.--background]="destination() === 'F-M' ? '#24355A' : '#0EA5E9'" [style.--color]="'#fff'">
                 <p>F-M</p>
             </a>
         </li>
 
-        <li hide (click)="shiftsComponent.onSelectDestination('OVA')" [class.disabled]="disabled()">
+        <li hide (click)="shiftsComponent.onSelectDestination('OVA')">
             <a [style.--background]="destination() === 'OVA' ? '#24355A' : '#0EA5E9'" [style.--color]="'#fff'">
                 <p>OVA</p>
             </a>
         </li>
 
-        <li hide (click)="shiftsComponent.onAllToPdf()" [class.disabled]="disabled()">
+        <li hide (click)="shiftsComponent.onAllToPdf()" [class.disabled]="shiftsComponent.cards().length === 0">
             <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
                 @if (!pdfOn()) {
                 <i class="bi bi-filetype-pdf"></i>
@@ -50,26 +49,25 @@
         </li>
 
         <li hideAdmin (click)="shiftsComponent.onAddShift()"
-            [class.disabled]="(shiftsComponent.isPastCard() === true && loggedUser.role === 'Master') || disabled()">
+            [class.disabled]="(shiftsComponent.isPastCard() === true && loggedUser.role === 'Master')">
             <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
                 <i class="bi bi-plus"></i>
             </a>
         </li>
 
-        <li hideAdmin class="first" (click)="shiftsComponent.toggleCalendar()" [class.disabled]="disabled()">
+        <li hideAdmin class="first" (click)="shiftsComponent.toggleCalendar()">
             <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
                 <i class="bi bi-calendar"></i>
-                <p>{{ calendarText() }}</p>
             </a>
         </li>
 
-        <li hideAdmin (click)="openModal()" [class.disabled]="disabled()">
+        <li hideAdmin (click)="openModal()" [class.disabled]="shiftsComponent.cards().length === 0">
             <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
                 <i class="bi bi-people"></i>
             </a>
         </li>
 
-        <li hideAdmin (click)="shiftsComponent.onReset()" [class.disabled]="disabled()">
+        <li hideAdmin (click)="shiftsComponent.onReset()">
             <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
                 <i class="bi bi-arrow-clockwise"></i>
             </a>

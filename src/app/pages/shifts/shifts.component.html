@@ -21,7 +21,7 @@
         </swiper-container>
     </div>
     } @else {
-    <h4>Chybí evidovaní pracovníci na pobočce - {{destination()}}</h4>
+    <h4>{{ missingCardsMessage() }}</h4>
     }
     } @else {
     <div class="skeleton" @fadeOut>
