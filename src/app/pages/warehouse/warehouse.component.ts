@@ -39,7 +39,6 @@ import { RouterOutlet } from '@angular/router';
   ]
 })
 export class WarehouseComponent {
-  private MONTHS_NAMES = ["LED", "ÚNO", "BŘE", "DUB", "KVĚ", "ČER", "ČRV", "SRP", "ZÁŘ", "ŘÍJ", "LIS", "PRO"];
   private MONTHS_NUM = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
   private warehouseService = inject(WarehouseService);
   private alertService = inject(AlertService);
@@ -49,7 +48,6 @@ export class WarehouseComponent {
   unitHeaderTitle = '';
   visible: boolean = false;
   reorderedItems = signal<WarehouseItem[]>([]);
-  calendarText = signal<string>(this.MONTHS_NAMES[new Date().getMonth()] + ' ' + new Date().getFullYear().toString().substring(2));
   destination = computed(() => this.warehouseService.destination());
   cards = computed(() => this.warehouseService.cards());
   pdfLoading = signal(false);
@@ -63,7 +61,6 @@ export class WarehouseComponent {
     let date = this.calendar.value;
     this.warehouseService.monthYear.set(this.MONTHS_NUM[new Date(date).getMonth()] + new Date(date).getFullYear());
     this.warehouseService.numberOfDays.set(new Date(new Date(date).getFullYear(), new Date(date).getMonth(), 0).getDate());
-    this.calendarText.set(this.MONTHS_NAMES[new Date(date).getMonth()] + ' ' + new Date(date).getFullYear().toString().substring(2));
     this.warehouseService.reloadCards.set(true);
   }
 

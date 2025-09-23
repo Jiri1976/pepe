@@ -276,13 +276,8 @@ export class ShiftsComponent implements OnInit {
         } else if (response.isSuccess === true) {
           const _cards = response.result;
           if (_cards.length > 0) {
-            // let _cards = result.sort((a: any, b: any) =>
-            //   a.user.localeCompare(b.user)
-            // );
             let _users = _cards.map((card: any) => {
               let userName = card.userName + " " + card.userSurname;
-              console.log(userName);
-
               return {
                 userName: userName,
                 userId: card.userId,

@@ -6,11 +6,11 @@
         user().role.substring(0,1) }}</div>
 
     @if (hasPosition('Driver')) {
-    <div class="col-1 pos"><img src="/car.png" alt="Car driver" /></div>
+    <div class="col-1 pos"><img [src]="user().isActive ? '/car.png' : '/disabledcar.png'" alt="Car driver" /></div>
     }
 
     @if (hasPosition('Cook')) {
-    <div class="col-1 pos"><img src="/chef.png" alt="Car driver" /></div>
+    <div class="col-1 pos"><img [src]="user().isActive ? '/chef.png' : '/disabledchef.png'" alt="Car driver" /></div>
     @if(!hasPosition('Driver')) {
     <div class="col-1"></div>
     }

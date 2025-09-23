@@ -1,6 +1,6 @@
 .line {
-    color: #24355A;
-    border: 1px solid #24355A;
+    color: #864912;
+    border: 1px solid #864912;
     border-radius: 5px;
     margin: 3px 0 !important;
     display: flex;
@@ -20,7 +20,7 @@
         font-size: 0.9rem;
         display: flex;
         flex-direction: column;
-        color: #24355A;
+        color: #864912;
         font-weight: 500;
         align-items: center;
         height: 100%;
@@ -45,10 +45,10 @@
             border: none;
             background: #f8f8f4;
             border-radius: 5px;
-            color: #24355A;
+            color: #864912;
             font-weight: 500;
             outline: none;
-            border: 1px solid #24355A;
+            border: 1px solid #864912;
         }
 
         .buttons {
@@ -81,15 +81,15 @@
             }
 
             button.save-button {
-                color: #24355A;
-                border: 1px solid #24355A;
+                color: #864912;
+                border: 1px solid #864912;
                 background: #fff;
                 padding: 0;
             }
 
             button.save-button:hover {
                 color: #fff;
-                background: #24355A;
+                background: #864912;
                 cursor: pointer;
             }
 

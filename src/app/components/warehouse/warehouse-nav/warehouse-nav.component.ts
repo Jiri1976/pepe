@@ -26,7 +26,6 @@ export class WarehouseNavComponent {
   loggedUser = this.authService.getUser();
   warehouseComp = inject(WarehouseComponent);
   isOpened = signal(true);
-  calendarText = model('');
   destination = computed(() => this.warehouseService.destination());
   pdfLoading = model(false);
   items = computed(() => this.warehouseService.items());

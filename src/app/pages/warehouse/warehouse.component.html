@@ -1,5 +1,5 @@
 <div class="sidenav">
-    <app-warehouse-nav [(calendarText)]="calendarText" [(pdfLoading)]="pdfLoading" @fadeIn />
+    <app-warehouse-nav [(pdfLoading)]="pdfLoading" @fadeIn />
 </div>
 <div class="warehouse-calendar">
     <p-datepicker #calendar name="deadline" [(ngModel)]="defaultDate" view="month" dateFormat="mm-yy"

@@ -114,6 +114,7 @@ p-dialog.create-unit {
     p-datepicker {
         .p-datepicker-panel.p-component {
             left: 10px !important;
+            min-width: 200px;
         }
 
         .p-datepicker.p-component {
@@ -123,9 +124,29 @@ p-dialog.create-unit {
             }
 
             .p-datepicker-panel.p-component {
+
+                .p-datepicker-calendar-container {
+                    .p-datepicker-calendar {
+                        .p-datepicker-header {
+                            .p-datepicker-title {
+                                color: #864912;
+
+                                .p-datepicker-select-year {
+                                    color: #864912;
+                                }
+                            }
+                        }
+                    }
+                }
+
                 .p-datepicker-month-view {
                     .p-datepicker-month.p-datepicker-month-selected {
-                        background: #24355A !important;
+                        background: #864912 !important;
+                        color: #fff;
+                    }
+
+                    span {
+                        color: #864912;
                     }
                 }
 
@@ -134,13 +155,13 @@ p-dialog.create-unit {
                         .p-datepicker-header {
                             p-button {
                                 .p-button-text {
-                                    color: #24355A !important;
+                                    color: #864912 !important;
                                 }
                             }
 
                             p-button:hover {
                                 .p-button-text {
-                                    background: #24355A;
+                                    background: #864912;
                                     color: #fff !important;
                                     border: none;
                                 }
@@ -150,8 +171,13 @@ p-dialog.create-unit {
                 }
 
                 .p-datepicker-year-view {
+                    .p-datepicker-year {
+                        color: #864912 !important;
+                    }
+
                     span.p-datepicker-year.p-datepicker-year-selected {
-                        background: #24355A !important;
+                        background: #864912 !important;
+                        color: #fff !important;
                     }
                 }
             }
@@ -163,6 +189,8 @@ p-dialog.create-unit {
 .shifts-calendar {
     p-datepicker {
         .p-datepicker.p-component {
+            min-width: 200px;
+
             input {
                 display: none !important;
             }
@@ -170,7 +198,8 @@ p-dialog.create-unit {
             .p-datepicker-panel.p-component {
                 .p-datepicker-month-view {
                     .p-datepicker-month.p-datepicker-month-selected {
-                        background: #24355A !important;
+                        background: #864912 !important;
+                        color: #fff !important;
                     }
                 }
 
@@ -179,13 +208,13 @@ p-dialog.create-unit {
                         .p-datepicker-header {
                             p-button {
                                 .p-button-text {
-                                    color: #24355A !important;
+                                    color: #864912 !important;
                                 }
                             }
 
                             p-button:hover {
                                 .p-button-text {
-                                    background: #24355A;
+                                    background: #864912;
                                     color: #fff !important;
                                     border: none;
                                 }
@@ -196,7 +225,8 @@ p-dialog.create-unit {
 
                 .p-datepicker-year-view {
                     span.p-datepicker-year.p-datepicker-year-selected {
-                        background: #24355A !important;
+                        background: #864912 !important;
+                        color: #fff !important;
                     }
                 }
             }
@@ -220,9 +250,12 @@ p-datepicker {
 
         .p-datepicker.p-component {
             .p-datepicker-panel.p-component {
+                border: 1px solid #864912;
+
                 .p-datepicker-month-view {
                     .p-datepicker-month.p-datepicker-month-selected {
-                        background: #24355A !important;
+                        background: #864912 !important;
+                        color: #fff !important;
                     }
                 }
             }
@@ -236,12 +269,14 @@ p-datepicker {
                 top: 0px !important;
                 border: 2px solid #fff;
                 height: 24px !important;
-                border: none;
-                outline: none;
+                border: 1px solid #864912 !important;
+                outline: none !important;
                 width: 256px;
                 text-align: end;
                 background: #fff;
                 font-size: 0.9rem;
+                color: #864912;
+                box-shadow: none !important;
             }
 
             .p-datepicker-panel.p-component {
@@ -253,15 +288,24 @@ p-datepicker {
                     .p-datepicker-calendar {
 
                         .p-datepicker-header {
+                            .p-datepicker-title {
+
+                                .p-datepicker-select-month,
+                                .p-datepicker-select-year {
+                                    color: #864912 !important;
+                                }
+                            }
+
+
                             p-button {
                                 .p-button-text {
-                                    color: #24355A !important;
+                                    color: #864912 !important;
                                 }
                             }
 
                             p-button:hover {
                                 .p-button-text {
-                                    background: #24355A;
+                                    background: #864912;
                                     color: #fff !important;
                                     border: none;
                                 }
@@ -270,7 +314,8 @@ p-datepicker {
 
                         .p-datepicker-day-view {
                             .p-datepicker-day-selected {
-                                background: #24355A !important;
+                                background: #864912 !important;
+                                color: #fff !important;
                             }
                         }
                     }
@@ -278,7 +323,8 @@ p-datepicker {
 
                 .p-datepicker-year-view {
                     span.p-datepicker-year.p-datepicker-year-selected {
-                        background: #24355A !important;
+                        background: #864912 !important;
+                        color: #fff !important;
                     }
                 }
             }
@@ -286,21 +332,36 @@ p-datepicker {
     }
 }
 
+.p-datepicker-weekday,
+.p-datepicker-day,
+.p-datepicker-decade,
+.p-datepicker-year,
+.p-datepicker-month,
+.p-datepicker-select-year {
+    color: #864912 !important;
+}
+
 .timefromDiv {
     p-datepicker {
         span {
+
+            .p-inputtext {
+                color: #864912;
+            }
 
             input,
             input:disabled {
                 position: relative !important;
                 top: 0px !important;
-                border: none;
-                outline: none;
+                border: 1px solid #864912 !important;
+                outline: none !important;
                 height: 24px !important;
                 width: 256px;
                 text-align: end;
                 background: #fff;
                 font-size: 0.9rem;
+                color: #864912 !important;
+                box-shadow: none !important;
             }
 
             .p-datepicker-panel.p-component {
@@ -312,18 +373,25 @@ p-datepicker {
                 flex-direction: column;
                 justify-content: center;
                 align-items: center;
+                border: 1px solid #864912;
 
                 .p-datepicker-time-picker {
                     p-button {
                         .p-button-text {
-                            color: #24355A !important;
+                            color: #864912 !important;
                         }
 
                         .p-button-text:hover {
-                            background: #24355A;
+                            background: #864912;
                             color: #fff !important;
                             border: none;
                         }
+                    }
+
+                    .p-datepicker-hour-picker span,
+                    .p-datepicker-separator span,
+                    .p-datepicker-minute-picker span {
+                        color: #864912;
                     }
                 }
             }
@@ -340,13 +408,15 @@ p-datepicker {
             input:disabled {
                 position: relative !important;
                 top: 0px !important;
-                border: none;
-                outline: none;
+                border: 1px solid #864912 !important;
+                outline: none !important;
                 height: 24px !important;
                 width: 256px;
                 text-align: end;
                 background: #fff;
                 font-size: 0.9rem;
+                color: #864912 !important;
+                box-shadow: none !important;
             }
 
             .p-datepicker-panel.p-component {
@@ -358,15 +428,16 @@ p-datepicker {
                 flex-direction: column;
                 justify-content: center;
                 align-items: center;
+                border: 1px solid #864912;
 
                 .p-datepicker-time-picker {
                     p-button {
                         .p-button-text {
-                            color: #24355A !important;
+                            color: #864912 !important;
                         }
 
                         .p-button-text:hover {
-                            background: #24355A;
+                            background: #864912;
                             color: #fff !important;
                             border: none;
                         }
@@ -374,6 +445,12 @@ p-datepicker {
                         .p-button:focus-visible {
                             outline: none !important;
                         }
+                    }
+
+                    .p-datepicker-hour-picker span,
+                    .p-datepicker-separator span,
+                    .p-datepicker-minute-picker span {
+                        color: #864912;
                     }
                 }
             }
@@ -390,7 +467,7 @@ p-datepicker {
     justify-content: center;
     align-items: center;
     margin-bottom: 20px;
-    color: #24355A;
+    color: #864912;
     font-weight: bold;
 
     h4 {
@@ -408,7 +485,7 @@ p-datepicker {
     justify-content: center;
     align-items: center;
     margin-bottom: 10px;
-    color: #24355A;
+    color: #864912;
     font-weight: bold;
 
     p-datepicker#timeFrom {
@@ -420,7 +497,8 @@ p-datepicker {
             .p-inputtext {
                 text-align: center;
                 width: 70px !important;
-                border: 1px solid #24355A;
+                border: 1px solid #864912;
+                color: #864912;
             }
 
             .p-datepicker-timeonly {
@@ -439,7 +517,8 @@ p-datepicker {
             .p-inputtext {
                 text-align: center;
                 width: 70px !important;
-                border: 1px solid #24355A;
+                border: 1px solid #864912;
+                color: #864912 !important;
             }
 
             .p-datepicker-timeonly {
@@ -458,7 +537,7 @@ p-datepicker {
 .drag-item.cdk-drag-dragging {
     border: 2px solid #e2e2e2 !important;
     border-radius: 20px !important;
-    color: #24355A;
+    color: #864912;
     background: #e2e2e2;
 }
 
@@ -469,7 +548,7 @@ p-datepicker {
     border-radius: 20px !important;
     overflow: hidden !important;
     background: #e2e2e2;
-    color: #24355A;
+    color: #864912;
 }
 
 .cdk-drag-preview .col-4 {
@@ -511,7 +590,7 @@ p-toast {
     width: 100%;
 
     .p-fieldset-legend {
-        color: #24355A;
+        color: #864912;
         font-size: 1rem;
         position: relative;
         top: -22px;
@@ -531,6 +610,20 @@ p-toast {
                     p-checkbox {
                         margin-left: 20px;
                         margin-right: 15px;
+
+                        div {
+
+                            .p-checkbox-box {
+                                border: 1px solid #864912;
+                            }
+                        }
+
+                    }
+
+                    label {
+                        color: #864912;
+                        font-weight: 500;
+                        letter-spacing: 1px;
                     }
                 }
             }
@@ -538,13 +631,43 @@ p-toast {
     }
 }
 
-.p-checkbox-checked .p-checkbox-box {
-    border-color: #24355A !important;
-    background: #24355A !important;
+.p-fieldset.p-component {
+    border: 1px solid #864912 !important;
 }
 
-.col-4 {
-    p-checkbox {
-        margin-right: 10px;
+p-checkbox {
+
+    .p-checkbox.p-component.p-checkbox-checked.p-highlight.p-disabled {
+        .p-checkbox-box {
+            .p-component.p-iconwrapper {
+                .p-checkbox-icon.p-icon {
+                    color: #fff;
+                }
+            }
+        }
     }
+
+    .p-checkbox.p-component.p-disabled .p-checkbox-box {
+        background: #fff;
+        border-color: #864912 !important;
+    }
+
+    div {
+        .p-checkbox-box {
+            border: 1px solid #864912;
+        }
+    }
+}
+
+.p-checkbox:not(.p-disabled):has(.p-checkbox-input:hover) .p-checkbox-box {
+    border: 1px solid #864912 !important;
+}
+
+.p-checkbox-checked .p-checkbox-box {
+    border-color: #864912 !important;
+    background: #864912 !important;
+}
+
+.col-4 p-checkbox {
+    margin-right: 10px;
 }

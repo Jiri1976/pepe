@@ -24,8 +24,8 @@
                     flex-direction: row;
                     justify-content: space-between;
                     align-items: center;
-                    border: 1px solid #24355A;
-                    background: #24355A;
+                    border: 1px solid #864912;
+                    background: #864912;
                     color: #fff;
                     padding: 8px;
                     border-radius: 5px;
@@ -42,6 +42,7 @@
                         font-size: 0.6rem;
                         border-radius: 50%;
                         padding: 2px;
+                        color: #864912;
                     }
                 }
 
@@ -61,8 +62,8 @@
                 }
 
                 .head-cell {
-                    border: 1px solid #24355A;
-                    background: #24355A;
+                    border: 1px solid #864912;
+                    background: #864912;
                 }
 
                 .today-head-cell {
@@ -81,7 +82,7 @@
                     .first-table-cell {
                         height: 35px;
                         width: 150px !important;
-                        border: 1px solid #0EA5E9;
+                        border: 1px solid #864912;
                         border-radius: 5px;
                         margin-right: 10px;
                         display: flex;
@@ -90,9 +91,8 @@
                         overflow: hidden;
                         white-space: nowrap;
                         text-overflow: ellipsis;
-                        border: 1px solid #0EA5E9;
-                        background: #0EA5E9;
-                        color: #fff;
+                        background: #f7d3af;
+                        color: #864912;
                         font-size: 0.9rem;
                         font-weight: 700;
                     }
@@ -110,8 +110,8 @@
                         transition: 0.2s;
 
                         .input-success {
-                            border: 2px solid #0EA5E9;
-                            box-shadow: 0 0 5px #0EA5E9;
+                            border: 2px solid #f7d3af;
+                            box-shadow: 0 0 5px #f7d3af;
                             transition: border 0.3s, box-shadow 0.3s;
                         }
 
@@ -133,31 +133,31 @@
 
                             .text-secondary {
                                 --bs-text-opacity: 1;
-                                color: #24355A !important;
+                                color: #864912 !important;
                             }
                         }
 
                         input {
                             width: 35px !important;
                             height: 35px !important;
-                            border: 1px solid #666;
+                            border: 1px solid #864912;
                             border-radius: 5px;
                             outline: none;
                             text-align: center;
                             transition: 0.2s;
                             font-weight: 600;
-                            color: #666;
+                            color: #864912;
                         }
 
                         input.master {
-                            border: 2px solid #24355A;
+                            border: 2px solid #864912;
                         }
 
                         input:active,
                         input:focus {
                             cursor: default;
-                            background: #0EA5E9;
-                            color: #fff;
+                            background: #f7d3af;
+                            color: #864912;
                         }
                     }
 
@@ -165,9 +165,9 @@
 
                         input {
                             cursor: pointer;
-                            background: #0EA5E9;
-                            border: 1px solid #0EA5E9;
-                            color: #fff;
+                            background: #f7d3af;
+                            border: 1px solid #864912;
+                            color: #864912;
                         }
 
                         input:disabled {
@@ -193,7 +193,7 @@
             position: absolute;
 
             h4 {
-                color: #24355A;
+                color: #864912;
                 font-weight: bold;
             }
         }

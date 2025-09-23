@@ -1,39 +1,39 @@
 <div class="menu">
     <ul>
-        <li [style.--background]="'#24355A'">
+        <li [style.--background]="'#864912'">
             <a (click)="createUser()">
                 <i class="bi bi-person-add"></i>
             </a>
         </li>
-        <li [style.--background]="filter() === 'F-M' ? '#24355A' : 'rgba(0, 0, 0, 0.2)'">
+        <li [style.--background]="filter() === 'F-M' ? '#864912' : '#f7d3af'">
             <a (click)="selectList(1)">
                 <p>F-M</p>
             </a>
         </li>
-        <li [style.--background]="filter() === 'OVA' ? '#24355A' : 'rgba(0, 0, 0, 0.2)'">
+        <li [style.--background]="filter() === 'OVA' ? '#864912' : '#f7d3af'">
             <a (click)="selectList(2)">
                 <p>OVA</p>
             </a>
         </li>
         <li
-            [style.--background]="role() === 'User' && (selectedList() === 3 || selectedList() === 1 || selectedList() === 2) ? '#24355A' : 'rgba(0, 0, 0, 0.2)'">
+            [style.--background]="role() === 'User' && (selectedList() === 3 || selectedList() === 1 || selectedList() === 2) ? '#864912' : '#f7d3af'">
             <a (click)="selectList(3)">
                 <p>U</p>
             </a>
         </li>
         <li
-            [style.--background]="role() === 'Master' && (selectedList() === 4 || selectedList() === 1 || selectedList() === 2) ? '#24355A' : 'rgba(0, 0, 0, 0.2)'">
+            [style.--background]="role() === 'Master' && (selectedList() === 4 || selectedList() === 1 || selectedList() === 2) ? '#864912' : '#f7d3af'">
             <a (click)="selectList(4)">
                 <p>M</p>
             </a>
         </li>
         <li
-            [style.--background]="role() === 'Admin' && (selectedList() === 5 || selectedList() === 1 || selectedList() === 2) ? '#24355A' : 'rgba(0, 0, 0, 0.2)'">
+            [style.--background]="role() === 'Admin' && (selectedList() === 5 || selectedList() === 1 || selectedList() === 2) ? '#864912' : '#f7d3af'">
             <a (click)="selectList(5)">
                 <p>A</p>
             </a>
         </li>
-        <li [style.--background]="filter() === 'All' ? '#24355A' : 'rgba(0, 0, 0, 0.2)'">
+        <li [style.--background]="filter() === 'All' ? '#864912' : '#f7d3af'">
             <a (click)="selectList(6)">
                 <p>VŠE</p>
             </a>

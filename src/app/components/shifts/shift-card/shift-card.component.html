@@ -7,8 +7,6 @@
             </div>
             <div class="center">
                 @let userName = shiftCard()?.userName + " " + shiftCard()?.userSurname;
-                <!-- <b>{{shiftCard()!.userName }} {{shiftCard()!.userSurname }} - {{ shiftCard()?.userPosition === 'Driver'
-                    ? 'Řidič' : 'Kuchyň' }}</b> -->
                 <b>{{ userName }} - {{ shiftCard()?.userPosition === 'Driver'
                     ? 'Řidič' : 'Kuchyň' }}</b>
             </div>

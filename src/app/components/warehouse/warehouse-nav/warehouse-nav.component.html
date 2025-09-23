@@ -2,34 +2,34 @@
 <div class="menu" @fadeIn @fadeOut>
     <ul>
         <li (click)="onReloadCards()" @fadeIn @fadeOut [class.disabled]="this.cards().length === 0">
-            <a [style.--background]="'#24355A'" [style.--color]="'#fff'" [style.--color]="'#fff'">
+            <a [style.--background]="'#864912'" [style.--color]="'#fff'" [style.--color]="'#fff'">
                 <i class="bi bi-arrow-clockwise"></i>
             </a>
         </li>
 
         <li (click)="warehouseComp.toggleCalendar()" class="cal" @fadeIn @fadeOut hide
             [class.disabled]="this.cards().length === 0">
-            <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
+            <a [style.--background]="'#864912'" [style.--color]="'#fff'">
                 <i class="bi bi-calendar"></i>
             </a>
         </li>
 
         <li (click)="onSelectDestination('F-M')" @fadeIn @fadeOut hide [class.disabled]="this.cards().length === 0">
-            <a [style.--background]="destination() === 'F-M' ? '#24355A' : '#0EA5E9'" [style.--color]="'#fff'"
+            <a [style.--background]="destination() === 'F-M' ? '#864912' : '#f7d3af'" [style.--color]="'#fff'"
                 [style.--color]="'#fff'">
                 <p>F-M</p>
             </a>
         </li>
 
         <li (click)="onSelectDestination('OVA')" @fadeIn @fadeOut hide [class.disabled]="this.cards().length === 0">
-            <a [style.--background]="destination() === 'OVA' ? '#24355A' : '#0EA5E9'" [style.--color]="'#fff'"
+            <a [style.--background]="destination() === 'OVA' ? '#864912' : '#f7d3af'" [style.--color]="'#fff'"
                 [style.--color]="'#fff'">
                 <p>OVA</p>
             </a>
         </li>
 
         <li (click)="warehouseComp.onOpenPDF()" @fadeIn @fadeOut hide [class.disabled]="this.cards().length === 0">
-            <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
+            <a [style.--background]="'#864912'" [style.--color]="'#fff'">
                 @if (!pdfLoading()) {
                 <i class="bi bi-filetype-pdf"></i>
                 } @else {
@@ -48,40 +48,32 @@
 
         @if (warehouseNav() !== 'board') {
         <li (click)="onShowList()" hide [class.disabled]="this.cards().length === 0">
-            <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
+            <a [style.--background]="'#864912'" [style.--color]="'#fff'">
                 <i class="bi bi-list-check"></i>
             </a>
         </li>
 
         <li (click)="onShowList()" hideAdmin [class.disabled]="this.cards().length === 0">
-            <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
+            <a [style.--background]="'#864912'" [style.--color]="'#fff'">
                 <i class="bi bi-list-ul"></i>
             </a>
         </li>
         }
 
-        <!-- @if (warehouseNav() !== 'board') {
-        <li (click)="onShowList()" hideAdmin [class.disabled]="this.cards().length === 0">
-            <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
-                <i class="bi bi-list-ul"></i>
-            </a>
-        </li>
-        } -->
-
         <li (click)="onShowUnits()" [class.no-action]="warehouseNav() === 'units'">
-            <a [style.--background]="warehouseNav() === 'units' ? '#24355A' : '#0EA5E9'" [style.--color]="'#fff'">
+            <a [style.--background]="warehouseNav() === 'units' ? '#864912' : '#f7d3af'" [style.--color]="'#fff'">
                 <i class="bi bi-table"></i>
             </a>
         </li>
 
         <li (click)="onShowItems()" hide>
-            <a [style.--background]="'#0EA5E9'" [style.--color]="'#fff'">
+            <a [style.--background]="'#f7d3af'" [style.--color]="'#fff'">
                 <i class="bi bi-list-ul"></i>
             </a>
         </li>
 
         <li (click)="onShowBoard()" [class.no-action]="warehouseNav() === 'board'">
-            <a [style.--background]="warehouseNav() === 'board' ? '#24355A' : '#0EA5E9'" [style.--color]="'#fff'">
+            <a [style.--background]="warehouseNav() === 'board' ? '#864912' : '#f7d3af'" [style.--color]="'#fff'">
                 <i class="bi bi-house"></i>
             </a>
         </li>
@@ -93,31 +85,31 @@
 <div class="menu" @fadeIn @fadeOut>
     <ul>
         <li (click)="onReloadItems()" @fadeIn @fadeOut [class.disabled]="items().length === 0">
-            <a [style.--background]="'#24355A'" [style.--color]="'#fff'" [style.--color]="'#fff'">
+            <a [style.--background]="'#864912'" [style.--color]="'#fff'" [style.--color]="'#fff'">
                 <i class="bi bi-arrow-clockwise"></i>
             </a>
         </li>
 
         <li @fadeIn @fadeOut (click)="onAddItem()">
-            <a [style.--background]="'#24355A'" [style.--color]="'#fff'" [style.--color]="'#fff'">
+            <a [style.--background]="'#864912'" [style.--color]="'#fff'" [style.--color]="'#fff'">
                 <i class="bi bi-plus"></i>
             </a>
         </li>
 
         <li (click)="onShowUnits()" hide>
-            <a [style.--background]="'#0EA5E9'" [style.--color]="'#fff'">
+            <a [style.--background]="'#f7d3af'" [style.--color]="'#fff'">
                 <i class="bi bi-table"></i>
             </a>
         </li>
 
         <li hide class="no-action">
-            <a [style.--background]="'#24355A'" [style.--color]="'#fff'">
+            <a [style.--background]="'#864912'" [style.--color]="'#fff'">
                 <i class="bi bi-list-ul"></i>
             </a>
         </li>
 
         <li (click)="onShowBoard()">
-            <a [style.--background]="'#0EA5E9'" [style.--color]="'#fff'">
+            <a [style.--background]="'#f7d3af'" [style.--color]="'#fff'">
                 <i class="bi bi-house"></i>
             </a>
         </li>

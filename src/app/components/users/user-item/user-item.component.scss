@@ -3,14 +3,14 @@
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    color: #24355A;
+    color: #864912;
     font-family: "Poppins", sans-serif;
     font-weight: bold;
     font-style: normal;
     font-size: 0.9rem;
     height: 40px;
     border-radius: 10px;
-    border: 1px solid var(--border, #24355A);
+    border: 1px solid var(--border, #864912);
     margin: 10px auto;
     transition: ease 0.3s all;
 
@@ -48,12 +48,13 @@
         margin-left: auto;
         margin-right: auto;
         padding: 0 !important;
+        border-radius: 5px;
     }
 
     .pos {
         img {
-            height: 30px;
-            width: 30px;
+            height: 35px;
+            width: 35px;
         }
     }
 
@@ -66,7 +67,7 @@
     }
 
     .role.User {
-        background-color: #24355A;
+        background-color: #864912;
     }
 
     .role.User.false {
@@ -83,7 +84,7 @@
         .spinner-border {
             height: 25px;
             width: 25px;
-            color: #24355A !important;
+            color: #864912 !important;
         }
     }
 }
@@ -91,6 +92,6 @@
 .line:hover {
     border-bottom: 0px !important;
     cursor: pointer;
-    box-shadow: var(--border, #24355A) 0px 5px 15px;
+    box-shadow: var(--border, #864912) 0px 5px 15px;
     border-radius: 10px;
 }
