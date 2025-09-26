@@ -33,34 +33,34 @@
         height: 100%;
 
         .bellnoti {
-            .bell {
+
+            .bell,
+            .noti {
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
                 align-items: center;
+            }
+
+            .bell {
                 width: 30px;
                 height: 30px;
                 margin-right: 2rem;
                 margin-top: 5px;
 
                 .bi {
-                    font-size: 1.3rem
+                    font-size: 1.3rem;
+                    color: #864912;
                 }
             }
 
             .noti {
                 position: absolute;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
                 width: 20px;
                 height: 20px;
                 border-radius: 50%;
-                // border: 1px solid #864912;
-                // background: #864912;
-                border: 1px solid #864912;
-                background: #864912;
+                border: 1px solid #fc0202;
+                background: #fc0202;
                 color: #fff;
                 top: 0px;
                 left: 15px;
@@ -76,9 +76,7 @@
 
     .dropdown-toggle {
         background: #fff;
-        // border: 1px solid #bdb9b9;
         border: 1px solid #864912;
-        // color: #864912;
         color: #864912;
         font-weight: 700;
         border-radius: 30px;
@@ -95,12 +93,10 @@
 
         .dropdown-item {
             font-weight: 500;
-            // color: #864912;
             color: #864912;
         }
 
         .dropdown-item:hover {
-            // color: #EF4444;
             color: #f8a34e;
             background-color: rgba(217, 213, 213, 0.2);
             cursor: pointer;

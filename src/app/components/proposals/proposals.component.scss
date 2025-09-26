@@ -29,8 +29,6 @@
                 .user-name {
                     min-width: 150px !important;
                     margin-right: 10px;
-                    // border: 1px solid #666;
-                    // background: #666;
                     border: 1px solid #864912;
                     background: #864912;
 
@@ -50,7 +48,6 @@
                     display: flex;
                     flex-direction: column;
                     justify-content: center;
-                    // border: 1px solid #666;
                     border: 1px solid #864912;
                     padding: 0 8px;
                     border-radius: 5px;
@@ -81,7 +78,6 @@
                         height: 35px;
                         width: 150px !important;
                         background-color: var(--background-color);
-                        // border: 1px solid #666;
                         border: 1px solid #864912;
                         border-radius: 5px;
                         margin-right: 10px;
@@ -92,23 +88,55 @@
                         white-space: nowrap;
                         text-overflow: ellipsis;
                         color: #864912;
+                        padding-left: 5px;
+                    }
+
+                    .user-name-cell[cdkDragHandle] {
+                        cursor: grab;
+                        user-select: none;
+                        -webkit-user-select: none;
+                        -ms-user-select: none;
+                        transition: background-color 0.2s ease, box-shadow 0.2s ease;
+                    }
+
+                    .user-name-cell[cdkDragHandle]:active {
+                        cursor: grabbing;
                     }
 
                     .drop-zone {
                         width: 35px !important;
                         height: 35px !important;
-                        // border: 1px solid #666;
                         border: 1px solid #864912;
                         padding: 0 8px;
                         border-radius: 5px;
                         display: flex;
                         flex-direction: column;
                         justify-content: center;
+                        align-items: center;
                         margin-right: 2px;
                         background-color: var(--background-color);
                     }
+
+                    .drop-zone.last {
+                        border-color: #fc0202;
+                        background: #fc0202;
+                        color: #fff;
+                        margin-left: 10px;
+
+                        .bi {
+                            font-size: 1.3rem;
+                        }
+                    }
+
+                    .drop-zone.last:hover {
+                        cursor: pointer;
+                    }
                 }
             }
+        }
+
+        .table> :not(caption)>*>* {
+            padding: 0px;
         }
     }
 }

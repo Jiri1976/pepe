@@ -1,0 +1,12 @@
+<div class="select-user">
+    @for(user of users(); track $index) {
+    <div class="user" (click)="onSelectUser(user, $index)">
+        <p>{{ user.name }} {{ user.surname }} - {{ user.position === 'Driver' ? 'řidič' : user.position === 'Cook' ?
+            'kuchyň' : ''}}
+        </p>
+    </div>
+    }
+    <div class="close">
+        <button class="closeBtn" (click)="onClose()">Zavřít</button>
+    </div>
+</div>

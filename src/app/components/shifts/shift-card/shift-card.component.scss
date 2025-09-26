@@ -37,23 +37,19 @@
         .table {
             margin-bottom: 20px;
 
-            .table-dark {
+            thead {
                 --bs-table-bg: #864912 !important;
                 --bs-table-border-color: none;
-            }
 
-            thead {
-                tr {
-
-                    th {
-                        height: 25px !important;
-                        font-size: 0.9rem;
-                        padding: 0 !important;
-                    }
+                tr th {
+                    height: 25px !important;
+                    font-size: 0.9rem;
+                    padding: 0 !important;
                 }
             }
 
             tbody {
+                border-top: none;
 
                 th,
                 td {
@@ -67,7 +63,6 @@
                 tr {
                     margin: 10px 0 !important;
                     border-color: #864912 !important;
-
 
                     td {
                         transition: 0.2s ease-in-out;
@@ -99,8 +94,8 @@
                     }
                 }
 
-                tr:hover>td {
-                    background: #e2e2e2 !important;
+                tr:hover td {
+                    background: #f7d3af !important;
                 }
             }
 

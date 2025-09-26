@@ -15,6 +15,11 @@
     backdrop-filter: blur(3px);
 }
 
+::placeholder {
+    color: #864912;
+    font-weight: 500;
+}
+
 .form-div {
     border: 1px solid #864912;
     border-radius: 10px;
@@ -84,6 +89,17 @@
                 letter-spacing: 1px;
             }
 
+            div .card {
+                border: none;
+            }
+
+            div .card input:disabled {
+                border: 1px solid #864912;
+                border-radius: 5px;
+                background: #f7d3af;
+                text-align: center;
+            }
+
             .label.invalid {
                 color: #EF4444;
                 animation: shake 0.82s cubic-bezier(.36, .07, .19, .97) both;
@@ -133,11 +149,9 @@
                 background: #EF4444;
             }
 
-            .btn {
-                .spinner-border {
-                    --bs-spinner-width: 1.4rem;
-                    --bs-spinner-height: 1.4rem;
-                }
+            .btn .spinner-border {
+                --bs-spinner-width: 1.4rem;
+                --bs-spinner-height: 1.4rem;
             }
         }
 

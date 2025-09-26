@@ -1,4 +1,4 @@
-<div class="container" cdkDrag (cdkDragMoved)="onDragMoved(item())" (cdkDragEnded)="onDragEnded($event)">
+<div class="container drag-item" cdkDrag (cdkDragMoved)="onDragMoved(item())" (cdkDragEnded)="onDragEnded($event)">
     @if (item().id > 0) {
     <p>{{item().name}}</p>
     <div class="buttons">

@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject } from '@angular/core';
+import { Component, computed, effect, ElementRef, inject, viewChild } from '@angular/core';
 import { ProposalsService } from '../../services/proposals.service';
 import { AuthService } from '../../services/auth.service';
 import { UpdateProposalComponent } from "./update-proposal/update-proposal.component";
@@ -6,13 +6,16 @@ import { PageAnimation } from '../../animations/page.animation';
 import { ProposalSkeletonComponent } from "./proposal-skeleton/proposal-skeleton.component";
 import { AlertService } from '../../services/alert.service';
 import { Dialog } from '@angular/cdk/dialog';
-
+import { CdkDrag, CdkDragHandle, CdkDragPlaceholder, CdkDragDrop, CdkDropList, CdkDropListGroup } from '@angular/cdk/drag-drop';
 import * as signalR from '@microsoft/signalr';
 import { environment } from '../../../environments/environment';
 import { ProposalShiftComponent } from "./proposal-shift/proposal-shift.component";
 import { DisabledClassDirective } from '../../directives/disabled-class.directive';
 import { SetBackgroundDirective } from '../../directives/set-background.directive';
 import { ProposalTableStyleDirective } from '../../directives/proposal-table-style.directive';
+import { wrapGrid } from 'animate-css-grid';
+import { ProposalUser } from '../../models/proposals/proposalUser.interface';
+import { ConfirmService } from '../../services/confirm.service';
 
 @Component({
   selector: 'app-proposals',
@@ -21,7 +24,9 @@ import { ProposalTableStyleDirective } from '../../directives/proposal-table-sty
     ProposalShiftComponent,
     DisabledClassDirective,
     SetBackgroundDirective,
-    ProposalTableStyleDirective
+    ProposalTableStyleDirective,
+    CdkDropList, CdkDropListGroup,
+    CdkDrag, CdkDragPlaceholder, CdkDragHandle
   ],
   templateUrl: './proposals.component.html',
   styleUrl: './proposals.component.scss',
@@ -34,6 +39,8 @@ export class ProposalsComponent {
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
   private dialog = inject(Dialog)
+  private confirmService = inject(ConfirmService);
+  dashboard = viewChild.required<ElementRef>('dashboard');
   proposalsService = inject(ProposalsService);
   loggedUser = this.authService.getUser();
   proposalsLoading = computed(() => this.proposalsService.isProposalLoading());
@@ -81,7 +88,20 @@ export class ProposalsComponent {
 
   ngOnInit(): void {
     this.proposalsService.uploadProposals();
+    // setTimeout(() => {
+    //   wrapGrid(this.dashboard().nativeElement, {
+    //     duration: 300
+    //   });
+    // }, 500);
   }
+
+  // ngAfterViewInit() {
+  //   setTimeout(() => {
+  //     wrapGrid(this.dashboard().nativeElement, {
+  //       duration: 300
+  //     });
+  //   }, 500);
+  // }
 
   public async start() {
     try {
@@ -115,6 +135,21 @@ export class ProposalsComponent {
     } catch (error) {
       console.log('PROPOSALS - LEAVE CHAT ERROR: ', error);
     }
+  }
+
+  remove(user: ProposalUser, index: number) {
+    this.confirmService.confirm(`Odstranit uživatele - ${user.name} ${user.surname}?`)
+      .then((confirmed) => {
+        if (confirmed) {
+          this.proposalsService.removeFromActive(user, index);
+        }
+      });
+  }
+
+  drop(event: CdkDragDrop<number, any>) {
+    console.log(this.planCard()!.users![0].shifts[0]);
+
+    this.proposalsService.updatePositions(event.previousIndex, event.currentIndex);
   }
 
   isFridayOrSaturday(date: string) {

@@ -4,6 +4,8 @@ import { HideWhenAdminDirective } from '../../../directives/hide-when-admin.dire
 import { ProposalsService } from '../../../services/proposals.service';
 import { PlansComponent } from '../../../pages/plans/plans.component';
 import { AuthService } from '../../../services/auth.service';
+import { InactiveUsersComponent } from '../inactive-users/inactive-users.component';
+import { Dialog } from '@angular/cdk/dialog';
 
 @Component({
   selector: 'app-proposals-nav',
@@ -14,10 +16,15 @@ import { AuthService } from '../../../services/auth.service';
 export class ProposalsNavComponent {
   private proposalsService = inject(ProposalsService);
   private authService = inject(AuthService);
+  private dialog = inject(Dialog)
   loggedUser = this.authService.getUser();
   plansComponent = inject(PlansComponent);
   calendarTitle = computed(() => this.proposalsService.calendarTitle());
   destination = computed(() => this.proposalsService.destination());
   pdfLoading = model(false);
   isSaving = computed(() => this.proposalsService.isSaving());
+
+  openModal() {
+    this.dialog.open(InactiveUsersComponent, { disableClose: false });
+  }
 }

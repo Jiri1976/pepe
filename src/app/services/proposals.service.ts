@@ -8,6 +8,7 @@ import { AlertService } from "./alert.service";
 import { ErrorHandlingService } from "./error-handling.service";
 import { ProposalCard } from "../models/proposals/proposalCard.interface";
 import { ProposalShift } from "../models/proposals/proposalShift.interface";
+import { ProposalUser } from "../models/proposals/proposalUser.interface";
 
 @Injectable({
     providedIn: 'root'
@@ -52,6 +53,7 @@ export class ProposalsService {
     }
 
     onSave() {
+        this.updateShiftListOrders();
         const subscription = this.saveProposals(this.planCard()!).pipe(
             tap(response => {
                 if (response === null) {
@@ -89,7 +91,6 @@ export class ProposalsService {
                     this.isProposalLoading.set(false);
                     this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
                 } else if (response.isSuccess) {
-                    console.log(response.result);
                     this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: `Směny byly odstraněny!` });
                     this.planCard.set(response.result);
                     this.isProposalLoading.set(false);
@@ -131,6 +132,50 @@ export class ProposalsService {
         this.destroyRef.onDestroy(() => {
             subscription.unsubscribe();
         });
+    }
+
+    addFromInactive(inactiveUser: ProposalUser, index: number) {
+        const inactiveUsers = [...this.planCard()!.inactiveUsers];
+        if (inactiveUsers.length === 0) {
+            return;
+        }
+        if (this.planCard()?.users.length === 0) {
+            return;
+        }
+        const users = [...this.planCard()!.users];
+
+        users[0].shifts.forEach(shift => {
+            inactiveUser.shifts.push({
+                destination: shift.destination,
+                from: null,
+                id: 0,
+                listOrder: users.length + 1,
+                monthYear: shift.monthYear,
+                position: inactiveUser.position,
+                proposalDate: shift.proposalDate,
+                to: null,
+                userId: inactiveUser.id,
+                userName: inactiveUser.name,
+                userSurname: inactiveUser.surname
+            });
+        });
+
+        users.push(inactiveUser);
+        inactiveUsers.splice(index, 1);
+        this.planCard.update(c => ({ ...c!, users: users, inactiveUsers: inactiveUsers }));
+        this.uploadedCard = structuredClone(this.planCard());
+        this.nothingChanged.set(false);
+    }
+
+    removeFromActive(activeUser: ProposalUser, index: number) {
+        const inactiveUsers = [...this.planCard()!.inactiveUsers];
+        const users = [...this.planCard()!.users];
+        activeUser.shifts = [];
+        inactiveUsers.push(activeUser);
+        users.splice(index, 1);
+        this.planCard.update(c => ({ ...c!, users: users, inactiveUsers: inactiveUsers }));
+        this.uploadedCard = structuredClone(this.planCard());
+        this.nothingChanged.set(false);
     }
 
     setSelectedProposal(proposal: ProposalShift) {
@@ -180,6 +225,25 @@ export class ProposalsService {
             }
         }
         this.nothingChanged.set(changed)
+    }
+
+    updatePositions(currentIndex: number, targetIndex: number) {
+        const users = [...this.planCard()!.users];
+        const user = users.splice(currentIndex, 1)[0];
+        const insertAt = targetIndex === currentIndex ? targetIndex + 1 : targetIndex;
+        users.splice(insertAt, 0, user);
+        this.planCard.update(c => ({ ...c!, users: users }));
+        this.checkNothingChanged();
+    }
+
+    private updateShiftListOrders() {
+        const users = [...this.planCard()!.users];
+        users.forEach((user, i) => {
+            user.shifts.forEach(shift => {
+                shift.listOrder = i;
+            });
+        });
+        this.planCard.update(c => ({ ...c!, users: users }));
     }
 
     private saveProposals(card: ProposalCard) {

@@ -34,7 +34,7 @@
                             (keydown.enter)="onChangeInput(x, y, $event)"
                             [disabled]="isUpdating() || isDisabled(card.units[y].date)"
                             [class.input-success]="highlightedInputs.has(x + '-' + y)"
-                            [class.master]="loggedUser.role === 'Master' && !isDisabled(card.units[y].date)" />
+                            [class.master]="isToday(card.units[y].date)" />
                         }
                     </div>
                     }

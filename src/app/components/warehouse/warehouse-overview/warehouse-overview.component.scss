@@ -107,7 +107,6 @@
                         align-items: center;
                         margin-right: 2px;
                         font-size: 0.7rem;
-                        transition: 0.2s;
 
                         .input-success {
                             border: 2px solid #f7d3af;
@@ -144,13 +143,12 @@
                             border-radius: 5px;
                             outline: none;
                             text-align: center;
-                            transition: 0.2s;
                             font-weight: 600;
                             color: #864912;
                         }
 
                         input.master {
-                            border: 2px solid #864912;
+                            border: 2px solid #F97316;
                         }
 
                         input:active,
@@ -158,6 +156,7 @@
                             cursor: default;
                             background: #f7d3af;
                             color: #864912;
+                            border: 2px solid #864912;
                         }
                     }
 
@@ -166,7 +165,7 @@
                         input {
                             cursor: pointer;
                             background: #f7d3af;
-                            border: 1px solid #864912;
+                            border: 2px solid #864912;
                             color: #864912;
                         }
 

@@ -221,7 +221,9 @@ form {
     }
 
     input:disabled {
-        background: #fff;
+        background: #f7d3af;
+        font-weight: 500;
+        pointer-events: none;
     }
 
     input.shake {

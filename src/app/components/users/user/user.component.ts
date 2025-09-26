@@ -186,37 +186,19 @@ export class UserComponent implements OnInit {
         subscription.unsubscribe();
       });
     } else {
-      if (this.user().role === 'Admin' || this.user().role === 'Master') {
-        _user.role = this.user().role;
-        _user.isActive = true;
+      if (_user.password !== '') {
+        this.confirmService.confirm('Opravdu chceš změnit heslo?')
+          .then((confirmed) => {
+            if (confirmed) {
+              this.updateUser(_user);
+            } else {
+              this.isLoading.set(false);
+              return;
+            }
+          });
+      } else {
+        this.updateUser(_user);
       }
-      this.actionText.set('Upravuji...');
-      const subscription = this.usersService.updateUser(_user).pipe(
-        concatMap(response => {
-          this.isLoading.set(false);
-          if (response === null) {
-            this.userForm.enable();
-            this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
-          } else if (response.isSuccess === false) {
-            this.userForm.enable();
-            this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
-          } else if (response.isSuccess) {
-            this.userForm.enable();
-            this.usersService.setUser(_user);
-            this.usersService.onUpdateUser(_user);
-            this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: response.result });
-            this.onGoBack();
-          }
-          return of();
-        }),
-      ).subscribe({
-        next: () => { },
-        error: error => this.handleError(error)
-      });
-
-      this.destroyRef.onDestroy(() => {
-        subscription.unsubscribe();
-      });
     }
   }
 
@@ -330,6 +312,40 @@ export class UserComponent implements OnInit {
   onCheckboxChange(destIndex: number, posIndex: number, event: any) {
     const control = this.getPositions(destIndex).at(posIndex).get('position');
     control?.setValue(event.checked);
+  }
+
+  private updateUser(_user: any) {
+    if (this.user().role === 'Admin' || this.user().role === 'Master') {
+      _user.role = this.user().role;
+      _user.isActive = true;
+    }
+    this.actionText.set('Upravuji...');
+    const subscription = this.usersService.updateUser(_user).pipe(
+      concatMap(response => {
+        this.isLoading.set(false);
+        if (response === null) {
+          this.userForm.enable();
+          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+        } else if (response.isSuccess === false) {
+          this.userForm.enable();
+          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+        } else if (response.isSuccess) {
+          this.userForm.enable();
+          this.usersService.setUser(_user);
+          this.usersService.onUpdateUser(_user);
+          this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: response.result });
+          this.onGoBack();
+        }
+        return of();
+      }),
+    ).subscribe({
+      next: () => { },
+      error: error => this.handleError(error)
+    });
+
+    this.destroyRef.onDestroy(() => {
+      subscription.unsubscribe();
+    });
   }
 
   private initializedUserForm() {

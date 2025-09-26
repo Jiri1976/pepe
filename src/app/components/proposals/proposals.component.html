@@ -27,21 +27,31 @@
                 </th>
                 }
             </div>
-            <div class="body">
-                @for(user of planCard()?.users; track $index; let i = $index) {
-                <div class="table-row">
-                    <div class="user-name-cell" [setBackground]="user.position === 'Cook'">
-                        {{`${user.name} ${user.surname.substring(0,1)}.`}}
-                    </div>
+            <div class="body" cdkDropListGroup #dashboard>
+                <div cdkDropList (cdkDropListDropped)="drop($event)">
+                    @for(user of planCard()?.users; track $index; let i = $index) {
 
-                    @for(shift of user.shifts; track $index; let j = $index) {
-                    <th class="drop-zone" [setBackground]="isWeekend(shift.proposalDate)"
-                        [disabledClass]="isPassedTime(shift.proposalDate)" (click)="onCreateUpdateProposal(i, j)">
-                        <app-proposal-shift [shift]="shift" />
-                    </th>
+                    <div class="table-row" cdkDrag>
+                        <div class="user-name-cell" cdkDragHandle [setBackground]="user.position === 'Cook'">
+                            {{`${user.name} ${user.surname.substring(0,1)}.`}}
+                        </div>
+
+                        @for(shift of user.shifts; track $index; let j = $index) {
+                        <th class="drop-zone" [setBackground]="isWeekend(shift.proposalDate)"
+                            [disabledClass]="isPassedTime(shift.proposalDate)" (click)="onCreateUpdateProposal(i, j)">
+                            <app-proposal-shift [shift]="shift" />
+                        </th>
+                        }
+
+                        <th class="drop-zone last" (click)="remove(user, i)">
+                            <i class="bi bi-x-circle"></i>
+                        </th>
+                    </div>
+                    <div *cdkDragPlaceholder></div>
+
                     }
                 </div>
-                }
+                <div cdkDropList></div>
             </div>
         </div>
     </div>

@@ -6,7 +6,7 @@
     border-radius: 0.375em;
     background-color: #fff;
     filter: drop-shadow(0 0 2em rgba(#000, 0.5));
-    padding: 0 2em 2em;
+    padding: 1.5em 2em;
 }
 
 article {
@@ -24,8 +24,9 @@ article {
         align-items: center;
         border: 1px solid #864912;
         border-radius: 5px;
-        background: #864912;
-        color: #fff;
+        font-weight: 500;
+        background: #fff;
+        color: #864912;
         margin: 10px;
         padding: 5px 10px;
 
@@ -43,7 +44,7 @@ article {
                 outline: none;
 
                 .bi {
-                    color: #F97316;
+                    color: #fc0202;
                     font-weight: bold;
                     font-size: 1.2rem;
                 }
@@ -59,5 +60,6 @@ article {
         color: #fff;
         width: 100px;
         height: 40px;
+        letter-spacing: 1px;
     }
 }
