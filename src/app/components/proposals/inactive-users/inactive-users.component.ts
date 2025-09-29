@@ -1,6 +1,5 @@
 import { DialogRef } from '@angular/cdk/dialog';
 import { Component, computed, inject } from '@angular/core';
-import { ShiftService } from '../../../services/shift.service';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { ProposalsService } from '../../../services/proposals.service';

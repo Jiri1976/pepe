@@ -1,11 +1,9 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { Component, DestroyRef, inject, input, signal } from '@angular/core';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { map } from 'rxjs';
 import { WarehouseCard } from '../../../models/warehouse/warehouse-card.interface';
 import { WarehouseUnit } from '../../../models/warehouse/warehouse-unit.interface';
 import { AlertService } from '../../../services/alert.service';
-import { ErrorHandlingService } from '../../../services/error-handling.service';
 import { WarehouseService } from '../../../services/warehouse.service';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
@@ -24,7 +22,6 @@ export class WarehouseInputComponent {
   private warehouseUnitsComponent = inject(WarehouseUnitsComponent);
   private confirmService = inject(ConfirmService);
   private warehouseService = inject(WarehouseService);
-  private errorHandlingService = inject(ErrorHandlingService);
   private alertService = inject(AlertService);
   private destroyRef = inject(DestroyRef);
   card = input.required<WarehouseCard>();
@@ -82,7 +79,7 @@ export class WarehouseInputComponent {
                 this.amount?.enable();
                 this.submitAction.set(null);
               },
-              error: error => this.handleError(error)
+              error: () => this.isLoading.set(false)
             });
 
             this.destroyRef.onDestroy(() => {
@@ -115,7 +112,7 @@ export class WarehouseInputComponent {
         next: () => {
           this.amount?.enable();
         },
-        error: error => this.handleError(error)
+        error: () => this.isLoading.set(false)
       });
 
       this.destroyRef.onDestroy(() => {
@@ -156,9 +153,4 @@ export class WarehouseInputComponent {
     });
     this.amount?.markAsUntouched();
   }
-
-  private handleError = (errorRes: HttpErrorResponse) => {
-    this.isLoading.set(false);
-    return this.errorHandlingService.handleError(errorRes);
-  };
 }

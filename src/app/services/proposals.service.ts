@@ -1,11 +1,10 @@
 import { DestroyRef, inject, Injectable, signal } from "@angular/core";
-import { HttpClient, HttpErrorResponse, HttpHeaders } from "@angular/common/http";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { environment } from "../../environments/environment";
 import { Response } from '../models/response.interface';
 import { AuthService } from "./auth.service";
 import { map, tap } from "rxjs";
 import { AlertService } from "./alert.service";
-import { ErrorHandlingService } from "./error-handling.service";
 import { ProposalCard } from "../models/proposals/proposalCard.interface";
 import { ProposalShift } from "../models/proposals/proposalShift.interface";
 import { ProposalUser } from "../models/proposals/proposalUser.interface";
@@ -19,7 +18,6 @@ export class ProposalsService {
     private authService = inject(AuthService);
     private destroyRef = inject(DestroyRef);
     private alertService = inject(AlertService);
-    private errorHandlingService = inject(ErrorHandlingService);
     private BASE_ROUTE = environment.SHIFTS_PATH;
 
     destination = signal<string>('F-M');
@@ -72,7 +70,10 @@ export class ProposalsService {
                 }
             })
         ).subscribe({
-            error: error => this.handleError(error)
+            error: () => {
+                this.isSaving?.set(false);
+                this.isProposalLoading?.set(false);
+            }
         });
 
         this.destroyRef.onDestroy(() => {
@@ -98,7 +99,10 @@ export class ProposalsService {
             }),
         ).subscribe({
             next: () => { },
-            error: error => this.handleError(error)
+            error: () => {
+                this.isSaving?.set(false);
+                this.isProposalLoading?.set(false);
+            }
         });
 
         this.destroyRef.onDestroy(() => {
@@ -126,7 +130,10 @@ export class ProposalsService {
             }),
         ).subscribe({
             next: () => { },
-            error: error => this.handleError(error)
+            error: () => {
+                this.isSaving?.set(false);
+                this.isProposalLoading?.set(false);
+            }
         });
 
         this.destroyRef.onDestroy(() => {
@@ -250,10 +257,4 @@ export class ProposalsService {
         const url = this.BASE_ROUTE + `Proposals/CreateUpdate`;
         return this.http.post<Response>(url, card);
     }
-
-    private handleError = (errorRes: HttpErrorResponse) => {
-        this.isSaving?.set(false);
-        this.isProposalLoading?.set(false);
-        return this.errorHandlingService.handleError(errorRes);
-    };
 }

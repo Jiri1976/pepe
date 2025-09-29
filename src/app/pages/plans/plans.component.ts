@@ -10,10 +10,8 @@ import { ProposalsComponent } from '../../components/proposals/proposals.compone
 import { ProposalsService } from '../../services/proposals.service';
 import { ConfirmService } from '../../services/confirm.service';
 import { OverlayModule } from 'primeng/overlay';
-import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from '../../services/alert.service';
 import { tap } from 'rxjs';
-import { ErrorHandlingService } from '../../services/error-handling.service';
 import { ProposalsNavComponent } from "../../components/proposals/proposals-nav/proposals-nav.component";
 import { PageAnimation } from '../../animations/page.animation';
 import { DragDropModule } from '@angular/cdk/drag-drop';
@@ -46,7 +44,6 @@ export class PlansComponent {
   private confirmService = inject(ConfirmService);
   private destroyRef = inject(DestroyRef);
   private alertService = inject(AlertService);
-  private errorHandlingService = inject(ErrorHandlingService);
   defaultDate = new Date(new Date().getFullYear(), new Date().getMonth());
   maxDate: Date = new Date(new Date().getFullYear(), new Date().getMonth());
   planCard = computed(() => this.proposalsService.planCard());
@@ -172,7 +169,7 @@ export class PlansComponent {
         }
       })
     ).subscribe({
-      error: error => this.handleError(error)
+      error: () => this.proposalsService.isProposalLoading.set(false)
     });
 
     this.destroyRef.onDestroy(() => {
@@ -192,9 +189,4 @@ export class PlansComponent {
     this.proposalsService.destination.set(destination);
     this.proposalsService.uploadProposals();
   }
-
-  private handleError = (errorRes: HttpErrorResponse) => {
-    this.proposalsService.isProposalLoading.set(false);
-    return this.errorHandlingService.handleError(errorRes);
-  };
 }

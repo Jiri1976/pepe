@@ -76,9 +76,6 @@ export class ShiftService {
     }
 
     createUpdateShift(shift: Shift) {
-        console.log('createupdateshifty');
-
-        // const url = this.BASE_ROUTE + `shifts/CreateUpdateShift?destination=${}`;
         const url = this.BASE_ROUTE + `shifts/CreateUpdateShift`;
         return this.http.post<Response>(url, shift);
     }

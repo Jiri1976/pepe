@@ -4,8 +4,6 @@ import { UserPaginationComponent } from '../../components/users/user-pagination/
 import { ConfirmComponent } from '../../components/confirm/confirm.component';
 import { UsersService } from '../../services/users.service';
 import { tap } from 'rxjs';
-import { HttpErrorResponse } from '@angular/common/http';
-import { ErrorHandlingService } from '../../services/error-handling.service';
 import { AlertService } from '../../services/alert.service';
 import { EmptyBlockComponent } from "../../components/users/empty-block/empty-block.component";
 import { UsersNavComponent } from '../../components/users/users-nav/users-nav.component';
@@ -28,7 +26,6 @@ import { PageAnimation } from '../../animations/page.animation';
 })
 export class UsersComponent implements OnInit {
   private usersService = inject(UsersService);
-  private errorHandlingService = inject(ErrorHandlingService);
   private alertService = inject(AlertService);
   private destroyRef = inject(DestroyRef);
   isLoading = signal(false);
@@ -52,7 +49,7 @@ export class UsersComponent implements OnInit {
         }
       }),
       tap({
-        error: error => this.handleError(error)
+        error: () => this.isLoading.set(false)
       })
     ).subscribe();
     this.destroyRef.onDestroy(() => {
@@ -67,9 +64,4 @@ export class UsersComponent implements OnInit {
     }
     return fakeArray;
   }
-
-  private handleError = (errorRes: HttpErrorResponse) => {
-    this.isLoading.set(false);
-    return this.errorHandlingService.handleError(errorRes);
-  };
 }

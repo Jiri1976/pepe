@@ -13,7 +13,6 @@ import { ProposalShiftComponent } from "./proposal-shift/proposal-shift.componen
 import { DisabledClassDirective } from '../../directives/disabled-class.directive';
 import { SetBackgroundDirective } from '../../directives/set-background.directive';
 import { ProposalTableStyleDirective } from '../../directives/proposal-table-style.directive';
-import { wrapGrid } from 'animate-css-grid';
 import { ProposalUser } from '../../models/proposals/proposalUser.interface';
 import { ConfirmService } from '../../services/confirm.service';
 
@@ -25,8 +24,11 @@ import { ConfirmService } from '../../services/confirm.service';
     DisabledClassDirective,
     SetBackgroundDirective,
     ProposalTableStyleDirective,
-    CdkDropList, CdkDropListGroup,
-    CdkDrag, CdkDragPlaceholder, CdkDragHandle
+    CdkDropList,
+    CdkDropListGroup,
+    CdkDrag,
+    CdkDragPlaceholder,
+    CdkDragHandle
   ],
   templateUrl: './proposals.component.html',
   styleUrl: './proposals.component.scss',
@@ -88,20 +90,7 @@ export class ProposalsComponent {
 
   ngOnInit(): void {
     this.proposalsService.uploadProposals();
-    // setTimeout(() => {
-    //   wrapGrid(this.dashboard().nativeElement, {
-    //     duration: 300
-    //   });
-    // }, 500);
   }
-
-  // ngAfterViewInit() {
-  //   setTimeout(() => {
-  //     wrapGrid(this.dashboard().nativeElement, {
-  //       duration: 300
-  //     });
-  //   }, 500);
-  // }
 
   public async start() {
     try {

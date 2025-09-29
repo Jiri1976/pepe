@@ -4,10 +4,8 @@ import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { ConfirmComponent } from '../../components/confirm/confirm.component';
 import { ShiftService } from '../../services/shift.service';
-import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from '../../services/alert.service';
 import { tap } from 'rxjs';
-import { ErrorHandlingService } from '../../services/error-handling.service';
 import { ShiftCard } from '../../models/shifts/shiftCard.interface';
 import { ShiftCardComponent } from '../../components/shifts/shift-card/shift-card.component';
 import Swiper from 'swiper';
@@ -46,7 +44,6 @@ export class ShiftsComponent implements OnInit {
   private shiftService = inject(ShiftService);
   private destroyRef = inject(DestroyRef);
   private alertService = inject(AlertService);
-  private errorHandlingService = inject(ErrorHandlingService);
   filteredUsers = signal<any[]>([]);
   monthYear = signal<string>(this.MONTHS_NUM[new Date().getMonth()] + new Date().getFullYear());
   loggedUser = this.authService.getUser();
@@ -172,7 +169,7 @@ export class ShiftsComponent implements OnInit {
         }
       })
     ).subscribe({
-      error: error => this.handleError(error)
+      error: () => this.isLoading.set(false)
     });
 
     this.destroyRef.onDestroy(() => {
@@ -298,16 +295,11 @@ export class ShiftsComponent implements OnInit {
       }),
     ).subscribe({
       next: () => { },
-      error: error => this.handleError(error)
+      error: () => this.isLoading.set(false)
     });
 
     this.destroyRef.onDestroy(() => {
       subscription.unsubscribe();
     });
   }
-
-  private handleError = (errorRes: HttpErrorResponse) => {
-    this.isLoading.set(false);
-    return this.errorHandlingService.handleError(errorRes);
-  };
 }

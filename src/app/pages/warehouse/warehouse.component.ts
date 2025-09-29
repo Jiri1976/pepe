@@ -3,11 +3,9 @@ import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { WarehouseService } from '../../services/warehouse.service';
-import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from '../../services/alert.service';
 import { tap } from 'rxjs';
 import { ConfirmComponent } from '../../components/confirm/confirm.component';
-import { ErrorHandlingService } from '../../services/error-handling.service';
 import { WarehouseItemsComponent } from "../../components/warehouse/warehouse-items/warehouse-items.component";
 import { WarehouseItem } from '../../models/warehouse/warehouse-item.interface';
 import { Calendar, CalendarModule } from 'primeng/calendar';
@@ -43,7 +41,6 @@ export class WarehouseComponent {
   private warehouseService = inject(WarehouseService);
   private alertService = inject(AlertService);
   private destroyRef = inject(DestroyRef);
-  private errorHandlingService = inject(ErrorHandlingService);
   selectedUnit = computed(() => this.warehouseService.selectedUnit());
   unitHeaderTitle = '';
   visible: boolean = false;
@@ -104,18 +101,15 @@ export class WarehouseComponent {
           }
         }),
       ).subscribe({
-        error: (error) => this.handleError(error),
+        error: () => {
+          this.visible = false;
+          this.warehouseItems?.isLoading.set(false);
+          this.warehouseUnits?.isLoading.set(false);
+          this.pdfLoading?.set(false);
+        }
       });
 
       this.destroyRef.onDestroy(() => subscription.unsubscribe());
     }
   }
-
-  private handleError = (errorRes: HttpErrorResponse) => {
-    this.visible = false;
-    this.warehouseItems?.isLoading.set(false);
-    this.warehouseUnits?.isLoading.set(false);
-    this.pdfLoading?.set(false);
-    return this.errorHandlingService.handleError(errorRes);
-  };
 }

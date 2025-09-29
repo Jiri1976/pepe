@@ -26,5 +26,4 @@ export class AlertComponent {
   onReject() {
     this.messageService.clear();
   }
-
 }

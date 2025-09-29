@@ -1,10 +1,8 @@
 import { Component, computed, DestroyRef, ElementRef, inject, OnInit, signal, viewChild } from '@angular/core';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule, FormsModule, FormArray } from '@angular/forms';
-import { HttpErrorResponse } from '@angular/common/http';
 import { AlertService } from '../../../services/alert.service';
-import { ErrorHandlingService } from '../../../services/error-handling.service';
 import { ConfirmService } from '../../../services/confirm.service';
-import { concatMap, map, of } from 'rxjs';
+import { concatMap, of } from 'rxjs';
 import { UsersService } from '../../../services/users.service';
 import { CommonModule } from '@angular/common';
 import { DialogRef } from '@angular/cdk/dialog';
@@ -25,7 +23,6 @@ export class UserComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
   private usersService = inject(UsersService);
   private alertService = inject(AlertService);
-  private errorHandlingService = inject(ErrorHandlingService);
   private confirmService = inject(ConfirmService);
   private dialogRef = inject(DialogRef, { optional: true });
   user = computed(() => this.usersService.user());
@@ -179,7 +176,7 @@ export class UserComponent implements OnInit {
         next: () => {
           this.userForm.enable();
         },
-        error: error => this.handleError(error)
+        error: () => this.isLoading.set(false)
       });
 
       this.destroyRef.onDestroy(() => {
@@ -230,7 +227,7 @@ export class UserComponent implements OnInit {
             next: () => {
 
             },
-            error: error => this.handleError(error)
+            error: () => this.isLoading.set(false)
           });
 
           this.destroyRef.onDestroy(() => {
@@ -340,7 +337,7 @@ export class UserComponent implements OnInit {
       }),
     ).subscribe({
       next: () => { },
-      error: error => this.handleError(error)
+      error: () => this.isLoading.set(false)
     });
 
     this.destroyRef.onDestroy(() => {
@@ -425,9 +422,4 @@ export class UserComponent implements OnInit {
       position: new FormControl({ value: existing ? true : false, disabled: this.user().role !== 'User' }),
     });
   }
-
-  private handleError = (errorRes: HttpErrorResponse) => {
-    this.isLoading.set(false);
-    return this.errorHandlingService.handleError(errorRes);
-  };
 }

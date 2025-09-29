@@ -1,4 +1,3 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, DestroyRef, inject, input, model, output, signal, ViewChild } from '@angular/core';
 import { tap } from 'rxjs';
 import { InitShift } from '../../../models/shifts/initShift.interface';
@@ -6,7 +5,6 @@ import { Shift } from '../../../models/shifts/shift.interface';
 import { AlertService } from '../../../services/alert.service';
 import { AuthService } from '../../../services/auth.service';
 import { ConfirmService } from '../../../services/confirm.service';
-import { ErrorHandlingService } from '../../../services/error-handling.service';
 import { ShiftService } from '../../../services/shift.service';
 import { ShiftCard } from '../../../models/shifts/shiftCard.interface';
 import { ShiftFormComponent } from "../shift-form/shift-form.component";
@@ -28,7 +26,6 @@ export class ShiftCardComponent {
   private shiftService = inject(ShiftService);
   private authService = inject(AuthService);
   private confirmService = inject(ConfirmService);
-  private errorHandlingService = inject(ErrorHandlingService);
   private alertService = inject(AlertService);
   private destroyRef = inject(DestroyRef);
   private shiftComponent = inject(ShiftsComponent);
@@ -92,7 +89,10 @@ export class ShiftCardComponent {
 
           ).subscribe({
             next: () => { },
-            error: error => this.handleError(error)
+            error: () => {
+              this.cardLoading?.set(false);
+              this.shiftFormComponent?.loading?.set(false);
+            }
           });
 
           this.destroyRef.onDestroy(() => {
@@ -127,7 +127,10 @@ export class ShiftCardComponent {
 
     ).subscribe({
       next: () => { },
-      error: error => this.handleError(error)
+      error: () => {
+        this.cardLoading?.set(false);
+        this.shiftFormComponent?.loading?.set(false);
+      }
     });
 
     this.destroyRef.onDestroy(() => {
@@ -163,7 +166,10 @@ export class ShiftCardComponent {
     ).subscribe({
       next: () => {
       },
-      error: error => this.handleError(error)
+      error: () => {
+        this.cardLoading?.set(false);
+        this.shiftFormComponent?.loading?.set(false);
+      }
     });
 
     this.destroyRef.onDestroy(() => {
@@ -198,7 +204,10 @@ export class ShiftCardComponent {
         }
       })
     ).subscribe({
-      error: error => this.handleError(error)
+      error: () => {
+        this.cardLoading?.set(false);
+        this.shiftFormComponent?.loading?.set(false);
+      }
     });
 
     this.destroyRef.onDestroy(() => {
@@ -263,10 +272,4 @@ export class ShiftCardComponent {
     }
     return converted;
   }
-
-  private handleError = (errorRes: HttpErrorResponse) => {
-    this.cardLoading?.set(false);
-    this.shiftFormComponent?.loading?.set(false);
-    return this.errorHandlingService.handleError(errorRes);
-  };
 }

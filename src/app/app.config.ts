@@ -10,12 +10,13 @@ import { TokenInterceptor } from './interceptor/token.interceptor';
 import { ConfirmationService } from 'primeng/api';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeng/themes/aura';
+import { globalHttpErrorInterceptor } from './interceptor/global-http-error.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideHttpClient(withInterceptors([TokenInterceptor]),
+    provideHttpClient(withInterceptors([TokenInterceptor, globalHttpErrorInterceptor]),
       withFetch()),
     provideAnimations(),
     providePrimeNG(

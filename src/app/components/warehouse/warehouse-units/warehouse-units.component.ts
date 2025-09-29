@@ -2,8 +2,6 @@ import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, DestroyRef, effect, Elemen
 import { WarehouseService } from '../../../services/warehouse.service';
 import { AlertService } from '../../../services/alert.service';
 import { tap } from 'rxjs';
-import { HttpErrorResponse } from '@angular/common/http';
-import { ErrorHandlingService } from '../../../services/error-handling.service';
 import Swiper from 'swiper';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../services/auth.service';
@@ -28,7 +26,6 @@ export class WarehouseUnitsComponent implements OnInit {
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
   private destroyRef = inject(DestroyRef);
-  private errorHandlingService = inject(ErrorHandlingService);
   private swiper!: Swiper;
   private confirmService = inject(ConfirmService);
   user = computed(() => this.authService.user());
@@ -103,7 +100,7 @@ export class WarehouseUnitsComponent implements OnInit {
 
     ).subscribe({
       next: () => { },
-      error: error => this.handleError(error)
+      error: () => this.isLoading.set(false)
     });
 
     this.destroyRef.onDestroy(() => {
@@ -135,7 +132,7 @@ export class WarehouseUnitsComponent implements OnInit {
               }
             })
           ).subscribe({
-            error: error => this.handleError(error)
+            error: () => this.isLoading.set(false)
           });
 
           this.destroyRef.onDestroy(() => {
@@ -179,7 +176,7 @@ export class WarehouseUnitsComponent implements OnInit {
               }
             })
           ).subscribe({
-            error: error => this.handleError(error)
+            error: () => this.isLoading.set(false)
           });
 
           this.destroyRef.onDestroy(() => {
@@ -188,9 +185,4 @@ export class WarehouseUnitsComponent implements OnInit {
         }
       });
   }
-
-  private handleError = (errorRes: HttpErrorResponse) => {
-    this.isLoading.set(false);
-    return this.errorHandlingService.handleError(errorRes);
-  };
 }

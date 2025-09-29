@@ -3,8 +3,6 @@ import { WarehouseService } from '../../../services/warehouse.service';
 import { PageAnimation } from '../../../animations/page.animation';
 import { tap } from 'rxjs';
 import { AlertService } from '../../../services/alert.service';
-import { HttpErrorResponse } from '@angular/common/http';
-import { ErrorHandlingService } from '../../../services/error-handling.service';
 import { WarehouseCard } from '../../../models/warehouse/warehouse-card.interface';
 import { AuthService } from '../../../services/auth.service';
 import { ConfirmService } from '../../../services/confirm.service';
@@ -32,7 +30,6 @@ interface OverviewCard {
 })
 export class WarehouseOverviewComponent implements OnInit {
   private MONTHS_NUM = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
-  private errorHandlingService = inject(ErrorHandlingService);
   private warehouseService = inject(WarehouseService);
   private alertService = inject(AlertService);
   private destroyRef = inject(DestroyRef);
@@ -115,7 +112,7 @@ export class WarehouseOverviewComponent implements OnInit {
         }
       }),
     ).subscribe({
-      error: (error) => this.handleError(error),
+      error: () => this.isUpdating.set(false),
     });
 
     this.destroyRef.onDestroy(() => subscription.unsubscribe());
@@ -141,7 +138,7 @@ export class WarehouseOverviewComponent implements OnInit {
         }
       }),
     ).subscribe({
-      error: (error) => this.handleError(error),
+      error: () => this.uploadingCards.set(false)
     });
 
     this.destroyRef.onDestroy(() => subscription.unsubscribe());
@@ -211,7 +208,7 @@ export class WarehouseOverviewComponent implements OnInit {
               }
             })
           ).subscribe({
-            error: error => this.handleError(error)
+            error: () => this.uploadingCards.set(false)
           });
 
           this.destroyRef.onDestroy(() => {
@@ -249,8 +246,4 @@ export class WarehouseOverviewComponent implements OnInit {
       this.overviewCard.set(overCard)
     }
   }
-
-  private handleError = (errorRes: HttpErrorResponse) => {
-    return this.errorHandlingService.handleError(errorRes);
-  };
 }

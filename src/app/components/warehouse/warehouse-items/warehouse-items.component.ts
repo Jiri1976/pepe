@@ -2,9 +2,7 @@ import { Component, computed, DestroyRef, effect, ElementRef, inject, model, OnI
 import { WidgetComponent } from "../widget/widget.component";
 import { CdkDragDrop, CdkDropList, CdkDropListGroup } from '@angular/cdk/drag-drop';
 import { wrapGrid } from 'animate-css-grid';
-import { HttpErrorResponse } from '@angular/common/http';
 import { tap } from 'rxjs';
-import { ErrorHandlingService } from '../../../services/error-handling.service';
 import { WarehouseService } from '../../../services/warehouse.service';
 import { AlertService } from '../../../services/alert.service';
 import { ConfirmService } from '../../../services/confirm.service';
@@ -21,7 +19,6 @@ import { PageAnimation } from '../../../animations/page.animation';
   ]
 })
 export class WarehouseItemsComponent implements OnInit {
-  private errorHandlingService = inject(ErrorHandlingService);
   private destroyRef = inject(DestroyRef);
   private warehouseService = inject(WarehouseService);
   private alertService = inject(AlertService);
@@ -92,7 +89,7 @@ export class WarehouseItemsComponent implements OnInit {
           }
         }),
       ).subscribe({
-        error: (error) => this.handleError(error),
+        error: () => this.isLoading.set(false),
       });
 
       this.destroyRef.onDestroy(() => subscription.unsubscribe());
@@ -134,7 +131,7 @@ export class WarehouseItemsComponent implements OnInit {
               }
             }),
           ).subscribe({
-            error: (error) => this.handleError(error),
+            error: () => this.isLoading.set(false)
           });
 
           this.destroyRef.onDestroy(() => subscription.unsubscribe());
@@ -171,16 +168,11 @@ export class WarehouseItemsComponent implements OnInit {
 
     ).subscribe({
       next: () => { },
-      error: error => this.handleError(error)
+      error: () => this.isLoading.set(false)
     });
 
     this.destroyRef.onDestroy(() => {
       subscription.unsubscribe();
     });
   }
-
-  private handleError = (errorRes: HttpErrorResponse) => {
-    this.isLoading.set(false);
-    return this.errorHandlingService.handleError(errorRes);
-  };
 }

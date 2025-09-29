@@ -3,8 +3,6 @@ import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angula
 import { AuthService } from '../../services/auth.service';
 import { tap } from 'rxjs';
 import { AlertService } from '../../services/alert.service';
-import { ErrorHandlingService } from '../../services/error-handling.service';
-import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { WarehouseService } from '../../services/warehouse.service';
 
@@ -20,7 +18,6 @@ export class LoginComponent implements OnInit {
   private warehouseService = inject(WarehouseService);
   private destroyRef = inject(DestroyRef);
   private alertService = inject(AlertService);
-  private errorHandlingService = inject(ErrorHandlingService);
   private router = inject(Router);
   isLoading = signal<boolean>(false);
   form!: FormGroup;
@@ -70,7 +67,10 @@ export class LoginComponent implements OnInit {
       next: () => {
         this.enableInputs();
       },
-      error: error => this.handleError(error)
+      error: () => {
+        this.isLoading.set(false);
+        this.enableInputs();
+      }
     });
 
     this.destroyRef.onDestroy(() => {
@@ -94,9 +94,4 @@ export class LoginComponent implements OnInit {
       'password': new FormControl('', [Validators.required, Validators.minLength(6)])
     });
   }
-
-  private handleError = (errorRes: HttpErrorResponse) => {
-    this.isLoading.set(false);
-    return this.errorHandlingService.handleError(errorRes);
-  };
 }

@@ -103,6 +103,10 @@
                         cursor: grabbing;
                     }
 
+                    .user-name-cell[cdkDragHandle][cdkDragDisabled="true"] {
+                        cursor: pointer !important;
+                    }
+
                     .drop-zone {
                         width: 35px !important;
                         height: 35px !important;

@@ -6,8 +6,6 @@ import { UserComponent } from '../user/user.component';
 import { User } from '../../../models/users/user.interface';
 import { map } from 'rxjs';
 import { AlertService } from '../../../services/alert.service';
-import { HttpErrorResponse } from '@angular/common/http';
-import { ErrorHandlingService } from '../../../services/error-handling.service';
 
 @Component({
   selector: 'app-user-item',
@@ -23,7 +21,6 @@ export class UserItemComponent {
   private alertService = inject(AlertService);
   private dialog = inject(Dialog);
   private destroyRef = inject(DestroyRef);
-  private errorHandlingService = inject(ErrorHandlingService);
   user = input.required<User>();
   isLoading = signal(false);
 
@@ -57,16 +54,11 @@ export class UserItemComponent {
       next: () => {
         this.isLoading.set(false);
       },
-      error: error => this.handleError(error)
+      error: () => this.isLoading.set(false)
     });
 
     this.destroyRef.onDestroy(() => {
       subscription.unsubscribe();
     });
   }
-
-  private handleError = (errorRes: HttpErrorResponse) => {
-    this.isLoading.set(false);
-    return this.errorHandlingService.handleError(errorRes);
-  };
 }

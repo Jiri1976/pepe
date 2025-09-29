@@ -3,11 +3,9 @@ import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angula
 import { WarehouseItem } from '../../../models/warehouse/warehouse-item.interface';
 import { tap } from 'rxjs';
 import { AlertService } from '../../../services/alert.service';
-import { ErrorHandlingService } from '../../../services/error-handling.service';
 import { WarehouseService } from '../../../services/warehouse.service';
-import { HttpErrorResponse } from '@angular/common/http';
 import { NotificationComponent } from "../../notification/notification.component";
-import { WarehouseItemsComponent } from '../warehouse-items/warehouse-items.component';
+// import { WarehouseItemsComponent } from '../warehouse-items/warehouse-items.component';
 
 @Component({
   selector: 'app-widget-update',
@@ -17,10 +15,9 @@ import { WarehouseItemsComponent } from '../warehouse-items/warehouse-items.comp
 })
 export class WidgetUpdateComponent {
   private warehouseService = inject(WarehouseService);
-  private errorHandlingService = inject(ErrorHandlingService);
   private alertService = inject(AlertService);
   private destroyRef = inject(DestroyRef);
-  private warehouseItemsComp = inject(WarehouseItemsComponent);
+  // private warehouseItemsComp = inject(WarehouseItemsComponent);
   itemForm!: FormGroup;
   item = input.required<WarehouseItem>();
   updateVisible = model<boolean>(false);
@@ -80,7 +77,7 @@ export class WidgetUpdateComponent {
       next: () => {
 
       },
-      error: error => this.handleError(error)
+      error: () => this.isLoading.set(false)
     });
 
     this.destroyRef.onDestroy(() => {
@@ -100,9 +97,4 @@ export class WidgetUpdateComponent {
       ),
     });
   }
-
-  private handleError = (errorRes: HttpErrorResponse) => {
-    this.isLoading.set(false);
-    return this.errorHandlingService.handleError(errorRes);
-  };
 }
