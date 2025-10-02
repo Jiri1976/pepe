@@ -51,7 +51,7 @@ export class WarehouseComponent {
   @ViewChild('calendar', { static: false }) calendar!: Calendar;
   @ViewChild(WarehouseUnitsComponent) warehouseUnits: any;
   @ViewChild(WarehouseItemsComponent) warehouseItems: any;
-  defaultDate = new Date(new Date().getFullYear(), new Date().getMonth());
+  defaultDate = computed(() => this.warehouseService.defaultDate());
   maxDate: Date = new Date(new Date().getFullYear(), new Date().getMonth());
 
   onSelectMonth() {

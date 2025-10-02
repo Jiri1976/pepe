@@ -53,6 +53,7 @@ export class WarehouseUnitsComponent implements OnInit {
 
   ngOnInit(): void {
     this.warehouseService.monthYear.set(this.MONTHS_NUM[new Date().getMonth()] + new Date().getFullYear());
+    this.warehouseService.resetDefaultDate();
     this.warehouseService.warehouseNav.set('units');
     if (this.user().role === 'Master') {
       this.warehouseService.destination.set(this.user().destination);

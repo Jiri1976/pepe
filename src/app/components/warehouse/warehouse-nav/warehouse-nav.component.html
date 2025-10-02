@@ -1,27 +1,26 @@
 @if (warehouseNav() === 'units' || warehouseNav() === 'board') {
 <div class="menu" @fadeIn @fadeOut>
     <ul>
-        <li (click)="onReloadCards()" @fadeIn @fadeOut [class.disabled]="this.cards().length === 0">
+        <li (click)="onReloadCards()" @fadeIn @fadeOut>
             <a [style.--background]="'#864912'" [style.--color]="'#fff'" [style.--color]="'#fff'">
                 <i class="bi bi-arrow-clockwise"></i>
             </a>
         </li>
 
-        <li (click)="warehouseComp.toggleCalendar()" class="cal" @fadeIn @fadeOut hide
-            [class.disabled]="this.cards().length === 0">
+        <li (click)="warehouseComp.toggleCalendar()" class="cal" @fadeIn @fadeOut hide>
             <a [style.--background]="'#864912'" [style.--color]="'#fff'">
                 <i class="bi bi-calendar"></i>
             </a>
         </li>
 
-        <li (click)="onSelectDestination('F-M')" @fadeIn @fadeOut hide [class.disabled]="this.cards().length === 0">
+        <li (click)="onSelectDestination('F-M')" @fadeIn @fadeOut hide>
             <a [style.--background]="destination() === 'F-M' ? '#864912' : '#f7d3af'" [style.--color]="'#fff'"
                 [style.--color]="'#fff'">
                 <p>F-M</p>
             </a>
         </li>
 
-        <li (click)="onSelectDestination('OVA')" @fadeIn @fadeOut hide [class.disabled]="this.cards().length === 0">
+        <li (click)="onSelectDestination('OVA')" @fadeIn @fadeOut hide>
             <a [style.--background]="destination() === 'OVA' ? '#864912' : '#f7d3af'" [style.--color]="'#fff'"
                 [style.--color]="'#fff'">
                 <p>OVA</p>
@@ -47,13 +46,13 @@
         </li>
 
         @if (warehouseNav() !== 'board') {
-        <li (click)="onShowList()" hide [class.disabled]="this.cards().length === 0">
+        <li (click)="onShowList()" hide>
             <a [style.--background]="'#864912'" [style.--color]="'#fff'">
                 <i class="bi bi-list-check"></i>
             </a>
         </li>
 
-        <li (click)="onShowList()" hideAdmin [class.disabled]="this.cards().length === 0">
+        <li (click)="onShowList()" hideAdmin>
             <a [style.--background]="'#864912'" [style.--color]="'#fff'">
                 <i class="bi bi-list-ul"></i>
             </a>

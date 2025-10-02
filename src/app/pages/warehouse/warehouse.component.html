@@ -2,7 +2,7 @@
     <app-warehouse-nav [(pdfLoading)]="pdfLoading" @fadeIn />
 </div>
 <div class="warehouse-calendar">
-    <p-datepicker #calendar name="deadline" [(ngModel)]="defaultDate" view="month" dateFormat="mm-yy"
+    <p-datepicker #calendar name="deadline" [ngModel]="defaultDate()" view="month" dateFormat="mm-yy"
         [readonlyInput]="true" [maxDate]="maxDate" (onSelect)="onSelectMonth()" />
 </div>
 <router-outlet />

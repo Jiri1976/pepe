@@ -1,4 +1,4 @@
-import { Component, computed, effect, ElementRef, inject, viewChild } from '@angular/core';
+import { Component, computed, effect, ElementRef, HostListener, inject, signal, viewChild } from '@angular/core';
 import { ProposalsService } from '../../services/proposals.service';
 import { AuthService } from '../../services/auth.service';
 import { UpdateProposalComponent } from "./update-proposal/update-proposal.component";
@@ -53,12 +53,19 @@ export class ProposalsComponent {
 
   planCard = computed(() => this.proposalsService.planCard());
   days = computed(() => this.proposalsService.days());
+  bodyStyles = signal<any>({});
 
   hubEffect = effect(() => {
     if (this.updateHub()) {
       this.updateProposals(this.proposalsService.destination(), true);
     }
-  })
+    this.setBodyStyles();
+  });
+
+  @HostListener('window:resize', ['$event'])
+  onWindowResize() {
+    this.setBodyStyles();
+  }
 
   connection = new signalR.HubConnectionBuilder()
     .withUrl(this.PEPE_HUB, {
@@ -90,6 +97,7 @@ export class ProposalsComponent {
 
   ngOnInit(): void {
     this.proposalsService.uploadProposals();
+    this.setBodyStyles();
   }
 
   public async start() {
@@ -189,6 +197,10 @@ export class ProposalsComponent {
     if (day >= today) {
       return false;
     }
+
+    if (this.planCard()!.users?.length > 0) {
+      return false;
+    }
     this.unsavedProposalCardErrorText = `Rozpis směn pro ${this.planCard()?.monthYearName.toLowerCase()} není uložen.`;
     return true;
   }
@@ -207,5 +219,33 @@ export class ProposalsComponent {
 
   ngOnDestroy(): void {
     this.leaveRoom();
+  }
+
+  private setBodyStyles() {
+    if (this.planCard()?.users) {
+      if (window.innerHeight < 700) {
+        this.bodyStyles.set({
+          'maxHeight': '500px',
+          'overflow-y': 'auto'
+        });
+      } else if (window.innerHeight > 700 && window.innerHeight < 920) {
+        if (this.planCard() && this.planCard()!.users.length > 16) {
+          this.bodyStyles.set({
+            'maxHeight': '680px',
+            'overflow-y': 'auto'
+          });
+        } else {
+          this.bodyStyles.set({
+            'maxHeight': '',
+            'overflow-y': 'hiddent'
+          });
+        }
+      } else {
+        this.bodyStyles.set({
+          'maxHeight': '',
+          'overflow-y': 'hidden'
+        });
+      }
+    }
   }
 }

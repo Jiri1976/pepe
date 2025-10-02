@@ -124,6 +124,12 @@ p-dialog.create-unit {
             }
 
             .p-datepicker-panel.p-component {
+                .p-datepicker-month-view {
+                    .p-datepicker-month.p-datepicker-month-selected {
+                        background: #864912 !important;
+                        color: #fff !important;
+                    }
+                }
 
                 .p-datepicker-calendar-container {
                     .p-datepicker-calendar {

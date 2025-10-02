@@ -70,7 +70,13 @@
 
         <li hideAdmin (click)="plansComponent.onSave()" [class.disabled]="plansComponent.nothingChanched()">
             <a [style.--background]="'#05C46B'">
+                @if (!isSaving()) {
                 <i class="bi bi-floppy"></i>
+                } @else {
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                }
             </a>
         </li>
     </ul>

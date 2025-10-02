@@ -31,6 +31,7 @@ export class WarehouseService {
     reloadItems = signal(false);
     reloadCards = signal(false);
     monthYear = signal<string>(this.MONTHS_NUM[new Date().getMonth()] + new Date().getFullYear());
+    defaultDate = signal<Date>(new Date(new Date().getFullYear(), new Date().getMonth()));
     destination = signal<string>('F-M');
     deleteCards = signal(false);
     warehouseNav = signal<'units' | 'items' | 'board'>('units');
@@ -114,6 +115,10 @@ export class WarehouseService {
         } catch (error) {
             console.log('WAREHOUSE LEAVE CHAT ERROR: ', error);
         }
+    }
+
+    resetDefaultDate() {
+        this.defaultDate.set(new Date(new Date().getFullYear(), new Date().getMonth()));
     }
 
     setComponent(comp: WarehouseItemsComponent) {

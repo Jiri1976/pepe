@@ -52,6 +52,7 @@ export class WarehouseOverviewComponent implements OnInit {
 
   ngOnInit(): void {
     this.warehouseService.monthYear.set(this.MONTHS_NUM[new Date().getMonth()] + new Date().getFullYear());
+    this.warehouseService.resetDefaultDate();
     this.warehouseService.warehouseNav.set('board');
     this.getCards();
   }

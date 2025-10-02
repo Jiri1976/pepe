@@ -27,7 +27,7 @@
                 </th>
                 }
             </div>
-            <div class="body" cdkDropListGroup #dashboard>
+            <div class="body" cdkDropListGroup #dashboard [style]="bodyStyles()">
                 <div cdkDropList (cdkDropListDropped)="drop($event)">
                     @for(user of planCard()?.users; track $index; let i = $index) {
 

@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { DialogRef } from '@angular/cdk/dialog';
@@ -23,4 +23,10 @@ export class SelectUserComponent {
   onClose() {
     this.dialogRef?.close();
   }
+
+  sectionStyles = signal<any>({
+    'width': '25rem',
+    'maxHeight': '500px',
+    'overflow-y': this.users()!.length > 11 ? 'auto' : 'hidden'
+  });
 }

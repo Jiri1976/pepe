@@ -10,7 +10,6 @@
 }
 
 .select-user {
-    width: 25rem;
 
     .close,
     .user {
@@ -29,15 +28,41 @@
         border-radius: 5px;
         border: 1px solid #864912;
         margin: 10px 0;
-        transition: 0.3s;
+        transition: 0.1s;
 
-        p {
+        .line {
             color: #864912;
             font-weight: 500;
             margin-bottom: 0 !important;
-            transition: 0.3s;
+            transition: 0.1s;
             font-family: "Poppins", sans-serif;
-            font-size: 14px;
+            font-size: 16px;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            width: 70%;
+
+            .user-roles {
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+
+                .role {
+                    display: flex;
+                    flex-direction: column;
+                    width: 20px;
+                    height: 20px;
+                    justify-content: center;
+                    align-items: center;
+                    border-radius: 15%;
+                    border: 1px solid #864912;
+                    // margin-left: 10px;
+                    padding: 2px;
+                    font-size: 14px;
+                }
+            }
         }
     }
 
@@ -46,8 +71,18 @@
         box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
         background: #864912;
 
-        p {
+        .line {
             color: #fff;
+        }
+
+        .role {
+            background: #fff;
+            color: #864912;
+        }
+
+        .role:hover {
+            background: #f7d3ad;
+            color: #864912;
         }
     }
 

@@ -1,9 +1,27 @@
-<div class="select-user">
-    @for(user of users(); track $index) {
-    <div class="user" (click)="onSelectUser(user, $index)">
-        <p>{{ user.name }} {{ user.surname }} - {{ user.position === 'Driver' ? 'řidič' : user.position === 'Cook' ?
-            'kuchyň' : ''}}
-        </p>
+<div class="select-user" [style]="sectionStyles()">
+    @for(user of uniqueUsers; track $index) {
+    <div class="user">
+
+        <div class="line">{{ user.user.name }} {{ user.user.surname }}
+
+            @let onlyOneRole = user.roles.length === 1;
+
+            <div class="user-roles">
+                @if (user.roles.includes('Driver')) {
+                <div class="role" (click)="onSelectUser(user.user, 'Driver')"
+                    [style.margin-right]="onlyOneRole ? '30px' : ''">
+                    Ř
+                </div>
+                }
+
+                @if (user.roles.includes('Cook')) {
+                <div class="role" (click)="onSelectUser(user.user, 'Cook')"
+                    [style.margin-right]="onlyOneRole ? '30px' : ''" [style.margin-left]="onlyOneRole ? '' : '10px'">
+                    K
+                </div>
+                }
+            </div>
+        </div>
     </div>
     }
     <div class="close">
