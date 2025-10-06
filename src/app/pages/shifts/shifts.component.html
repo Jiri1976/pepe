@@ -9,15 +9,17 @@
 
 <div class="box">
     @if(!isLoading()) {
-    @if (cards().length > 0) {
+
+    @if (uniqueUsers().length > 0) {
     <div class="shift-card" @fadeIn>
         <swiper-container #swiperRef effect="cards" grab-cursor="true" (swiperinit)="onSwiperInit($event)"
             (swiperslidechange)="onSlideChange($event)">
-            @for(card of cards(); track $index) {
+            @for(user of uniqueUsers(); track $index) {
             <swiper-slide>
-                <app-shift-card [shiftCard]="card" (updatedCard)="onCardUpdate($event)" [currentIndex]="$index" />
+                <app-shift-card [userCards]="user.cards" [currentIndex]="$index" />
             </swiper-slide>
             }
+
         </swiper-container>
     </div>
     } @else {

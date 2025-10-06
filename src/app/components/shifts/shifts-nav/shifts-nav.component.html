@@ -1,6 +1,6 @@
 <div class="menu">
     <ul>
-        <li hide (click)="shiftsComponent.onAddShift()" [class.disabled]="shiftsComponent.cards().length === 0">
+        <li hide (click)="shiftsComponent.onAddShift()" [class.disabled]="shiftsComponent.uniqueUsers().length === 0">
             <a [style.--background]="'#864912'" [style.--color]="'#fff'">
                 <i class="bi bi-plus"></i>
             </a>
@@ -12,7 +12,7 @@
             </a>
         </li>
 
-        <li hide (click)="openModal()" [class.disabled]="shiftsComponent.cards().length === 0">
+        <li hide (click)="openModal()" [class.disabled]="shiftsComponent.uniqueUsers().length === 0">
             <a [style.--background]="'#864912'" [style.--color]="'#fff'">
                 <i class="bi bi-people"></i>
             </a>
@@ -36,7 +36,7 @@
             </a>
         </li>
 
-        <li hide (click)="shiftsComponent.onAllToPdf()" [class.disabled]="shiftsComponent.cards().length === 0">
+        <li hide (click)="shiftsComponent.onAllToPdf()" [class.disabled]="pdfCards().length === 0">
             <a [style.--background]="'#864912'" [style.--color]="'#fff'">
                 @if (!pdfOn()) {
                 <i class="bi bi-filetype-pdf"></i>
@@ -61,7 +61,7 @@
             </a>
         </li>
 
-        <li hideAdmin (click)="openModal()" [class.disabled]="shiftsComponent.cards().length === 0">
+        <li hideAdmin (click)="openModal()" [class.disabled]="shiftsComponent.uniqueUsers().length === 0">
             <a [style.--background]="'#864912'" [style.--color]="'#fff'">
                 <i class="bi bi-people"></i>
             </a>

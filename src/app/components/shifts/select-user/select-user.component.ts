@@ -13,7 +13,13 @@ import { ShiftService } from '../../../services/shift.service';
 export class SelectUserComponent {
   private shiftService = inject(ShiftService);
   private dialogRef = inject(DialogRef, { optional: true });
-  users = computed(() => this.shiftService.users());
+  uniqueUsers = computed(() => this.shiftService.uniqueUsers());
+
+  sectionStyles = signal<any>({
+    'width': '25rem',
+    'maxHeight': '500px',
+    'overflow-y': this.uniqueUsers()!.length > 11 ? 'auto' : 'hidden'
+  });
 
   onSelectUser(userId: number) {
     this.shiftService.selectedUserId.set(userId);
@@ -23,10 +29,4 @@ export class SelectUserComponent {
   onClose() {
     this.dialogRef?.close();
   }
-
-  sectionStyles = signal<any>({
-    'width': '25rem',
-    'maxHeight': '500px',
-    'overflow-y': this.users()!.length > 11 ? 'auto' : 'hidden'
-  });
 }

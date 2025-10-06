@@ -15,6 +15,9 @@ import { FormsModule } from '@angular/forms';
 import { CalendarModule, Calendar } from 'primeng/calendar';
 import { DatePickerModule } from 'primeng/datepicker';
 import { Shift } from '../../models/shifts/shift.interface';
+import { UniqueUser } from '../../models/shifts/uniqueUser.interface';
+import { Dialog } from '@angular/cdk/dialog';
+import { ShiftFormComponent } from '../../components/shifts/shift-form/shift-form.component';
 
 @Component({
   selector: 'app-plans',
@@ -44,21 +47,19 @@ export class ShiftsComponent implements OnInit {
   private shiftService = inject(ShiftService);
   private destroyRef = inject(DestroyRef);
   private alertService = inject(AlertService);
-  filteredUsers = signal<any[]>([]);
+  private dialog = inject(Dialog);
   monthYear = signal<string>(this.MONTHS_NUM[new Date().getMonth()] + new Date().getFullYear());
   loggedUser = this.authService.getUser();
   destination = signal(this.loggedUser.role === 'Master' ? this.loggedUser.destination : 'F-M');
   isLoading = signal(false);
-  users = computed(() => this.shiftService.users());
   selectedUserId = computed(() => this.shiftService.selectedUserId());
-  cards = signal<ShiftCard[]>([]);
   currentIndex = signal<number>(0);
   calendarText = signal<string>(this.MONTHS_NAMES[new Date().getMonth()] + ' ' + new Date().getFullYear().toString().substring(2));
-  formShiftVisible = computed(() => this.shiftService.shiftFormVisible());
   pdfOn = signal(false);
   empty = new Array(45);
   defaultDate = new Date(new Date().getFullYear(), new Date().getMonth());
   maxDate: Date = new Date(new Date().getFullYear(), new Date().getMonth());
+  uniqueUsers = computed(() => this.shiftService.uniqueUsers());
   @ViewChild('calendar', { static: false }) calendar!: Calendar;
   @ViewChild('swiperRef', { static: false }) swiperRef!: ElementRef;
 
@@ -67,20 +68,6 @@ export class ShiftsComponent implements OnInit {
   }
 
   formShiftEffect = effect(() => {
-    if (this.formShiftVisible()) {
-      const swiper = (this.swiperRef.nativeElement as any).swiper;
-      swiper.allowTouchMove = false;
-    } else {
-      if (!this.isLoading()) {
-        setTimeout(() => {
-          if (this.cards().length > 0) {
-            const swiper = (this.swiperRef.nativeElement as any).swiper;
-            swiper.allowTouchMove = true;
-          }
-        }, 100);
-      }
-    }
-
     if (this.selectedUserId() > -1) {
       this.onSelectUser(this.selectedUserId());
     }
@@ -95,15 +82,9 @@ export class ShiftsComponent implements OnInit {
     });
   }
 
-  onCardUpdate(updatedCard: ShiftCard) {
-    let _cards = [...this.cards()];
-    let cardForUpdate = _cards.find(c => c.userId === updatedCard.userId);
-    cardForUpdate = updatedCard;
-    this.cards.set(_cards);
-  }
-
   onSlideChange(event: Event) {
     const swiperInstance = (event.target as any).swiper as Swiper;
+    this.shiftService.selectedCard.set(this.uniqueUsers()[swiperInstance.activeIndex].cards[0]);
     this.currentIndex.set(swiperInstance.activeIndex);
   }
 
@@ -114,6 +95,7 @@ export class ShiftsComponent implements OnInit {
 
   onSelectDestination(destination: string) {
     this.destination.set(destination);
+    this.currentIndex.set(0);
     this.getCards();
   }
 
@@ -138,13 +120,8 @@ export class ShiftsComponent implements OnInit {
   }
 
   onAllToPdf() {
-    let _cards = this.cards().filter(c => c.shifts.length > 0);
-    if (_cards.length === 0) {
-      this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Chybí uložené směny.' });
-      return;
-    }
     this.pdfOn.set(true);
-    const subscription = this.shiftService.generateAllToPDF(_cards, this.destination()).pipe(
+    const subscription = this.shiftService.generateAllToPDF(this.shiftService.pdfCards(), this.destination()).pipe(
       tap(response => {
         if (response === null) {
           this.pdfOn.set(false);
@@ -169,7 +146,7 @@ export class ShiftsComponent implements OnInit {
         }
       })
     ).subscribe({
-      error: () => this.isLoading.set(false)
+      error: () => this.pdfOn.set(false)
     });
 
     this.destroyRef.onDestroy(() => {
@@ -178,10 +155,11 @@ export class ShiftsComponent implements OnInit {
   }
 
   onReset() {
-    if (this.cards().length > 0) {
+    if (this.uniqueUsers().length > 0) {
       const swiper = (this.swiperRef.nativeElement as any).swiper;
       swiper.allowTouchMove = true;
     }
+    this.currentIndex.set(0);
     this.getCards();
   }
 
@@ -195,17 +173,17 @@ export class ShiftsComponent implements OnInit {
   }
 
   onAddShift() {
-    if (this.cards().length === 0) {
+    if (this.uniqueUsers().length === 0) {
       return;
     }
-    let card = { ...this.cards()[this.currentIndex()] };
-    this.shiftService.setMonthYear(card.monthYear);
+
+    this.shiftService.setMonthYear(this.shiftService.selectedCard()!.monthYear);
     let _shift: Shift = {
       id: 0,
-      shiftCardId: card.id,
-      userId: card.userId,
-      position: card.userPosition,
-      destination: card.destination,
+      shiftCardId: this.shiftService.selectedCard()!.id,
+      userId: this.shiftService.selectedCard()!.userId,
+      position: this.shiftService.selectedCard()!.userPosition,
+      destination: this.shiftService.selectedCard()!.destination,
       date: '',
       from: '11:00',
       to: '22:00',
@@ -214,23 +192,23 @@ export class ShiftsComponent implements OnInit {
     }
 
     if (this.isPastCard()) {
-      _shift.date = `01.${card.monthYear.substring(0, 2)}.${card.monthYear.substring(2, 6)}`;
+      _shift.date = `01.${this.shiftService.selectedCard()!.monthYear.substring(0, 2)}.${this.shiftService.selectedCard()!.monthYear.substring(2, 6)}`;
     } else {
       let day = new Date().getDate() < 10 ? '0' + new Date().getDate() : (new Date().getDate()).toString();
-      _shift.date = `${day}.${card.monthYear.substring(0, 2)}.${card.monthYear.substring(2, 6)}`;
+      _shift.date = `${day}.${this.shiftService.selectedCard()!.monthYear.substring(0, 2)}.${this.shiftService.selectedCard()!.monthYear.substring(2, 6)}`;
       _shift.to = this.isFridayOrSaturday(_shift.date) ? '23:00' : '22:00';
     }
     this.shiftService.setSelectedShift(_shift);
-    this.shiftService.shiftFormVisible.set(true);
+    this.dialog.open(ShiftFormComponent, { disableClose: false });
   }
 
   isPastCard() {
-    if (this.isLoading() || this.cards().length === 0) {
+    if (this.isLoading() || this.uniqueUsers().length === 0) {
       return true;
     }
-    let card = { ...this.cards()[this.currentIndex()] };
+
     let currentDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-    let cardDate = new Date(parseInt(card.monthYear.substring(2, 6)), parseInt(card.monthYear.substring(0, 2)) - 1, 1);
+    let cardDate = new Date(parseInt(this.monthYear().substring(2, 6)), parseInt(this.monthYear().substring(0, 2)) - 1, 1);
     if (cardDate < currentDate) {
       return true;
     }
@@ -245,9 +223,38 @@ export class ShiftsComponent implements OnInit {
     }
   }
 
+  private filterUsers(cards: ShiftCard[]) {
+    let unique: UniqueUser[] = [];
+    cards.forEach((card) => {
+      let isListed = false;
+      let isListedIndex = -1;
+      unique.forEach((uni, index) => {
+        if (card.userId === uni.userId) {
+          isListed = true;
+          isListedIndex = index;
+        }
+      });
+
+      if (isListed) {
+        unique[isListedIndex].cards.push(card);
+      } else {
+        unique.push({
+          userId: card.userId,
+          userName: card.userName,
+          userSurname: card.userSurname,
+          cards: [card]
+        });
+      }
+    });
+    this.shiftService.uniqueUsers.set(unique);
+    this.shiftService.selectedCard.set(this.uniqueUsers()[0].cards[0]);
+    this.shiftService.checkAllToPdf()
+  }
+
   private onSelectUser(userId: number) {
     this.swiper = this.swiperRef.nativeElement.swiper;
-    let index = this.users().findIndex(u => u.userId === userId);
+    let index = this.uniqueUsers().findIndex(u => u.userId === userId);
+    this.shiftService.selectedCard.set(this.uniqueUsers()[index].cards[0]);
     this.swiper.slideTo(index);
     this.shiftService.selectedUserId.set(-1);
   }
@@ -271,24 +278,14 @@ export class ShiftsComponent implements OnInit {
           this.isLoading.set(false);
           this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
         } else if (response.isSuccess === true) {
-          const _cards = response.result;
-          if (_cards.length > 0) {
-            let _users = _cards.map((card: any) => {
-              let userName = card.userName + " " + card.userSurname;
-              return {
-                userName: userName,
-                userId: card.userId,
-                position: card.userPosition
-              }
-            });
-            this.shiftService.users.set(_users);
-            this.cards.set(_cards);
+          if (response.result.length > 0) {
+            this.filterUsers(response.result);
             setTimeout(() => {
               this.slideToCard(this.currentIndex());
             }, 100)
           } else {
-            this.shiftService.users.set([]);
-            this.cards.set([]);
+            this.shiftService.uniqueUsers.set([]);
+            this.shiftService.checkAllToPdf();
           }
           this.isLoading.set(false);
         }

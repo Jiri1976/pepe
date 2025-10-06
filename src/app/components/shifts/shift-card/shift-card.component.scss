@@ -17,6 +17,7 @@
             background: #f8f8f4;
             color: #864912;
             justify-content: space-between;
+            align-items: center;
             display: flex;
             min-width: 700px;
 
@@ -31,6 +32,31 @@
 
             .center {
                 text-align: center !important;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-direction: row;
+
+                img {
+                    width: 33px;
+                    height: 33px;
+                    margin: 0 10px;
+                    border-radius: 50%;
+                    transition: 0.2s;
+                }
+
+                img:not(.onlyOne):hover {
+                    border: 1px solid #864912;
+                    cursor: pointer;
+                    transform: scale(1.2);
+                }
+
+                .onlyOne,
+                .onlyOne:hover {
+                    cursor: default;
+                    transform: scale(1);
+                }
+
             }
         }
 

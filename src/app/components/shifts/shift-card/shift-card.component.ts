@@ -1,6 +1,5 @@
-import { Component, computed, DestroyRef, inject, input, model, output, signal, ViewChild } from '@angular/core';
+import { Component, DestroyRef, inject, input, model, OnInit, output, signal } from '@angular/core';
 import { tap } from 'rxjs';
-import { InitShift } from '../../../models/shifts/initShift.interface';
 import { Shift } from '../../../models/shifts/shift.interface';
 import { AlertService } from '../../../services/alert.service';
 import { AuthService } from '../../../services/auth.service';
@@ -11,10 +10,11 @@ import { ShiftFormComponent } from "../shift-form/shift-form.component";
 import { ShiftsComponent } from '../../../pages/shifts/shifts.component';
 import { PageAnimation } from '../../../animations/page.animation';
 import { FastPageAnimation } from '../../../animations/fast-page.animation';
+import { Dialog } from '@angular/cdk/dialog';
 
 @Component({
   selector: 'app-shift-card',
-  imports: [ShiftFormComponent],
+  imports: [],
   templateUrl: './shift-card.component.html',
   styleUrl: './shift-card.component.scss',
   animations: [
@@ -22,48 +22,42 @@ import { FastPageAnimation } from '../../../animations/fast-page.animation';
     FastPageAnimation
   ]
 })
-export class ShiftCardComponent {
+export class ShiftCardComponent implements OnInit {
   private shiftService = inject(ShiftService);
   private authService = inject(AuthService);
   private confirmService = inject(ConfirmService);
   private alertService = inject(AlertService);
   private destroyRef = inject(DestroyRef);
   private shiftComponent = inject(ShiftsComponent);
-  visibleModal = model<boolean>(false);
+  private dialog = inject(Dialog);
   loggedUser = this.authService.getUser();
   cardLoading = signal(false);
-  shiftCard = model<ShiftCard>();
-  formVisible = computed(() => this.shiftService.shiftFormVisible());
   updatedCard = output<ShiftCard>();
   pdfLoading = signal(false);
   currentIndex = input.required<number>();
-  @ViewChild(ShiftFormComponent) shiftFormComponent: any;
+  userCards = model<ShiftCard[]>();
+  hasDriver = signal(false);
+  hasCook = signal(false);
+  firstCard = signal<string>('Cook');
+  card = signal<ShiftCard | null>(null);
 
-  onUpdateShift(shift: Shift) {
-    this.shiftService.setMonthYear(this.shiftCard()!.monthYear);
-    let date = new Date(parseInt(shift.date.split('.')[2]), parseInt(shift.date.split('.')[1]) - 1, parseInt(shift.date.split('.')[0]));
-    let from = new Date(parseInt(shift.date.split('.')[2]), parseInt(shift.date.split('.')[1]) - 1, parseInt(shift.date.split('.')[0]), parseInt(shift.from?.split(':')[0]!), parseInt(shift.from?.split(':')[1]!));
-    let to = new Date(parseInt(shift.date.split('.')[2]), parseInt(shift.date.split('.')[1]) - 1, parseInt(shift.date.split('.')[0]), parseInt(shift.to?.split(':')[0]!), parseInt(shift.to?.split(':')[1]!));
-    let _shift: InitShift = {
-      id: shift.id,
-      date: date,
-      from: from,
-      to: to,
-      perso: shift.perso,
-      position: shift.position,
-      destination: shift.destination
-    }
-    this.shiftService.selectedShift.set(_shift);
+  ngOnInit() {
+    this.hasDriver.set((this.userCards()!.filter(c => c.userPosition === 'Driver')).length > 0);
+    this.hasCook.set((this.userCards()!.filter(c => c.userPosition === 'Cook')).length > 0);
+    this.firstCard.set(this.userCards()![0].userPosition);
+    this.card.set(this.userCards()![0]);
   }
 
-  onCloseShiftForm() {
-    this.shiftService.shiftFormVisible.set(false);
+  changeCard(position: string) {
+    this.card.set(this.userCards()!.find(c => c.userPosition === position)!);
+    this.shiftService.selectedCard.set(this.card());
+    this.firstCard.set(position);
   }
 
   onUpdate(shift: Shift) {
-    this.shiftService.setMonthYear(this.shiftCard()!.monthYear);
+    this.shiftService.setMonthYear(this.card()!.monthYear);
     this.shiftService.setSelectedShift(shift);
-    this.shiftService.shiftFormVisible.set(true);
+    this.dialog.open(ShiftFormComponent, { disableClose: false });
   }
 
   onDeleteCard() {
@@ -71,7 +65,7 @@ export class ShiftCardComponent {
       .then((confirmed) => {
         if (confirmed) {
           this.cardLoading.set(true);
-          const subscription = this.shiftService.deleteShiftCard(this.shiftCard()!.id).pipe(
+          const subscription = this.shiftService.deleteShiftCard(this.card()!.id).pipe(
             tap(response => {
               if (response === null) {
                 this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
@@ -80,10 +74,16 @@ export class ShiftCardComponent {
                 this.cardLoading.set(false);
                 this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
               } else if (response.isSuccess) {
-                this.cardLoading.set(false);
-                this.shiftComponent.currentIndex.set(this.currentIndex());
-                this.shiftComponent.onReset();
+                let _uniqueUsers = [...this.shiftService.uniqueUsers()];
+                let user = _uniqueUsers.find(u => u.userId === this.card()!.userId);
+                let card = user?.cards.find(c => c.userPosition === this.card()!.userPosition);
+                card!.totalHours = "00:00";
+                card!.shifts = [];
+                this.shiftService.uniqueUsers.set(_uniqueUsers);
+                this.shiftService.selectedCard.set(card!);
+                this.shiftService.checkAllToPdf();
                 this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Karta byla smazána!' });
+                this.cardLoading.set(false);
               }
             }),
 
@@ -91,7 +91,6 @@ export class ShiftCardComponent {
             next: () => { },
             error: () => {
               this.cardLoading?.set(false);
-              this.shiftFormComponent?.loading?.set(false);
             }
           });
 
@@ -102,84 +101,9 @@ export class ShiftCardComponent {
       });
   }
 
-  onDeleteShift(shift: Shift) {
-    this.shiftFormComponent.loading.set(true);
-    const subscription = this.shiftService.deleteShift(shift.id).pipe(
-      tap(response => {
-        if (response === null) {
-          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
-          this.shiftFormComponent.loading.set(false);
-          this.shiftService.setSelectedShift(shift);
-          this.shiftFormComponent.shiftForm.enable();
-        } else if (response.isSuccess === false) {
-          this.shiftFormComponent.loading.set(false);
-          this.shiftService.setSelectedShift(shift);
-          this.shiftFormComponent.shiftForm.enable();
-          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
-        } else if (response.isSuccess) {
-          this.shiftFormComponent.loading.set(false);
-          this.shiftService.shiftFormVisible.set(false);
-          this.shiftComponent.currentIndex.set(this.currentIndex());
-          this.shiftComponent.onReset();
-          this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Směna byla smazána!' });
-        }
-      }),
-
-    ).subscribe({
-      next: () => { },
-      error: () => {
-        this.cardLoading?.set(false);
-        this.shiftFormComponent?.loading?.set(false);
-      }
-    });
-
-    this.destroyRef.onDestroy(() => {
-      subscription.unsubscribe();
-    });
-  }
-
-  onSave(shift: Shift) {
-    this.shiftFormComponent.loading.set(true);
-    shift.shiftCardId = this.shiftCard()!.id;
-    shift.userId = this.shiftCard()!.userId; 0
-    const subscription = this.shiftService.createUpdateShift(shift).pipe(
-      tap(response => {
-        if (response === null) {
-          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
-          this.shiftFormComponent.loading.set(false);
-          this.shiftService.setSelectedShift(shift);
-          this.shiftFormComponent.shiftForm.enable();
-        } else if (response.isSuccess === false) {
-          this.shiftFormComponent.loading.set(false);
-          this.shiftService.setSelectedShift(shift);
-          this.shiftFormComponent.shiftForm.enable();
-          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
-        } else if (response.isSuccess) {
-          this.shiftFormComponent.loading.set(false);
-          this.shiftService.shiftFormVisible.set(false);
-          this.shiftComponent.currentIndex.set(this.currentIndex());
-          this.shiftComponent.onReset();
-          this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Směna byla uložena!' });
-        }
-      }),
-
-    ).subscribe({
-      next: () => {
-      },
-      error: () => {
-        this.cardLoading?.set(false);
-        this.shiftFormComponent?.loading?.set(false);
-      }
-    });
-
-    this.destroyRef.onDestroy(() => {
-      subscription.unsubscribe();
-    });
-  }
-
   onToPdf() {
     this.pdfLoading.set(true);
-    const subscription = this.shiftService.generatePDF(this.shiftCard()!, this.shiftComponent.destination()).pipe(
+    const subscription = this.shiftService.generatePDF(this.card()!, this.shiftComponent.destination()).pipe(
       tap(response => {
         if (response === null) {
           this.pdfLoading.set(false);
@@ -198,15 +122,14 @@ export class ShiftCardComponent {
           var url = window.URL.createObjectURL(blob);
           const a = document.createElement('a')
           a.href = url;
-          a.download = `${this.shiftCard()?.userName} ${this.shiftCard()?.userSurname} - ${this.convertMonthYear(this.shiftCard()!.monthYear)} - ${this.shiftComponent.destination()}.pdf`;
+          a.download = `${this.card()?.userName} ${this.card()?.userSurname} - ${this.convertMonthYear(this.card()!.monthYear)} - ${this.card()!.destination}.pdf`;
           a.click();
           URL.revokeObjectURL(url);
         }
       })
     ).subscribe({
       error: () => {
-        this.cardLoading?.set(false);
-        this.shiftFormComponent?.loading?.set(false);
+        this.pdfLoading.set(false);
       }
     });
 
@@ -217,7 +140,7 @@ export class ShiftCardComponent {
 
   isPastCard() {
     let currentDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-    let cardDate = new Date(parseInt(this.shiftCard()!.monthYear.substring(2, 6)), parseInt(this.shiftCard()!.monthYear.substring(0, 2)) - 1, 1);
+    let cardDate = new Date(parseInt(this.card()!.monthYear.substring(2, 6)), parseInt(this.card()!.monthYear.substring(0, 2)) - 1, 1);
     if (cardDate < currentDate) {
       return true;
     }

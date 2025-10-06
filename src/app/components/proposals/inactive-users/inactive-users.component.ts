@@ -20,7 +20,6 @@ export class InactiveUsersComponent implements OnInit {
   private proposalsService = inject(ProposalsService);
   private dialogRef = inject(DialogRef, { optional: true });
   users = computed(() => this.proposalsService.planCard()?.inactiveUsers);
-  checkedUsers: { user: ProposalUser, roles: 'cook' | 'driver'[] }[] = [];
   uniqueUsers: UniqueUser[] = [];
 
   ngOnInit() {

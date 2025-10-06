@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, ElementRef, inject, input, OnInit, output, signal, ViewChild } from '@angular/core';
+import { Component, computed, DestroyRef, effect, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Calendar, CalendarModule } from 'primeng/calendar';
 import { ButtonModule } from 'primeng/button';
@@ -11,7 +11,10 @@ import { ConfirmService } from '../../../services/confirm.service';
 import { Shift } from '../../../models/shifts/shift.interface';
 import { DatePickerModule } from 'primeng/datepicker';
 import { OverlayModule } from 'primeng/overlay';
-import { AuthUser } from '../../../models/auth-user.interface';
+import { DialogRef } from '@angular/cdk/dialog';
+import { tap } from 'rxjs';
+import { AlertService } from '../../../services/alert.service';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-shift-form',
@@ -33,9 +36,14 @@ import { AuthUser } from '../../../models/auth-user.interface';
 export class ShiftFormComponent implements OnInit {
   private shiftService = inject(ShiftService);
   private confirmService = inject(ConfirmService);
-  loggedUser = input.required<AuthUser>();
+  private dialogRef = inject(DialogRef, { optional: true });
+  private alertService = inject(AlertService);
+  private destroyRef = inject(DestroyRef);
+  private authService = inject(AuthService);
+  loggedUser = computed(() => this.authService.getUser());
   shiftForm!: FormGroup;
   selectedShift = computed(() => this.shiftService.selectedShift());
+  card = computed(() => this.shiftService.selectedCard());
   persoError = false;
   dateError = false;
   fromError = false;
@@ -44,15 +52,12 @@ export class ShiftFormComponent implements OnInit {
   fromIsOpen = signal(false);
   toIsOpen = signal(false);
   oldAndNewValuesAreSame = true;
-  closeShiftForm = output<boolean>();
-  shiftForSave = output<Shift>();
-  shiftForDelete = output<Shift>();
   monthYear = computed(() => this.shiftService.monthYear());
   minDate = this.getMinDate(this.monthYear()!);
   maxDate = new Date();
   loading = signal(false);
   loadingText = signal('');
-  userName = input.required<string | undefined>();
+  userName = signal<string>('');
 
   @ViewChild('calendar', { static: false }) calendar!: Calendar;
   @ViewChild('timeFrom', { static: false }) timeFrom!: Calendar;
@@ -77,25 +82,59 @@ export class ShiftFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.initializedShitForm();
+    this.userName.set(`${this.shiftService.selectedCard()!.userName} ${this.shiftService.selectedCard()!.userSurname}`)
   }
 
   ngAfterViewInit() {
     this.calendar.cd.detectChanges();
+    this.calendar.hideOverlay();
   }
 
   onDelete() {
-    if (this.loading()) {
-      return;
-    }
     this.shiftForm.disable();
     let date = new Date(this.shiftForm.get('shiftDate')?.value).toLocaleString("cs-CZ", { dateStyle: 'medium' });
     this.confirmService.confirm(`Opravdu chceš smazat směnu z ${date}?`)
       .then((confirmed) => {
         if (confirmed) {
-          this.shiftForDelete.emit(this.convertToShift());
-          this.loadingText.set('Odtraňuji směnu ...')
+          this.loading.set(true);
+          let shift = this.convertToShift();
+          this.loadingText.set('Odtraňuji směnu ...');
+
+          const subscription = this.shiftService.deleteShift(shift.id).pipe(
+            tap(response => {
+              if (response === null) {
+                this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+                this.loading.set(false);
+              } else if (response.isSuccess === false) {
+                this.loading.set(false);
+                this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+              } else if (response.isSuccess) {
+                let _uniqueUsers = [...this.shiftService.uniqueUsers()];
+                let user = _uniqueUsers.find(u => u.userId === this.card()!.userId);
+                let card = user?.cards.find(c => c.userPosition === this.card()!.userPosition);
+                card!.shifts = card!.shifts.filter(s => s.id !== shift.id);
+                this.shiftService.uniqueUsers.set(_uniqueUsers);
+                this.shiftService.selectedCard.set(response.result);
+                this.shiftService.checkAllToPdf()
+                this.loading.set(false);
+                this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Směna byla smazána!' });
+                this.dialogRef!.close();
+
+              }
+            }),
+
+          ).subscribe({
+            next: () => { },
+            error: () => {
+              this.loading.set(false);
+            }
+          });
+
+          this.destroyRef.onDestroy(() => {
+            subscription.unsubscribe();
+          });
         } else {
-          this.shiftForm.enable();
+          return;
         }
       });
   }
@@ -121,21 +160,11 @@ export class ShiftFormComponent implements OnInit {
     }
   }
 
-  onSubmitShiftForm() {
-    this.shiftForm.disable();
-    this.shiftForSave.emit(this.convertToShift());
-    this.loadingText.set(this.selectedShift().id > 0 ? 'Upravuji směnu ...' : 'Ukládám směnu ...')
-  }
-
   onHideForm() {
     if (this.loading()) {
       return;
     }
-    this.persoError = false;
-    this.dateError = false;
-    this.fromError = false;
-    this.toError = false;
-    this.closeShiftForm.emit(true);
+    this.dialogRef?.close();
   }
 
   onBlur(el: 'calendar' | 'from' | 'to') {
@@ -274,6 +303,53 @@ export class ShiftFormComponent implements OnInit {
     let _date = date.split('T')[0];
     let time = date.split('T')[1].substring(0, 5);
     return `${_date.split('-')[2]}.${_date.split('-')[1]}.${_date.split('-')[0]} ${time}`;
+  }
+
+  onSave() {
+    let shift = this.convertToShift();
+    this.shiftForm.disable();
+    this.loadingText.set(this.selectedShift().id > 0 ? 'Upravuji směnu ...' : 'Ukládám směnu ...');
+    this.loading.set(true);
+    shift.shiftCardId = this.card()!.id;
+    shift.userId = this.card()!.userId; 0
+    const subscription = this.shiftService.createUpdateShift(shift).pipe(
+      tap(response => {
+        if (response === null) {
+          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+          this.loading.set(false);
+          this.shiftForm.enable();
+        } else if (response.isSuccess === false) {
+          this.loading.set(false);
+          this.shiftForm.enable();
+          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+        } else if (response.isSuccess) {
+          this.loading.set(false);
+          let _uniqueUsers = [...this.shiftService.uniqueUsers()];
+          let user = _uniqueUsers.find(u => u.userId === shift.userId);
+          let card = user?.cards.find(c => c.userPosition === this.card()!.userPosition);
+          if (card!.id === 0) {
+            card!.id = response.result.id;
+          }
+          card!.shifts = response.result.shifts;
+          this.shiftService.uniqueUsers.set(_uniqueUsers);
+          this.shiftService.selectedCard.set(response.result);
+          this.shiftService.checkAllToPdf()
+          this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Směna byla uložena!' });
+          this.dialogRef?.close();
+        }
+      }),
+
+    ).subscribe({
+      next: () => {
+      },
+      error: () => {
+        this.loading?.set(false);
+      }
+    });
+
+    this.destroyRef.onDestroy(() => {
+      subscription.unsubscribe();
+    });
   }
 
   private convertToShift() {

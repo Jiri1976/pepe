@@ -5,7 +5,6 @@ import { tap } from 'rxjs';
 import { AlertService } from '../../../services/alert.service';
 import { WarehouseService } from '../../../services/warehouse.service';
 import { NotificationComponent } from "../../notification/notification.component";
-// import { WarehouseItemsComponent } from '../warehouse-items/warehouse-items.component';
 
 @Component({
   selector: 'app-widget-update',
@@ -17,7 +16,6 @@ export class WidgetUpdateComponent {
   private warehouseService = inject(WarehouseService);
   private alertService = inject(AlertService);
   private destroyRef = inject(DestroyRef);
-  // private warehouseItemsComp = inject(WarehouseItemsComponent);
   itemForm!: FormGroup;
   item = input.required<WarehouseItem>();
   updateVisible = model<boolean>(false);

@@ -5,7 +5,6 @@ export interface ShiftCard {
     monthYear: string,
     destination: string,
     userId: number,
-    // user: string,
     userName: string,
     userSurname: string,
     userPosition: string,

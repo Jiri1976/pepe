@@ -2,7 +2,6 @@ import { Component, computed, inject, OnInit } from '@angular/core';
 import { HeaderComponent } from "./components/header/header.component";
 import { AlertComponent } from "./components/alert/alert.component";
 import { AuthService } from './services/auth.service';
-import { RouteAnimation } from './animations/route.animation';
 import { PrimeNG } from 'primeng/config';
 import { RouterOutlet } from '@angular/router';
 
@@ -11,7 +10,7 @@ import { RouterOutlet } from '@angular/router';
   imports: [RouterOutlet, HeaderComponent, AlertComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
-  animations: [RouteAnimation]
+  animations: []
 })
 export class AppComponent implements OnInit {
   private authService = inject(AuthService);
@@ -44,12 +43,5 @@ export class AppComponent implements OnInit {
       dateFormat: 'dd.mm.yy',
       weekHeader: 'Týd',
     });
-  }
-
-  prepareRoute(outlet: RouterOutlet) {
-    return (
-      outlet?.activatedRouteData &&
-      outlet.activatedRouteData['animation']
-    );
   }
 }

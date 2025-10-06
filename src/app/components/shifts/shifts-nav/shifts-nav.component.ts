@@ -22,16 +22,9 @@ export class ShiftsNavComponent {
   destination = model('');
   pdfOn = model(false);
   loggedUser = this.authService.getUser();
-  disabled = computed(() => this.shiftService.shiftFormVisible() || this.shiftsComponent.isLoading());
-  formShiftVisible = computed(() => this.shiftService.shiftFormVisible());
+  pdfCards = computed(() => this.shiftService.pdfCards());
 
   openModal() {
-    if (this.shiftsComponent.cards().length === 0) {
-      return;
-    }
-
-    if (!this.formShiftVisible()) {
-      this.dialog.open(SelectUserComponent, { disableClose: false });
-    }
+    this.dialog.open(SelectUserComponent, { disableClose: false });
   }
 }

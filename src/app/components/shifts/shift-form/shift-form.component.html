@@ -2,7 +2,13 @@
     <form [formGroup]="shiftForm">
         <div class="row">
             <div class="title">
-                <h1>{{ shiftForm.get('id')?.value === 0 ? 'Přidat směnu' : 'Upravit směnu' }} - {{ userName()}}</h1>
+                <h1>{{ shiftForm.get('id')?.value === 0 ? 'Nová směna' : 'Upravit směnu' }} - {{ userName()}}</h1>
+                @if (card()?.userPosition === 'Driver') {
+                <img src="./colored_car.png" alt="Car" />
+                }
+                @if (card()?.userPosition === 'Cook') {
+                <img src="./colored_chef.png" alt="Chef" />
+                }
             </div>
         </div>
         <div class="row">
@@ -142,7 +148,7 @@
             </div>
             <div class="col-6">
                 @if(!loading()) {
-                <button type="submit" id="addBtn" class="btn w-100" (click)="onSubmitShiftForm()"
+                <button type="submit" id="addBtn" class="btn w-100" (click)="onSave()"
                     [disabled]="persoError || fromError || toError || dateError"><i
                         class="bi bi-plus"></i>&nbsp;{{selectedShift().id
                     === 0 ? 'Zapsat' : 'Upravit'}}</button>

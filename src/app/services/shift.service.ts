@@ -7,6 +7,7 @@ import { Shift } from "../models/shifts/shift.interface";
 import { InitShift } from "../models/shifts/initShift.interface";
 import { AuthService } from "./auth.service";
 import { ShiftCard } from "../models/shifts/shiftCard.interface";
+import { UniqueUser } from "../models/shifts/uniqueUser.interface";
 
 @Injectable({
     providedIn: 'root'
@@ -27,9 +28,12 @@ export class ShiftService {
     monthYear = signal<string>('');
     selectedShift = signal<InitShift>(this.initialShift);
     cardShiftMonthYear = signal<string>('');
-    shiftFormVisible = signal(false);
-    users = signal<{ userName: string, userId: number, position: string }[]>([]);
+    // shiftFormVisible = signal(false);
+    //users = signal<{ userName: string, userId: number, position: string }[]>([]);
     selectedUserId = signal<number>(-1);
+    selectedCard = signal<ShiftCard | null>(null);
+    uniqueUsers = signal<UniqueUser[]>([]);
+    pdfCards = signal<ShiftCard[]>([]);
 
     setMonthYear(monthYear: string) {
         this.monthYear.set(monthYear);
@@ -105,6 +109,19 @@ export class ShiftService {
                 .set('user-role', role)
                 .set('destination', destination)
         });
+    }
+
+    checkAllToPdf() {
+        this.pdfCards.set([]);
+        let _pdfCards: ShiftCard[] = [];
+        this.uniqueUsers().forEach(user => {
+            user.cards.forEach(card => {
+                if (card.id > 0 && card.shifts.length > 0) {
+                    _pdfCards.push(card);
+                }
+            });
+        });
+        this.pdfCards.set(_pdfCards);
     }
 
     generateAllToPDF(cards: ShiftCard[], destination: string) {

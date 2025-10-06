@@ -144,8 +144,6 @@ export class ProposalsComponent {
   }
 
   drop(event: CdkDragDrop<number, any>) {
-    console.log(this.planCard()!.users![0].shifts[0]);
-
     this.proposalsService.updatePositions(event.previousIndex, event.currentIndex);
   }
 

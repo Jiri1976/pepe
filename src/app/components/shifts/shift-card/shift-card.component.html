@@ -3,20 +3,35 @@
     <div class="user-card-table" @fadeIn @fadeOut>
         <div class="head">
             <div class="right">
-                <b>{{convertMonthYear(shiftCard()!.monthYear)}}</b>
+                <b>{{convertMonthYear(card()!.monthYear)}}</b>
             </div>
             <div class="center">
-                @let userName = shiftCard()?.userName + " " + shiftCard()?.userSurname;
-                <b>{{ userName }} - {{ shiftCard()?.userPosition === 'Driver'
-                    ? 'Řidič' : 'Kuchyň' }}</b>
-            </div>
+                @let userName = card()!.userName + " " + card()!.userSurname;
+                <b>{{ userName }}</b>
 
+                @if (hasDriver()) {
+                @if (firstCard() === 'Driver') {
+                <img src="./dark_car.png" alt="Car" [class.onlyOne]="userCards()?.length === 1" />
+                } @else {
+                <img src="./colored_car.png" alt="Car" (click)="changeCard('Driver')" />
+                }
+                }
+
+                @if (hasCook()) {
+                @if (firstCard() === 'Cook') {
+                <img src="./dark_chef.png" alt="Chef" [class.onlyOne]="userCards()?.length === 1" />
+                } @else {
+                <img src="./colored_chef.png" alt="Chef" (click)="changeCard('Cook')" />
+                }
+                }
+            </div>
             <div class="left">
                 <i class="bi bi-watch"></i>&nbsp;
-                <b>{{shiftCard()!.totalHours ? shiftCard()!.totalHours : '00:00'}}</b>
+                <b>{{card()!.totalHours ? card()!.totalHours : '00:00'}}</b>
             </div>
         </div>
-        @if(shiftCard()!.shifts.length > 0) {
+
+        @if(card()!.shifts.length > 0) {
         <table class="table">
             <thead class="table-dark">
                 <tr>
@@ -29,7 +44,7 @@
                 </tr>
             </thead>
             <tbody>
-                @for(shift of shiftCard()!.shifts; track $index) {
+                @for(shift of card()!.shifts; track $index) {
                 <tr
                     (click)="((isPastCard() === false && loggedUser.role === 'Master') || (loggedUser.role === 'Admin')) && onUpdate(shift)">
                     <td scope="row" style="width: 5% !important; text-align: right !important; font-weight: bold;">
@@ -58,12 +73,12 @@
             }
         </div>
         }
-        @if(shiftCard()!.shifts.length === 0) {
+        @if(card()!.shifts.length === 0) {
         <div class="empty-shifts">
             <h4>Žádné uložené směny.</h4>
         </div>
         <div class="action-buttons">
-            @if (loggedUser.role === 'Admin' && shiftCard()!.id > 0) {
+            @if (loggedUser.role === 'Admin' && card()!.id > 0 && card()!.shifts.length > 0) {
             <button class="deleteCardBtn" (click)="onDeleteCard()"><i class="bi bi-x"></i> Smazat kartu</button>
             }
         </div>
@@ -81,10 +96,3 @@
     </div>
     }
 </div>
-
-@if (formVisible()) {
-@let userName = shiftCard()?.userName + " " + shiftCard()?.userSurname;
-
-<app-shift-form @fastIn @fastOut (closeShiftForm)="onCloseShiftForm()" (shiftForSave)="onSave($event)"
-    (shiftForDelete)="onDeleteShift($event)" [userName]="userName" [loggedUser]="loggedUser" />
-}

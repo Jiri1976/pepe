@@ -1,8 +1,7 @@
 <div class="select-user" [style]="sectionStyles()">
-    @for(user of users(); track user.userId) {
+    @for(user of uniqueUsers(); track user.userId) {
     <div class="user" (click)="onSelectUser(user.userId)">
-        <p>{{ user.userName }} - {{ user.position === 'Driver' ? 'řidič' : user.position === 'Cook' ? 'kuchyň' : ''}}
-        </p>
+        <p>{{ user.userName }} {{ user.userSurname }}</p>
     </div>
     }
     <div class="close">
