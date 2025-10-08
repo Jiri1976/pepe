@@ -8,19 +8,13 @@ import { ShiftService } from '../../../services/shift.service';
 import { ShiftCard } from '../../../models/shifts/shiftCard.interface';
 import { ShiftFormComponent } from "../shift-form/shift-form.component";
 import { ShiftsComponent } from '../../../pages/shifts/shifts.component';
-import { PageAnimation } from '../../../animations/page.animation';
-import { FastPageAnimation } from '../../../animations/fast-page.animation';
 import { Dialog } from '@angular/cdk/dialog';
 
 @Component({
   selector: 'app-shift-card',
   imports: [],
   templateUrl: './shift-card.component.html',
-  styleUrl: './shift-card.component.scss',
-  animations: [
-    PageAnimation,
-    FastPageAnimation
-  ]
+  styleUrl: './shift-card.component.scss'
 })
 export class ShiftCardComponent implements OnInit {
   private shiftService = inject(ShiftService);

@@ -7,16 +7,12 @@ import { WarehouseService } from '../../../services/warehouse.service';
 import { AlertService } from '../../../services/alert.service';
 import { ConfirmService } from '../../../services/confirm.service';
 import { WarehouseItem } from '../../../models/warehouse/warehouse-item.interface';
-import { PageAnimation } from '../../../animations/page.animation';
 
 @Component({
   selector: 'app-warehouse-items',
   imports: [WidgetComponent, CdkDropList, CdkDropListGroup],
   templateUrl: './warehouse-items.component.html',
-  styleUrl: './warehouse-items.component.scss',
-  animations: [
-    PageAnimation
-  ]
+  styleUrl: './warehouse-items.component.scss'
 })
 export class WarehouseItemsComponent implements OnInit {
   private destroyRef = inject(DestroyRef);

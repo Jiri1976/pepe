@@ -1,6 +1,6 @@
 <div class="container">
     @if (!isLoading()) {
-    <div class="unit-card" @fadeIn>
+    <div class="unit-card" animate.enter="fade-in">
         @if (cards().length > 0) {
         <swiper-container #swiperRef effect="cards" grab-cursor="true" (swiperinit)="onSwiperInit($event)">
             @for(card of cards(); track $index) {
@@ -81,13 +81,13 @@
             }
         </swiper-container>
         } @else {
-        <div class="missig-items" @fadeIn>
+        <div class="missig-items" animate.enter="fade-in">
             <h4>Nenalezeny data v databázi.</h4>
         </div>
         }
     </div>
     } @else {
-    <div class="skeleton" @fadeOut>
+    <div class="skeleton" animate.leave="fade-out">
         <div class="row unitList">
             <div class="row mb-3 head">
             </div>

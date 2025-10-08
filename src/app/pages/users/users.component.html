@@ -1,10 +1,10 @@
 <div class="box">
     @if (!isLoading()) {
 
-    <div class="users" @fadeIn @fadeOut>
+    <div class="users" animate.enter="fade-in" animate.leave="fade-out">
         <div class="row">
             @if(filteredUsers().length > 0) {
-            @for(user of filteredUsers(); track $index) {
+            @for(user of filteredUsers(); track $index; let i = $index) {
             <app-user-item [user]="user" />
             }
 
@@ -18,17 +18,17 @@
     </div>
 
     } @else {
-    <div class="skeleton" @fadeOut>
+    <div class="skeleton" animate.leave="fade-out">
         @for (i of [1,2,3,4,5,6,7,8,9,10]; track i) {
         <div class="row blind mt-1"></div>
         }
     </div>
     }
 
-    <app-users-nav @fadeIn @fadeOut />
+    <app-users-nav animate.enter="fade-in" animate.leave="fade-out" />
 
     @if (filteredUsers().length > 0) {
-    <div class="pagination-div" @fadeIn @fadeOut>
+    <div class="pagination-div" animate.enter="fade-in" animate.leave="fade-out">
         <app-user-pagination />
     </div>
     }

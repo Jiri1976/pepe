@@ -1,16 +1,12 @@
 import { Component, computed, inject } from '@angular/core';
 import { AlertService } from '../../services/alert.service';
 import { DialogRef } from '@angular/cdk/dialog';
-import { FastPageAnimation } from '../../animations/fast-page.animation';
 
 @Component({
   selector: 'app-notification-messages',
   imports: [],
   templateUrl: './notification-messages.component.html',
-  styleUrl: './notification-messages.component.scss',
-  animations: [
-    FastPageAnimation,
-  ]
+  styleUrl: './notification-messages.component.scss'
 })
 export class NotificationMessagesComponent {
   private alertService = inject(AlertService);

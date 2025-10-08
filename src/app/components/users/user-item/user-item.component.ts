@@ -1,5 +1,4 @@
 import { Component, DestroyRef, inject, input, signal } from '@angular/core';
-import { PageAnimation } from '../../../animations/page.animation';
 import { UsersService } from '../../../services/users.service';
 import { Dialog } from '@angular/cdk/dialog';
 import { UserComponent } from '../user/user.component';
@@ -11,10 +10,7 @@ import { AlertService } from '../../../services/alert.service';
   selector: 'app-user-item',
   imports: [],
   templateUrl: './user-item.component.html',
-  styleUrl: './user-item.component.scss',
-  animations: [
-    PageAnimation
-  ]
+  styleUrl: './user-item.component.scss'
 })
 export class UserItemComponent {
   private usersService = inject(UsersService);

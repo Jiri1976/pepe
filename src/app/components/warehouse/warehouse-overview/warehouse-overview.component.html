@@ -1,6 +1,6 @@
 <div class="block">
     @if (!uploadingCards()) {
-    <div class="wrapper" @fadeIn @fadeOut>
+    <div class="wrapper" animate.enter="fade-in" animate.leave="fade-out">
         @if (cards().length > 0) {
         <div class="table">
             <div class="table-head">
@@ -43,13 +43,13 @@
             </div>
         </div>
         } @else {
-        <div class="empty-item" @fadeIn>
+        <div class="empty-item" animate.enter="fade-in">
             <h4>Nenalezeny data v databázi.</h4>
         </div>
         }
     </div>
     } @else {
-    <div class="skeleton" @fadeIn @fadeOut>
+    <div class="skeleton" animate.enter="fade-in" animate.leave="fade-out">
         <div class="empty-table">
             <div class="empty-table-head">
                 <div class="empty-first-head-cell"></div>

@@ -10,10 +10,8 @@ import { ShiftCard } from '../../models/shifts/shiftCard.interface';
 import { ShiftCardComponent } from '../../components/shifts/shift-card/shift-card.component';
 import Swiper from 'swiper';
 import { ShiftsNavComponent } from "../../components/shifts/shifts-nav/shifts-nav.component";
-import { PageAnimation } from '../../animations/page.animation';
 import { FormsModule } from '@angular/forms';
-import { CalendarModule, Calendar } from 'primeng/calendar';
-import { DatePickerModule } from 'primeng/datepicker';
+import { DatePicker, DatePickerModule } from 'primeng/datepicker';
 import { Shift } from '../../models/shifts/shift.interface';
 import { UniqueUser } from '../../models/shifts/uniqueUser.interface';
 import { Dialog } from '@angular/cdk/dialog';
@@ -27,16 +25,13 @@ import { ShiftFormComponent } from '../../components/shifts/shift-form/shift-for
     ButtonModule,
     ShiftCardComponent,
     ShiftsNavComponent,
-    CalendarModule,
+    DatePicker,
     DatePickerModule,
     FormsModule
   ],
   templateUrl: './shifts.component.html',
   styleUrl: './shifts.component.scss',
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  animations: [
-    PageAnimation
-  ]
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class ShiftsComponent implements OnInit {
   private swiper!: Swiper;
@@ -60,7 +55,7 @@ export class ShiftsComponent implements OnInit {
   defaultDate = new Date(new Date().getFullYear(), new Date().getMonth());
   maxDate: Date = new Date(new Date().getFullYear(), new Date().getMonth());
   uniqueUsers = computed(() => this.shiftService.uniqueUsers());
-  @ViewChild('calendar', { static: false }) calendar!: Calendar;
+  @ViewChild('calendar', { static: false }) calendar!: DatePicker;
   @ViewChild('swiperRef', { static: false }) swiperRef!: ElementRef;
 
   ngOnInit(): void {

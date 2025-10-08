@@ -1,6 +1,6 @@
 <div class="card-wrapper">
     @if (!cardLoading()) {
-    <div class="user-card-table" @fadeIn @fadeOut>
+    <div class="user-card-table" animate.enter="fade-in" animate.leave="fade-out">
         <div class="head">
             <div class="right">
                 <b>{{convertMonthYear(card()!.monthYear)}}</b>
@@ -85,7 +85,7 @@
         }
     </div>
     } @else {
-    <div class="skeleton" @fadeOut>
+    <div class="skeleton" animate.leave="fade-out">
         @for(i of [1,2,3]; track i) {
         <div class="empty-widget">
             @if (i === 2) {

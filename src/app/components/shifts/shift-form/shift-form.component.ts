@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, DestroyRef, effect, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, computed, DestroyRef, effect, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Calendar, CalendarModule } from 'primeng/calendar';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { TextareaModule } from 'primeng/textarea';
@@ -9,7 +8,7 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 import { ShiftService } from '../../../services/shift.service';
 import { ConfirmService } from '../../../services/confirm.service';
 import { Shift } from '../../../models/shifts/shift.interface';
-import { DatePickerModule } from 'primeng/datepicker';
+import { DatePicker, DatePickerModule } from 'primeng/datepicker';
 import { OverlayModule } from 'primeng/overlay';
 import { DialogRef } from '@angular/cdk/dialog';
 import { tap } from 'rxjs';
@@ -24,22 +23,24 @@ import { AuthService } from '../../../services/auth.service';
     DialogModule,
     ButtonModule,
     FormsModule,
-    CalendarModule,
+    DatePickerModule,
     TextareaModule,
     FloatLabelModule,
     DatePickerModule,
-    OverlayModule
+    OverlayModule,
+    DatePicker
   ],
   templateUrl: './shift-form.component.html',
   styleUrl: './shift-form.component.scss'
 })
-export class ShiftFormComponent implements OnInit {
+export class ShiftFormComponent implements OnInit, AfterViewInit {
   private shiftService = inject(ShiftService);
   private confirmService = inject(ConfirmService);
   private dialogRef = inject(DialogRef, { optional: true });
   private alertService = inject(AlertService);
   private destroyRef = inject(DestroyRef);
   private authService = inject(AuthService);
+  private cdRef = inject(ChangeDetectorRef);
   loggedUser = computed(() => this.authService.getUser());
   shiftForm!: FormGroup;
   selectedShift = computed(() => this.shiftService.selectedShift());
@@ -59,9 +60,10 @@ export class ShiftFormComponent implements OnInit {
   loadingText = signal('');
   userName = signal<string>('');
 
-  @ViewChild('calendar', { static: false }) calendar!: Calendar;
-  @ViewChild('timeFrom', { static: false }) timeFrom!: Calendar;
-  @ViewChild('timeTo', { static: false }) timeTo!: Calendar;
+  @ViewChild('calendar', { static: false }) calendar!: DatePicker;
+  @ViewChild('timeFrom', { static: false }) timeFrom!: DatePicker;
+  @ViewChild('timeTo', { static: false }) timeTo!: DatePicker;
+
   @ViewChild('perso') perso!: ElementRef;
 
   constructor() {
@@ -88,6 +90,7 @@ export class ShiftFormComponent implements OnInit {
   ngAfterViewInit() {
     this.calendar.cd.detectChanges();
     this.calendar.hideOverlay();
+    this.cdRef.detectChanges();
   }
 
   onDelete() {
@@ -119,7 +122,6 @@ export class ShiftFormComponent implements OnInit {
                 this.loading.set(false);
                 this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Směna byla smazána!' });
                 this.dialogRef!.close();
-
               }
             }),
 

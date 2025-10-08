@@ -4,7 +4,6 @@ import { WarehouseService } from '../../../services/warehouse.service';
 import { HideElementDirective } from '../../../directives/hide-element.directive';
 import { HideWhenAdminDirective } from '../../../directives/hide-when-admin.directive';
 import { AuthService } from '../../../services/auth.service';
-import { PageAnimation } from '../../../animations/page.animation';
 import { Router } from '@angular/router';
 import { Dialog } from '@angular/cdk/dialog';
 import { ItemsListComponent } from '../items-list/items-list.component';
@@ -13,10 +12,7 @@ import { ItemsListComponent } from '../items-list/items-list.component';
   selector: 'app-warehouse-nav',
   imports: [HideElementDirective, HideWhenAdminDirective],
   templateUrl: './warehouse-nav.component.html',
-  styleUrl: './warehouse-nav.component.scss',
-  animations: [
-    PageAnimation
-  ]
+  styleUrl: './warehouse-nav.component.scss'
 })
 export class WarehouseNavComponent {
   private authService = inject(AuthService);

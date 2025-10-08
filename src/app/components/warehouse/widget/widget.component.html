@@ -6,11 +6,12 @@
         <button class="delete-button" (click)="onDelete()"><i class="bi bi-trash"></i></button>
     </div>
     } @else {
-    <app-widget-add [item]="item()" @fastIn @fastOut />
+    <app-widget-add [item]="item()" animate.enter="fast-in" animate.leave="fast-out" />
     }
 
     @if (updateVisible()) {
-    <app-widget-update [(updateVisible)]="updateVisible" [item]="item()" @fastIn @fastOut />
+    <app-widget-update [(updateVisible)]="updateVisible" [item]="item()" animate.enter="fast-in"
+        animate.leave="fast-out" />
     }
     <div *cdkDragPlaceholder></div>
 </div>

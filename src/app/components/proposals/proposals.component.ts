@@ -2,7 +2,6 @@ import { Component, computed, effect, ElementRef, HostListener, inject, signal, 
 import { ProposalsService } from '../../services/proposals.service';
 import { AuthService } from '../../services/auth.service';
 import { UpdateProposalComponent } from "./update-proposal/update-proposal.component";
-import { PageAnimation } from '../../animations/page.animation';
 import { ProposalSkeletonComponent } from "./proposal-skeleton/proposal-skeleton.component";
 import { AlertService } from '../../services/alert.service';
 import { Dialog } from '@angular/cdk/dialog';
@@ -31,10 +30,7 @@ import { ConfirmService } from '../../services/confirm.service';
     CdkDragHandle
   ],
   templateUrl: './proposals.component.html',
-  styleUrl: './proposals.component.scss',
-  animations: [
-    PageAnimation
-  ]
+  styleUrl: './proposals.component.scss'
 })
 export class ProposalsComponent {
   private PEPE_HUB = environment.PEPE_HUB;

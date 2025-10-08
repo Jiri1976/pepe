@@ -2,7 +2,6 @@ import { Component, computed, effect, inject, OnInit } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { AuthService } from '../../services/auth.service';
 import { RouterLink } from '@angular/router';
-import { PageAnimation } from '../../animations/page.animation';
 import { HideElementDirective } from '../../directives/hide-element.directive';
 import { AlertService } from '../../services/alert.service';
 import { Dialog } from '@angular/cdk/dialog';
@@ -13,9 +12,6 @@ import { NotificationMessagesComponent } from '../notification-messages/notifica
   imports: [ButtonModule, RouterLink, HideElementDirective],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
-  animations: [
-    PageAnimation
-  ]
 })
 export class HeaderComponent implements OnInit {
   private authService = inject(AuthService);

@@ -8,18 +8,15 @@ import { tap } from 'rxjs';
 import { ConfirmComponent } from '../../components/confirm/confirm.component';
 import { WarehouseItemsComponent } from "../../components/warehouse/warehouse-items/warehouse-items.component";
 import { WarehouseItem } from '../../models/warehouse/warehouse-item.interface';
-import { Calendar, CalendarModule } from 'primeng/calendar';
-import { DatePickerModule } from 'primeng/datepicker';
+import { DatePicker, DatePickerModule } from 'primeng/datepicker';
 import { WarehouseUnitsComponent } from '../../components/warehouse/warehouse-units/warehouse-units.component';
 import { WarehouseNavComponent } from "../../components/warehouse/warehouse-nav/warehouse-nav.component";
-import { PageAnimation } from '../../animations/page.animation';
 import { FormsModule } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-warehouse',
   imports: [
-    CalendarModule,
     DialogModule,
     DatePickerModule,
     ButtonModule,
@@ -27,14 +24,12 @@ import { RouterOutlet } from '@angular/router';
     ConfirmComponent,
     WarehouseNavComponent,
     FormsModule,
-    RouterOutlet
+    RouterOutlet,
+    DatePicker
   ],
   templateUrl: './warehouse.component.html',
   styleUrl: './warehouse.component.scss',
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  animations: [
-    PageAnimation
-  ]
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class WarehouseComponent {
   private MONTHS_NUM = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
@@ -48,7 +43,7 @@ export class WarehouseComponent {
   destination = computed(() => this.warehouseService.destination());
   cards = computed(() => this.warehouseService.cards());
   pdfLoading = signal(false);
-  @ViewChild('calendar', { static: false }) calendar!: Calendar;
+  @ViewChild('calendar', { static: false }) calendar!: DatePicker;
   @ViewChild(WarehouseUnitsComponent) warehouseUnits: any;
   @ViewChild(WarehouseItemsComponent) warehouseItems: any;
   defaultDate = computed(() => this.warehouseService.defaultDate());

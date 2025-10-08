@@ -8,17 +8,13 @@ import { AuthService } from '../../../services/auth.service';
 import { HideElementDirective } from '../../../directives/hide-element.directive';
 import { ConfirmService } from '../../../services/confirm.service';
 import { WarehouseInputComponent } from "../warehouse-input/warehouse-input.component";
-import { PageAnimation } from '../../../animations/page.animation';
 
 @Component({
   selector: 'app-warehouse-units',
   imports: [CommonModule, HideElementDirective, WarehouseInputComponent],
   templateUrl: './warehouse-units.component.html',
   styleUrl: './warehouse-units.component.scss',
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  animations: [
-    PageAnimation
-  ]
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class WarehouseUnitsComponent implements OnInit {
   private MONTHS_NUM = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];

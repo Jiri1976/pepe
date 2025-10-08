@@ -1,6 +1,5 @@
 import { Component, computed, DestroyRef, effect, inject, OnInit, signal } from '@angular/core';
 import { WarehouseService } from '../../../services/warehouse.service';
-import { PageAnimation } from '../../../animations/page.animation';
 import { tap } from 'rxjs';
 import { AlertService } from '../../../services/alert.service';
 import { WarehouseCard } from '../../../models/warehouse/warehouse-card.interface';
@@ -23,10 +22,7 @@ interface OverviewCard {
   selector: 'app-warehouse-overview',
   imports: [],
   templateUrl: './warehouse-overview.component.html',
-  styleUrl: './warehouse-overview.component.scss',
-  animations: [
-    PageAnimation
-  ]
+  styleUrl: './warehouse-overview.component.scss'
 })
 export class WarehouseOverviewComponent implements OnInit {
   private MONTHS_NUM = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];

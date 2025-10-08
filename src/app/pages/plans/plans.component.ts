@@ -2,8 +2,7 @@ import { Component, computed, DestroyRef, inject, signal, ViewChild } from '@ang
 import { AuthService } from '../../services/auth.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { CalendarModule, Calendar } from 'primeng/calendar';
-import { DatePickerModule } from 'primeng/datepicker';
+import { DatePicker, DatePickerModule } from 'primeng/datepicker';
 import { DialogModule } from 'primeng/dialog';
 import { ConfirmComponent } from '../../components/confirm/confirm.component';
 import { ProposalsComponent } from '../../components/proposals/proposals.component';
@@ -13,13 +12,11 @@ import { OverlayModule } from 'primeng/overlay';
 import { AlertService } from '../../services/alert.service';
 import { tap } from 'rxjs';
 import { ProposalsNavComponent } from "../../components/proposals/proposals-nav/proposals-nav.component";
-import { PageAnimation } from '../../animations/page.animation';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-plans',
   imports: [
-    CalendarModule,
     ConfirmComponent,
     ProposalsComponent,
     DialogModule,
@@ -27,15 +24,13 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     FormsModule,
     ReactiveFormsModule,
     DatePickerModule,
+    DatePicker,
     OverlayModule,
     ProposalsNavComponent,
     DragDropModule
   ],
   templateUrl: './plans.component.html',
-  styleUrl: './plans.component.scss',
-  animations: [
-    PageAnimation
-  ]
+  styleUrl: './plans.component.scss'
 })
 export class PlansComponent {
   private MONTHS_NUM = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
@@ -51,7 +46,7 @@ export class PlansComponent {
   user = computed(() => this.authService.user());
   nothingChanched = computed(() => this.proposalsService.nothingChanged());
   pdfLoading = signal(false);
-  @ViewChild('calendar', { static: false }) calendar!: Calendar;
+  @ViewChild('calendar', { static: false }) calendar!: DatePicker;
 
   toggleCalendar() {
     if (this.calendar) {

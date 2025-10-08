@@ -1,6 +1,6 @@
+@use 'animations';
 @import "primeicons/primeicons.css";
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-@import '../node_modules/animate.css/animate.min.css';
 
 p-dialog {
 
@@ -96,8 +96,6 @@ p-dialog.create-unit {
     width: 90px;
 }
 
-
-
 .p-confirm-dialog-accept {
     background: #05C46B;
     color: #fff;
@@ -117,74 +115,71 @@ p-dialog.create-unit {
             min-width: 200px;
         }
 
-        .p-datepicker.p-component {
+        input {
+            display: none;
+        }
 
-            input {
-                display: none;
+        .p-datepicker-panel.p-component {
+            .p-datepicker-month-view {
+                .p-datepicker-month.p-datepicker-month-selected {
+                    background: #864912 !important;
+                    color: #fff !important;
+                }
             }
 
-            .p-datepicker-panel.p-component {
-                .p-datepicker-month-view {
-                    .p-datepicker-month.p-datepicker-month-selected {
-                        background: #864912 !important;
-                        color: #fff !important;
-                    }
-                }
+            .p-datepicker-calendar-container {
+                .p-datepicker-calendar {
+                    .p-datepicker-header {
+                        .p-datepicker-title {
+                            color: #864912;
 
-                .p-datepicker-calendar-container {
-                    .p-datepicker-calendar {
-                        .p-datepicker-header {
-                            .p-datepicker-title {
+                            .p-datepicker-select-year {
                                 color: #864912;
-
-                                .p-datepicker-select-year {
-                                    color: #864912;
-                                }
                             }
                         }
                     }
                 }
+            }
 
-                .p-datepicker-month-view {
-                    .p-datepicker-month.p-datepicker-month-selected {
-                        background: #864912 !important;
-                        color: #fff;
-                    }
-
-                    span {
-                        color: #864912;
-                    }
+            .p-datepicker-month-view {
+                .p-datepicker-month.p-datepicker-month-selected {
+                    background: #864912 !important;
+                    color: #fff;
                 }
 
-                .p-datepicker-calendar-container {
-                    .p-datepicker-calendar {
-                        .p-datepicker-header {
-                            p-button {
-                                .p-button-text {
-                                    color: #864912 !important;
-                                }
-                            }
+                span {
+                    color: #864912;
+                }
+            }
 
-                            p-button:hover {
-                                .p-button-text {
-                                    background: #864912;
-                                    color: #fff !important;
-                                    border: none;
-                                }
+            .p-datepicker-calendar-container {
+                .p-datepicker-calendar {
+                    .p-datepicker-header {
+                        p-button {
+                            .p-button-text {
+                                color: #864912 !important;
+                            }
+                        }
+
+                        p-button:hover {
+                            .p-button-text {
+                                background: #864912;
+                                color: #fff !important;
+                                border: none;
                             }
                         }
                     }
                 }
+            }
 
-                .p-datepicker-year-view {
-                    .p-datepicker-year {
-                        color: #864912 !important;
-                    }
+            .p-datepicker-year-view {
+                .p-datepicker-year {
+                    color: #864912 !important;
+                }
 
-                    span.p-datepicker-year.p-datepicker-year-selected {
-                        background: #864912 !important;
-                        color: #fff !important;
-                    }
+                span.p-datepicker-year.p-datepicker-year-selected {
+                    background: #864912 !important;
+                    color: #fff !important;
                 }
             }
         }
@@ -194,46 +189,44 @@ p-dialog.create-unit {
 .warehouse-calendar,
 .shifts-calendar {
     p-datepicker {
-        .p-datepicker.p-component {
-            min-width: 200px;
+        min-width: 200px;
 
-            input {
-                display: none !important;
+        input {
+            display: none !important;
+        }
+
+        .p-datepicker-panel.p-component {
+            .p-datepicker-month-view {
+                .p-datepicker-month.p-datepicker-month-selected {
+                    background: #864912 !important;
+                    color: #fff !important;
+                }
             }
 
-            .p-datepicker-panel.p-component {
-                .p-datepicker-month-view {
-                    .p-datepicker-month.p-datepicker-month-selected {
-                        background: #864912 !important;
-                        color: #fff !important;
-                    }
-                }
-
-                .p-datepicker-calendar-container {
-                    .p-datepicker-calendar {
-                        .p-datepicker-header {
-                            p-button {
-                                .p-button-text {
-                                    color: #864912 !important;
-                                }
+            .p-datepicker-calendar-container {
+                .p-datepicker-calendar {
+                    .p-datepicker-header {
+                        p-button {
+                            .p-button-text {
+                                color: #864912 !important;
                             }
+                        }
 
-                            p-button:hover {
-                                .p-button-text {
-                                    background: #864912;
-                                    color: #fff !important;
-                                    border: none;
-                                }
+                        p-button:hover {
+                            .p-button-text {
+                                background: #864912;
+                                color: #fff !important;
+                                border: none;
                             }
                         }
                     }
                 }
+            }
 
-                .p-datepicker-year-view {
-                    span.p-datepicker-year.p-datepicker-year-selected {
-                        background: #864912 !important;
-                        color: #fff !important;
-                    }
+            .p-datepicker-year-view {
+                span.p-datepicker-year.p-datepicker-year-selected {
+                    background: #864912 !important;
+                    color: #fff !important;
                 }
             }
         }
@@ -254,84 +247,79 @@ p-datepicker {
 .calendarDivShift {
     p-datepicker {
 
-        .p-datepicker.p-component {
-            .p-datepicker-panel.p-component {
-                border: 1px solid #864912;
+        .p-datepicker-panel.p-component {
+            border: 1px solid #864912;
 
-                .p-datepicker-month-view {
-                    .p-datepicker-month.p-datepicker-month-selected {
-                        background: #864912 !important;
-                        color: #fff !important;
-                    }
+            .p-datepicker-month-view {
+                .p-datepicker-month.p-datepicker-month-selected {
+                    background: #864912 !important;
+                    color: #fff !important;
                 }
             }
         }
 
-        span {
+        input,
+        input:disabled {
+            position: relative !important;
+            top: 0px !important;
+            border: 2px solid #fff;
+            height: 24px !important;
+            border: 1px solid #864912 !important;
+            outline: none !important;
+            width: 256px;
+            text-align: end;
+            background: #fff;
+            font-size: 0.9rem;
+            color: #864912;
+            box-shadow: none !important;
+        }
 
-            input,
-            input:disabled {
-                position: relative !important;
-                top: 0px !important;
-                border: 2px solid #fff;
-                height: 24px !important;
-                border: 1px solid #864912 !important;
-                outline: none !important;
-                width: 256px;
-                text-align: end;
-                background: #fff;
-                font-size: 0.9rem;
-                color: #864912;
-                box-shadow: none !important;
-            }
+        .p-datepicker-panel.p-component {
+            top: 40px !important;
+            left: -25px !important;
+            width: 306px !important;
 
-            .p-datepicker-panel.p-component {
-                top: 40px !important;
-                left: -25px !important;
-                width: 306px !important;
+            .p-datepicker-calendar-container {
+                .p-datepicker-calendar {
 
-                .p-datepicker-calendar-container {
-                    .p-datepicker-calendar {
+                    .p-datepicker-header {
+                        .p-datepicker-title {
 
-                        .p-datepicker-header {
-                            .p-datepicker-title {
-
-                                .p-datepicker-select-month,
-                                .p-datepicker-select-year {
-                                    color: #864912 !important;
-                                }
-                            }
-
-
-                            p-button {
-                                .p-button-text {
-                                    color: #864912 !important;
-                                }
-                            }
-
-                            p-button:hover {
-                                .p-button-text {
-                                    background: #864912;
-                                    color: #fff !important;
-                                    border: none;
-                                }
+                            .p-datepicker-select-month,
+                            .p-datepicker-select-year {
+                                color: #864912 !important;
                             }
                         }
 
-                        .p-datepicker-day-view {
-                            .p-datepicker-day-selected {
-                                background: #864912 !important;
-                                color: #fff !important;
+
+                        p-button {
+                            .p-button-text {
+                                color: #864912 !important;
                             }
+                        }
+
+                        p-button:hover {
+                            .p-button-text {
+                                background: #864912;
+                                color: #fff !important;
+                                border: none;
+                            }
+                        }
+                    }
+
+                    .p-datepicker-day-view {
+                        .p-datepicker-day-selected {
+                            background: #864912 !important;
+                            color: #fff !important;
                         }
                     }
                 }
+            }
 
-                .p-datepicker-year-view {
-                    span.p-datepicker-year.p-datepicker-year-selected {
-                        background: #864912 !important;
-                        color: #fff !important;
-                    }
+            .p-datepicker-year-view {
+                span.p-datepicker-year.p-datepicker-year-selected {
+                    background: #864912 !important;
+                    color: #fff !important;
                 }
             }
         }
@@ -349,56 +337,54 @@ p-datepicker {
 
 .timefromDiv {
     p-datepicker {
-        span {
 
-            .p-inputtext {
-                color: #864912;
-            }
+        .p-inputtext {
+            color: #864912;
+        }
 
-            input,
-            input:disabled {
-                position: relative !important;
-                top: 0px !important;
-                border: 1px solid #864912 !important;
-                outline: none !important;
-                height: 24px !important;
-                width: 256px;
-                text-align: end;
-                background: #fff;
-                font-size: 0.9rem;
-                color: #864912 !important;
-                box-shadow: none !important;
-            }
+        input,
+        input:disabled {
+            position: relative !important;
+            top: 0px !important;
+            border: 1px solid #864912 !important;
+            outline: none !important;
+            height: 24px !important;
+            width: 256px;
+            text-align: end;
+            background: #fff;
+            font-size: 0.9rem;
+            color: #864912 !important;
+            box-shadow: none !important;
+        }
 
-            .p-datepicker-panel.p-component {
-                top: 40px !important;
-                left: -25px !important;
-                width: 306px !important;
-                height: 130px;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                border: 1px solid #864912;
+        .p-datepicker-panel.p-component {
+            top: 40px !important;
+            left: -25px !important;
+            width: 306px !important;
+            height: 130px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #864912;
 
-                .p-datepicker-time-picker {
-                    p-button {
-                        .p-button-text {
-                            color: #864912 !important;
-                        }
-
-                        .p-button-text:hover {
-                            background: #864912;
-                            color: #fff !important;
-                            border: none;
-                        }
+            .p-datepicker-time-picker {
+                p-button {
+                    .p-button-text {
+                        color: #864912 !important;
                     }
 
-                    .p-datepicker-hour-picker span,
-                    .p-datepicker-separator span,
-                    .p-datepicker-minute-picker span {
-                        color: #864912;
+                    .p-button-text:hover {
+                        background: #864912;
+                        color: #fff !important;
+                        border: none;
                     }
+                }
+
+                .p-datepicker-hour-picker span,
+                .p-datepicker-separator span,
+                .p-datepicker-minute-picker span {
+                    color: #864912;
                 }
             }
         }
@@ -408,56 +394,54 @@ p-datepicker {
 
 .timetoDiv {
     p-datepicker {
-        span {
 
-            input,
-            input:disabled {
-                position: relative !important;
-                top: 0px !important;
-                border: 1px solid #864912 !important;
-                outline: none !important;
-                height: 24px !important;
-                width: 256px;
-                text-align: end;
-                background: #fff;
-                font-size: 0.9rem;
-                color: #864912 !important;
-                box-shadow: none !important;
-            }
+        input,
+        input:disabled {
+            position: relative !important;
+            top: 0px !important;
+            border: 1px solid #864912 !important;
+            outline: none !important;
+            height: 24px !important;
+            width: 256px;
+            text-align: end;
+            background: #fff;
+            font-size: 0.9rem;
+            color: #864912 !important;
+            box-shadow: none !important;
+        }
 
-            .p-datepicker-panel.p-component {
-                top: 40px !important;
-                left: -25px !important;
-                width: 306px !important;
-                height: 130px;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                border: 1px solid #864912;
+        .p-datepicker-panel.p-component {
+            top: 40px !important;
+            left: -25px !important;
+            width: 306px !important;
+            height: 130px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #864912;
 
-                .p-datepicker-time-picker {
-                    p-button {
-                        .p-button-text {
-                            color: #864912 !important;
-                        }
-
-                        .p-button-text:hover {
-                            background: #864912;
-                            color: #fff !important;
-                            border: none;
-                        }
-
-                        .p-button:focus-visible {
-                            outline: none !important;
-                        }
+            .p-datepicker-time-picker {
+                p-button {
+                    .p-button-text {
+                        color: #864912 !important;
                     }
 
-                    .p-datepicker-hour-picker span,
-                    .p-datepicker-separator span,
-                    .p-datepicker-minute-picker span {
-                        color: #864912;
+                    .p-button-text:hover {
+                        background: #864912;
+                        color: #fff !important;
+                        border: none;
                     }
+
+                    .p-button:focus-visible {
+                        outline: none !important;
+                    }
+                }
+
+                .p-datepicker-hour-picker span,
+                .p-datepicker-separator span,
+                .p-datepicker-minute-picker span {
+                    color: #864912;
                 }
             }
         }
@@ -730,30 +714,46 @@ p-checkbox {
     margin-right: 10px;
 }
 
-::view-transition-old(root) {
-    animation: exit 400ms ease-out 0s 1 normal forwards;
-}
+// ::view-transition-old(root) {
+//     animation: exit 400ms ease-out 0s 1 normal forwards;
+// }
 
-::view-transition-new(root) {
-    animation: enter 600ms ease-in 0s 1 normal forwards;
-}
+// ::view-transition-new(root) {
+//     animation: enter 600ms ease-in 0s 1 normal forwards;
+// }
 
-@keyframes enter {
-    from {
-        opacity: 0;
-    }
+// .fade-in {
+//     animation: enter 600ms ease-in both;
+// }
 
-    to {
-        opacity: 1;
-    }
-}
+// .fade-out {
+//     animation: exit 500ms ease-out both;
+// }
 
-@keyframes exit {
-    from {
-        opacity: 1;
-    }
+// .fast-in {
+//     animation: enter 200ms ease-in both;
+// }
 
-    to {
-        opacity: 0;
-    }
-}
+// .fast-out {
+//     animation: exit 100ms ease-out both;
+// }
+
+// @keyframes enter {
+//     from {
+//         opacity: 0;
+//     }
+
+//     to {
+//         opacity: 1;
+//     }
+// }
+
+// @keyframes exit {
+//     from {
+//         opacity: 1;
+//     }
+
+//     to {
+//         opacity: 0;
+//     }
+// }

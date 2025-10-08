@@ -7,7 +7,6 @@ import { tap } from 'rxjs';
 import { AlertService } from '../../services/alert.service';
 import { EmptyBlockComponent } from "../../components/users/empty-block/empty-block.component";
 import { UsersNavComponent } from '../../components/users/users-nav/users-nav.component';
-import { PageAnimation } from '../../animations/page.animation';
 
 @Component({
   selector: 'app-users',
@@ -19,10 +18,7 @@ import { PageAnimation } from '../../animations/page.animation';
     UsersNavComponent,
   ],
   templateUrl: './users.component.html',
-  styleUrl: './users.component.scss',
-  animations: [
-    PageAnimation
-  ]
+  styleUrl: './users.component.scss'
 })
 export class UsersComponent implements OnInit {
   private usersService = inject(UsersService);

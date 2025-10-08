@@ -5,16 +5,12 @@ import { WarehouseItem } from '../../../models/warehouse/warehouse-item.interfac
 import { WarehouseService } from '../../../services/warehouse.service';
 import { WidgetAddComponent } from "../widget-add/widget-add.component";
 import { WarehouseItemsComponent } from '../warehouse-items/warehouse-items.component';
-import { FastPageAnimation } from '../../../animations/fast-page.animation';
 
 @Component({
   selector: 'app-widget',
   imports: [WidgetUpdateComponent, CdkDrag, CdkDragPlaceholder, WidgetAddComponent],
   templateUrl: './widget.component.html',
-  styleUrl: './widget.component.scss',
-  animations: [
-    FastPageAnimation
-  ]
+  styleUrl: './widget.component.scss'
 })
 export class WidgetComponent {
   private warehouseService = inject(WarehouseService);

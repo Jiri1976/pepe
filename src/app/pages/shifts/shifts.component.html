@@ -1,5 +1,6 @@
 <div class="sidenav">
-    <app-shifts-nav @fadeIn @fadeOut [(calendarText)]="calendarText" [(destination)]="destination" [(pdfOn)]="pdfOn" />
+    <app-shifts-nav animate.enter="fade-in" animate.leave="fade-out" [(calendarText)]="calendarText"
+        [(destination)]="destination" [(pdfOn)]="pdfOn" />
 </div>
 
 <div class="shifts-calendar">
@@ -11,7 +12,7 @@
     @if(!isLoading()) {
 
     @if (uniqueUsers().length > 0) {
-    <div class="shift-card" @fadeIn>
+    <div class="shift-card" animate.enter="fade-in">
         <swiper-container #swiperRef effect="cards" grab-cursor="true" (swiperinit)="onSwiperInit($event)"
             (swiperslidechange)="onSlideChange($event)">
             @for(user of uniqueUsers(); track $index) {
@@ -26,7 +27,7 @@
     <h4>{{ missingCardsMessage() }}</h4>
     }
     } @else {
-    <div class="skeleton" @fadeOut>
+    <div class="skeleton" animate.leave="fade-out">
         <div class="head">
         </div>
 
