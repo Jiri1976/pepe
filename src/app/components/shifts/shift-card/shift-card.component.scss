@@ -66,6 +66,9 @@
             thead {
                 --bs-table-bg: #864912 !important;
                 --bs-table-border-color: none;
+                display: table;
+                width: 100%;
+                table-layout: fixed;
 
                 tr th {
                     height: 25px !important;
@@ -76,6 +79,9 @@
 
             tbody {
                 border-top: none;
+                max-height: 580px;
+                display: block;
+                // overflow-y: scroll;
 
                 th,
                 td {
@@ -87,8 +93,10 @@
                 }
 
                 tr {
-                    margin: 10px 0 !important;
                     border-color: #864912 !important;
+                    display: table;
+                    width: 100%;
+                    table-layout: fixed;
 
                     td {
                         transition: 0.2s ease-in-out;

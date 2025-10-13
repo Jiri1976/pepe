@@ -5,6 +5,18 @@
                 <i class="bi bi-person-add"></i>
             </a>
         </li>
+        <li [style.--background]="'#864912'" (click)="usersComponent.getUsers()">
+            <a>
+                @if (!usersComponent.isLoading()) {
+                <i class="bi bi-arrow-clockwise"></i>
+                } @else {
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                }
+            </a>
+        </li>
+
         <li [style.--background]="filter() === 'F-M' ? '#864912' : '#f7d3af'">
             <a (click)="selectList(1)">
                 <p>F-M</p>

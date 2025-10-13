@@ -28,6 +28,10 @@ export class UsersComponent implements OnInit {
   filteredUsers = computed(() => this.usersService.filteredUsers());
 
   ngOnInit() {
+    this.getUsers();
+  }
+
+  getUsers() {
     this.usersService.filter.set('All');
     this.usersService.role.set('User');
     this

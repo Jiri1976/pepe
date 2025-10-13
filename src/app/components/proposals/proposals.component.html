@@ -38,7 +38,8 @@
 
                         @for(shift of user.shifts; track $index; let j = $index) {
                         <th class="drop-zone" [setBackground]="isWeekend(shift.proposalDate)"
-                            [disabledClass]="isPassedTime(shift.proposalDate)" (click)="onCreateUpdateProposal(i, j)">
+                            [disabledClass]="isPassedTime(shift.proposalDate)"
+                            (click)="!isPassedTime(shift.proposalDate) && onCreateUpdateProposal(i, j)">
                             <app-proposal-shift [shift]="shift" />
                         </th>
                         }

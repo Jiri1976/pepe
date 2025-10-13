@@ -1,4 +1,4 @@
-<div class="select-user" [style]="sectionStyles()">
+<div #scrollContainer class="select-user" [style]="sectionStyles()">
     @for(user of uniqueUsers(); track user.userId) {
     <div class="user" (click)="onSelectUser(user.userId)">
         <p>{{ user.userName }} {{ user.userSurname }}</p>

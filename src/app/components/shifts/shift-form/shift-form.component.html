@@ -140,10 +140,13 @@
         <div class="row">
             <div class="col-6 inline">
                 @if (selectedShift().id === 0) {
-                <button class="w-100 cancel" (click)="onHideForm()"><i class="bi bi-x"></i>&nbsp;Zpět</button>
+                <button type="button" class="w-100 cancel" (click)="onHideForm()"><i
+                        class="bi bi-x"></i>&nbsp;Zpět</button>
                 } @else {
-                <button class="w-50 cancel me-1" (click)="onHideForm()"><i class="bi bi-x"></i>&nbsp;Zpět</button>
-                <button class="w-50 delete ms-1" (click)="onDelete()"><i class="bi bi-trash"></i>&nbsp;Smazat</button>
+                <button type="button" class="w-50 cancel me-1" (click)="onHideForm()"><i
+                        class="bi bi-x"></i>&nbsp;Zpět</button>
+                <button type="button" class="w-50 delete ms-1" (click)="onDelete()"><i
+                        class="bi bi-trash"></i>&nbsp;Smazat</button>
                 }
             </div>
             <div class="col-6">

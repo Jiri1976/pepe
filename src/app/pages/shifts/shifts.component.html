@@ -27,11 +27,11 @@
     <h4>{{ missingCardsMessage() }}</h4>
     }
     } @else {
-    <div class="skeleton" animate.leave="fade-out">
-        <div class="head">
+    <div class="skeleton">
+        <div class="head" animate.enter="fade-in" animate.leave="fade-out">
         </div>
 
-        <table class="table table-striped">
+        <table class="table table-striped" animate.enter="fade-in" animate.leave="fade-out">
             <thead class="table-dark">
                 <tr>
                     <th class="user-name" style="width: 5% !important; text-align: right;"></th>

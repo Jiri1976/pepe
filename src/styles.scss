@@ -480,40 +480,35 @@ p-datepicker {
 
     p-datepicker#timeFrom {
         position: absolute !important;
-        top: 420px !important;
+        top: 120px !important;
         left: 90px !important;
 
-        span.p-datepicker.p-component.p-inputwrapper {
-            .p-inputtext {
-                text-align: center;
-                width: 70px !important;
-                border: 1px solid #864912;
-                color: #864912;
-            }
+        .p-inputtext {
+            text-align: center;
+            width: 70px !important;
+            border: 1px solid #864912;
+            color: #864912;
+        }
 
-            .p-datepicker-timeonly {
-                display: none !important;
-            }
-
+        .p-datepicker-timeonly {
+            display: none !important;
         }
     }
 
     p-datepicker#timeTo {
         position: absolute !important;
-        top: 420px !important;
+        top: 120px !important;
         left: 210px !important;
 
-        span.p-datepicker.p-component.p-inputwrapper {
-            .p-inputtext {
-                text-align: center;
-                width: 70px !important;
-                border: 1px solid #864912;
-                color: #864912 !important;
-            }
+        .p-inputtext {
+            text-align: center;
+            width: 70px !important;
+            border: 1px solid #864912;
+            color: #864912 !important;
+        }
 
-            .p-datepicker-timeonly {
-                display: none !important;
-            }
+        .p-datepicker-timeonly {
+            display: none !important;
         }
     }
 }

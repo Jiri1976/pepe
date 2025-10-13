@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, effect, ElementRef, inject, model, OnInit, signal, viewChild } from '@angular/core';
+import { Component, computed, DestroyRef, effect, ElementRef, HostListener, inject, model, OnInit, signal, viewChild } from '@angular/core';
 import { WidgetComponent } from "../widget/widget.component";
 import { CdkDragDrop, CdkDropList, CdkDropListGroup } from '@angular/cdk/drag-drop';
 import { wrapGrid } from 'animate-css-grid';
@@ -28,16 +28,26 @@ export class WarehouseItemsComponent implements OnInit {
   isDragged = signal(false);
   reorderedItems = model<WarehouseItem[]>([]);
   reloadItems = computed(() => this.warehouseService.reloadItems());
+  bodyStyles = signal<any>({});
 
-  reload = effect(() => {
-    if (this.reloadItems()) {
-      this.uploadItems();
-    }
-  });
+  @HostListener('window:resize', ['$event'])
+  onWindowResize() {
+    this.setBodyStyles();
+  }
+
+  constructor() {
+    effect(() => {
+      if (this.reloadItems()) {
+        this.uploadItems();
+      }
+      this.setBodyStyles();
+    });
+  }
 
   ngOnInit() {
     this.warehouseService.warehouseNav.set('items');
     this.uploadItems();
+    this.setBodyStyles();
   }
 
   ngAfterViewInit() {
@@ -170,5 +180,27 @@ export class WarehouseItemsComponent implements OnInit {
     this.destroyRef.onDestroy(() => {
       subscription.unsubscribe();
     });
+  }
+
+  private setBodyStyles() {
+    if (this.items()?.length > 11) {
+      if (window.innerHeight < 700) {
+        this.bodyStyles.set({
+          'maxHeight': '550px',
+          'overflow-y': 'scroll'
+        });
+      } else {
+        this.bodyStyles.set({
+          'maxHeight': '',
+          'overflow-y': 'hidden'
+        });
+      }
+    } else {
+      this.bodyStyles.set({
+        'maxHeight': '',
+        'overflow-y': 'hidden'
+      });
+    }
+    // }
   }
 }

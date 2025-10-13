@@ -7,7 +7,7 @@ import { AuthUser } from '../models/auth-user.interface';
 import { Router } from '@angular/router';
 import { WarehouseService } from './warehouse.service';
 import { AlertService } from './alert.service';
-import { DialogRef } from '@angular/cdk/dialog';
+import { Dialog } from '@angular/cdk/dialog';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +20,7 @@ export class AuthService {
   private initialUser: AuthUser = { name: '', email: '', role: '', destination: '', token: '', expiresIn: '' };
   private warehouseService = inject(WarehouseService);
   private alertService = inject(AlertService);
-  private dialogRef = inject(DialogRef, { optional: true });
+  private dialog = inject(Dialog);
 
   user = signal<AuthUser>(this.initialUser);
   firstRun = true;
@@ -51,7 +51,7 @@ export class AuthService {
   };
 
   logout() {
-    this.dialogRef?.close();
+    this.dialog.closeAll();
     localStorage.removeItem('notifications');
     localStorage.removeItem('userRole');
     localStorage.removeItem('userName');

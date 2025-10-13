@@ -353,7 +353,7 @@ export class UserComponent implements OnInit {
       }),
       'name': new FormControl({
         value: this.user().name,
-        disabled: this.user().id > 0
+        disabled: this.user().id > 0 && this.user().role !== 'User'
       }, [
         Validators.required,
         Validators.maxLength(15)
@@ -361,7 +361,7 @@ export class UserComponent implements OnInit {
       ),
       'surname': new FormControl({
         value: this.user().surname,
-        disabled: this.user().id > 0
+        disabled: this.user().id > 0 && this.user().role !== 'User'
       }, [Validators.required,
       Validators.maxLength(20)]),
       'email': new FormControl({

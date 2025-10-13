@@ -1,4 +1,4 @@
-import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, DestroyRef, inject, signal, ViewChild } from '@angular/core';
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, DestroyRef, inject, signal, viewChild } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
@@ -6,10 +6,8 @@ import { WarehouseService } from '../../services/warehouse.service';
 import { AlertService } from '../../services/alert.service';
 import { tap } from 'rxjs';
 import { ConfirmComponent } from '../../components/confirm/confirm.component';
-import { WarehouseItemsComponent } from "../../components/warehouse/warehouse-items/warehouse-items.component";
 import { WarehouseItem } from '../../models/warehouse/warehouse-item.interface';
 import { DatePicker, DatePickerModule } from 'primeng/datepicker';
-import { WarehouseUnitsComponent } from '../../components/warehouse/warehouse-units/warehouse-units.component';
 import { WarehouseNavComponent } from "../../components/warehouse/warehouse-nav/warehouse-nav.component";
 import { FormsModule } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
@@ -43,27 +41,25 @@ export class WarehouseComponent {
   destination = computed(() => this.warehouseService.destination());
   cards = computed(() => this.warehouseService.cards());
   pdfLoading = signal(false);
-  @ViewChild('calendar', { static: false }) calendar!: DatePicker;
-  @ViewChild(WarehouseUnitsComponent) warehouseUnits: any;
-  @ViewChild(WarehouseItemsComponent) warehouseItems: any;
+  calendar = viewChild<DatePicker>('calendar');
   defaultDate = computed(() => this.warehouseService.defaultDate());
   maxDate: Date = new Date(new Date().getFullYear(), new Date().getMonth());
 
   onSelectMonth() {
-    let date = this.calendar.value;
+    let date = this.calendar()!.value;
     this.warehouseService.monthYear.set(this.MONTHS_NUM[new Date(date).getMonth()] + new Date(date).getFullYear());
     this.warehouseService.numberOfDays.set(new Date(new Date(date).getFullYear(), new Date(date).getMonth(), 0).getDate());
     this.warehouseService.reloadCards.set(true);
   }
 
   toggleCalendar() {
-    if (this.calendar) {
-      if (this.calendar.overlayVisible) {
-        this.calendar.hideOverlay();
-        this.calendar.cd.detectChanges();
+    if (this.calendar()) {
+      if (this.calendar()!.overlayVisible) {
+        this.calendar()!.hideOverlay();
+        this.calendar()!.cd.detectChanges();
       } else {
-        this.calendar.showOverlay();
-        this.calendar.cd.detectChanges();
+        this.calendar()!.showOverlay();
+        this.calendar()!.cd.detectChanges();
       }
     }
   }
@@ -98,12 +94,9 @@ export class WarehouseComponent {
       ).subscribe({
         error: () => {
           this.visible = false;
-          this.warehouseItems?.isLoading.set(false);
-          this.warehouseUnits?.isLoading.set(false);
           this.pdfLoading?.set(false);
         }
       });
-
       this.destroyRef.onDestroy(() => subscription.unsubscribe());
     }
   }

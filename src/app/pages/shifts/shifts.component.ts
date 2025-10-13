@@ -111,6 +111,7 @@ export class ShiftsComponent implements OnInit {
     let _monthYear = this.MONTHS_NUM[new Date(date).getMonth()] + new Date(date).getFullYear();
     this.monthYear.set(_monthYear);
     this.calendarText.set(this.MONTHS_NAMES[new Date(date).getMonth()] + ' ' + new Date(date).getFullYear().toString().substring(2));
+    this.currentIndex.set(0);
     this.getCards();
   }
 
@@ -277,7 +278,7 @@ export class ShiftsComponent implements OnInit {
             this.filterUsers(response.result);
             setTimeout(() => {
               this.slideToCard(this.currentIndex());
-            }, 100)
+            }, 100);
           } else {
             this.shiftService.uniqueUsers.set([]);
             this.shiftService.checkAllToPdf();

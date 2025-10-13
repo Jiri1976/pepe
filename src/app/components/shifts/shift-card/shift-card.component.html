@@ -43,7 +43,7 @@
                     <th style="width: 40% !important; text-align: center; border-top-right-radius: 10px;">Perso</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody [style]="sectionStyles()">
                 @for(shift of card()!.shifts; track $index) {
                 <tr
                     (click)="((isPastCard() === false && loggedUser.role === 'Master') || (loggedUser.role === 'Admin')) && onUpdate(shift)">
@@ -85,7 +85,7 @@
         }
     </div>
     } @else {
-    <div class="skeleton" animate.leave="fade-out">
+    <!-- <div class="skeleton" animate.leave="fade-out">
         @for(i of [1,2,3]; track i) {
         <div class="empty-widget">
             @if (i === 2) {
@@ -93,6 +93,6 @@
             }
         </div>
         }
-    </div>
+    </div> -->
     }
 </div>

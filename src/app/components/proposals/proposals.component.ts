@@ -231,7 +231,7 @@ export class ProposalsComponent {
         } else {
           this.bodyStyles.set({
             'maxHeight': '',
-            'overflow-y': 'hiddent'
+            'overflow-y': 'hidden'
           });
         }
       } else {

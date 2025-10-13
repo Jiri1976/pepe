@@ -1,6 +1,6 @@
 <div class="container" cdkDropListGroup>
     @if (!isLoading()) {
-    <div class="block" animate.enter="fade-in">
+    <div class="block" animate.enter="fade-in" [style]="bodyStyles()">
         @if (items().length > 0) {
         <div #dashboard class="widget-wrapper">
             @for(item of items(); track $index) {

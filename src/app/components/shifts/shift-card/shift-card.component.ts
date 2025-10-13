@@ -34,13 +34,25 @@ export class ShiftCardComponent implements OnInit {
   hasCook = signal(false);
   firstCard = signal<string>('Cook');
   card = signal<ShiftCard | null>(null);
+  sectionStyles = signal<any>({
+    'overflow-y': 'hidden'
+  });
 
   ngOnInit() {
     this.hasDriver.set((this.userCards()!.filter(c => c.userPosition === 'Driver')).length > 0);
     this.hasCook.set((this.userCards()!.filter(c => c.userPosition === 'Cook')).length > 0);
     this.firstCard.set(this.userCards()![0].userPosition);
     this.card.set(this.userCards()![0]);
+    if (this.card()?.shifts && this.card()!.shifts?.length > 29) {
+      this.sectionStyles.set(
+        {
+          'overflow-y': 'scroll'
+        }
+      );
+    }
   }
+
+
 
   changeCard(position: string) {
     this.card.set(this.userCards()!.find(c => c.userPosition === position)!);

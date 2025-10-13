@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { DialogRef } from '@angular/cdk/dialog';
@@ -14,6 +14,20 @@ export class SelectUserComponent {
   private shiftService = inject(ShiftService);
   private dialogRef = inject(DialogRef, { optional: true });
   uniqueUsers = computed(() => this.shiftService.uniqueUsers());
+  scrollContainer = viewChild<ElementRef<HTMLDivElement>>('scrollContainer');
+
+  constructor() {
+    effect(() => {
+      const el = this.scrollContainer();
+      if (el) {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            el.nativeElement.scrollTop = 0;
+          });
+        });
+      }
+    });
+  }
 
   sectionStyles = signal<any>({
     'width': '25rem',

@@ -102,7 +102,6 @@ export class ShiftFormComponent implements OnInit, AfterViewInit {
           this.loading.set(true);
           let shift = this.convertToShift();
           this.loadingText.set('Odtraňuji směnu ...');
-
           const subscription = this.shiftService.deleteShift(shift.id).pipe(
             tap(response => {
               if (response === null) {
@@ -116,6 +115,7 @@ export class ShiftFormComponent implements OnInit, AfterViewInit {
                 let user = _uniqueUsers.find(u => u.userId === this.card()!.userId);
                 let card = user?.cards.find(c => c.userPosition === this.card()!.userPosition);
                 card!.shifts = card!.shifts.filter(s => s.id !== shift.id);
+                card!.totalHours = response.result.totalHours;
                 this.shiftService.uniqueUsers.set(_uniqueUsers);
                 this.shiftService.selectedCard.set(response.result);
                 this.shiftService.checkAllToPdf()
@@ -333,6 +333,7 @@ export class ShiftFormComponent implements OnInit, AfterViewInit {
             card!.id = response.result.id;
           }
           card!.shifts = response.result.shifts;
+          card!.totalHours = response.result.totalHours;
           this.shiftService.uniqueUsers.set(_uniqueUsers);
           this.shiftService.selectedCard.set(response.result);
           this.shiftService.checkAllToPdf()

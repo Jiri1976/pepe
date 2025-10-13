@@ -18,7 +18,6 @@
                 <div class="lower">{{ isFridayOrSaturday(selectedProposal()?.proposalDate!) ? '23' : '22' }}</div>
             </div>
 
-            <!-- Leaving it for the future use? -->
             <button type="button" class="btn destination" (click)="onUpdate(proposalsService.destination())">{{
                 proposalsService.destination() === 'F-M' ?
                 'OVA' : 'F-M'}}</button>

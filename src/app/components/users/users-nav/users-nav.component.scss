@@ -46,6 +46,7 @@
 
     .bi {
         font-size: 1.5rem;
+        margin-top: 2px;
     }
 
     p {
@@ -53,6 +54,11 @@
         padding: 0;
         font-size: 0.8rem;
         font-weight: bold;
+    }
+
+    .spinner-border {
+        --bs-spinner-width: 1.4rem;
+        --bs-spinner-height: 1.4rem;
     }
 }
 

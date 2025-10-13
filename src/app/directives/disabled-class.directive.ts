@@ -20,7 +20,7 @@ export class DisabledClassDirective {
 
     @HostBinding('style.cursor')
     get cursor(): string {
-        return this.disabled && this.user.role === 'Master' ? 'default' : 'pointer';
+        return this.disabled ? 'default' : 'pointer';
     }
 
     @HostListener('click', ['$event'])
