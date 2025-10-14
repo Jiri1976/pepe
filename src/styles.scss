@@ -7,7 +7,6 @@ p-dialog {
     .p-dialog-mask {
         .p-dialog.p-component {
 
-
             .p-dialog-header {
                 span {
                     font-size: 1rem;
@@ -673,27 +672,23 @@ p-toast {
 }
 
 p-checkbox {
+    .p-checkbox-box {
+        border: 1px solid #864912;
+        color: #fff;
+    }
+}
 
-    .p-checkbox.p-component.p-checkbox-checked.p-highlight.p-disabled {
-        .p-checkbox-box {
-            .p-component.p-iconwrapper {
-                .p-checkbox-icon.p-icon {
-                    color: #fff;
-                }
-            }
+.p-checkbox.p-component.p-checkbox-checked.p-highlight.p-disabled {
+    .p-checkbox-box {
+        .p-checkbox-icon.p-icon {
+            color: #fff;
         }
     }
+}
 
-    .p-checkbox.p-component.p-disabled .p-checkbox-box {
-        background: #fff;
-        border-color: #864912 !important;
-    }
-
-    div {
-        .p-checkbox-box {
-            border: 1px solid #864912;
-        }
-    }
+.p-checkbox.p-component.p-disabled .p-checkbox-box {
+    background: #fff;
+    border-color: #864912 !important;
 }
 
 .p-checkbox:not(.p-disabled):has(.p-checkbox-input:hover) .p-checkbox-box {
@@ -708,47 +703,3 @@ p-checkbox {
 .col-4 p-checkbox {
     margin-right: 10px;
 }
-
-// ::view-transition-old(root) {
-//     animation: exit 400ms ease-out 0s 1 normal forwards;
-// }
-
-// ::view-transition-new(root) {
-//     animation: enter 600ms ease-in 0s 1 normal forwards;
-// }
-
-// .fade-in {
-//     animation: enter 600ms ease-in both;
-// }
-
-// .fade-out {
-//     animation: exit 500ms ease-out both;
-// }
-
-// .fast-in {
-//     animation: enter 200ms ease-in both;
-// }
-
-// .fast-out {
-//     animation: exit 100ms ease-out both;
-// }
-
-// @keyframes enter {
-//     from {
-//         opacity: 0;
-//     }
-
-//     to {
-//         opacity: 1;
-//     }
-// }
-
-// @keyframes exit {
-//     from {
-//         opacity: 1;
-//     }
-
-//     to {
-//         opacity: 0;
-//     }
-// }
