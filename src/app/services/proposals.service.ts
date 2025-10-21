@@ -28,12 +28,11 @@ export class ProposalsService {
     calendarTitle = signal<string>(this.MONTHS_NAMES[new Date().getMonth()] + ' ' + new Date().getFullYear().toString().substring(2));
     isSaving = signal(false);
     updateHub = signal(false);
-
-    planCard = signal<ProposalCard | null>(null);
+    schedules = signal<ProposalCard[]>([]);
     days = signal<number[]>(new Array(0));
     selectedUserIndex = signal<number>(0);
     selectedShiftIndex = signal<number>(0);
-    uploadedCard = structuredClone(this.planCard());
+    uploadedSchedules = structuredClone(this.schedules());
 
     getProposalsOverview() {
         const url = this.BASE_ROUTE + `Proposals/GetProposalsOverview`;
@@ -46,13 +45,15 @@ export class ProposalsService {
                 'user-role': this.authService.getUser().role,
             })
         };
-        const url = this.BASE_ROUTE + `Proposals/DeleteProposalCard?monthYear=${this.planCard()?.monthYear}&destination=${this.planCard()?.destination}`;
+        const url = this.BASE_ROUTE + `Proposals/DeleteProposalCard?monthYear=${this.schedules().find(c => c.destination === this.destination())!.monthYear}&destination=${this.schedules().find(c => c.destination === this.destination())!.destination}`;
         return this.http.delete<Response>(url, httpOptions);
     }
 
     onSave() {
         this.updateShiftListOrders();
-        const subscription = this.saveProposals(this.planCard()!).pipe(
+        console.log(this.schedules());
+
+        const subscription = this.saveProposals().pipe(
             tap(response => {
                 if (response === null) {
                     this.isSaving.set(false);
@@ -62,8 +63,8 @@ export class ProposalsService {
                     this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
                 } else {
                     this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Úspěšně uloženo!' });
-                    this.planCard.set(response.result);
-                    this.uploadedCard = structuredClone(this.planCard());
+                    this.schedules.set(response.result);
+                    this.uploadedSchedules = structuredClone(this.schedules());
                     this.nothingChanged.set(true);
                     // this.updateHub.set(true);
                     this.isSaving.set(false);
@@ -93,7 +94,10 @@ export class ProposalsService {
                     this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
                 } else if (response.isSuccess) {
                     this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: `Směny byly odstraněny!` });
-                    this.planCard.set(response.result);
+                    let cards = [...this.schedules()];
+                    let _card = cards.find(c => c.destination === this.destination());
+                    _card = response.result;
+                    this.schedules.set(cards);
                     this.isProposalLoading.set(false);
                 }
             }),
@@ -110,9 +114,9 @@ export class ProposalsService {
         });
     }
 
-    uploadProposals() {
+    uploadSchedulesShifts() {
         this.isProposalLoading.set(true);
-        const subscription = this.getProposalsByMonthAndDestination().pipe(
+        const subscription = this.getScheduledShifts().pipe(
             map(response => {
                 if (response === null) {
                     this.isProposalLoading.set(false);
@@ -121,9 +125,10 @@ export class ProposalsService {
                     this.isProposalLoading.set(false);
                     this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
                 } else if (response.isSuccess) {
-                    this.planCard.set(response.result);
-                    this.days.set(new Array(this.planCard()?.countOfDays));
-                    this.uploadedCard = structuredClone(this.planCard());
+                    const card = response.result.find((c: ProposalCard) => c.destination === this.destination());
+                    this.days.set(new Array(card.countOfDays));
+                    this.schedules.set(response.result);
+                    this.uploadedSchedules = structuredClone(this.schedules());
                     this.nothingChanged.set(true);
                     this.isProposalLoading.set(false);
                 }
@@ -142,14 +147,14 @@ export class ProposalsService {
     }
 
     addFromInactive(inactiveUser: ProposalUser, index: number) {
-        const inactiveUsers = [...this.planCard()!.inactiveUsers];
+        let inactiveUsers = [...this.schedules().find(c => c.destination === this.destination())!.inactiveUsers];
+        let users = [...this.schedules().find(c => c.destination === this.destination())!.users];
         if (inactiveUsers.length === 0) {
             return;
         }
-        if (this.planCard()?.users.length === 0) {
+        if (users.length === 0) {
             return;
         }
-        const users = [...this.planCard()!.users];
 
         users[0].shifts.forEach(shift => {
             inactiveUser.shifts.push({
@@ -169,19 +174,27 @@ export class ProposalsService {
 
         users.push(inactiveUser);
         inactiveUsers.splice(index, 1);
-        this.planCard.update(c => ({ ...c!, users: users, inactiveUsers: inactiveUsers }));
-        this.uploadedCard = structuredClone(this.planCard());
+        let cards = [...this.schedules()];
+        let card = cards.find(c => c.destination === this.destination());
+        card!.inactiveUsers = inactiveUsers;
+        card!.users = users;
+        this.schedules.set(cards);
+        this.uploadedSchedules = structuredClone(this.schedules());
         this.nothingChanged.set(false);
     }
 
     removeFromActive(activeUser: ProposalUser, index: number) {
-        const inactiveUsers = [...this.planCard()!.inactiveUsers];
-        const users = [...this.planCard()!.users];
+        const inactiveUsers = [...this.schedules().find(c => c.destination === this.destination())!.inactiveUsers];
+        const users = [...this.schedules().find(c => c.destination === this.destination())!.users];
         activeUser.shifts = [];
         inactiveUsers.push(activeUser);
         users.splice(index, 1);
-        this.planCard.update(c => ({ ...c!, users: users, inactiveUsers: inactiveUsers }));
-        this.uploadedCard = structuredClone(this.planCard());
+        let _cards = [...this.schedules()];
+        let _card = _cards.find(c => c.destination === this.destination());
+        _card!.users = users;
+        _card!.inactiveUsers = inactiveUsers;
+        this.schedules.set(_cards);
+        this.uploadedSchedules = structuredClone(this.schedules());
         this.nothingChanged.set(false);
     }
 
@@ -209,7 +222,7 @@ export class ProposalsService {
         this.monthYear.set((new Date().getMonth() + 1).toString() + (new Date().getFullYear()).toString());
     }
 
-    getProposalsByMonthAndDestination() {
+    getScheduledShifts() {
         let httpOptions = {
             headers: new HttpHeaders({
                 'user-role': this.authService.getUser().role,
@@ -218,43 +231,54 @@ export class ProposalsService {
         if (this.monthYear().length === 5) {
             this.monthYear.set('0' + this.monthYear());
         }
-        const url = this.BASE_ROUTE + `Proposals/GetProposalsByMonthAndDestination?monthYear=${this.monthYear()}&destination=${this.destination()}`;
+        const url = this.BASE_ROUTE + `Proposals/GetScheduledShifts?monthYear=${this.monthYear()}&destination=${this.destination()}`;
         return this.http.get<Response>(url, httpOptions);
     }
 
     checkNothingChanged() {
-        let changed = true;
-        for (let i = 0; i < this.uploadedCard!.users.length; i++) {
-            for (let j = 0; j < this.uploadedCard!.users[i].shifts.length; j++) {
-                if ((this.uploadedCard!.users[i].shifts[j].from !== this.planCard()!.users[i].shifts[j].from) || (this.uploadedCard!.users[i].shifts[j].to !== this.planCard()!.users[i].shifts[j].to)) {
-                    changed = false;
+        let nothingChanged = true;
+        this.uploadedSchedules.forEach((card) => {
+            let currentCard = this.schedules().find(c => c.destination === card.destination)!;
+            for (let i = 0; i < card.users?.length; i++) {
+                if (card.users[i].id !== currentCard.users[i].id) {
+                    nothingChanged = false;
+                } else {
+                    for (let j = 0; j < card.users[i]?.shifts?.length; j++) {
+                        if ((card.users[i]?.shifts[j]?.from !== currentCard.users[i]?.shifts[j]?.from) || (card.users[i]?.shifts[j]?.to !== currentCard.users[i]?.shifts[j]?.to)) {
+                            nothingChanged = false;
+                        }
+                    }
                 }
             }
-        }
-        this.nothingChanged.set(changed)
+        });
+        this.nothingChanged.set(nothingChanged);
     }
 
     updatePositions(currentIndex: number, targetIndex: number) {
-        const users = [...this.planCard()!.users];
+        let cards = [...this.schedules()];
+        let card = cards.find(c => c.destination === this.destination());
+        const users = [...card!.users];
         const user = users.splice(currentIndex, 1)[0];
         const insertAt = targetIndex === currentIndex ? targetIndex + 1 : targetIndex;
         users.splice(insertAt, 0, user);
-        this.planCard.update(c => ({ ...c!, users: users }));
+        card!.users = users;
+        this.schedules.set(cards);
         this.checkNothingChanged();
     }
 
     private updateShiftListOrders() {
-        const users = [...this.planCard()!.users];
-        users.forEach((user, i) => {
+        let cards = [...this.schedules()];
+        let card = cards.find(c => c.destination === this.destination());
+        card?.users.forEach((user, i) => {
             user.shifts.forEach(shift => {
                 shift.listOrder = i;
             });
         });
-        this.planCard.update(c => ({ ...c!, users: users }));
+        this.schedules.set(cards);
     }
 
-    private saveProposals(card: ProposalCard) {
+    private saveProposals() {
         const url = this.BASE_ROUTE + `Proposals/CreateUpdate`;
-        return this.http.post<Response>(url, card);
+        return this.http.post<Response>(url, this.schedules());
     }
 }

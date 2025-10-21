@@ -46,8 +46,7 @@ export class ProposalsComponent {
   hubUser = `${this.loggedUser.name}`;
   token = this.authService.getToken();
   updateHub = computed(() => this.proposalsService.updateHub());
-
-  planCard = computed(() => this.proposalsService.planCard());
+  planCard = computed(() => this.proposalsService.schedules().find(c => c.destination === this.proposalsService.destination())!);
   days = computed(() => this.proposalsService.days());
   bodyStyles = signal<any>({});
 
@@ -92,7 +91,7 @@ export class ProposalsComponent {
   }
 
   ngOnInit(): void {
-    this.proposalsService.uploadProposals();
+    this.proposalsService.uploadSchedulesShifts();
     this.setBodyStyles();
   }
 

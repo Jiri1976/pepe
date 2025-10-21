@@ -19,7 +19,10 @@ interface UniqueUser {
 export class InactiveUsersComponent implements OnInit {
   private proposalsService = inject(ProposalsService);
   private dialogRef = inject(DialogRef, { optional: true });
-  users = computed(() => this.proposalsService.planCard()?.inactiveUsers);
+  // users = computed(() => this.proposalsService.planCard()?.inactiveUsers);
+
+  users = computed(() => this.proposalsService.schedules().find(c => c.destination === this.proposalsService.destination())!.inactiveUsers)
+
   uniqueUsers: UniqueUser[] = [];
 
   ngOnInit() {

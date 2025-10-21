@@ -6,6 +6,7 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DateValidator } from '../../../helpers/proposal-times.validator';
 import { DialogRef } from '@angular/cdk/dialog';
+import { AlertService } from '../../../services/alert.service';
 
 @Component({
   selector: 'app-update-proposal',
@@ -21,11 +22,12 @@ import { DialogRef } from '@angular/cdk/dialog';
 })
 export class UpdateProposalComponent implements OnInit {
   private dialogRef = inject(DialogRef, { optional: true });
+  private alertService = inject(AlertService);
   proposalsService = inject(ProposalsService);
   selectedProposal = computed(() => this.proposalsService.selectedProposal());
   proposalForm!: FormGroup;
   errorMessage = signal<string | null>(null);
-  planCard = computed(() => this.proposalsService.planCard());
+  planCard = computed(() => this.proposalsService.schedules().find(c => c.destination === this.proposalsService.destination()));
 
   get timeFrom() {
     return this.proposalForm.get('timeFrom');
@@ -89,27 +91,83 @@ export class UpdateProposalComponent implements OnInit {
     }
 
     let _users = [...this.planCard()!.users!];
+    let secondCard = computed(() => this.proposalsService.schedules().find(c => c.destination !== this.proposalsService.destination())!);
+    let _oppositeUsers = [...secondCard()!.users];
+    let _oppositeUser = _oppositeUsers.find(u => u.id === this.selectedProposal()?.userId);
 
     if (shiftType === 'OVA' || shiftType === 'F-M') {
-      _users[this.proposalsService.selectedUserIndex()]!.shifts[this.proposalsService.selectedShiftIndex()].from = this.proposalsService.destination() === 'F-M' ? 'OVA' : 'F-M';
-      _users[this.proposalsService.selectedUserIndex()]!.shifts[this.proposalsService.selectedShiftIndex()].to = isFridaySaturday ? '23:00' : '22:00';
+      if (!_oppositeUser) {
+        this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: `${this.selectedProposal()?.userName} ${this.selectedProposal()?.userSurname} nemá registraci pro ${this.proposalsService.destination() === 'F-M' ? 'OVA' : 'F-M'}.` });
+        return;
+      } else {
+
+        let index = _oppositeUsers.findIndex(u => u.id === _oppositeUser.id);
+        let shiftIndex = _oppositeUsers[index].shifts.findIndex(s => s.proposalDate === this.selectedProposal()?.proposalDate);
+        let shift = _oppositeUsers[index].shifts[shiftIndex];
+
+        if (shift.from === null && shift.to === null) {
+          shift.from = '11:00';
+          shift.to = isFridaySaturday ? '23:00' : '22:00';
+        }
+        _users[this.proposalsService.selectedUserIndex()]!.shifts[this.proposalsService.selectedShiftIndex()].from = this.proposalsService.destination() === 'F-M' ? 'OVA' : 'F-M';
+        _users[this.proposalsService.selectedUserIndex()]!.shifts[this.proposalsService.selectedShiftIndex()].to = isFridaySaturday ? '23:00' : '22:00';
+      }
     } else {
-      _users![this.proposalsService.selectedUserIndex()]!.shifts[this.proposalsService.selectedShiftIndex()].from = `${hoursFrom}:${minutesFrom}`;
-      _users![this.proposalsService.selectedUserIndex()]!.shifts[this.proposalsService.selectedShiftIndex()].to = `${hoursTo}:${minutesTo}`;
+      if (_oppositeUser) {
+        let index = _oppositeUsers.findIndex(u => u.id === _oppositeUser.id);
+        let shiftIndex = _oppositeUsers[index].shifts.findIndex(s => s.proposalDate === this.selectedProposal()?.proposalDate);
+        let shift = _oppositeUsers[index].shifts[shiftIndex];
+
+        if (shift.from !== null && shift.from !== 'F-M' && shift.from !== 'OVA') {
+          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: `${this.selectedProposal()?.userName} ${this.selectedProposal()?.userSurname} má směnu v ${this.proposalsService.destination() === 'F-M' ? 'OVA' : 'F-M'}.` });
+          return;
+        } else {
+          _users![this.proposalsService.selectedUserIndex()]!.shifts[this.proposalsService.selectedShiftIndex()].from = `${hoursFrom}:${minutesFrom}`;
+          _users![this.proposalsService.selectedUserIndex()]!.shifts[this.proposalsService.selectedShiftIndex()].to = `${hoursTo}:${minutesTo}`;
+        }
+      } else {
+        _users![this.proposalsService.selectedUserIndex()]!.shifts[this.proposalsService.selectedShiftIndex()].from = `${hoursFrom}:${minutesFrom}`;
+        _users![this.proposalsService.selectedUserIndex()]!.shifts[this.proposalsService.selectedShiftIndex()].to = `${hoursTo}:${minutesTo}`;
+      }
     }
+    let _cards = [...this.proposalsService.schedules()];
+    let _card = _cards.find(c => c.destination === this.proposalsService.destination());
+    _card!.users = _users;
 
-    this.proposalsService.planCard.update(c => ({ ...c!, users: _users }));
+    if (_oppositeUser) {
+      let _card2 = _cards.find(c => c.destination !== this.proposalsService.destination());
+      _card2!.users = _oppositeUsers;
+    }
+    this.proposalsService.schedules.set(_cards);
     this.proposalsService.checkNothingChanged();
-
   }
 
   onDelete() {
-    let _users = [...this.planCard()!.users!];
+    let _cards = [...this.proposalsService.schedules()];
+    let _users = _cards.find(c => c.destination === this.proposalsService.destination())!.users!;
+
+    let shiftToDelete = { ..._users![this.proposalsService.selectedUserIndex()]!.shifts[this.proposalsService.selectedShiftIndex()] };
+
+    let secondCard = _cards.find(c => c.destination !== this.proposalsService.destination());
+    let _oppositeUsers = secondCard!.users;
+    let _oppositeUser = _oppositeUsers.find(u => u.id === shiftToDelete.userId);
+
+    if (_oppositeUser) {
+      let _card2 = _cards.find(c => c.destination !== this.proposalsService.destination());
+      let index = _oppositeUsers.findIndex(u => u.id === _oppositeUser.id);
+      let shiftIndex = _oppositeUsers[index].shifts.findIndex(s => s.proposalDate === shiftToDelete.proposalDate);
+      let shift = _oppositeUsers[index].shifts[shiftIndex];
+
+      if (shift.from === 'F-M' || shift.from === 'OVA' || shiftToDelete.from === 'F-M' || shiftToDelete.from === 'OVA') {
+        shift.from = null;
+        shift.to = null;
+        _card2!.users = _oppositeUsers;
+      }
+    }
     _users![this.proposalsService.selectedUserIndex()]!.shifts[this.proposalsService.selectedShiftIndex()].from = null;
     _users![this.proposalsService.selectedUserIndex()]!.shifts[this.proposalsService.selectedShiftIndex()].to = null;
 
-    this.proposalsService.planCard.update(c => ({ ...c!, users: [] }));
-    this.proposalsService.planCard.update(c => ({ ...c!, users: _users }));
+    this.proposalsService.schedules.set(_cards);
     this.proposalsService.checkNothingChanged();
     this.onClose();
   }

@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, inject, signal, ViewChild } from '@angular/core';
+import { Component, computed, DestroyRef, inject, signal, viewChild } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
@@ -41,21 +41,20 @@ export class PlansComponent {
   private alertService = inject(AlertService);
   defaultDate = new Date(new Date().getFullYear(), new Date().getMonth());
   maxDate: Date = new Date(new Date().getFullYear(), new Date().getMonth());
-  planCard = computed(() => this.proposalsService.planCard());
   isLoading = computed(() => this.proposalsService.isProposalLoading());
   user = computed(() => this.authService.user());
   nothingChanched = computed(() => this.proposalsService.nothingChanged());
   pdfLoading = signal(false);
-  @ViewChild('calendar', { static: false }) calendar!: DatePicker;
+  calendar = viewChild<DatePicker>('calendar');
 
   toggleCalendar() {
     if (this.calendar) {
-      if (this.calendar.overlayVisible) {
-        this.calendar.hideOverlay();
-        this.calendar.cd.detectChanges();
+      if (this.calendar()?.overlayVisible) {
+        this.calendar()?.hideOverlay();
+        this.calendar()?.cd.detectChanges();
       } else {
-        this.calendar.showOverlay();
-        this.calendar.cd.detectChanges();
+        this.calendar()?.showOverlay();
+        this.calendar()?.cd.detectChanges();
       }
     }
   }
@@ -73,26 +72,14 @@ export class PlansComponent {
     }
   }
 
-  onChangeDestination(destination: string) {
-    if (!this.nothingChanched()) {
-      this.confirmService.confirm('Nejsou uloženy změny, chceš pokračovat?')
-        .then((confirmed) => {
-          if (confirmed) {
-            this.changeDestination(destination);
-          }
-        });
-    } else {
-      this.changeDestination(destination);
-    }
-  }
-
   onSave() {
     this.proposalsService.isSaving.set(true);
     this.proposalsService.onSave();
   }
 
   onDelete() {
-    this.confirmService.confirm(`Odstranit plán směn pro - ${this.planCard()?.monthYearName.toLowerCase()}?`)
+    let card = this.proposalsService.schedules().find(c => c.destination === this.proposalsService.destination());
+    this.confirmService.confirm(`Odstranit plán směn pro - ${card?.destination} - ${card?.monthYearName.toLowerCase()}?`)
       .then((confirmed) => {
         if (confirmed) {
           this.proposalsService.onDelete();
@@ -105,11 +92,11 @@ export class PlansComponent {
       this.confirmService.confirm('Nejsou uloženy změny, chceš pokračovat?')
         .then((confirmed) => {
           if (confirmed) {
-            this.proposalsService.uploadProposals();
+            this.proposalsService.uploadSchedulesShifts();
           }
         });
     } else {
-      this.proposalsService.uploadProposals();
+      this.proposalsService.uploadSchedulesShifts();
     }
   }
 
@@ -127,8 +114,9 @@ export class PlansComponent {
   }
 
   isPassedMonth() {
+    let card = this.proposalsService.schedules().find(c => c.destination === this.proposalsService.destination());
     let today = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-    let _monthYear = this.planCard()!.monthYear.length === 5 ? '0' + this.planCard()!.monthYear : this.planCard()!.monthYear;
+    let _monthYear = card!.monthYear.length === 5 ? '0' + card!.monthYear : card!.monthYear;
 
     let day = new Date(parseInt(_monthYear.substring(2, 6)), parseInt(_monthYear.substring(0, 2)) - 1, 1);
     if (day >= today) {
@@ -139,7 +127,8 @@ export class PlansComponent {
 
   private getPDF() {
     this.pdfLoading.set(true);
-    const subscription = this.proposalsService.uploadPDF(this.planCard()!, this.user().role).pipe(
+    const card = this.proposalsService.schedules().find(c => c.destination === this.proposalsService.destination())!; // check for shift count???
+    const subscription = this.proposalsService.uploadPDF(card, this.user().role).pipe(
       tap(response => {
         if (response === null) {
           this.pdfLoading.set(false);
@@ -158,7 +147,7 @@ export class PlansComponent {
           var url = window.URL.createObjectURL(blob);
           const a = document.createElement('a')
           a.href = url;
-          a.download = `Směny - ${this.planCard()?.destination} - ${this.planCard()?.monthYearName.toLowerCase()}`;
+          a.download = `Směny - ${card?.destination} - ${card?.monthYearName.toLowerCase()}`;
           a.click();
           URL.revokeObjectURL(url);
         }
@@ -173,15 +162,9 @@ export class PlansComponent {
   }
 
   private selectMonth() {
-    let date = this.calendar.value;
+    let date = this.calendar()?.value;
     let monthYear = this.MONTHS_NUM[new Date(date).getMonth()] + new Date(date).getFullYear();
     this.proposalsService.monthYear.set(monthYear);
-    this.proposalsService.uploadProposals();
-  }
-
-  private changeDestination(destination: string) {
-    this.proposalsService.isProposalLoading.set(true);
-    this.proposalsService.destination.set(destination);
-    this.proposalsService.uploadProposals();
+    this.proposalsService.uploadSchedulesShifts();
   }
 }

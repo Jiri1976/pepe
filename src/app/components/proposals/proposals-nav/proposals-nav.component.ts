@@ -23,8 +23,26 @@ export class ProposalsNavComponent {
   destination = computed(() => this.proposalsService.destination());
   pdfLoading = model(false);
   isSaving = computed(() => this.proposalsService.isSaving());
+  currentCard = computed(() => this.proposalsService.schedules().find(c => c.destination === this.proposalsService.destination()))!;
 
   openModal() {
     this.dialog.open(InactiveUsersComponent, { disableClose: false });
+  }
+
+  onChangeDestination(destination: string) {
+    // if (!this.nothingChanched()) {
+    //   this.confirmService.confirm('Nejsou uloženy změny, chceš pokračovat?')
+    //     .then((confirmed) => {
+    //       if (confirmed) {
+    //         this.changeDestination(destination);
+    //       }
+    //     });
+    // } else {
+    //   this.changeDestination(destination);
+    // }
+    // const cards = [...this.proposalsService.schedules()];
+    // const selectedCard = cards.find(c => c.destination === destination);
+    // this.proposalsService.planCard.set(selectedCard!);
+    this.proposalsService.destination.set(destination);
   }
 }
