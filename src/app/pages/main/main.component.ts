@@ -11,7 +11,7 @@ import { WarehouseService } from '../../services/warehouse.service';
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss'
 })
-export class MainComponent implements OnInit {
+export default class MainComponent implements OnInit {
   private proposalsService = inject(ProposalsService);
   private warehouseService = inject(WarehouseService);
   private authService = inject(AuthService);

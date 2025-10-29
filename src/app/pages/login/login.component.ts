@@ -13,7 +13,7 @@ import { WarehouseService } from '../../services/warehouse.service';
   styleUrl: './login.component.scss',
   providers: []
 })
-export class LoginComponent implements OnInit {
+export default class LoginComponent implements OnInit {
   private authService = inject(AuthService);
   private warehouseService = inject(WarehouseService);
   private destroyRef = inject(DestroyRef);

@@ -1,6 +1,4 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './pages/login/login.component';
-import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component';
 import { AdminGuard } from './guards/admin.guard';
 import { AuthGuard } from './guards/auth.guard';
 import { AdminMasterGuard } from './guards/admin-master.guard';
@@ -13,12 +11,12 @@ export const routes: Routes = [
     },
     {
         path: 'login',
-        component: LoginComponent,
+        loadComponent: () => import('./pages/login/login.component'),
         title: 'Přihlášení'
     },
     {
         path: 'main',
-        loadComponent: () => import('./pages/main/main.component').then(m => m.MainComponent),
+        loadComponent: () => import('./pages/main/main.component'),
         canMatch: [AuthGuard],
         title: 'Hlavní strana'
     },
@@ -75,7 +73,7 @@ export const routes: Routes = [
     },
     {
         path: '**',
-        component: PageNotFoundComponent,
+        loadComponent: () => import('./pages/page-not-found/page-not-found.component').then(m => m.PageNotFoundComponent),
         title: 'Stránka nenalezena'
     }
 ];

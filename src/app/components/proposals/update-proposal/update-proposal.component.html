@@ -17,10 +17,11 @@
                 <div class="upper">17</div>
                 <div class="lower">{{ isFridayOrSaturday(selectedProposal()?.proposalDate!) ? '23' : '22' }}</div>
             </div>
-
-            <button type="button" class="btn destination" (click)="onUpdate(proposalsService.destination())">{{
+            <!-- <button type="button" class="btn destination" (click)="onUpdate(proposalsService.destination() === 'F-M' ?
+                'OVA' : 'F-M')">{{
                 proposalsService.destination() === 'F-M' ?
-                'OVA' : 'F-M'}}</button>
+                'OVA' : 'F-M'}}</button> -->
+
             <button type="button" class="btn delete" (click)="onDelete()"><i class="bi bi-trash"></i></button>
         </div>
 

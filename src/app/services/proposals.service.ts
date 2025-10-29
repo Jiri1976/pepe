@@ -128,6 +128,8 @@ export class ProposalsService {
                     const card = response.result.find((c: ProposalCard) => c.destination === this.destination());
                     this.days.set(new Array(card.countOfDays));
                     this.schedules.set(response.result);
+                    console.log(this.schedules());
+
                     this.uploadedSchedules = structuredClone(this.schedules());
                     this.nothingChanged.set(true);
                     this.isProposalLoading.set(false);
@@ -155,17 +157,20 @@ export class ProposalsService {
         if (users.length === 0) {
             return;
         }
+        let _cards = [...this.schedules()];
+        let nextCard = _cards.find(c => c.destination !== this.destination());
+        const sameUser = nextCard!.users.find(u => u.id === inactiveUser.id && u.position === inactiveUser.position);
 
-        users[0].shifts.forEach(shift => {
+        users[0].shifts.forEach((shift, index) => {
             inactiveUser.shifts.push({
                 destination: shift.destination,
-                from: null,
+                from: sameUser && sameUser!.shifts[index].from !== null ? sameUser!.shifts[index].destination : null,
                 id: 0,
                 listOrder: users.length + 1,
                 monthYear: shift.monthYear,
                 position: inactiveUser.position,
                 proposalDate: shift.proposalDate,
-                to: null,
+                to: sameUser && sameUser!.shifts[index].to !== null ? sameUser!.shifts[index].to : null,
                 userId: inactiveUser.id,
                 userName: inactiveUser.name,
                 userSurname: inactiveUser.surname
@@ -264,6 +269,32 @@ export class ProposalsService {
         card!.users = users;
         this.schedules.set(cards);
         this.checkNothingChanged();
+    }
+
+    updateSchedulesAndCheckChanges(cards: ProposalCard[]) {
+        this.schedules.set(cards);
+        this.checkNothingChanged();
+    }
+
+    collideShifts(inputShiftFrom: string, inputShiftTo: string, timeFrom: string, timeTo: string) {
+        timeFrom = timeFrom === 'OVA' || timeFrom === 'F-M' ? '11:00' : timeFrom;
+        if (inputShiftFrom === '11:00' && (inputShiftTo === '22:00' || inputShiftTo === '23:00')) {
+            return true;
+        }
+
+        if (inputShiftFrom === timeFrom && inputShiftTo === timeTo) {
+            return true;
+        }
+
+        const inputFrom = parseFloat(inputShiftFrom.replace(':', ''));
+        const inputTo = parseFloat(inputShiftTo.replace(':', ''));
+        const listedFrom = parseFloat(timeFrom.replace(':', ''));
+        const listedTo = parseFloat(timeTo.replace(':', ''));
+
+        if ((listedFrom > inputFrom && listedFrom < inputTo) || (listedTo > inputFrom && listedTo < inputTo) || (inputFrom >= listedFrom && inputTo <= listedTo)) {
+            return true;
+        }
+        return false;
     }
 
     private updateShiftListOrders() {
