@@ -1,6 +1,5 @@
-import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, DestroyRef, effect, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, DestroyRef, effect, ElementRef, inject, OnInit, signal, viewChild } from '@angular/core';
 import { WarehouseService } from '../../../services/warehouse.service';
-import { AlertService } from '../../../services/alert.service';
 import { tap } from 'rxjs';
 import Swiper from 'swiper';
 import { CommonModule } from '@angular/common';
@@ -8,6 +7,8 @@ import { AuthService } from '../../../services/auth.service';
 import { HideElementDirective } from '../../../directives/hide-element.directive';
 import { ConfirmService } from '../../../services/confirm.service';
 import { WarehouseInputComponent } from "../warehouse-input/warehouse-input.component";
+import { ToasterService } from '../../../services/toaster.service';
+import { SignalService } from '../../../services/signal.service';
 
 @Component({
   selector: 'app-warehouse-units',
@@ -20,10 +21,11 @@ export class WarehouseUnitsComponent implements OnInit {
   private MONTHS_NUM = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
   private warehouseService = inject(WarehouseService);
   private authService = inject(AuthService);
-  private alertService = inject(AlertService);
+  private toaster = inject(ToasterService);
   private destroyRef = inject(DestroyRef);
   private swiper!: Swiper;
   private confirmService = inject(ConfirmService);
+  private signalService = inject(SignalService);
   user = computed(() => this.authService.user());
   isLoading = signal(false);
   reloadCards = computed(() => this.warehouseService.reloadCards());
@@ -33,7 +35,7 @@ export class WarehouseUnitsComponent implements OnInit {
   monthYear = computed(() => this.warehouseService.monthYear());
   selectedListItemId = computed(() => this.warehouseService.selectedListItemId());
   selectedIndex = computed(() => this.warehouseService.selectedIndex());
-  @ViewChild('swiperRef', { static: false }) swiperRef!: ElementRef;
+  swiperRef = viewChild<ElementRef>('swiperRef');
 
   reload = effect(() => {
     if (this.reloadCards()) {
@@ -59,7 +61,7 @@ export class WarehouseUnitsComponent implements OnInit {
 
   onSwiperInit(event: any) {
     setTimeout(() => {
-      const swiper = (this.swiperRef.nativeElement as any).swiper;
+      const swiper = (this.swiperRef()?.nativeElement as any).swiper;
       if (swiper) {
         swiper.on('slideChange', () => {
         });
@@ -74,20 +76,20 @@ export class WarehouseUnitsComponent implements OnInit {
     const subscription = this.warehouseService.getWarehouseCards(this.monthYear(), this.destination()).pipe(
       tap(response => {
         if (response === null) {
-          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+          this.toaster.error('Něco se pokazilo, zkus to znovu.');
           this.isLoading.set(false);
         } else if (response.isSuccess === false) {
           this.isLoading.set(false);
-          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+          this.toaster.error(response.errorMessage);
         } else if (response.isSuccess) {
-          this.warehouseService.sendCards(this.destination(), this.warehouseService.isUpdating(), false);
+          this.signalService.sendCards(this.destination(), this.warehouseService.isUpdating(), false);
           if (this.warehouseService.isUpdating()) {
             this.warehouseService.isUpdating.set(false);
           }
           if (response.result.length > 0) {
             this.warehouseService.cards.set(response.result);
             setTimeout(() => {
-              this.swiper = this.swiperRef.nativeElement.swiper;
+              this.swiper = this.swiperRef()?.nativeElement.swiper;
               this.swiper.slideTo(this.selectedIndex());
             }, 100);
           }
@@ -119,10 +121,10 @@ export class WarehouseUnitsComponent implements OnInit {
             tap(response => {
               if (response === null) {
                 this.isLoading.set(false);
-                this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+                this.toaster.error('Něco se pokazilo, zkus to znovu.');
               } else if (response.isSuccess === false) {
                 this.isLoading.set(false);
-                this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+                this.toaster.error(response.errorMessage);
               } else {
                 this.warehouseService.isUpdating.set(true);
                 this.uploadCards();
@@ -144,7 +146,7 @@ export class WarehouseUnitsComponent implements OnInit {
       return;
     }
     this.warehouseService.selectedListItemId.set(-1);
-    this.swiper = this.swiperRef.nativeElement.swiper;
+    this.swiper = this.swiperRef()?.nativeElement.swiper;
     let index = this.cards().findIndex(u => u.warehouseItemId === itemId);
     this.swiper.slideTo(index);
   }
@@ -152,7 +154,7 @@ export class WarehouseUnitsComponent implements OnInit {
   private onDeleteCards() {
     this.warehouseService.deleteCards.set(false);
     if (this.cards().length === 0) {
-      this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Chybí karty.' });
+      this.toaster.error('Chybí karty.');
       return;
     }
     this.confirmService.confirm(`Opravdu smazat karty za ${this.cards()[0].monthYearName}?`)
@@ -163,10 +165,10 @@ export class WarehouseUnitsComponent implements OnInit {
             tap(response => {
               if (response === null) {
                 this.isLoading.set(false);
-                this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+                this.toaster.error('Něco se pokazilo, zkus to znovu.');
               } else if (response.isSuccess === false) {
                 this.isLoading.set(false);
-                this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+                this.toaster.error(response.errorMessage);
               } else {
                 this.warehouseService.isUpdating.set(true);
                 this.uploadCards();

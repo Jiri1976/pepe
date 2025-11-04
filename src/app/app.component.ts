@@ -1,13 +1,12 @@
 import { Component, computed, inject, OnInit } from '@angular/core';
 import { HeaderComponent } from "./components/header/header.component";
-import { AlertComponent } from "./components/alert/alert.component";
 import { AuthService } from './services/auth.service';
 import { PrimeNG } from 'primeng/config';
 import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, HeaderComponent, AlertComponent],
+  imports: [RouterOutlet, HeaderComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   animations: []

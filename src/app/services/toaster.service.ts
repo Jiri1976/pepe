@@ -1,24 +1,23 @@
-import { Injectable, signal } from "@angular/core";
-import { Alert } from "../models/alert.interface";
+import { inject, Injectable, signal } from '@angular/core';
+import { HotToastService } from '@ngxpert/hot-toast';
 
 @Injectable({
     providedIn: 'root'
 })
-export class AlertService {
+export class ToasterService {
+    toaster = inject(HotToastService);
     notifications = signal<string[]>([]);
-    alert = signal<Alert>({ severity: 'success', summary: '', detail: '' });
-    resetPassword = signal<boolean>(false);
 
-    setAlert(alert: Alert) {
-        this.alert.set(alert);
+    success(message: string) {
+        this.toaster.success(message);
     }
 
-    openResetPassword() {
-        this.resetPassword.set(true);
+    error(message: string) {
+        this.toaster.error(message);
     }
 
-    closeResetPassword() {
-        this.resetPassword.set(false);
+    warning(message: string) {
+        this.toaster.warning(message);
     }
 
     removeNotifications(index: number) {

@@ -3,9 +3,10 @@ import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angula
 import { WarehouseItem } from '../../../models/warehouse/warehouse-item.interface';
 import { WarehouseService } from '../../../services/warehouse.service';
 import { tap } from 'rxjs';
-import { AlertService } from '../../../services/alert.service';
 import { NotificationComponent } from "../../notification/notification.component";
 import { WarehouseItemsComponent } from '../warehouse-items/warehouse-items.component';
+import { ToasterService } from '../../../services/toaster.service';
+import { SignalService } from '../../../services/signal.service';
 
 @Component({
   selector: 'app-widget-add',
@@ -15,8 +16,9 @@ import { WarehouseItemsComponent } from '../warehouse-items/warehouse-items.comp
 })
 export class WidgetAddComponent {
   private warehouseService = inject(WarehouseService);
-  private alertService = inject(AlertService);
+  private toaster = inject(ToasterService);
   private destroyRef = inject(DestroyRef);
+  private signalServie = inject(SignalService);
   private warehouseItemsComp = inject(WarehouseItemsComponent);
   itemForm!: FormGroup;
   items = computed(() => this.warehouseService.items());
@@ -49,19 +51,19 @@ export class WidgetAddComponent {
     const subscription = this.warehouseService.createWarehouseItem(newItem).pipe(
       tap(response => {
         if (response === null) {
-          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+          this.toaster.error('Něco se pokazilo, zkus to znovu.');
           this.isLoading.set(false);
         } else if (response.isSuccess === false) {
           this.isLoading.set(false);
-          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+          this.toaster.error(response.errorMessage);
         } else if (response.isSuccess) {
           newItem.id = response.result.id;
           let _items = [newItem, ...this.items()];
           _items = _items.filter(i => i.id !== 0);
           this.warehouseService.setItems(_items);
-          this.warehouseService.sendCards('F-M', false, true);
+          this.signalServie.sendCards('F-M', false, true);
           this.isLoading.set(false);
-          this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Položka byla uložena!' });
+          this.toaster.success('Položka byla uložena!');
         }
       }),
 

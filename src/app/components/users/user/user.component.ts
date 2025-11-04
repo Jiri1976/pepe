@@ -1,6 +1,5 @@
 import { Component, computed, DestroyRef, ElementRef, inject, OnInit, signal, viewChild } from '@angular/core';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule, FormsModule, FormArray } from '@angular/forms';
-import { AlertService } from '../../../services/alert.service';
 import { ConfirmService } from '../../../services/confirm.service';
 import { concatMap, of } from 'rxjs';
 import { UsersService } from '../../../services/users.service';
@@ -11,6 +10,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { UserDestination } from '../../../models/users/userDestination.interface';
 import { UserPosition } from '../../../models/users/userPosition.interface';
 import { CheckBoxesValidator } from '../../../helpers/user-checkboxes.validation';
+import { ToasterService } from '../../../services/toaster.service';
 
 @Component({
   selector: 'app-user',
@@ -22,7 +22,7 @@ import { CheckBoxesValidator } from '../../../helpers/user-checkboxes.validation
 export class UserComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
   private usersService = inject(UsersService);
-  private alertService = inject(AlertService);
+  private toaster = inject(ToasterService);
   private confirmService = inject(ConfirmService);
   private dialogRef = inject(DialogRef, { optional: true });
   user = computed(() => this.usersService.user());
@@ -86,13 +86,13 @@ export class UserComponent implements OnInit {
       const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
       if (!allowedTypes.includes(file.type)) {
-        this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Nepovolený formát! Povoleny jsou pouze JPG, PNG, GIF, nebo WEBP.' });
+        this.toaster.error('Nepovolený formát! Povoleny jsou pouze JPG, PNG, GIF, nebo WEBP.');
         this.imagePicker()!.nativeElement.value = '';
         return;
       }
 
       if (file.size > 1 * 1024 * 1024) {
-        this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Soubor je příliš velký! Maximální velikost je 1 MB.' });
+        this.toaster.error('Soubor je příliš velký! Maximální velikost je 1 MB.');
         this.imagePicker()!.nativeElement.value = '';
         return;
       }
@@ -158,15 +158,15 @@ export class UserComponent implements OnInit {
         concatMap(response => {
           this.isLoading.set(false);
           if (response === null) {
-            this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+            this.toaster.error('Něco se pokazilo, zkus to znovu.');
           } else if (response.isSuccess === false) {
-            this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+            this.toaster.error(response.errorMessage);
           } else if (response.isSuccess) {
             _user.id = response.result;
             _user.password = '';
             this.usersService.setUser(_user);
             this.usersService.addUser(_user);
-            this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: `Úspěšně přidán - ${_user.name} ${_user.surname}` });
+            this.toaster.success(`Úspěšně přidán - ${_user.name} ${_user.surname}`);
             this.userForm.reset();
             this.onGoBack();
           }
@@ -211,14 +211,14 @@ export class UserComponent implements OnInit {
               this.isLoading.set(false);
               if (response === null) {
                 this.userForm.enable();
-                this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+                this.toaster.error('Něco se pokazilo, zkus to znovu.');
               } else if (response.isSuccess === false) {
                 this.userForm.enable();
-                this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+                this.toaster.error(response.errorMessage);
               } else if (response.isSuccess) {
                 this.userForm.enable();
                 this.usersService.onRemoveUser(this.user().id);
-                this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: `Uživatel byl úspěšně smazán.` });
+                this.toaster.success(`Uživatel byl úspěšně smazán.`);
                 this.onGoBack();
               }
               return of();
@@ -322,15 +322,15 @@ export class UserComponent implements OnInit {
         this.isLoading.set(false);
         if (response === null) {
           this.userForm.enable();
-          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+          this.toaster.error('Něco se pokazilo, zkus to znovu.');
         } else if (response.isSuccess === false) {
           this.userForm.enable();
-          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+          this.toaster.error(response.errorMessage);
         } else if (response.isSuccess) {
           this.userForm.enable();
           this.usersService.setUser(_user);
           this.usersService.onUpdateUser(_user);
-          this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: response.result });
+          this.toaster.success(response.result);
           this.onGoBack();
         }
         return of();

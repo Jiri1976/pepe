@@ -1,10 +1,11 @@
 import { Component, computed, DestroyRef, effect, inject, OnInit, signal } from '@angular/core';
 import { WarehouseService } from '../../../services/warehouse.service';
 import { tap } from 'rxjs';
-import { AlertService } from '../../../services/alert.service';
 import { WarehouseCard } from '../../../models/warehouse/warehouse-card.interface';
 import { AuthService } from '../../../services/auth.service';
 import { ConfirmService } from '../../../services/confirm.service';
+import { ToasterService } from '../../../services/toaster.service';
+import { SignalService } from '../../../services/signal.service';
 
 interface OverViewDay {
   amount: string;
@@ -27,10 +28,11 @@ interface OverviewCard {
 export class WarehouseOverviewComponent implements OnInit {
   private MONTHS_NUM = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
   private warehouseService = inject(WarehouseService);
-  private alertService = inject(AlertService);
+  private toaster = inject(ToasterService);
   private destroyRef = inject(DestroyRef);
   private authService = inject(AuthService);
   private confirmService = inject(ConfirmService);
+  private signalService = inject(SignalService);
   uploadingCards = signal(false);
   loggedUser = this.authService.getUser();
   cards = signal<WarehouseCard[]>([]);
@@ -77,7 +79,7 @@ export class WarehouseOverviewComponent implements OnInit {
 
     const value = parseInt((event.target as HTMLInputElement).value);
     if (this.isDisabled(this.cards()[x].units[y].date)) {
-      this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Pole nelze aktualizovat!' });
+      this.toaster.error('Pole nelze aktualizovat!');
       return;
     }
     this.isUpdating.set(true);
@@ -94,17 +96,17 @@ export class WarehouseOverviewComponent implements OnInit {
           _card!.lines[x].days[y].amount = value.toString();
           this.overviewCard.set(_card);
           this.isUpdating.set(false);
-          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+          this.toaster.error('Něco se pokazilo, zkus to znovu.');
         } else if (response.isSuccess === false) {
           _card!.lines[x].days[y].amount = value.toString();
           this.overviewCard.set(_card);
           this.isUpdating.set(false);
-          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+          this.toaster.error(response.errorMessage);
         } else if (response.isSuccess) {
           _card!.lines[x].days[y].amount = value.toString();
           this.overviewCard.set(_card);
-          this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Položka byla aktualizována!' });
-          this.warehouseService.sendCards(this.destination(), true, false);
+          this.toaster.success('Položka byla aktualizována!');
+          this.signalService.sendCards(this.destination(), true, false);
           this.isUpdating.set(false);
         }
       }),
@@ -121,10 +123,10 @@ export class WarehouseOverviewComponent implements OnInit {
       tap(response => {
         if (response === null) {
           this.uploadingCards.set(false);
-          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+          this.toaster.error('Něco se pokazilo, zkus to znovu.');
         } else if (response.isSuccess === false) {
           this.uploadingCards.set(false);
-          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+          this.toaster.error(response.errorMessage);
         } else if (response.isSuccess) {
           this.warehouseService.reloadCards.set(false);
           this.warehouseService.cards.set(response.result);
@@ -184,7 +186,7 @@ export class WarehouseOverviewComponent implements OnInit {
   private onDeleteCards() {
     this.warehouseService.deleteCards.set(false);
     if (this.cards().length === 0) {
-      this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Chybí karty.' });
+      this.toaster.error('Chybí karty.');
       return;
     }
     this.confirmService.confirm(`Opravdu smazat karty za ${this.cards()[0].monthYearName}?`)
@@ -195,10 +197,10 @@ export class WarehouseOverviewComponent implements OnInit {
             tap(response => {
               if (response === null) {
                 this.uploadingCards.set(false);
-                this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+                this.toaster.error('Něco se pokazilo, zkus to znovu.');
               } else if (response.isSuccess === false) {
                 this.uploadingCards.set(false);
-                this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+                this.toaster.error(response.errorMessage);
               } else {
                 this.warehouseService.isUpdating.set(true);
                 this.getCards();

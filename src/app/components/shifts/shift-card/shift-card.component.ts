@@ -1,7 +1,6 @@
 import { Component, DestroyRef, inject, input, model, OnInit, output, signal } from '@angular/core';
 import { tap } from 'rxjs';
 import { Shift } from '../../../models/shifts/shift.interface';
-import { AlertService } from '../../../services/alert.service';
 import { AuthService } from '../../../services/auth.service';
 import { ConfirmService } from '../../../services/confirm.service';
 import { ShiftService } from '../../../services/shift.service';
@@ -9,6 +8,7 @@ import { ShiftCard } from '../../../models/shifts/shiftCard.interface';
 import { ShiftFormComponent } from "../shift-form/shift-form.component";
 import { ShiftsComponent } from '../../../pages/shifts/shifts.component';
 import { Dialog } from '@angular/cdk/dialog';
+import { ToasterService } from '../../../services/toaster.service';
 
 @Component({
   selector: 'app-shift-card',
@@ -20,7 +20,7 @@ export class ShiftCardComponent implements OnInit {
   private shiftService = inject(ShiftService);
   private authService = inject(AuthService);
   private confirmService = inject(ConfirmService);
-  private alertService = inject(AlertService);
+  private toaster = inject(ToasterService);
   private destroyRef = inject(DestroyRef);
   private shiftComponent = inject(ShiftsComponent);
   private dialog = inject(Dialog);
@@ -74,11 +74,11 @@ export class ShiftCardComponent implements OnInit {
           const subscription = this.shiftService.deleteShiftCard(this.card()!.id).pipe(
             tap(response => {
               if (response === null) {
-                this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+                this.toaster.error('Něco se pokazilo, zkus to znovu.');
                 this.cardLoading.set(false);
               } else if (response.isSuccess === false) {
                 this.cardLoading.set(false);
-                this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+                this.toaster.error(response.errorMessage);
               } else if (response.isSuccess) {
                 let _uniqueUsers = [...this.shiftService.uniqueUsers()];
                 let user = _uniqueUsers.find(u => u.userId === this.card()!.userId);
@@ -88,7 +88,7 @@ export class ShiftCardComponent implements OnInit {
                 this.shiftService.uniqueUsers.set(_uniqueUsers);
                 this.shiftService.selectedCard.set(card!);
                 this.shiftService.checkAllToPdf();
-                this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Karta byla smazána!' });
+                this.toaster.success('Karta byla smazána!');
                 this.cardLoading.set(false);
               }
             }),
@@ -113,10 +113,10 @@ export class ShiftCardComponent implements OnInit {
       tap(response => {
         if (response === null) {
           this.pdfLoading.set(false);
-          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+          this.toaster.error('Něco se pokazilo, zkus to znovu.');
         } else if (response.isSuccess === false) {
           this.pdfLoading.set(false);
-          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+          this.toaster.error(response.errorMessage);
         } else {
           this.pdfLoading.set(false);
           const binary = atob(response.result);

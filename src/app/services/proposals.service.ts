@@ -4,10 +4,10 @@ import { environment } from "../../environments/environment";
 import { Response } from '../models/response.interface';
 import { AuthService } from "./auth.service";
 import { map, tap } from "rxjs";
-import { AlertService } from "./alert.service";
 import { ProposalCard } from "../models/proposals/proposalCard.interface";
 import { ProposalShift } from "../models/proposals/proposalShift.interface";
 import { ProposalUser } from "../models/proposals/proposalUser.interface";
+import { ToasterService } from "./toaster.service";
 
 @Injectable({
     providedIn: 'root'
@@ -17,7 +17,7 @@ export class ProposalsService {
     private http = inject(HttpClient);
     private authService = inject(AuthService);
     private destroyRef = inject(DestroyRef);
-    private alertService = inject(AlertService);
+    private toaster = inject(ToasterService);
     private BASE_ROUTE = environment.SHIFTS_PATH;
 
     destination = signal<string>('F-M');
@@ -51,18 +51,16 @@ export class ProposalsService {
 
     onSave() {
         this.updateShiftListOrders();
-        console.log(this.schedules());
-
         const subscription = this.saveProposals().pipe(
             tap(response => {
                 if (response === null) {
                     this.isSaving.set(false);
-                    this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+                    this.toaster.error('Něco se pokazilo, zkus to znovu.');
                 } else if (response.isSuccess === false) {
                     this.isSaving.set(false);
-                    this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+                    this.toaster.error(response.errorMessage);
                 } else {
-                    this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Úspěšně uloženo!' });
+                    this.toaster.success('Úspěšně uloženo!');
                     this.schedules.set(response.result);
                     this.uploadedSchedules = structuredClone(this.schedules());
                     this.nothingChanged.set(true);
@@ -88,12 +86,12 @@ export class ProposalsService {
             map(response => {
                 if (response === null) {
                     this.isProposalLoading.set(false);
-                    this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+                    this.toaster.error('Něco se pokazilo, zkus to znovu.');
                 } else if (response.isSuccess === false) {
                     this.isProposalLoading.set(false);
-                    this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+                    this.toaster.error(response.errorMessage);
                 } else if (response.isSuccess) {
-                    this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: `Směny byly odstraněny!` });
+                    this.toaster.success(`Směny byly odstraněny!`);
                     let cards = [...this.schedules()];
                     let _card = cards.find(c => c.destination === this.destination());
                     _card = response.result;
@@ -120,16 +118,14 @@ export class ProposalsService {
             map(response => {
                 if (response === null) {
                     this.isProposalLoading.set(false);
-                    this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+                    this.toaster.error('Něco se pokazilo, zkus to znovu.');
                 } else if (response.isSuccess === false) {
                     this.isProposalLoading.set(false);
-                    this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+                    this.toaster.error(response.errorMessage);
                 } else if (response.isSuccess) {
                     const card = response.result.find((c: ProposalCard) => c.destination === this.destination());
                     this.days.set(new Array(card.countOfDays));
                     this.schedules.set(response.result);
-                    console.log(this.schedules());
-
                     this.uploadedSchedules = structuredClone(this.schedules());
                     this.nothingChanged.set(true);
                     this.isProposalLoading.set(false);

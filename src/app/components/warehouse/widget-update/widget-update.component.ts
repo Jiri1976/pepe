@@ -2,9 +2,10 @@ import { Component, computed, DestroyRef, ElementRef, inject, input, model, sign
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { WarehouseItem } from '../../../models/warehouse/warehouse-item.interface';
 import { tap } from 'rxjs';
-import { AlertService } from '../../../services/alert.service';
 import { WarehouseService } from '../../../services/warehouse.service';
 import { NotificationComponent } from "../../notification/notification.component";
+import { ToasterService } from '../../../services/toaster.service';
+import { SignalService } from '../../../services/signal.service';
 
 @Component({
   selector: 'app-widget-update',
@@ -14,7 +15,8 @@ import { NotificationComponent } from "../../notification/notification.component
 })
 export class WidgetUpdateComponent {
   private warehouseService = inject(WarehouseService);
-  private alertService = inject(AlertService);
+  private signalService = inject(SignalService);
+  private toaster = inject(ToasterService);
   private destroyRef = inject(DestroyRef);
   itemForm!: FormGroup;
   item = input.required<WarehouseItem>();
@@ -54,20 +56,20 @@ export class WidgetUpdateComponent {
     const subscription = this.warehouseService.updateWarehouseItem(newItem).pipe(
       tap(response => {
         if (response === null) {
-          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+          this.toaster.error('Něco se pokazilo, zkus to znovu.');
           this.isLoading.set(false);
         } else if (response.isSuccess === false) {
           this.isLoading.set(false);
-          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+          this.toaster.error(response.errorMessage);
         } else if (response.isSuccess) {
           let _items = [...this.items()];
           let updatedItem = _items.find(x => x.id === this.item().id);
           updatedItem!.name = this.itemForm.get('name')?.value;
           this.warehouseService.setItems(_items);
           this.updateVisible.set(false);
-          this.warehouseService.sendCards('F-M', false, true);
+          this.signalService.sendCards('F-M', false, true);
           this.isLoading.set(false);
-          this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Položka byla upravena!' });
+          this.toaster.success('Položka byla upravena!');
         }
       }),
 

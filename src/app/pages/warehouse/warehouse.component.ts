@@ -3,7 +3,6 @@ import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { WarehouseService } from '../../services/warehouse.service';
-import { AlertService } from '../../services/alert.service';
 import { tap } from 'rxjs';
 import { ConfirmComponent } from '../../components/confirm/confirm.component';
 import { WarehouseItem } from '../../models/warehouse/warehouse-item.interface';
@@ -11,6 +10,7 @@ import { DatePicker, DatePickerModule } from 'primeng/datepicker';
 import { WarehouseNavComponent } from "../../components/warehouse/warehouse-nav/warehouse-nav.component";
 import { FormsModule } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
+import { ToasterService } from '../../services/toaster.service';
 
 @Component({
   selector: 'app-warehouse',
@@ -32,7 +32,7 @@ import { RouterOutlet } from '@angular/router';
 export class WarehouseComponent {
   private MONTHS_NUM = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
   private warehouseService = inject(WarehouseService);
-  private alertService = inject(AlertService);
+  private toaster = inject(ToasterService);
   private destroyRef = inject(DestroyRef);
   selectedUnit = computed(() => this.warehouseService.selectedUnit());
   unitHeaderTitle = '';
@@ -71,10 +71,10 @@ export class WarehouseComponent {
         tap(response => {
           if (response === null) {
             this.pdfLoading.set(false);
-            this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+            this.toaster.error('Něco se pokazilo, zkus to znovu.');
           } else if (response.isSuccess === false) {
             this.pdfLoading.set(false);
-            this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+            this.toaster.error(response.errorMessage);
           } else if (response.isSuccess) {
             this.pdfLoading.set(false);
             const binary = atob(response.result);

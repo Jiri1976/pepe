@@ -3,7 +3,6 @@ import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angula
 import { map } from 'rxjs';
 import { WarehouseCard } from '../../../models/warehouse/warehouse-card.interface';
 import { WarehouseUnit } from '../../../models/warehouse/warehouse-unit.interface';
-import { AlertService } from '../../../services/alert.service';
 import { WarehouseService } from '../../../services/warehouse.service';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
@@ -11,6 +10,7 @@ import { CommonModule } from '@angular/common';
 import { AuthUser } from '../../../models/auth-user.interface';
 import { ConfirmService } from '../../../services/confirm.service';
 import { WarehouseUnitsComponent } from '../warehouse-units/warehouse-units.component';
+import { ToasterService } from '../../../services/toaster.service';
 
 @Component({
   selector: 'app-warehouse-input',
@@ -22,7 +22,7 @@ export class WarehouseInputComponent {
   private warehouseUnitsComponent = inject(WarehouseUnitsComponent);
   private confirmService = inject(ConfirmService);
   private warehouseService = inject(WarehouseService);
-  private alertService = inject(AlertService);
+  private toaster = inject(ToasterService);
   private destroyRef = inject(DestroyRef);
   card = input.required<WarehouseCard>();
   unitForm!: FormGroup;
@@ -60,17 +60,17 @@ export class WarehouseInputComponent {
             const subscription = this.warehouseService.createUpdateWarehouseCard(_card).pipe(
               map(response => {
                 if (response === null) {
-                  this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+                  this.toaster.error('Něco se pokazilo, zkus to znovu.');
                   this.isLoading.set(false);
                 } else if (response.isSuccess === false) {
                   this.isLoading.set(false);
-                  this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+                  this.toaster.error(response.errorMessage);
                 } else if (response.isSuccess) {
                   this.amount?.setValue(_selectedUnit?.amount);
                   this.warehouseService.isUpdating.set(true);
                   this.warehouseUnitsComponent.uploadCards();
                   this.isLoading.set(false);
-                  this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Položka byla vynulována!' });
+                  this.toaster.success('Položka byla vynulována!');
                 }
               }),
 
@@ -93,18 +93,18 @@ export class WarehouseInputComponent {
       const subscription = this.warehouseService.createUpdateWarehouseCard(_card).pipe(
         map(response => {
           if (response === null) {
-            this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+            this.toaster.error('Něco se pokazilo, zkus to znovu.');
             this.isLoading.set(false);
           } else if (response.isSuccess === false) {
             this.isLoading.set(false);
-            this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+            this.toaster.error(response.errorMessage);
           } else if (response.isSuccess) {
             this.isLoading.set(false);
             this.amount?.setValue(_selectedUnit?.amount);
             this.warehouseService.isUpdating.set(true);
             this.warehouseService.selectedIndex.set(this.selectedIndex);
             this.warehouseUnitsComponent.uploadCards();
-            this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Položka byla uložena!' });
+            this.toaster.success('Položka byla uložena!');
           }
         }),
 

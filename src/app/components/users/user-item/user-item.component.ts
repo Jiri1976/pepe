@@ -4,7 +4,7 @@ import { Dialog } from '@angular/cdk/dialog';
 import { UserComponent } from '../user/user.component';
 import { User } from '../../../models/users/user.interface';
 import { map } from 'rxjs';
-import { AlertService } from '../../../services/alert.service';
+import { ToasterService } from '../../../services/toaster.service';
 
 @Component({
   selector: 'app-user-item',
@@ -14,7 +14,7 @@ import { AlertService } from '../../../services/alert.service';
 })
 export class UserItemComponent {
   private usersService = inject(UsersService);
-  private alertService = inject(AlertService);
+  private toaster = inject(ToasterService);
   private dialog = inject(Dialog);
   private destroyRef = inject(DestroyRef);
   user = input.required<User>();
@@ -38,9 +38,9 @@ export class UserItemComponent {
     const subscription = this.usersService.getUser(this.user().id).pipe(
       map(response => {
         if (response === null) {
-          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+          this.toaster.error('Něco se pokazilo, zkus to znovu.');
         } else if (response.isSuccess === false) {
-          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+          this.toaster.error(response.errorMessage);
         } else if (response.isSuccess) {
           this.usersService.setUser(response.result);
           this.dialog.open(UserComponent, { disableClose: false });

@@ -4,9 +4,10 @@ import { CdkDragDrop, CdkDropList, CdkDropListGroup } from '@angular/cdk/drag-dr
 import { wrapGrid } from 'animate-css-grid';
 import { tap } from 'rxjs';
 import { WarehouseService } from '../../../services/warehouse.service';
-import { AlertService } from '../../../services/alert.service';
 import { ConfirmService } from '../../../services/confirm.service';
 import { WarehouseItem } from '../../../models/warehouse/warehouse-item.interface';
+import { ToasterService } from '../../../services/toaster.service';
+import { SignalService } from '../../../services/signal.service';
 
 @Component({
   selector: 'app-warehouse-items',
@@ -17,8 +18,9 @@ import { WarehouseItem } from '../../../models/warehouse/warehouse-item.interfac
 export class WarehouseItemsComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
   private warehouseService = inject(WarehouseService);
-  private alertService = inject(AlertService);
+  private toaster = inject(ToasterService);
   private confirmService = inject(ConfirmService);
+  private signalService = inject(SignalService);
   dashboard = viewChild.required<ElementRef>('dashboard');
   isLoading = signal(false);
   items = computed(() => this.warehouseService.items());
@@ -68,7 +70,7 @@ export class WarehouseItemsComponent implements OnInit {
     let _items = [...this.items()];
     const isUnsaved = _items.filter(i => i.id === 0);
     if (isUnsaved.length > 0) {
-      this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Nejdříve ulož položku!' });
+      this.toaster.error('Nejdříve ulož položku!');
       return;
     }
     const { previousContainer, container, item: { data } } = event;
@@ -84,14 +86,14 @@ export class WarehouseItemsComponent implements OnInit {
       const subscription = this.warehouseService.reorderWarehouseItems(this.reorderedItems()).pipe(
         tap(response => {
           if (response === null) {
-            this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+            this.toaster.error('Něco se pokazilo, zkus to znovu.');
           } else if (response.isSuccess === false) {
-            this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+            this.toaster.error(response.errorMessage);
           } else if (response.isSuccess) {
             this.warehouseService.setItems(response.result);
             this.reorderedItems.set([]);
-            this.warehouseService.sendCards('F-M', false, true);
-            this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Pořadí položek bylo změněno.' });
+            this.signalService.sendCards('F-M', false, true);
+            this.toaster.success('Pořadí položek bylo změněno.');
           }
         }),
       ).subscribe({
@@ -120,20 +122,20 @@ export class WarehouseItemsComponent implements OnInit {
             tap(response => {
               if (response === null) {
                 this.isDroppedToDelete.set(false);
-                this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+                this.toaster.error('Něco se pokazilo, zkus to znovu.');
                 this.isLoading.set(false);
               } else if (response.isSuccess === false) {
                 this.isDroppedToDelete.set(false);
                 this.isLoading.set(false);
-                this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+                this.toaster.error(response.errorMessage);
               } else if (response.isSuccess) {
                 let _items = [...this.items()];
                 let removed_items = _items.filter(i => i.id !== item.id);
                 this.warehouseService.setItems(removed_items);
                 this.isDroppedToDelete.set(false);
-                this.warehouseService.sendCards('F-M', false, true);
+                this.signalService.sendCards('F-M', false, true);
                 this.isLoading.set(false);
-                this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: response.result });
+                this.toaster.success(response.result);
               }
             }),
           ).subscribe({
@@ -153,11 +155,11 @@ export class WarehouseItemsComponent implements OnInit {
     const subscription = this.warehouseService.getAllWarehouseItems().pipe(
       tap(response => {
         if (response === null) {
-          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+          this.toaster.error('Něco se pokazilo, zkus to znovu.');
           this.isLoading.set(false);
         } else if (response.isSuccess === false) {
           this.isLoading.set(false);
-          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+          this.toaster.error(response.errorMessage);
         } else if (response.isSuccess) {
           this.isLoading.set(false);
           if (response.result.length > 0) {
@@ -201,6 +203,5 @@ export class WarehouseItemsComponent implements OnInit {
         'overflow-y': 'hidden'
       });
     }
-    // }
   }
 }

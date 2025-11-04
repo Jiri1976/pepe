@@ -9,10 +9,10 @@ import { ProposalsComponent } from '../../components/proposals/proposals.compone
 import { ProposalsService } from '../../services/proposals.service';
 import { ConfirmService } from '../../services/confirm.service';
 import { OverlayModule } from 'primeng/overlay';
-import { AlertService } from '../../services/alert.service';
 import { tap } from 'rxjs';
 import { ProposalsNavComponent } from "../../components/proposals/proposals-nav/proposals-nav.component";
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { ToasterService } from '../../services/toaster.service';
 
 @Component({
   selector: 'app-plans',
@@ -38,7 +38,7 @@ export class PlansComponent {
   private proposalsService = inject(ProposalsService);
   private confirmService = inject(ConfirmService);
   private destroyRef = inject(DestroyRef);
-  private alertService = inject(AlertService);
+  private toaster = inject(ToasterService);
   defaultDate = new Date(new Date().getFullYear(), new Date().getMonth());
   maxDate: Date = new Date(new Date().getFullYear(), new Date().getMonth());
   isLoading = computed(() => this.proposalsService.isProposalLoading());
@@ -132,10 +132,10 @@ export class PlansComponent {
       tap(response => {
         if (response === null) {
           this.pdfLoading.set(false);
-          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+          this.toaster.error('Něco se pokazilo, zkus to znovu.');
         } else if (response.isSuccess === false) {
           this.pdfLoading.set(false);
-          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+          this.toaster.error(response.errorMessage);
         } else {
           this.pdfLoading.set(false);
           const binary = atob(response.result);

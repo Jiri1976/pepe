@@ -3,9 +3,9 @@ import { ButtonModule } from 'primeng/button';
 import { AuthService } from '../../services/auth.service';
 import { RouterLink } from '@angular/router';
 import { HideElementDirective } from '../../directives/hide-element.directive';
-import { AlertService } from '../../services/alert.service';
 import { Dialog } from '@angular/cdk/dialog';
 import { NotificationMessagesComponent } from '../notification-messages/notification-messages.component';
+import { ToasterService } from '../../services/toaster.service';
 
 @Component({
   selector: 'app-header',
@@ -15,10 +15,10 @@ import { NotificationMessagesComponent } from '../notification-messages/notifica
 })
 export class HeaderComponent implements OnInit {
   private authService = inject(AuthService);
-  private alertService = inject(AlertService);
+  private toaster = inject(ToasterService);
   private dialog = inject(Dialog)
   user = computed(() => this.authService.user());
-  notifications = computed(() => this.alertService.notifications());
+  notifications = computed(() => this.toaster.notifications());
 
   ngOnInit(): void {
     let messages: any[] = [];
@@ -26,7 +26,7 @@ export class HeaderComponent implements OnInit {
     if (localStorageMessages) {
       messages = JSON.parse(localStorageMessages);
     }
-    this.alertService.notifications.set(messages);
+    this.toaster.notifications.set(messages);
   }
 
   constructor() {

@@ -1,11 +1,11 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { catchError, retry, throwError } from 'rxjs';
-import { AlertService } from '../services/alert.service';
 import { AuthService } from '../services/auth.service';
+import { ToasterService } from '../services/toaster.service';
 
 export const globalHttpErrorInterceptor: HttpInterceptorFn = (req, next) => {
-    const alertService = inject(AlertService);
+    const toaster = inject(ToasterService);
     const authService = inject(AuthService);
 
     const handled$ = req.method === 'GET'
@@ -18,7 +18,7 @@ export const globalHttpErrorInterceptor: HttpInterceptorFn = (req, next) => {
 
             if (error.status === 401) {
                 alertDetail = 'Chybí ti oprávnění, zkus se přihlásit.';
-                alertService.setAlert({ severity: 'error', summary: 'Error', detail: alertDetail });
+                toaster.error(alertDetail);
                 authService.logout();
                 return throwError(() => error);
             }
@@ -29,7 +29,7 @@ export const globalHttpErrorInterceptor: HttpInterceptorFn = (req, next) => {
                 alertDetail = error.error.message;
             }
 
-            alertService.setAlert({ severity: 'error', summary: 'Error', detail: alertDetail });
+            toaster.error(alertDetail);
             return throwError(() => error);
         })
     );

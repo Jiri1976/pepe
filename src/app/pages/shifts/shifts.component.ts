@@ -1,10 +1,9 @@
-import { Component, DestroyRef, inject, OnInit, signal, ViewChild, CUSTOM_ELEMENTS_SCHEMA, ElementRef, computed, effect } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal, CUSTOM_ELEMENTS_SCHEMA, ElementRef, computed, effect, viewChild } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { ConfirmComponent } from '../../components/confirm/confirm.component';
 import { ShiftService } from '../../services/shift.service';
-import { AlertService } from '../../services/alert.service';
 import { tap } from 'rxjs';
 import { ShiftCard } from '../../models/shifts/shiftCard.interface';
 import { ShiftCardComponent } from '../../components/shifts/shift-card/shift-card.component';
@@ -16,6 +15,7 @@ import { Shift } from '../../models/shifts/shift.interface';
 import { UniqueUser } from '../../models/shifts/uniqueUser.interface';
 import { Dialog } from '@angular/cdk/dialog';
 import { ShiftFormComponent } from '../../components/shifts/shift-form/shift-form.component';
+import { ToasterService } from '../../services/toaster.service';
 
 @Component({
   selector: 'app-plans',
@@ -41,7 +41,7 @@ export class ShiftsComponent implements OnInit {
   private authService = inject(AuthService);
   private shiftService = inject(ShiftService);
   private destroyRef = inject(DestroyRef);
-  private alertService = inject(AlertService);
+  private toaster = inject(ToasterService);
   private dialog = inject(Dialog);
   monthYear = signal<string>(this.MONTHS_NUM[new Date().getMonth()] + new Date().getFullYear());
   loggedUser = this.authService.getUser();
@@ -55,8 +55,8 @@ export class ShiftsComponent implements OnInit {
   defaultDate = new Date(new Date().getFullYear(), new Date().getMonth());
   maxDate: Date = new Date(new Date().getFullYear(), new Date().getMonth());
   uniqueUsers = computed(() => this.shiftService.uniqueUsers());
-  @ViewChild('calendar', { static: false }) calendar!: DatePicker;
-  @ViewChild('swiperRef', { static: false }) swiperRef!: ElementRef;
+  calendar = viewChild<DatePicker>('calendar');
+  swiperRef = viewChild<ElementRef>('swiperRef');
 
   ngOnInit(): void {
     this.getCards();
@@ -70,7 +70,7 @@ export class ShiftsComponent implements OnInit {
 
   onSwiperInit(event: any) {
     setTimeout(() => {
-      const swiper = (this.swiperRef.nativeElement as any).swiper;
+      const swiper = (this.swiperRef()?.nativeElement as any).swiper;
       if (swiper) {
         swiper.on('slideChange', () => { });
       }
@@ -84,7 +84,7 @@ export class ShiftsComponent implements OnInit {
   }
 
   slideToCard(index: number) {
-    this.swiper = this.swiperRef.nativeElement.swiper;
+    this.swiper = this.swiperRef()?.nativeElement.swiper;
     this.swiper.slideTo(index);
   }
 
@@ -96,18 +96,18 @@ export class ShiftsComponent implements OnInit {
 
   toggleCalendar() {
     if (this.calendar) {
-      if (this.calendar.overlayVisible) {
-        this.calendar.hideOverlay();
-        this.calendar.cd.detectChanges();
+      if (this.calendar()?.overlayVisible) {
+        this.calendar()?.hideOverlay();
+        this.calendar()?.cd.detectChanges();
       } else {
-        this.calendar.showOverlay();
-        this.calendar.cd.detectChanges();
+        this.calendar()?.showOverlay();
+        this.calendar()?.cd.detectChanges();
       }
     }
   }
 
   onSelectMonth() {
-    let date = this.calendar.value;
+    let date = this.calendar()?.value;
     let _monthYear = this.MONTHS_NUM[new Date(date).getMonth()] + new Date(date).getFullYear();
     this.monthYear.set(_monthYear);
     this.calendarText.set(this.MONTHS_NAMES[new Date(date).getMonth()] + ' ' + new Date(date).getFullYear().toString().substring(2));
@@ -121,10 +121,10 @@ export class ShiftsComponent implements OnInit {
       tap(response => {
         if (response === null) {
           this.pdfOn.set(false);
-          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+          this.toaster.error('Něco se pokazilo, zkus to znovu.');
         } else if (response.isSuccess === false) {
           this.pdfOn.set(false);
-          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+          this.toaster.error(response.errorMessage);
         } else {
           this.pdfOn.set(false);
           const binary = atob(response.result);
@@ -152,7 +152,7 @@ export class ShiftsComponent implements OnInit {
 
   onReset() {
     if (this.uniqueUsers().length > 0) {
-      const swiper = (this.swiperRef.nativeElement as any).swiper;
+      const swiper = (this.swiperRef()?.nativeElement as any).swiper;
       swiper.allowTouchMove = true;
     }
     this.currentIndex.set(0);
@@ -160,7 +160,7 @@ export class ShiftsComponent implements OnInit {
   }
 
   toggleSwipping(disable: boolean) {
-    const swiper = (this.swiperRef.nativeElement as any).swiper;
+    const swiper = (this.swiperRef()?.nativeElement as any).swiper;
     if (!disable) {
       swiper.allowTouchMove = false;
     } else {
@@ -248,7 +248,7 @@ export class ShiftsComponent implements OnInit {
   }
 
   private onSelectUser(userId: number) {
-    this.swiper = this.swiperRef.nativeElement.swiper;
+    this.swiper = this.swiperRef()?.nativeElement.swiper;
     let index = this.uniqueUsers().findIndex(u => u.userId === userId);
     this.shiftService.selectedCard.set(this.uniqueUsers()[index].cards[0]);
     this.swiper.slideTo(index);
@@ -269,10 +269,10 @@ export class ShiftsComponent implements OnInit {
       tap(response => {
         if (response === null) {
           this.isLoading.set(false);
-          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+          this.toaster.error('Něco se pokazilo, zkus to znovu.');
         } else if (response.isSuccess === false) {
           this.isLoading.set(false);
-          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+          this.toaster.error(response.errorMessage);
         } else if (response.isSuccess === true) {
           if (response.result.length > 0) {
             this.filterUsers(response.result);

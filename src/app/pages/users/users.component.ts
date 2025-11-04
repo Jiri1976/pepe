@@ -4,9 +4,9 @@ import { UserPaginationComponent } from '../../components/users/user-pagination/
 import { ConfirmComponent } from '../../components/confirm/confirm.component';
 import { UsersService } from '../../services/users.service';
 import { tap } from 'rxjs';
-import { AlertService } from '../../services/alert.service';
 import { EmptyBlockComponent } from "../../components/users/empty-block/empty-block.component";
 import { UsersNavComponent } from '../../components/users/users-nav/users-nav.component';
+import { ToasterService } from '../../services/toaster.service';
 
 @Component({
   selector: 'app-users',
@@ -22,7 +22,7 @@ import { UsersNavComponent } from '../../components/users/users-nav/users-nav.co
 })
 export class UsersComponent implements OnInit {
   private usersService = inject(UsersService);
-  private alertService = inject(AlertService);
+  private toaster = inject(ToasterService);
   private destroyRef = inject(DestroyRef);
   isLoading = signal(false);
   filteredUsers = computed(() => this.usersService.filteredUsers());
@@ -40,9 +40,9 @@ export class UsersComponent implements OnInit {
       tap(response => {
         this.isLoading.set(false);
         if (response === null) {
-          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+          this.toaster.error('Něco se pokazilo, zkus to znovu.');
         } else if (response.isSuccess === false) {
-          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+          this.toaster.error(response.errorMessage);
         } else {
           this.usersService.setUsers(response.result);
           this.usersService.filteredUsers.set(this.usersService.filterUsers(response.result));

@@ -3,7 +3,6 @@ import { ProposalsService } from '../../services/proposals.service';
 import { AuthService } from '../../services/auth.service';
 import { UpdateProposalComponent } from "./update-proposal/update-proposal.component";
 import { ProposalSkeletonComponent } from "./proposal-skeleton/proposal-skeleton.component";
-import { AlertService } from '../../services/alert.service';
 import { Dialog } from '@angular/cdk/dialog';
 import { CdkDrag, CdkDragHandle, CdkDragPlaceholder, CdkDragDrop, CdkDropList, CdkDropListGroup } from '@angular/cdk/drag-drop';
 import * as signalR from '@microsoft/signalr';
@@ -14,6 +13,7 @@ import { SetBackgroundDirective } from '../../directives/set-background.directiv
 import { ProposalTableStyleDirective } from '../../directives/proposal-table-style.directive';
 import { ProposalUser } from '../../models/proposals/proposalUser.interface';
 import { ConfirmService } from '../../services/confirm.service';
+import { ToasterService } from '../../services/toaster.service';
 
 @Component({
   selector: 'app-proposals',
@@ -35,7 +35,7 @@ import { ConfirmService } from '../../services/confirm.service';
 export class ProposalsComponent {
   private PEPE_HUB = environment.PEPE_HUB;
   private authService = inject(AuthService);
-  private alertService = inject(AlertService);
+  private toaster = inject(ToasterService);
   private dialog = inject(Dialog)
   private confirmService = inject(ConfirmService);
   dashboard = viewChild.required<ElementRef>('dashboard');
@@ -100,7 +100,7 @@ export class ProposalsComponent {
       await this.connection.start();
       await this.joinRoom(this.hubUser, 'proposals');
     } catch (error) {
-      this.alertService.setAlert({ severity: 'warn', summary: 'Warn', detail: 'Nepodařilo se navázat spojení s hubem.' });
+      this.toaster.warning('Nepodařilo se navázat spojení s hubem.');
     }
   }
 

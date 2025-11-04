@@ -24,8 +24,6 @@ export default class MainComponent implements OnInit {
     } else {
       this.proposalsService.destination.set(this.user().destination);
       this.warehouseService.destination.set(this.user().destination);
-      console.log(this.user());
-
     }
     this.proposalsService.resetCalendars();
   }

@@ -31,7 +31,6 @@
                     margin-right: 10px;
                     border: 1px solid #864912;
                     background: #864912;
-
                     color: #fff;
                     border-radius: 5px;
                     display: flex;
@@ -65,6 +64,13 @@
                         font-size: 0.7rem;
                         text-align: center;
                     }
+                }
+
+                .cell-lastone {
+                    margin-right: 40px;
+                    border: none;
+                    width: 35px !important;
+                    height: 35px !important;
                 }
             }
 

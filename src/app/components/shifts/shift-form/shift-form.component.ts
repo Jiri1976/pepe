@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, ChangeDetectorRef, Component, computed, DestroyRef, effect, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, computed, DestroyRef, effect, ElementRef, inject, OnInit, signal, viewChild } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
@@ -12,8 +12,8 @@ import { DatePicker, DatePickerModule } from 'primeng/datepicker';
 import { OverlayModule } from 'primeng/overlay';
 import { DialogRef } from '@angular/cdk/dialog';
 import { tap } from 'rxjs';
-import { AlertService } from '../../../services/alert.service';
 import { AuthService } from '../../../services/auth.service';
+import { ToasterService } from '../../../services/toaster.service';
 
 @Component({
   selector: 'app-shift-form',
@@ -37,7 +37,7 @@ export class ShiftFormComponent implements OnInit, AfterViewInit {
   private shiftService = inject(ShiftService);
   private confirmService = inject(ConfirmService);
   private dialogRef = inject(DialogRef, { optional: true });
-  private alertService = inject(AlertService);
+  private toaster = inject(ToasterService);
   private destroyRef = inject(DestroyRef);
   private authService = inject(AuthService);
   private cdRef = inject(ChangeDetectorRef);
@@ -59,12 +59,10 @@ export class ShiftFormComponent implements OnInit, AfterViewInit {
   loading = signal(false);
   loadingText = signal('');
   userName = signal<string>('');
-
-  @ViewChild('calendar', { static: false }) calendar!: DatePicker;
-  @ViewChild('timeFrom', { static: false }) timeFrom!: DatePicker;
-  @ViewChild('timeTo', { static: false }) timeTo!: DatePicker;
-
-  @ViewChild('perso') perso!: ElementRef;
+  calendar = viewChild<DatePicker>('calendar');
+  timeFrom = viewChild<DatePicker>('timeFrom');
+  timeTo = viewChild<DatePicker>('timeTo');
+  perso = viewChild<ElementRef>('perso');
 
   constructor() {
     effect(() => {
@@ -88,8 +86,8 @@ export class ShiftFormComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.calendar.cd.detectChanges();
-    this.calendar.hideOverlay();
+    this.calendar()?.cd.detectChanges();
+    this.calendar()?.hideOverlay();
     this.cdRef.detectChanges();
   }
 
@@ -105,11 +103,11 @@ export class ShiftFormComponent implements OnInit, AfterViewInit {
           const subscription = this.shiftService.deleteShift(shift.id).pipe(
             tap(response => {
               if (response === null) {
-                this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+                this.toaster.error('Něco se pokazilo, zkus to znovu.');
                 this.loading.set(false);
               } else if (response.isSuccess === false) {
                 this.loading.set(false);
-                this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+                this.toaster.error(response.errorMessage);
               } else if (response.isSuccess) {
                 let _uniqueUsers = [...this.shiftService.uniqueUsers()];
                 let user = _uniqueUsers.find(u => u.userId === this.card()!.userId);
@@ -120,7 +118,7 @@ export class ShiftFormComponent implements OnInit, AfterViewInit {
                 this.shiftService.selectedCard.set(response.result);
                 this.shiftService.checkAllToPdf()
                 this.loading.set(false);
-                this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Směna byla smazána!' });
+                this.toaster.success('Směna byla smazána!');
                 this.dialogRef!.close();
               }
             }),
@@ -143,22 +141,22 @@ export class ShiftFormComponent implements OnInit, AfterViewInit {
 
   onOpenCalendar() {
     if (this.calendar) {
-      this.calendar.showOverlay();
-      this.calendar.cd.detectChanges();
+      this.calendar()?.showOverlay();
+      this.calendar()?.cd.detectChanges();
     }
   }
 
   onOpenFrom() {
     if (this.timeFrom) {
-      this.timeFrom.showOverlay();
-      this.timeFrom.cd.detectChanges();
+      this.timeFrom()?.showOverlay();
+      this.timeFrom()?.cd.detectChanges();
     }
   }
 
   onOpenTo() {
     if (this.timeTo) {
-      this.timeTo.showOverlay();
-      this.timeTo.cd.detectChanges();
+      this.timeTo()?.showOverlay();
+      this.timeTo()?.cd.detectChanges();
     }
   }
 
@@ -171,7 +169,7 @@ export class ShiftFormComponent implements OnInit, AfterViewInit {
 
   onBlur(el: 'calendar' | 'from' | 'to') {
     if (el === 'calendar') {
-      if (this.calendar.value === null) {
+      if (this.calendar()?.value === null) {
         this.dateError = true;
         this.calendarFocus.set(false);
         return;
@@ -184,17 +182,17 @@ export class ShiftFormComponent implements OnInit, AfterViewInit {
 
     if (el === 'from') {
       this.fromIsOpen.set(true)
-      if (this.timeFrom.value === null) {
+      if (this.timeFrom()?.value === null) {
         this.fromError = true;
         return;
       }
-      if (this.timeFrom.value > this.timeTo.value) {
+      if (this.timeFrom()?.value > this.timeTo()?.value) {
         this.fromError = true;
         return;
       }
       this.fromError = false;
       this.compareOldAndNewValues();
-      if (this.timeTo.isValidDate(this.timeTo.value) && this.toError) {
+      if (this.timeTo()?.isValidDate(this.timeTo()?.value) && this.toError) {
         this.toError = false;
       }
       return;
@@ -202,17 +200,17 @@ export class ShiftFormComponent implements OnInit, AfterViewInit {
 
     if (el === 'to') {
       this.toIsOpen.set(true);
-      if (this.timeTo.value === null) {
+      if (this.timeTo()?.value === null) {
         this.toError = true;
         return;
       }
-      if (this.timeFrom.value > this.timeTo.value) {
+      if (this.timeFrom()?.value > this.timeTo()?.value) {
         this.toError = true;
         return;
       }
       this.toError = false;
       this.compareOldAndNewValues();
-      if (this.timeFrom.isValidDate(this.timeFrom.value) && this.fromError) {
+      if (this.timeFrom()?.isValidDate(this.timeFrom()?.value) && this.fromError) {
         this.fromError = false;
       }
       return;
@@ -221,12 +219,12 @@ export class ShiftFormComponent implements OnInit, AfterViewInit {
 
   onInput(el: 'calendar' | 'from' | 'to') {
     if (el === 'calendar') {
-      if (this.calendar.value === null) {
+      if (this.calendar()?.value === null) {
         this.dateError = true;
         return;
       }
 
-      if (!this.calendar.isValidDate(this.calendar.value)) {
+      if (!this.calendar()?.isValidDate(this.calendar()?.value)) {
         this.dateError = true;
         return;
       } else {
@@ -237,22 +235,22 @@ export class ShiftFormComponent implements OnInit, AfterViewInit {
     }
     if (el === 'from') {
       this.fromIsOpen.set(false);
-      this.timeFrom.hideOverlay();
-      if (this.timeFrom.value === null) {
+      this.timeFrom()?.hideOverlay();
+      if (this.timeFrom()?.value === null) {
         this.fromError = true;
         return;
       }
-      if (!this.timeFrom.isValidDate(this.timeFrom.value)) {
+      if (!this.timeFrom()?.isValidDate(this.timeFrom()?.value)) {
         this.fromError = true;
         return;
       } else {
-        if (this.timeFrom.value > this.timeTo.value) {
+        if (this.timeFrom()?.value > this.timeTo()?.value) {
           this.fromError = true;
           return;
         }
         this.compareOldAndNewValues();
         this.fromError = false;
-        if (this.timeTo.isValidDate(this.timeTo.value) && this.toError) {
+        if (this.timeTo()?.isValidDate(this.timeTo()?.value) && this.toError) {
           this.toError = false;
         }
         return;
@@ -260,21 +258,21 @@ export class ShiftFormComponent implements OnInit, AfterViewInit {
     }
     if (el === 'to') {
       this.toIsOpen.set(false);
-      this.timeTo.hideOverlay();
-      if (this.timeTo.value === null) {
+      this.timeTo()?.hideOverlay();
+      if (this.timeTo()?.value === null) {
         this.toError = true;
         return;
       }
-      if (!this.timeTo.isValidDate(this.timeTo.value)) {
+      if (!this.timeTo()?.isValidDate(this.timeTo()?.value)) {
         this.toError = true;
         return;
       } else {
-        if (this.timeFrom.value > this.timeTo.value) {
+        if (this.timeFrom()?.value > this.timeTo()?.value) {
           this.toError = true;
           return;
         }
         this.compareOldAndNewValues();
-        if (this.timeFrom.isValidDate(this.timeFrom.value) && this.fromError) {
+        if (this.timeFrom()?.isValidDate(this.timeFrom()?.value) && this.fromError) {
           this.fromError = false;
         }
         this.toError = false;
@@ -284,7 +282,7 @@ export class ShiftFormComponent implements OnInit, AfterViewInit {
   }
 
   checkPerso() {
-    let text = this.perso.nativeElement.value;
+    let text = this.perso()?.nativeElement.value;
     if (text.length > 100) {
       this.persoError = true;
     } else {
@@ -297,8 +295,8 @@ export class ShiftFormComponent implements OnInit, AfterViewInit {
     if (this.oldAndNewValuesAreSame) {
       return true;
     }
-    return ((new Date(this.timeFrom?.value).getHours() === new Date(this.timeTo?.value).getHours())
-      && (new Date(this.timeFrom?.value).getMinutes() === new Date(this.timeTo?.value).getMinutes()));
+    return ((new Date(this.timeFrom()?.value).getHours() === new Date(this.timeTo()?.value).getHours())
+      && (new Date(this.timeFrom()?.value).getMinutes() === new Date(this.timeTo()?.value).getMinutes()));
   }
 
   getTime(date: string) {
@@ -317,13 +315,13 @@ export class ShiftFormComponent implements OnInit, AfterViewInit {
     const subscription = this.shiftService.createUpdateShift(shift).pipe(
       tap(response => {
         if (response === null) {
-          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+          this.toaster.error('Něco se pokazilo, zkus to znovu.');
           this.loading.set(false);
           this.shiftForm.enable();
         } else if (response.isSuccess === false) {
           this.loading.set(false);
           this.shiftForm.enable();
-          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+          this.toaster.error(response.errorMessage);
         } else if (response.isSuccess) {
           this.loading.set(false);
           let _uniqueUsers = [...this.shiftService.uniqueUsers()];
@@ -337,7 +335,7 @@ export class ShiftFormComponent implements OnInit, AfterViewInit {
           this.shiftService.uniqueUsers.set(_uniqueUsers);
           this.shiftService.selectedCard.set(response.result);
           this.shiftService.checkAllToPdf()
-          this.alertService.setAlert({ severity: 'success', summary: 'Success', detail: 'Směna byla uložena!' });
+          this.toaster.success('Směna byla uložena!');
           this.dialogRef?.close();
         }
       }),
@@ -356,11 +354,11 @@ export class ShiftFormComponent implements OnInit, AfterViewInit {
   }
 
   private convertToShift() {
-    let hoursFrom = new Date(this.timeFrom.value).getHours() < 10 ? '0' + new Date(this.timeFrom.value).getHours() : new Date(this.timeFrom.value).getHours();
-    let minutesFrom = new Date(this.timeFrom.value).getMinutes() < 10 ? '0' + new Date(this.timeFrom.value).getMinutes() : new Date(this.timeFrom.value).getMinutes();
-    let hoursTo = new Date(this.timeTo.value).getHours() < 10 ? '0' + new Date(this.timeTo.value).getHours() : new Date(this.timeTo.value).getHours();
-    let minutesTo = new Date(this.timeTo.value).getMinutes() < 10 ? '0' + new Date(this.timeTo.value).getMinutes() : new Date(this.timeTo.value).getMinutes();
-    let calendarDay = new Date(this.calendar.value);
+    let hoursFrom = new Date(this.timeFrom()?.value).getHours() < 10 ? '0' + new Date(this.timeFrom()?.value).getHours() : new Date(this.timeFrom()?.value).getHours();
+    let minutesFrom = new Date(this.timeFrom()?.value).getMinutes() < 10 ? '0' + new Date(this.timeFrom()?.value).getMinutes() : new Date(this.timeFrom()?.value).getMinutes();
+    let hoursTo = new Date(this.timeTo()?.value).getHours() < 10 ? '0' + new Date(this.timeTo()?.value).getHours() : new Date(this.timeTo()?.value).getHours();
+    let minutesTo = new Date(this.timeTo()?.value).getMinutes() < 10 ? '0' + new Date(this.timeTo()?.value).getMinutes() : new Date(this.timeTo()?.value).getMinutes();
+    let calendarDay = new Date(this.calendar()?.value);
     let day = calendarDay.getDate() < 10 ? '0' + calendarDay.getDate() : calendarDay.getDate();
     let month = (calendarDay.getMonth() + 1) < 10 ? '0' + (calendarDay.getMonth() + 1) : (calendarDay.getMonth() + 1);
     let year = calendarDay.getFullYear();
@@ -411,11 +409,11 @@ export class ShiftFormComponent implements OnInit, AfterViewInit {
       minutesToSelectedShift = '0' + minutesToSelectedShift;
     }
 
-    let hoursFrom = new Date(this.timeFrom.value).getHours() < 10 ? '0' + new Date(this.timeFrom.value).getHours() : new Date(this.timeFrom.value).getHours();
-    let minutesFrom = new Date(this.timeFrom.value).getMinutes() < 10 ? '0' + new Date(this.timeFrom.value).getMinutes() : new Date(this.timeFrom.value).getMinutes();
-    let hoursTo = new Date(this.timeTo.value).getHours() < 10 ? '0' + new Date(this.timeTo.value).getHours() : new Date(this.timeTo.value).getHours();
-    let minutesTo = new Date(this.timeTo.value).getMinutes() < 10 ? '0' + new Date(this.timeTo.value).getMinutes() : new Date(this.timeTo.value).getMinutes();
-    let calendarDay = new Date(this.calendar.value);
+    let hoursFrom = new Date(this.timeFrom()?.value).getHours() < 10 ? '0' + new Date(this.timeFrom()?.value).getHours() : new Date(this.timeFrom()?.value).getHours();
+    let minutesFrom = new Date(this.timeFrom()?.value).getMinutes() < 10 ? '0' + new Date(this.timeFrom()?.value).getMinutes() : new Date(this.timeFrom()?.value).getMinutes();
+    let hoursTo = new Date(this.timeTo()?.value).getHours() < 10 ? '0' + new Date(this.timeTo()?.value).getHours() : new Date(this.timeTo()?.value).getHours();
+    let minutesTo = new Date(this.timeTo()?.value).getMinutes() < 10 ? '0' + new Date(this.timeTo()?.value).getMinutes() : new Date(this.timeTo()?.value).getMinutes();
+    let calendarDay = new Date(this.calendar()?.value);
     let day = calendarDay.getDate() < 10 ? '0' + calendarDay.getDate() : calendarDay.getDate();
     let month = (calendarDay.getMonth() + 1) < 10 ? '0' + (calendarDay.getMonth() + 1) : (calendarDay.getMonth() + 1);
     let year = calendarDay.getFullYear();
@@ -428,7 +426,7 @@ export class ShiftFormComponent implements OnInit, AfterViewInit {
     let currentDate = day + '.' + month + '.' + year;
     let currentFrom = hoursFrom.toString() + ':' + minutesFrom.toString();
     let currentTo = hoursTo.toString() + ':' + minutesTo.toString();
-    let currentPerso = this.perso.nativeElement.value;
+    let currentPerso = this.perso()?.nativeElement.value;
 
     if (selectedDate === currentDate && selectedFrom === currentFrom && selectedTo === currentTo && selectedPerso === currentPerso) {
       this.shiftForm.markAsUntouched();

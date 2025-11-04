@@ -2,9 +2,9 @@ import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { tap } from 'rxjs';
-import { AlertService } from '../../services/alert.service';
 import { Router } from '@angular/router';
-import { WarehouseService } from '../../services/warehouse.service';
+import { ToasterService } from '../../services/toaster.service';
+import { SignalService } from '../../services/signal.service';
 
 @Component({
   selector: 'app-login',
@@ -15,17 +15,17 @@ import { WarehouseService } from '../../services/warehouse.service';
 })
 export default class LoginComponent implements OnInit {
   private authService = inject(AuthService);
-  private warehouseService = inject(WarehouseService);
+  private signalService = inject(SignalService);
   private destroyRef = inject(DestroyRef);
-  private alertService = inject(AlertService);
+  private toaster = inject(ToasterService);
   private router = inject(Router);
   isLoading = signal<boolean>(false);
   form!: FormGroup;
 
   ngOnInit() {
-    this.warehouseService.leaveRoom();
+    this.signalService.leaveRoom();
     localStorage.removeItem('notifications');
-    this.alertService.notifications.set([]);
+    this.toaster.notifications.set([]);
     this.initForm();
   }
 
@@ -45,19 +45,20 @@ export default class LoginComponent implements OnInit {
       tap(response => {
         if (response === null) {
           this.isLoading.set(false);
-          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: 'Něco se pokazilo, zkus to znovu.' });
+          this.toaster.error('Něco se pokazilo, zkus to znovu.');
         } else if (response.isSuccess === false) {
           this.isLoading.set(false);
-          this.alertService.setAlert({ severity: 'error', summary: 'Error', detail: response.errorMessage });
+          this.toaster.error(response.errorMessage);
         } else {
           localStorage.setItem('token', response.result);
           this.authService.setUserDetail(response.result);
           this.isLoading.set(false);
           this.router.navigate(['main']);
-          this.warehouseService.userName.set(this.authService.user().name);
-          this.warehouseService.userRole.set(this.authService.user().role);
-          this.warehouseService.userDestination.set(this.authService.user().destination);
-          this.warehouseService.token.set(this.authService.getToken()!);
+          this.signalService.userName.set(this.authService.user().name);
+          this.signalService.userRole.set(this.authService.user().role);
+          this.signalService.userDestination.set(this.authService.user().destination);
+          this.signalService.token.set(this.authService.getToken()!);
+
           localStorage.setItem('userRole', this.authService.user().role);
           localStorage.setItem('userName', this.authService.user().name);
           localStorage.setItem('userDestination', this.authService.user().destination);

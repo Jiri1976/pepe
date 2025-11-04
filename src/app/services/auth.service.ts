@@ -6,8 +6,9 @@ import { jwtDecode } from 'jwt-decode';
 import { AuthUser } from '../models/auth-user.interface';
 import { Router } from '@angular/router';
 import { WarehouseService } from './warehouse.service';
-import { AlertService } from './alert.service';
 import { Dialog } from '@angular/cdk/dialog';
+import { ToasterService } from './toaster.service';
+import { SignalService } from './signal.service';
 
 @Injectable({
   providedIn: 'root'
@@ -19,8 +20,9 @@ export class AuthService {
   private tokenExpirationTimer: any;
   private initialUser: AuthUser = { name: '', email: '', role: '', destination: '', token: '', expiresIn: '' };
   private warehouseService = inject(WarehouseService);
-  private alertService = inject(AlertService);
+  private toaster = inject(ToasterService);
   private dialog = inject(Dialog);
+  private signalService = inject(SignalService);
 
   user = signal<AuthUser>(this.initialUser);
   firstRun = true;
@@ -57,11 +59,12 @@ export class AuthService {
     localStorage.removeItem('userName');
     localStorage.removeItem('userDestination');
     localStorage.removeItem('token');
-    this.alertService.notifications.set([]);
+    this.toaster.notifications.set([]);
     this.warehouseService.items.set([]);
     this.warehouseService.selectedUnit.set({ id: 0, warehouseCardId: 0, warehouseItemId: 0, date: '', amount: 0 });
     this.warehouseService.warehouseCard.set({ id: 0, warehouseItemId: 0, warehouseItemName: '', monthYear: '', monthYearName: '', destination: '', position: 0, units: [] });
-    this.warehouseService.leaveRoom();
+    //this.warehouseService.leaveRoom();
+    this.signalService.leaveRoom();
     this.user.set(this.initialUser);
     this.firstRun = true;
     this.router.navigate(['login']);
