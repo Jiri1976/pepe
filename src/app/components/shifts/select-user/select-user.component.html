@@ -1,4 +1,9 @@
 <div #scrollContainer class="select-user" [style]="sectionStyles()">
+    @if (uniqueUsers()!.length > 11) {
+    <div class="close_btn" (click)="onClose()">
+        <i class="bi bi-x"></i>
+    </div>
+    }
     @for(user of uniqueUsers(); track user.userId) {
     <div class="user" (click)="onSelectUser(user.userId)">
         <p>{{ user.userName }} {{ user.userSurname }}</p>

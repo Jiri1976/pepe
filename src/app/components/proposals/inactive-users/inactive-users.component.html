@@ -1,4 +1,9 @@
 <div class="select-user" [style]="sectionStyles()">
+    @if (users()!.length > 11) {
+    <div class="close_btn" (click)="onClose()">
+        <i class="bi bi-x"></i>
+    </div>
+    }
     @for(user of uniqueUsers; track $index) {
     <div class="user">
 

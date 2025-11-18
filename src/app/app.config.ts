@@ -1,4 +1,4 @@
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, inject, provideEnvironmentInitializer, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter, withViewTransitions } from '@angular/router';
 import { routes } from './app.routes';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
@@ -28,11 +28,13 @@ export const appConfig: ApplicationConfig = {
       }
     ),
     AuthService,
-    SignalService,
     ToasterService,
     ConfirmationService,
     provideHotToastConfig({
       position: 'bottom-right'
+    }),
+    provideEnvironmentInitializer(() => {
+      inject(SignalService,);
     })
   ]
 };

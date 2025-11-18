@@ -82,7 +82,7 @@ export class ShiftFormComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.initializedShitForm();
-    this.userName.set(`${this.shiftService.selectedCard()!.userName} ${this.shiftService.selectedCard()!.userSurname}`)
+    this.userName.set(`${this.shiftService.selectedCard()!.userName} ${this.shiftService.selectedCard()!.userSurname}`);
   }
 
   ngAfterViewInit() {
@@ -174,6 +174,7 @@ export class ShiftFormComponent implements OnInit, AfterViewInit {
         this.calendarFocus.set(false);
         return;
       }
+      this.refreshTimeTo(this.calendar()?.value);
       this.calendarFocus.set(false);
       this.dateError = false;
       this.compareOldAndNewValues();
@@ -228,6 +229,7 @@ export class ShiftFormComponent implements OnInit, AfterViewInit {
         this.dateError = true;
         return;
       } else {
+        this.refreshTimeTo(this.calendar()?.value);
         this.dateError = false;
         this.compareOldAndNewValues();
         return;
@@ -351,6 +353,31 @@ export class ShiftFormComponent implements OnInit, AfterViewInit {
     this.destroyRef.onDestroy(() => {
       subscription.unsubscribe();
     });
+  }
+
+  private refreshTimeTo(date: string) {
+    let calendarDay = new Date(date);
+    let day = calendarDay.getDate() < 10 ? '0' + calendarDay.getDate() : calendarDay.getDate();
+    let month = (calendarDay.getMonth() + 1) < 10 ? '0' + (calendarDay.getMonth() + 1) : (calendarDay.getMonth() + 1);
+    let year = calendarDay.getFullYear();
+
+    if (this.isFridayOrSaturday(date)) {
+      this.shiftForm.patchValue({
+        'shiftTo': new Date(year, parseInt(month.toString()) - 1, parseInt(day.toString()), 23, 0)
+      });
+    } else {
+      this.shiftForm.patchValue({
+        'shiftTo': new Date(year, parseInt(month.toString()) - 1, parseInt(day.toString()), 22, 0)
+      });
+    }
+  }
+
+  private isFridayOrSaturday(date: string) {
+    var day = new Date(date);
+    if (day.getDay() == 5 || day.getDay() == 6) {
+      return true;
+    }
+    return false;
   }
 
   private convertToShift() {

@@ -61,7 +61,8 @@
         </li>
         }
 
-        <li (click)="onShowUnits()" [class.no-action]="warehouseNav() === 'units'">
+        <li (click)="onShowUnits()" [class.no-action]="warehouseNav() === 'units'"
+            [class.disabled]="this.cards().length === 0">
             <a [style.--background]="warehouseNav() === 'units' ? '#864912' : '#f7d3af'" [style.--color]="'#fff'">
                 <i class="bi bi-table"></i>
             </a>
@@ -98,7 +99,7 @@
             </a>
         </li>
 
-        <li (click)="onShowUnits()" hide>
+        <li (click)="onShowUnits()" hide [class.disabled]="this.cards().length === 0">
             <a [style.--background]="'#f7d3af'" [style.--color]="'#fff'">
                 <i class="bi bi-table"></i>
             </a>
