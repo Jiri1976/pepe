@@ -10,8 +10,7 @@ import { SignalService } from '../../services/signal.service';
   selector: 'app-login',
   imports: [ReactiveFormsModule],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.scss',
-  providers: []
+  styleUrl: './login.component.scss'
 })
 export default class LoginComponent implements OnInit {
   private authService = inject(AuthService);
@@ -29,14 +28,6 @@ export default class LoginComponent implements OnInit {
     this.initForm();
   }
 
-  get email() {
-    return this.form.get('email');
-  }
-
-  get password() {
-    return this.form.get('password');
-  }
-
   onSubmit() {
     this.isLoading.set(true);
     const data = { email: this.form.value.email, password: this.form.value.password };
@@ -50,18 +41,17 @@ export default class LoginComponent implements OnInit {
           this.isLoading.set(false);
           this.toaster.error(response.errorMessage);
         } else {
-          localStorage.setItem('token', response.result);
           this.authService.setUserDetail(response.result);
-          this.isLoading.set(false);
-          this.router.navigate(['main']);
           this.signalService.userName.set(this.authService.user().name);
           this.signalService.userRole.set(this.authService.user().role);
           this.signalService.userDestination.set(this.authService.user().destination);
           this.signalService.token.set(this.authService.getToken()!);
-
+          localStorage.setItem('token', response.result);
           localStorage.setItem('userRole', this.authService.user().role);
           localStorage.setItem('userName', this.authService.user().name);
           localStorage.setItem('userDestination', this.authService.user().destination);
+          this.isLoading.set(false);
+          this.router.navigate(['main']);
         }
       })
     ).subscribe({
@@ -80,13 +70,11 @@ export default class LoginComponent implements OnInit {
   }
 
   private disableInputs() {
-    this.password?.disable();
-    this.email?.disable();
+    this.form.disable();
   }
 
   private enableInputs() {
-    this.password?.enable();
-    this.email?.enable();
+    this.form.enable();
   }
 
   private initForm() {

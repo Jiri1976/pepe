@@ -7,26 +7,23 @@
                 <div class="input-box">
                     <form [formGroup]="form">
                         <div class="input-field">
+                            <i class="bi bi-envelope"></i>
                             <input type="text" class="input" id="email" required="" autocomplete="off"
                                 formControlName="email">
-                            <label for="email">Email</label>
                         </div>
                         <div class="input-field second">
+                            <i class="bi bi-lock"></i>
                             <input type="password" class="input" id="pass" required="" formControlName="password">
-                            <label for="pass">Heslo</label>
                         </div>
-                        <div class="input-field">
-                            @if (!isLoading()) {
-                            <button type="submit" class="submit" (click)="onSubmit()"
-                                [disabled]="form.invalid">Přihlásit se</button>
-                            } @else {
-                            <button class="submit loading" type="button" disabled>
-                                <span class="spinner-border spinner-border-sm text-white me-1"
-                                    aria-hidden="true"></span>
-                                Přihlašuji se ...
-                            </button>
-                            }
-                        </div>
+                        @if (!isLoading()) {
+                        <button type="submit" class="submit" (click)="onSubmit()" [disabled]="form.invalid">Přihlásit
+                            se</button>
+                        } @else {
+                        <button class="submit loading" type="button" disabled>
+                            <span class="spinner-border spinner-border-sm text-white me-1" aria-hidden="true"></span>
+                            Přihlašuji se ...
+                        </button>
+                        }
                     </form>
                 </div>
             </div>
