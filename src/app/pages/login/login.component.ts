@@ -41,17 +41,17 @@ export default class LoginComponent implements OnInit {
           this.isLoading.set(false);
           this.toaster.error(response.errorMessage);
         } else {
+          localStorage.setItem('token', response.result);
           this.authService.setUserDetail(response.result);
+          this.isLoading.set(false);
+          this.router.navigate(['main']);
           this.signalService.userName.set(this.authService.user().name);
           this.signalService.userRole.set(this.authService.user().role);
           this.signalService.userDestination.set(this.authService.user().destination);
           this.signalService.token.set(this.authService.getToken()!);
-          localStorage.setItem('token', response.result);
           localStorage.setItem('userRole', this.authService.user().role);
           localStorage.setItem('userName', this.authService.user().name);
           localStorage.setItem('userDestination', this.authService.user().destination);
-          this.isLoading.set(false);
-          this.router.navigate(['main']);
         }
       })
     ).subscribe({
