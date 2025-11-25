@@ -43,7 +43,7 @@ export default class LoginComponent implements OnInit {
         } else {
           localStorage.setItem('token', response.result);
           this.authService.setUserDetail(response.result);
-          this.isLoading.set(false);
+          //this.isLoading.set(false);
           this.router.navigate(['main']);
           this.signalService.userName.set(this.authService.user().name);
           this.signalService.userRole.set(this.authService.user().role);
