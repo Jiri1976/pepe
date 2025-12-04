@@ -1,7 +1,8 @@
 <nav class="navbar navbar-expand-lg bg-body-tertiary" animate.enter="fade-in">
     <div class="container-fluid">
         <a class="navbar-brand" routerLink="main">
-            <img src="/pizza.ico" alt="Pizza icon" width="50" height="50"> PEPE PIZZA
+            <!-- <img src="/pizza.ico" alt="Pizza icon" width="40" height="40">  -->
+            PEPE PIZZA
         </a>
 
         <div class="dropdown">
@@ -19,7 +20,7 @@
                 {{user().name }} - {{ user().role }}
             </button>
             <ul class="dropdown-menu text-center">
-                <li hide><a class="dropdown-item" routerLink="/users">Uživatelé</a></li>
+                <li hide><a class=" dropdown-item" routerLink="/users">Uživatelé</a></li>
                 <li><a class="dropdown-item" routerLink="/plans">Rozpis směn</a></li>
                 <li><a class="dropdown-item" routerLink="/shifts">Směny</a></li>
                 <li><a class="dropdown-item" routerLink="/warehouse">Sklad</a></li>

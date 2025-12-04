@@ -1,12 +1,14 @@
 * {
-    font-family: "Poppins", sans-serif;
-    font-weight: 400;
+    // font-family: "Poppins", sans-serif;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 100;
     font-style: normal;
-    font-size: 0.9rem;
+    font-size: 14px;
+    font-optical-sizing: auto;
 }
 
 .navbar {
-    height: 75px;
+    height: 65px;
     padding: 10px 60px;
     background: #fff !important;
     box-shadow: 0 3px 10px 2px rgba(0, 0, 0, 0.2);
@@ -19,8 +21,10 @@
     z-index: 999;
 
     .navbar-brand {
+        display: flex;
+        align-items: center;
         font-weight: 900;
-        color: #864912;
+        color: #292524;
         font-size: 1rem;
         letter-spacing: 1px;
     }
@@ -50,7 +54,7 @@
 
                 .bi {
                     font-size: 1.3rem;
-                    color: #864912;
+                    color: #292524;
                 }
             }
 
@@ -76,8 +80,8 @@
 
     .dropdown-toggle {
         background: #fff;
-        border: 1px solid #864912;
-        color: #864912;
+        border: 1px solid #292524;
+        color: #292524;
         font-weight: 700;
         border-radius: 30px;
     }
@@ -89,15 +93,15 @@
     .dropdown-menu {
         margin-top: 10px;
         min-width: 195px;
-        border: 1px solid #864912;
+        border: 1px solid #292524;
 
         .dropdown-item {
             font-weight: 500;
-            color: #864912;
+            color: #292524;
         }
 
         .dropdown-item:hover {
-            background: #864912;
+            background: #292524;
             color: #fff;
             cursor: pointer;
         }
