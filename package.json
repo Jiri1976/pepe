@@ -47,5 +47,10 @@
     "karma-jasmine": "^5.1.0",
     "karma-jasmine-html-reporter": "^2.1.0",
     "typescript": "^5.9.3"
+  },
+  "overrides": {
+    "@ngrx/signals": {
+      "@angular/core": "^21.0.3"
+    }
   }
 }
