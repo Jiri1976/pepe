@@ -1,6 +1,5 @@
 import { Component, computed, effect, ElementRef, HostListener, inject, signal, viewChild } from '@angular/core';
 import { ProposalsService } from '../../services/proposals.service';
-import { AuthService } from '../../services/auth.service';
 import { UpdateProposalComponent } from "./update-proposal/update-proposal.component";
 import { ProposalSkeletonComponent } from "./proposal-skeleton/proposal-skeleton.component";
 import { Dialog } from '@angular/cdk/dialog';
@@ -14,6 +13,7 @@ import { ProposalTableStyleDirective } from '../../directives/proposal-table-sty
 import { ProposalUser } from '../../models/proposals/proposalUser.interface';
 import { ConfirmService } from '../../services/confirm.service';
 import { ToasterService } from '../../services/toaster.service';
+import { AuthStore } from '../../stores/auth-store/auth.store';
 
 @Component({
   selector: 'app-proposals',
@@ -33,18 +33,17 @@ import { ToasterService } from '../../services/toaster.service';
   styleUrl: './proposals.component.scss'
 })
 export class ProposalsComponent {
+  readonly authStore = inject(AuthStore);
   private PEPE_HUB = environment.PEPE_HUB;
-  private authService = inject(AuthService);
   private toaster = inject(ToasterService);
   private dialog = inject(Dialog)
   private confirmService = inject(ConfirmService);
   dashboard = viewChild.required<ElementRef>('dashboard');
   proposalsService = inject(ProposalsService);
-  loggedUser = this.authService.getUser();
   proposalsLoading = computed(() => this.proposalsService.isProposalLoading());
   unsavedProposalCardErrorText = '';
-  hubUser = `${this.loggedUser.name}`;
-  token = this.authService.getToken();
+  hubUser = `${this.authStore.user()?.name}`;
+  token = this.authStore.user()?.token;
   updateHub = computed(() => this.proposalsService.updateHub());
   planCard = computed(() => this.proposalsService.schedules().find(c => c.destination === this.proposalsService.destination())!);
   days = computed(() => this.proposalsService.days());
@@ -57,7 +56,7 @@ export class ProposalsComponent {
     this.setBodyStyles();
   });
 
-  @HostListener('window:resize', ['$event'])
+  @HostListener('window:resize')
   onWindowResize() {
     this.setBodyStyles();
   }
@@ -166,7 +165,7 @@ export class ProposalsComponent {
 
   onCreateUpdateProposal(userIndex: number, shiftIndex: number) {
     let selectedProposal = { ...this.planCard()!.users![userIndex].shifts[shiftIndex] };
-    if (this.loggedUser.role === 'Master' && this.isPassedTime(selectedProposal.proposalDate)) {
+    if (this.authStore.user()?.role === 'Master' && this.isPassedTime(selectedProposal.proposalDate)) {
       return;
     }
 

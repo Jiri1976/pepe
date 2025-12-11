@@ -1,5 +1,4 @@
 import { Component, DestroyRef, inject, OnInit, signal, CUSTOM_ELEMENTS_SCHEMA, ElementRef, computed, effect, viewChild } from '@angular/core';
-import { AuthService } from '../../services/auth.service';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { ConfirmComponent } from '../../components/confirm/confirm.component';
@@ -16,6 +15,7 @@ import { UniqueUser } from '../../models/shifts/uniqueUser.interface';
 import { Dialog } from '@angular/cdk/dialog';
 import { ShiftFormComponent } from '../../components/shifts/shift-form/shift-form.component';
 import { ToasterService } from '../../services/toaster.service';
+import { AuthStore } from '../../stores/auth-store/auth.store';
 
 @Component({
   selector: 'app-plans',
@@ -34,18 +34,17 @@ import { ToasterService } from '../../services/toaster.service';
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class ShiftsComponent implements OnInit {
+  readonly authStore = inject(AuthStore);
   private swiper!: Swiper;
   private MONTHS = ["LEDEN", "ÚNOR", "BŘEZEN", "DUBEN", "KVĚTEN", "ČERVEN", "ČERVENEC", "SRPEN", "ZÁŘÍ", "ŘÍJEN", "LISTOPAD", "PROSINEC"];
   private MONTHS_NAMES = ["LED", "ÚNO", "BŘE", "DUB", "KVĚ", "ČER", "ČRV", "SRP", "ZÁŘ", "ŘÍJ", "LIS", "PRO"];
   private MONTHS_NUM = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
-  private authService = inject(AuthService);
   private shiftService = inject(ShiftService);
   private destroyRef = inject(DestroyRef);
   private toaster = inject(ToasterService);
   private dialog = inject(Dialog);
   monthYear = signal<string>(this.MONTHS_NUM[new Date().getMonth()] + new Date().getFullYear());
-  loggedUser = this.authService.getUser();
-  destination = signal(this.loggedUser.role === 'Master' ? this.loggedUser.destination : 'F-M');
+  destination = signal(this.authStore.user()?.role! === 'Master' ? this.authStore.user()?.destination! : 'F-M');
   isLoading = signal(false);
   selectedUserId = computed(() => this.shiftService.selectedUserId());
   currentIndex = signal<number>(0);

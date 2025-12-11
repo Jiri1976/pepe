@@ -1,11 +1,11 @@
 <div class="menu">
     <ul>
-        <li [style.--background]="'#864912'">
+        <li class="main">
             <a (click)="createUser()">
                 <i class="bi bi-person-add"></i>
             </a>
         </li>
-        <li [style.--background]="'#864912'" (click)="usersComponent.getUsers()">
+        <li class="main" (click)="usersComponent.getUsers()">
             <a>
                 @if (!usersComponent.isLoading()) {
                 <i class="bi bi-arrow-clockwise"></i>
@@ -17,35 +17,35 @@
             </a>
         </li>
 
-        <li [style.--background]="filter() === 'F-M' ? '#864912' : '#f7d3af'">
+        <li [class]="filter() === 'F-M' ? 'main' : 'disabled'">
             <a (click)="selectList(1)">
                 <p>F-M</p>
             </a>
         </li>
-        <li [style.--background]="filter() === 'OVA' ? '#864912' : '#f7d3af'">
+        <li [class]="filter() === 'OVA' ? 'main' : 'disabled'">
             <a (click)="selectList(2)">
                 <p>OVA</p>
             </a>
         </li>
         <li
-            [style.--background]="role() === 'User' && (selectedList() === 3 || selectedList() === 1 || selectedList() === 2) ? '#864912' : '#f7d3af'">
+            [class]="role() === 'User' && (selectedList() === 3 || selectedList() === 1 || selectedList() === 2) ? 'main' : 'disabled'">
             <a (click)="selectList(3)">
                 <p>U</p>
             </a>
         </li>
         <li
-            [style.--background]="role() === 'Master' && (selectedList() === 4 || selectedList() === 1 || selectedList() === 2) ? '#864912' : '#f7d3af'">
+            [class]="role() === 'Master' && (selectedList() === 4 || selectedList() === 1 || selectedList() === 2) ? 'main' : 'disabled'">
             <a (click)="selectList(4)">
                 <p>M</p>
             </a>
         </li>
         <li
-            [style.--background]="role() === 'Admin' && (selectedList() === 5 || selectedList() === 1 || selectedList() === 2) ? '#864912' : '#f7d3af'">
+            [class]="role() === 'Admin' && (selectedList() === 5 || selectedList() === 1 || selectedList() === 2) ? 'main' : 'disabled'">
             <a (click)="selectList(5)">
                 <p>A</p>
             </a>
         </li>
-        <li [style.--background]="filter() === 'All' ? '#864912' : '#f7d3af'">
+        <li [class]="filter() === 'All' ? 'main' : 'disabled'">
             <a (click)="selectList(6)">
                 <p>VŠE</p>
             </a>

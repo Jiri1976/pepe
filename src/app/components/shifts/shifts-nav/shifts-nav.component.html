@@ -49,7 +49,7 @@
         </li>
 
         <li hideAdmin (click)="shiftsComponent.onAddShift()"
-            [class.disabled]="(shiftsComponent.isPastCard() === true && loggedUser.role === 'Master')">
+            [class.disabled]="(shiftsComponent.isPastCard() === true && authStore.user()?.role === 'Master')">
             <a [style.--background]="'#864912'" [style.--color]="'#fff'">
                 <i class="bi bi-plus"></i>
             </a>

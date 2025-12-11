@@ -12,8 +12,8 @@ import { DatePicker, DatePickerModule } from 'primeng/datepicker';
 import { OverlayModule } from 'primeng/overlay';
 import { DialogRef } from '@angular/cdk/dialog';
 import { tap } from 'rxjs';
-import { AuthService } from '../../../services/auth.service';
 import { ToasterService } from '../../../services/toaster.service';
+import { AuthStore } from '../../../stores/auth-store/auth.store';
 
 @Component({
   selector: 'app-shift-form',
@@ -34,14 +34,13 @@ import { ToasterService } from '../../../services/toaster.service';
   styleUrl: './shift-form.component.scss'
 })
 export class ShiftFormComponent implements OnInit, AfterViewInit {
+  readonly authStore = inject(AuthStore);
   private shiftService = inject(ShiftService);
   private confirmService = inject(ConfirmService);
   private dialogRef = inject(DialogRef, { optional: true });
   private toaster = inject(ToasterService);
   private destroyRef = inject(DestroyRef);
-  private authService = inject(AuthService);
   private cdRef = inject(ChangeDetectorRef);
-  loggedUser = computed(() => this.authService.getUser());
   shiftForm!: FormGroup;
   selectedShift = computed(() => this.shiftService.selectedShift());
   card = computed(() => this.shiftService.selectedCard());

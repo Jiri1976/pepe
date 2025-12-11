@@ -136,7 +136,8 @@
     </div>
     <div class="row mt-4">
         <div class="col-8 offset-2 buttons">
-            <button class="cancel" (click)="onGoBack()" type="button"><i class="bi bi-x"></i>&nbsp;Zpět</button>
+            <button class="cancel" (click)="onGoBack()" type="button"><i
+                    class="bi bi-caret-left"></i>&nbsp;Zpět</button>
             @if (user().id > 1) {
             <button class="delete" (click)="onDelete()" type="button"><i class="bi bi-trash"></i>&nbsp;Smazat</button>
             }

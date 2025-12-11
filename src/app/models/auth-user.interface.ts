@@ -4,5 +4,6 @@ export interface AuthUser {
     role: string,
     destination: string,
     token: string,
-    expiresIn: string
+    expiresIn: string;
+    expireTime: number;
 }

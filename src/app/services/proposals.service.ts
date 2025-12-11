@@ -2,23 +2,23 @@ import { DestroyRef, inject, Injectable, signal } from "@angular/core";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { environment } from "../../environments/environment";
 import { Response } from '../models/response.interface';
-import { AuthService } from "./auth.service";
 import { map, tap } from "rxjs";
 import { ProposalCard } from "../models/proposals/proposalCard.interface";
 import { ProposalShift } from "../models/proposals/proposalShift.interface";
 import { ProposalUser } from "../models/proposals/proposalUser.interface";
 import { ToasterService } from "./toaster.service";
+import { AuthStore } from "../stores/auth-store/auth.store";
 
 @Injectable({
     providedIn: 'root'
 })
 export class ProposalsService {
+    readonly authStore = inject(AuthStore);
     private MONTHS_NAMES = ["LED", "ÚNO", "BŘE", "DUB", "KVĚ", "ČER", "ČRV", "SRP", "ZÁŘ", "ŘÍJ", "LIS", "PRO"];
     private http = inject(HttpClient);
-    private authService = inject(AuthService);
     private destroyRef = inject(DestroyRef);
     private toaster = inject(ToasterService);
-    private BASE_ROUTE = environment.SHIFTS_PATH;
+    private BASE_ROUTE = environment.PROPOSALS_PATH;
 
     destination = signal<string>('F-M');
     monthYear = signal<string>((new Date().getMonth() + 1).toString() + (new Date().getFullYear()).toString());
@@ -35,17 +35,17 @@ export class ProposalsService {
     uploadedSchedules = structuredClone(this.schedules());
 
     getProposalsOverview() {
-        const url = this.BASE_ROUTE + `Proposals/GetProposalsOverview`;
+        const url = this.BASE_ROUTE + `GetProposalsOverview`;
         return this.http.get<Response>(url);
     }
 
     deleteProposalCard() {
         let httpOptions = {
             headers: new HttpHeaders({
-                'user-role': this.authService.getUser().role,
+                'user-role': this.authStore.user()?.role!,
             })
         };
-        const url = this.BASE_ROUTE + `Proposals/DeleteProposalCard?monthYear=${this.schedules().find(c => c.destination === this.destination())!.monthYear}&destination=${this.schedules().find(c => c.destination === this.destination())!.destination}`;
+        const url = this.BASE_ROUTE + `DeleteProposalCard?monthYear=${this.schedules().find(c => c.destination === this.destination())!.monthYear}&destination=${this.schedules().find(c => c.destination === this.destination())!.destination}`;
         return this.http.delete<Response>(url, httpOptions);
     }
 
@@ -209,7 +209,7 @@ export class ProposalsService {
     }
 
     uploadPDF(card: ProposalCard, role: string) {
-        const url = this.BASE_ROUTE + 'Proposals/GenerateProposalPDF';
+        const url = this.BASE_ROUTE + 'GenerateProposalPDF';
 
         return this.http.post<Response>(url, card, {
             headers: new HttpHeaders()
@@ -226,13 +226,13 @@ export class ProposalsService {
     getScheduledShifts() {
         let httpOptions = {
             headers: new HttpHeaders({
-                'user-role': this.authService.getUser().role,
+                'user-role': this.authStore.user()?.role!,
             })
         }
         if (this.monthYear().length === 5) {
             this.monthYear.set('0' + this.monthYear());
         }
-        const url = this.BASE_ROUTE + `Proposals/GetScheduledShifts?monthYear=${this.monthYear()}&destination=${this.destination()}`;
+        const url = this.BASE_ROUTE + `GetScheduledShifts?monthYear=${this.monthYear()}&destination=${this.destination()}`;
         return this.http.get<Response>(url, httpOptions);
     }
 
@@ -305,7 +305,7 @@ export class ProposalsService {
     }
 
     private saveProposals() {
-        const url = this.BASE_ROUTE + `Proposals/CreateUpdate`;
+        const url = this.BASE_ROUTE + `CreateUpdate`;
         return this.http.post<Response>(url, this.schedules());
     }
 }

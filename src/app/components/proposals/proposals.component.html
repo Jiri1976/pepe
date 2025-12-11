@@ -34,7 +34,7 @@
                 <div cdkDropList (cdkDropListDropped)="drop($event)">
                     @for(user of planCard().users; track $index; let i = $index) {
 
-                    <div class="table-row" cdkDrag [cdkDragDisabled]="loggedUser.role !== 'Admin'">
+                    <div class="table-row" cdkDrag [cdkDragDisabled]="authStore.user()?.role !== 'Admin'">
                         <div class="user-name-cell" cdkDragHandle [setBackground]="user.position === 'Cook'">
                             {{`${user.name} ${user.surname.substring(0,1)}.`}}
                         </div>

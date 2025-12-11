@@ -1,7 +1,6 @@
 import { Component, DestroyRef, inject, input, model, OnInit, output, signal } from '@angular/core';
 import { tap } from 'rxjs';
 import { Shift } from '../../../models/shifts/shift.interface';
-import { AuthService } from '../../../services/auth.service';
 import { ConfirmService } from '../../../services/confirm.service';
 import { ShiftService } from '../../../services/shift.service';
 import { ShiftCard } from '../../../models/shifts/shiftCard.interface';
@@ -9,6 +8,7 @@ import { ShiftFormComponent } from "../shift-form/shift-form.component";
 import { ShiftsComponent } from '../../../pages/shifts/shifts.component';
 import { Dialog } from '@angular/cdk/dialog';
 import { ToasterService } from '../../../services/toaster.service';
+import { AuthStore } from '../../../stores/auth-store/auth.store';
 
 @Component({
   selector: 'app-shift-card',
@@ -17,14 +17,13 @@ import { ToasterService } from '../../../services/toaster.service';
   styleUrl: './shift-card.component.scss'
 })
 export class ShiftCardComponent implements OnInit {
+  readonly authStore = inject(AuthStore);
   private shiftService = inject(ShiftService);
-  private authService = inject(AuthService);
   private confirmService = inject(ConfirmService);
   private toaster = inject(ToasterService);
   private destroyRef = inject(DestroyRef);
   private shiftComponent = inject(ShiftsComponent);
   private dialog = inject(Dialog);
-  loggedUser = this.authService.getUser();
   cardLoading = signal(false);
   updatedCard = output<ShiftCard>();
   pdfLoading = signal(false);

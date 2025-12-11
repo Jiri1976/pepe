@@ -5,14 +5,15 @@ import { Response } from '../models/response.interface';
 import { GetUser } from "../models/users/getUser.interface";
 import { Shift } from "../models/shifts/shift.interface";
 import { InitShift } from "../models/shifts/initShift.interface";
-import { AuthService } from "./auth.service";
 import { ShiftCard } from "../models/shifts/shiftCard.interface";
 import { UniqueUser } from "../models/shifts/uniqueUser.interface";
+import { AuthStore } from "../stores/auth-store/auth.store";
 
 @Injectable({
     providedIn: 'root'
 })
 export class ShiftService {
+    readonly authStore = inject(AuthStore);
     private http = inject(HttpClient);
     private BASE_ROUTE = environment.SHIFTS_PATH;
     private initialShift: InitShift = {
@@ -24,12 +25,9 @@ export class ShiftService {
         position: '',
         destination: ''
     };
-    private authService = inject(AuthService);
     monthYear = signal<string>('');
     selectedShift = signal<InitShift>(this.initialShift);
     cardShiftMonthYear = signal<string>('');
-    // shiftFormVisible = signal(false);
-    //users = signal<{ userName: string, userId: number, position: string }[]>([]);
     selectedUserId = signal<number>(-1);
     selectedCard = signal<ShiftCard | null>(null);
     uniqueUsers = signal<UniqueUser[]>([]);
@@ -75,38 +73,38 @@ export class ShiftService {
             }
         }
         this.cardShiftMonthYear.set(monthYear);
-        const url = this.BASE_ROUTE + `shifts/GetUserShiftCard`;
+        const url = this.BASE_ROUTE + `GetUserShiftCard`;
         return this.http.post<Response>(url, data);
     }
 
     createUpdateShift(shift: Shift) {
-        const url = this.BASE_ROUTE + `shifts/CreateUpdateShift`;
+        const url = this.BASE_ROUTE + `CreateUpdateShift`;
         return this.http.post<Response>(url, shift);
     }
 
     deleteShift(shiftId: number) {
-        const url = this.BASE_ROUTE + `shifts/DeleteShift?id=${shiftId}`;
+        const url = this.BASE_ROUTE + `DeleteShift?id=${shiftId}`;
         return this.http.delete<Response>(url);
     }
 
     deleteShiftCard(cardId: number) {
-        const url = this.BASE_ROUTE + `shifts/DeleteCard?id=${cardId}`;
+        const url = this.BASE_ROUTE + `DeleteCard?id=${cardId}`;
         return this.http.delete<Response>(url);
     }
 
     getUsersShiftCards(monthYear: string, destination: string) {
-        const url = this.BASE_ROUTE + `shifts/GetUsersShiftCards?monthYear=${monthYear}&destination=${destination}`;
+        const url = this.BASE_ROUTE + `GetUsersShiftCards?monthYear=${monthYear}&destination=${destination}`;
         return this.http.get<Response>(url);
     }
 
     generatePDF(card: ShiftCard, destination: string) {
-        const role = this.authService.getUser().role;
-        const url = this.BASE_ROUTE + 'shifts/GeneratePDFCard';
+        const role = this.authStore.user()?.role;
+        const url = this.BASE_ROUTE + 'GeneratePDFCard';
 
         return this.http.post<Response>(url, card, {
             headers: new HttpHeaders()
                 .set('Content-Type', 'application/json')
-                .set('user-role', role)
+                .set('user-role', role!)
                 .set('destination', destination)
         });
     }
@@ -125,13 +123,13 @@ export class ShiftService {
     }
 
     generateAllToPDF(cards: ShiftCard[], destination: string) {
-        const role = this.authService.getUser().role;
-        const url = this.BASE_ROUTE + 'shifts/generateAllToPDF';
+        const role = this.authStore.user()?.role;
+        const url = this.BASE_ROUTE + 'generateAllToPDF';
 
         return this.http.post<Response>(url, cards, {
             headers: new HttpHeaders()
                 .set('Content-Type', 'application/json')
-                .set('user-role', role)
+                .set('user-role', role!)
                 .set('destination', destination)
         });
     }

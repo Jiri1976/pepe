@@ -1,10 +1,10 @@
-::view-transition-old(root) {
-    animation: exit 400ms ease-out 0s 1 normal forwards;
-}
+// ::view-transition-old(root) {
+//     animation: exit 400ms ease-out 0s 1 normal forwards;
+// }
 
-::view-transition-new(root) {
-    animation: enter 600ms ease-in 0s 1 normal forwards;
-}
+// ::view-transition-new(root) {
+//     animation: enter 600ms ease-in 0s 1 normal forwards;
+// }
 
 .fade-in {
     animation: enter 600ms ease-in both;

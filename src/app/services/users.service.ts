@@ -9,19 +9,19 @@ import { UserDestination } from "../models/users/userDestination.interface";
     providedIn: 'root'
 })
 export class UsersService {
-    private PER_PAGE = 10;
+    private PER_PAGE = 10; // done
     private http = inject(HttpClient);
     private BASE_ROUTE = environment.AUTHENTICATION_PATH;
     private initialUserDestinationFM: UserDestination = { id: 0, userId: 0, destination: 'F-M', positions: [] };
     private initialUserDestinationOVA: UserDestination = { id: 0, userId: 0, destination: 'OVA', positions: [] };
     private initialUser: User = { id: 0, name: '', surname: '', email: '', password: "", role: 'User', destinations: [this.initialUserDestinationFM, this.initialUserDestinationOVA], nick: '', isActive: true, image: null };
-    users = signal<User[]>([]);
+    users = signal<User[]>([]); // done
     user = signal<User>(this.initialUser);
     selectedList = signal<number>(6);
     filteredUsers = signal<User[]>([]);
     currentPage = signal<number>(1);
-    filter = signal<'All' | 'F-M' | 'OVA'>('All');
-    role = signal<'User' | 'Master' | 'Admin'>('User');
+    filter = signal<'All' | 'F-M' | 'OVA'>('All'); // done
+    role = signal<'User' | 'Master' | 'Admin'>('User'); // done
     hasNextPage = signal<boolean>(false);
     hasPreviousPage = signal<boolean>(false);
     lastPage = signal<number>(1);
@@ -85,35 +85,35 @@ export class UsersService {
     getUsers(isAdmin: boolean, destination?: string) {
         let url = '';
         if (isAdmin) {
-            url = this.BASE_ROUTE + 'authentication/GetAllUsers';
+            url = this.BASE_ROUTE + 'GetAllUsers';
         } else {
-            url = this.BASE_ROUTE + `authentication/GetListOfUsers?destination=${destination}`;
+            url = this.BASE_ROUTE + `GetListOfUsers?destination=${destination}`;
         }
         return this.http.get<Response>(url);
     }
 
     getProposalUsers(destination: string) {
-        let url = this.BASE_ROUTE + `authentication/GetListOfUsers?destination=${destination}`;
+        let url = this.BASE_ROUTE + `GetListOfUsers?destination=${destination}`;
         return this.http.get<Response>(url);
     }
 
     createUser(_user: User) {
-        const url = this.BASE_ROUTE + `authentication/Register`;
+        const url = this.BASE_ROUTE + `Register`;
         return this.http.post<Response>(url, _user);
     }
 
     getUser(userId: number) {
-        const url = this.BASE_ROUTE + `authentication/GetUser/${userId}`;
+        const url = this.BASE_ROUTE + `GetUser/${userId}`;
         return this.http.get<Response>(url);
     }
 
     updateUser(user: User) {
-        const url = this.BASE_ROUTE + `authentication/Update`;
+        const url = this.BASE_ROUTE + `Update`;
         return this.http.post<Response>(url, user);
     }
 
     deleteUser(userId: number) {
-        const url = this.BASE_ROUTE + `authentication/delete/${userId}`;
+        const url = this.BASE_ROUTE + `delete/${userId}`;
         return this.http.delete<Response>(url);
     }
 

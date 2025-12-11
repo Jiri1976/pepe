@@ -3,7 +3,6 @@ import { FormGroup, FormControl, Validators, ReactiveFormsModule, FormsModule, F
 import { ConfirmService } from '../../../services/confirm.service';
 import { concatMap, of } from 'rxjs';
 import { UsersService } from '../../../services/users.service';
-import { CommonModule } from '@angular/common';
 import { DialogRef } from '@angular/cdk/dialog';
 import { FieldsetModule } from 'primeng/fieldset';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -15,7 +14,7 @@ import { ToasterService } from '../../../services/toaster.service';
 @Component({
   selector: 'app-user',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, FieldsetModule, CheckboxModule],
+  imports: [ReactiveFormsModule, FormsModule, FieldsetModule, CheckboxModule],
   templateUrl: './user.component.html',
   styleUrl: './user.component.scss'
 })

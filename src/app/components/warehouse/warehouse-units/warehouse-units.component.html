@@ -17,17 +17,17 @@
                     </div>
                     <div class="col-4">
                         @for(unit of card.units | slice:0:11; track $index) {
-                        <app-warehouse-input [unit]="unit" [user]="user()" [card]="card" />
+                        <app-warehouse-input [unit]="unit" [user]="authStore.user()!" [card]="card" />
                         }
                     </div>
                     <div class="col-4">
                         @for(unit of card.units | slice:11:22; track $index) {
-                        <app-warehouse-input [unit]="unit" [user]="user()" [card]="card" />
+                        <app-warehouse-input [unit]="unit" [user]="authStore.user()!" [card]="card" />
                         }
                     </div>
                     <div class="col-4">
                         @for(unit of card.units | slice:22:card.units.length; track $index) {
-                        <app-warehouse-input [unit]="unit" [user]="user()" [card]="card" />
+                        <app-warehouse-input [unit]="unit" [user]="authStore.user()!" [card]="card" />
                         }
 
                         @switch (card.units.length) {

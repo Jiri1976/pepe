@@ -16,6 +16,7 @@ export class UserPaginationComponent {
   hasPreviousPage = computed(() => this.usersService.hasPreviousPage());
   lastPage = computed(() => this.usersService.lastPage());
   users = computed(() => this.usersService.filteredUsers());
+  buttonArray = new Array(this.lastPage());
 
   setPage(page: number) {
     this.usersService.currentPage.set(page);

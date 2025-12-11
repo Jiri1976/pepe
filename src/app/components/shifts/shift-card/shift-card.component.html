@@ -46,7 +46,7 @@
             <tbody [style]="sectionStyles()">
                 @for(shift of card()!.shifts; track $index) {
                 <tr
-                    (click)="((isPastCard() === false && loggedUser.role === 'Master') || (loggedUser.role === 'Admin')) && onUpdate(shift)">
+                    (click)="((isPastCard() === false && authStore.user()?.role === 'Master') || (authStore.user()?.role === 'Admin')) && onUpdate(shift)">
                     <td scope="row" style="width: 5% !important; text-align: right !important; font-weight: bold;">
                         {{$index + 1}}.</td>
                     <td style="width: 15% !important; text-align: center !important;">{{shift.date}}</td>
@@ -59,7 +59,7 @@
             </tbody>
         </table>
         <div class="action-buttons">
-            @if (loggedUser.role === 'Admin') {
+            @if (authStore.user()?.role === 'Admin') {
             <button class="deleteCardBtn" (click)="onDeleteCard()"><i class="bi bi-x"></i> Smazat kartu</button>
             <button class="pdfBtn" (click)="onToPdf()">
                 @if (!pdfLoading()) {
@@ -78,21 +78,11 @@
             <h4>Žádné uložené směny.</h4>
         </div>
         <div class="action-buttons">
-            @if (loggedUser.role === 'Admin' && card()!.id > 0 && card()!.shifts.length > 0) {
+            @if (authStore.user()?.role === 'Admin' && card()!.id > 0 && card()!.shifts.length > 0) {
             <button class="deleteCardBtn" (click)="onDeleteCard()"><i class="bi bi-x"></i> Smazat kartu</button>
             }
         </div>
         }
     </div>
-    } @else {
-    <!-- <div class="skeleton" animate.leave="fade-out">
-        @for(i of [1,2,3]; track i) {
-        <div class="empty-widget">
-            @if (i === 2) {
-            <div class="text title">Pracuje se na tom ...</div>
-            }
-        </div>
-        }
-    </div> -->
     }
 </div>

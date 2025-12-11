@@ -1,17 +1,19 @@
 import { Directive, HostBinding, HostListener, inject, Input } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { AuthUser } from '../models/auth-user.interface';
+import { AuthStore } from '../stores/auth-store/auth.store';
 
 @Directive({
     selector: '[disabledClass]',
     standalone: true
 })
 export class DisabledClassDirective {
-    private authService = inject(AuthService);
-    private user!: AuthUser;
+    //readonly authStore = inject(AuthStore);
+    // private authService = inject(AuthService);
+    // private user!: AuthUser;
 
     ngOnInit() {
-        this.user = this.authService.getUser();
+        //this.user = this.authService.getUser();
     }
 
     @Input('disabledClass')

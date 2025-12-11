@@ -1,13 +1,13 @@
 import { inject } from '@angular/core';
 import { CanMatchFn, Router } from '@angular/router';
-import { AuthService } from '../services/auth.service';
+import { AuthStore } from '../stores/auth-store/auth.store';
 
 export const AuthGuard: CanMatchFn = async (route, segments) => {
     try {
         const router = inject(Router);
-        const authService = inject(AuthService);
+        const authStore = inject(AuthStore);
 
-        if (authService.isLoggedIn()) {
+        if (authStore.user()) {
             return true;
         }
         router.navigate(['/']);

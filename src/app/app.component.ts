@@ -1,27 +1,20 @@
-import { Component, computed, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { HeaderComponent } from "./components/header/header.component";
-import { AuthService } from './services/auth.service';
 import { PrimeNG } from 'primeng/config';
 import { RouterOutlet } from '@angular/router';
+import { AuthStore } from './stores/auth-store/auth.store';
 
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet, HeaderComponent],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss',
-  animations: []
+  styleUrl: './app.component.scss'
 })
 export class AppComponent implements OnInit {
-  private authService = inject(AuthService);
-  user = computed(() => this.authService.user());
-  title = 'pepe';
-
+  readonly authStore = inject(AuthStore);
   private primeConfig = inject(PrimeNG);
 
-  constructor() { }
-
   ngOnInit(): void {
-    this.authService.autoLogin();
     this.primeConfig.setTranslation({
       firstDayOfWeek: 1,
       dayNames: [

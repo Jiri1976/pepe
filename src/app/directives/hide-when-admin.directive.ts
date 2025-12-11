@@ -1,18 +1,17 @@
 import { Directive, HostBinding, inject } from '@angular/core';
-import { AuthService } from '../services/auth.service';
+import { AuthStore } from '../stores/auth-store/auth.store';
 
 @Directive({
     selector: '[hideAdmin]',
     standalone: true
 })
 export class HideWhenAdminDirective {
-    private authService = inject(AuthService);
+    readonly authStore = inject(AuthStore);
     @HostBinding('style.display') display: string | null = null;
 
     constructor() { }
 
     ngOnInit() {
-        const user = this.authService.getUser();
-        this.display = user.role === 'Master' ? null : 'none';
+        this.display = this.authStore.user()?.role === 'Master' ? null : 'none';
     }
 }

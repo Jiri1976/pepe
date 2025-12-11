@@ -3,7 +3,6 @@ import { HideElementDirective } from '../../../directives/hide-element.directive
 import { HideWhenAdminDirective } from '../../../directives/hide-when-admin.directive';
 import { ProposalsService } from '../../../services/proposals.service';
 import { PlansComponent } from '../../../pages/plans/plans.component';
-import { AuthService } from '../../../services/auth.service';
 import { InactiveUsersComponent } from '../inactive-users/inactive-users.component';
 import { Dialog } from '@angular/cdk/dialog';
 
@@ -15,9 +14,7 @@ import { Dialog } from '@angular/cdk/dialog';
 })
 export class ProposalsNavComponent {
   private proposalsService = inject(ProposalsService);
-  private authService = inject(AuthService);
   private dialog = inject(Dialog)
-  loggedUser = this.authService.getUser();
   plansComponent = inject(PlansComponent);
   calendarTitle = computed(() => this.proposalsService.calendarTitle());
   destination = computed(() => this.proposalsService.destination());

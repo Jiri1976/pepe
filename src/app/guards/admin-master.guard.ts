@@ -1,21 +1,20 @@
 import { inject } from "@angular/core";
 import { CanMatchFn } from "@angular/router";
-import { AuthService } from "../services/auth.service";
 import { ToasterService } from "../services/toaster.service";
+import { AuthStore } from "../stores/auth-store/auth.store";
 
 export const AdminMasterGuard: CanMatchFn = async (route, segments) => {
     try {
         const roles = route.data!['role'] as string[];
-        const authService = inject(AuthService);
+        const authStore = inject(AuthStore);
         const toaster = inject(ToasterService);
-        const user = authService.getUser();
 
-        if (!authService.isLoggedIn()) {
+        if (!authStore.user()) {
             toaster.error("Nejsi prihlášený!");
-            authService.logout();
+            authStore.logOut();
             return false;
         }
-        if (roles.some((role) => user.role.includes(role))) {
+        if (roles.some((role) => authStore.user()?.role.includes(role))) {
             return true;
         }
         toaster.error("Nemáš oprávnění vidět tuto stránku.");

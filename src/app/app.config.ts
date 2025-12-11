@@ -6,7 +6,7 @@ import { AuthService } from './services/auth.service';
 import { TokenInterceptor } from './interceptor/token.interceptor';
 import { ConfirmationService } from 'primeng/api';
 import { providePrimeNG } from 'primeng/config';
-import Aura from '@primeng/themes/aura';
+import Aura from '@primeuix/themes/aura';
 import { globalHttpErrorInterceptor } from './interceptor/global-http-error.interceptor';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideHotToastConfig } from '@ngxpert/hot-toast';

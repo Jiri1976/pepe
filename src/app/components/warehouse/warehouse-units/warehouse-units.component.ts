@@ -3,12 +3,12 @@ import { WarehouseService } from '../../../services/warehouse.service';
 import { tap } from 'rxjs';
 import Swiper from 'swiper';
 import { CommonModule } from '@angular/common';
-import { AuthService } from '../../../services/auth.service';
 import { HideElementDirective } from '../../../directives/hide-element.directive';
 import { ConfirmService } from '../../../services/confirm.service';
 import { WarehouseInputComponent } from "../warehouse-input/warehouse-input.component";
 import { ToasterService } from '../../../services/toaster.service';
 import { SignalService } from '../../../services/signal.service';
+import { AuthStore } from '../../../stores/auth-store/auth.store';
 
 @Component({
   selector: 'app-warehouse-units',
@@ -18,15 +18,14 @@ import { SignalService } from '../../../services/signal.service';
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class WarehouseUnitsComponent implements OnInit {
+  readonly authStore = inject(AuthStore);
   private MONTHS_NUM = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
   private warehouseService = inject(WarehouseService);
-  private authService = inject(AuthService);
   private toaster = inject(ToasterService);
   private destroyRef = inject(DestroyRef);
   private swiper!: Swiper;
   private confirmService = inject(ConfirmService);
   private signalService = inject(SignalService);
-  user = computed(() => this.authService.user());
   isLoading = signal(false);
   reloadCards = computed(() => this.warehouseService.reloadCards());
   deleteCards = computed(() => this.warehouseService.deleteCards());
@@ -53,8 +52,8 @@ export class WarehouseUnitsComponent implements OnInit {
     this.warehouseService.monthYear.set(this.MONTHS_NUM[new Date().getMonth()] + new Date().getFullYear());
     this.warehouseService.resetDefaultDate();
     this.warehouseService.warehouseNav.set('units');
-    if (this.user().role === 'Master') {
-      this.warehouseService.destination.set(this.user().destination);
+    if (this.authStore.user()?.role === 'Master') {
+      this.warehouseService.destination.set(this.authStore.user()?.destination!);
     }
     this.uploadCards();
   }

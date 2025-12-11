@@ -3,7 +3,6 @@ import { WarehouseComponent } from '../../../pages/warehouse/warehouse.component
 import { WarehouseService } from '../../../services/warehouse.service';
 import { HideElementDirective } from '../../../directives/hide-element.directive';
 import { HideWhenAdminDirective } from '../../../directives/hide-when-admin.directive';
-import { AuthService } from '../../../services/auth.service';
 import { Router } from '@angular/router';
 import { Dialog } from '@angular/cdk/dialog';
 import { ItemsListComponent } from '../items-list/items-list.component';
@@ -15,11 +14,9 @@ import { ItemsListComponent } from '../items-list/items-list.component';
   styleUrl: './warehouse-nav.component.scss'
 })
 export class WarehouseNavComponent {
-  private authService = inject(AuthService);
   private warehouseService = inject(WarehouseService);
   private router = inject(Router);
   private dialog = inject(Dialog)
-  loggedUser = this.authService.getUser();
   warehouseComp = inject(WarehouseComponent);
   isOpened = signal(true);
   destination = computed(() => this.warehouseService.destination());

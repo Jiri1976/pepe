@@ -10,7 +10,6 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    font-family: 'Poppins', sans-serif;
 
     .users {
         height: 100%;
@@ -23,7 +22,7 @@
         .row {
             h4 {
                 font-weight: bold;
-                color: #864912;
+                color: var(--main-dark);
                 text-align: center;
             }
         }
@@ -67,9 +66,7 @@
             justify-content: center;
             align-items: center;
             height: 40px !important;
-            border-radius: 15px;
             margin: 10px 0;
-            box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
             text-align: center;
             background: linear-gradient(90deg,
                     #eee 25%,
@@ -77,7 +74,6 @@
                     #eee 75%);
             background-size: 400% 100%;
             animation: shimmer 2s infinite linear;
-            border-radius: 8px;
         }
     }
 }

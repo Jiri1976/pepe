@@ -1,18 +1,37 @@
-@use "tailwindcss";
 @use 'animations';
 @use '@ngxpert/hot-toast/styles';
 @use "primeicons/primeicons.css";
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Jost:ital,wght@0,100..900;1,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
-p-dialog {
+:root {
+    --main-dark: #292524;
+    --main-border-color: #dee2e6;
+    --main-disabled: #99a1af;
+    --white: #fff;
+    --main-green: #00c951;
+    --main-red: #e7000b;
+    --main-back: #79716b;
+    --black: #000000;
+}
 
+* {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 200;
+    font-style: normal;
+    font-size: 14px;
+    font-optical-sizing: auto;
+}
+
+
+p-dialog {
     .p-dialog-mask {
         .p-dialog.p-component {
 
             .p-dialog-header {
                 span {
-                    font-size: 1rem;
+                    font-weight: 500;
+                    //font-size: 1rem;
                 }
 
                 .p-dialog-header-actions {
@@ -42,6 +61,7 @@ p-dialog {
 }
 
 p-dialog {
+
     .p-dialog-mask.p-overlay-mask {
         z-index: 9999 !important;
     }
@@ -52,9 +72,10 @@ p-dialog {
 }
 
 .p-dialog.p-confirmdialog {
-    background: #000 !important;
-    border: 2px solid #000 !important;
-    color: #fff;
+    border-radius: 0 !important;
+    background: var(--black) !important;
+    border: 2px solid var(--black) !important;
+    color: var(--white);
 
     .p-dialog-header {
         display: flex;
@@ -67,8 +88,12 @@ p-dialog {
     }
 
     .p-dialog-content {
+        .p-confirmdialog-message {
+            font-weight: 500;
+        }
+
         .pi {
-            color: #fff !important;
+            color: var(--white) !important;
         }
     }
 }
@@ -90,6 +115,7 @@ p-dialog.create-unit {
 }
 
 .p-button {
+    border-radius: 0 !important;
     margin: 5px;
     border-radius: 6px;
     outline: none;
@@ -99,8 +125,8 @@ p-dialog.create-unit {
 }
 
 .p-confirm-dialog-accept {
-    background: #05C46B;
-    color: #fff;
+    background: var(--main-green);
+    color: var(--white);
 }
 
 .p-dialog-footer {
@@ -624,15 +650,16 @@ p-toast {
 }
 
 .p-fieldset {
+    border-radius: 0 !important;
     display: flex;
     flex-direction: row;
     width: 100%;
 
     .p-fieldset-legend {
-        color: #864912;
+        color: var(--main-dark);
         font-size: 1rem;
         position: relative;
-        top: -22px;
+        top: -18px;
         width: 60px;
     }
 
@@ -653,14 +680,14 @@ p-toast {
                         div {
 
                             .p-checkbox-box {
-                                border: 1px solid #864912;
+                                border: 1px solid var(--main-dark);
                             }
                         }
 
                     }
 
                     label {
-                        color: #864912;
+                        color: var(--main-dark);
                         font-weight: 500;
                         letter-spacing: 1px;
                     }
@@ -671,36 +698,37 @@ p-toast {
 }
 
 .p-fieldset.p-component {
-    border: 1px solid #864912 !important;
+    border: 1px solid var(--main-dark) !important;
 }
 
 p-checkbox {
     .p-checkbox-box {
-        border: 1px solid #864912;
-        color: #fff;
+        border-radius: 0 !important;
+        border: 1px solid var(--main-dark);
+        color: var(--white);
     }
 }
 
 .p-checkbox.p-component.p-checkbox-checked.p-highlight.p-disabled {
     .p-checkbox-box {
         .p-checkbox-icon.p-icon {
-            color: #fff;
+            color: var(--white);
         }
     }
 }
 
 .p-checkbox.p-component.p-disabled .p-checkbox-box {
-    background: #fff;
-    border-color: #864912 !important;
+    background: var(--white);
+    border-color: var(--main-dark) !important;
 }
 
 .p-checkbox:not(.p-disabled):has(.p-checkbox-input:hover) .p-checkbox-box {
-    border: 1px solid #864912 !important;
+    border: 1px solid var(--main-dark) !important;
 }
 
 .p-checkbox-checked .p-checkbox-box {
-    border-color: #864912 !important;
-    background: #864912 !important;
+    border-color: var(--main-dark) !important;
+    background: var(--main-dark) !important;
 }
 
 .col-4 p-checkbox {

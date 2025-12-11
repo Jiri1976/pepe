@@ -2,10 +2,10 @@ import { Component, computed, DestroyRef, effect, inject, OnInit, signal } from 
 import { WarehouseService } from '../../../services/warehouse.service';
 import { tap } from 'rxjs';
 import { WarehouseCard } from '../../../models/warehouse/warehouse-card.interface';
-import { AuthService } from '../../../services/auth.service';
 import { ConfirmService } from '../../../services/confirm.service';
 import { ToasterService } from '../../../services/toaster.service';
 import { SignalService } from '../../../services/signal.service';
+import { AuthStore } from '../../../stores/auth-store/auth.store';
 
 interface OverViewDay {
   amount: string;
@@ -26,15 +26,14 @@ interface OverviewCard {
   styleUrl: './warehouse-overview.component.scss'
 })
 export class WarehouseOverviewComponent implements OnInit {
+  readonly authStore = inject(AuthStore);
   private MONTHS_NUM = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
   private warehouseService = inject(WarehouseService);
   private toaster = inject(ToasterService);
   private destroyRef = inject(DestroyRef);
-  private authService = inject(AuthService);
   private confirmService = inject(ConfirmService);
   private signalService = inject(SignalService);
   uploadingCards = signal(false);
-  loggedUser = this.authService.getUser();
   cards = signal<WarehouseCard[]>([]);
   items = signal<string[]>([]);
   days = signal<Array<number>>(Array(0));
@@ -151,7 +150,7 @@ export class WarehouseOverviewComponent implements OnInit {
     const currentMonth = new Date().getMonth();
     const currentYear = new Date().getFullYear();
 
-    if (this.loggedUser.role === 'Master') {
+    if (this.authStore.user()?.role === 'Master') {
       if (day === today && month === currentMonth && year === currentYear) {
         return false;
       }

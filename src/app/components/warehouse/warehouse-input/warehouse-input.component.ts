@@ -6,7 +6,7 @@ import { WarehouseUnit } from '../../../models/warehouse/warehouse-unit.interfac
 import { WarehouseService } from '../../../services/warehouse.service';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
-import { CommonModule } from '@angular/common';
+
 import { AuthUser } from '../../../models/auth-user.interface';
 import { ConfirmService } from '../../../services/confirm.service';
 import { WarehouseUnitsComponent } from '../warehouse-units/warehouse-units.component';
@@ -14,7 +14,7 @@ import { ToasterService } from '../../../services/toaster.service';
 
 @Component({
   selector: 'app-warehouse-input',
-  imports: [DialogModule, ButtonModule, ReactiveFormsModule, CommonModule],
+  imports: [DialogModule, ButtonModule, ReactiveFormsModule],
   templateUrl: './warehouse-input.component.html',
   styleUrl: './warehouse-input.component.scss'
 })

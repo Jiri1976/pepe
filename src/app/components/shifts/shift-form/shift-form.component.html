@@ -86,7 +86,7 @@
             </div>
         </div>
 
-        @if (selectedShift().id > 0 && loggedUser().role === 'Admin') {
+        @if (selectedShift().id > 0 && authStore.user()?.role === 'Admin') {
         <div class="row">
             <div class="col-6">
                 <div class="label mt-2">

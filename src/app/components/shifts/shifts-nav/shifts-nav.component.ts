@@ -2,10 +2,10 @@ import { Component, computed, inject, model } from '@angular/core';
 import { ShiftService } from '../../../services/shift.service';
 import { ShiftsComponent } from '../../../pages/shifts/shifts.component';
 import { HideElementDirective } from '../../../directives/hide-element.directive';
-import { AuthService } from '../../../services/auth.service';
 import { HideWhenAdminDirective } from '../../../directives/hide-when-admin.directive';
 import { Dialog } from '@angular/cdk/dialog';
 import { SelectUserComponent } from '../select-user/select-user.component';
+import { AuthStore } from '../../../stores/auth-store/auth.store';
 
 @Component({
   selector: 'app-shifts-nav',
@@ -14,14 +14,13 @@ import { SelectUserComponent } from '../select-user/select-user.component';
   styleUrl: './shifts-nav.component.scss'
 })
 export class ShiftsNavComponent {
+  readonly authStore = inject(AuthStore);
   private shiftService = inject(ShiftService);
-  private authService = inject(AuthService);
   private dialog = inject(Dialog)
   shiftsComponent = inject(ShiftsComponent);
   calendarText = model('');
   destination = model('');
   pdfOn = model(false);
-  loggedUser = this.authService.getUser();
   pdfCards = computed(() => this.shiftService.pdfCards());
 
   openModal() {

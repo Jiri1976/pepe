@@ -32,7 +32,7 @@ export class WarehouseItemsComponent implements OnInit {
   reloadItems = computed(() => this.warehouseService.reloadItems());
   bodyStyles = signal<any>({});
 
-  @HostListener('window:resize', ['$event'])
+  @HostListener('window:resize')
   onWindowResize() {
     this.setBodyStyles();
   }

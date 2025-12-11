@@ -1,24 +1,25 @@
-import { Component, computed, effect, inject, OnInit } from '@angular/core';
-import { ButtonModule } from 'primeng/button';
-import { AuthService } from '../../services/auth.service';
-import { RouterLink } from '@angular/router';
+import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 import { HideElementDirective } from '../../directives/hide-element.directive';
 import { Dialog } from '@angular/cdk/dialog';
 import { NotificationMessagesComponent } from '../notification-messages/notification-messages.component';
 import { ToasterService } from '../../services/toaster.service';
+import { ClickOutsideDirective } from '../../directives/click-outside.directive';
+import { AuthStore } from '../../stores/auth-store/auth.store';
 
 @Component({
   selector: 'app-header',
-  imports: [ButtonModule, RouterLink, HideElementDirective],
+  imports: [RouterLink, HideElementDirective, ClickOutsideDirective],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
 })
 export class HeaderComponent implements OnInit {
-  private authService = inject(AuthService);
+  readonly authStore = inject(AuthStore);
   private toaster = inject(ToasterService);
   private dialog = inject(Dialog)
-  user = computed(() => this.authService.user());
+  private router = inject(Router);
   notifications = computed(() => this.toaster.notifications());
+  isShown = signal(false);
 
   ngOnInit(): void {
     let messages: any[] = [];
@@ -38,6 +39,15 @@ export class HeaderComponent implements OnInit {
   }
 
   onLogout() {
-    this.authService.logout();
+    this.authStore.logOut();
+  }
+
+  toggle() {
+    this.isShown.update((isShown) => !isShown);
+  }
+
+  navigate(url: string) {
+    this.toggle();
+    this.router.navigateByUrl(url);
   }
 }

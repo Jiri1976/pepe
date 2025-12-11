@@ -5,18 +5,20 @@
             </div>
             <div class="col-md-6 right">
                 <div class="input-box">
-                    <form [formGroup]="form">
+                    <form>
                         <div class="input-field">
                             <i class="bi bi-envelope"></i>
-                            <input type="text" class="input" id="email" required="" autocomplete="off"
-                                formControlName="email">
+                            <input type="text" class="input" id="email" autocomplete="off" [field]="form.email"
+                                (keydown.enter)="onSubmit()">
                         </div>
                         <div class="input-field second">
                             <i class="bi bi-lock"></i>
-                            <input type="password" class="input" id="pass" required="" formControlName="password">
+                            <input type="password" class="input" id="pass" [field]="form.password"
+                                (keydown.enter)="onSubmit()">
                         </div>
-                        @if (!isLoading()) {
-                        <button type="submit" class="submit" (click)="onSubmit()" [disabled]="form.invalid">Přihlásit
+                        @if (!authStore.isLoading()) {
+                        <button type="button" class="submit" (click)="onSubmit()"
+                            [disabled]="form().invalid()">Přihlásit
                             se</button>
                         } @else {
                         <button class="submit loading" type="button" disabled>

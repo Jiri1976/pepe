@@ -1,5 +1,4 @@
 import { Component, computed, DestroyRef, inject, signal, viewChild } from '@angular/core';
-import { AuthService } from '../../services/auth.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { DatePicker, DatePickerModule } from 'primeng/datepicker';
@@ -13,6 +12,7 @@ import { tap } from 'rxjs';
 import { ProposalsNavComponent } from "../../components/proposals/proposals-nav/proposals-nav.component";
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ToasterService } from '../../services/toaster.service';
+import { AuthStore } from '../../stores/auth-store/auth.store';
 
 @Component({
   selector: 'app-plans',
@@ -33,8 +33,8 @@ import { ToasterService } from '../../services/toaster.service';
   styleUrl: './plans.component.scss'
 })
 export class PlansComponent {
+  readonly authStore = inject(AuthStore);
   private MONTHS_NUM = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
-  private authService = inject(AuthService);
   private proposalsService = inject(ProposalsService);
   private confirmService = inject(ConfirmService);
   private destroyRef = inject(DestroyRef);
@@ -42,7 +42,6 @@ export class PlansComponent {
   defaultDate = new Date(new Date().getFullYear(), new Date().getMonth());
   maxDate: Date = new Date(new Date().getFullYear(), new Date().getMonth());
   isLoading = computed(() => this.proposalsService.isProposalLoading());
-  user = computed(() => this.authService.user());
   nothingChanched = computed(() => this.proposalsService.nothingChanged());
   pdfLoading = signal(false);
   calendar = viewChild<DatePicker>('calendar');
@@ -128,7 +127,7 @@ export class PlansComponent {
   private getPDF() {
     this.pdfLoading.set(true);
     const card = this.proposalsService.schedules().find(c => c.destination === this.proposalsService.destination())!; // check for shift count???
-    const subscription = this.proposalsService.uploadPDF(card, this.user().role).pipe(
+    const subscription = this.proposalsService.uploadPDF(card, this.authStore.user()?.role!).pipe(
       tap(response => {
         if (response === null) {
           this.pdfLoading.set(false);
