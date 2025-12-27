@@ -71,7 +71,7 @@
     background: transparent;
     border: none;
     outline: none;
-    color: #292524;
+    color: var(--main-dark);
     font-weight: 500;
 }
 
@@ -80,10 +80,10 @@
     border: none;
     outline: none;
     height: 40px;
-    background: #292524;
+    background: var(--main-dark);
     border-radius: 35px;
     transition: 0.4s;
-    color: #fff;
+    color: var(--white);
     width: 100%;
     font-weight: bold;
 }
@@ -94,8 +94,8 @@
 
 .submit.loading:disabled {
     opacity: 1;
-    background: #292524;
-    color: #fff !important;
+    background: var(--main-dark);
+    color: var(--white) !important;
 }
 
 @media only screen and (max-width: 768px) {

@@ -5,9 +5,9 @@
                 <i class="bi bi-person-add"></i>
             </a>
         </li>
-        <li class="main" (click)="usersComponent.getUsers()">
+        <li class="main" (click)="store.getUsers()">
             <a>
-                @if (!usersComponent.isLoading()) {
+                @if (!store.isLoading()) {
                 <i class="bi bi-arrow-clockwise"></i>
                 } @else {
                 <div class="spinner-border" role="status">
@@ -17,36 +17,36 @@
             </a>
         </li>
 
+        @let filter = store.filter;
+        @let role = store.role;
+
         <li [class]="filter() === 'F-M' ? 'main' : 'disabled'">
-            <a (click)="selectList(1)">
+            <a (click)="store.setFilter('F-M')">
                 <p>F-M</p>
             </a>
         </li>
         <li [class]="filter() === 'OVA' ? 'main' : 'disabled'">
-            <a (click)="selectList(2)">
+            <a (click)="store.setFilter('OVA')">
                 <p>OVA</p>
             </a>
         </li>
-        <li
-            [class]="role() === 'User' && (selectedList() === 3 || selectedList() === 1 || selectedList() === 2) ? 'main' : 'disabled'">
-            <a (click)="selectList(3)">
+        <li [class]="role() === 'User' ? 'main' : 'disabled'">
+            <a (click)="store.setRole('User')">
                 <p>U</p>
             </a>
         </li>
-        <li
-            [class]="role() === 'Master' && (selectedList() === 4 || selectedList() === 1 || selectedList() === 2) ? 'main' : 'disabled'">
-            <a (click)="selectList(4)">
+        <li [class]="role() === 'Master' ? 'main' : 'disabled'">
+            <a (click)="store.setRole('Master')">
                 <p>M</p>
             </a>
         </li>
-        <li
-            [class]="role() === 'Admin' && (selectedList() === 5 || selectedList() === 1 || selectedList() === 2) ? 'main' : 'disabled'">
-            <a (click)="selectList(5)">
+        <li [class]="role() === 'Admin' ? 'main' : 'disabled'">
+            <a (click)="store.setRole('Admin')">
                 <p>A</p>
             </a>
         </li>
-        <li [class]="filter() === 'All' ? 'main' : 'disabled'">
-            <a (click)="selectList(6)">
+        <li [class]="filter() === 'All' && role() === '' ? 'main' : 'disabled'">
+            <a (click)="store.setFilter('All')">
                 <p>VŠE</p>
             </a>
         </li>

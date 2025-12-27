@@ -8,16 +8,15 @@ import { ConfirmationService } from 'primeng/api';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeuix/themes/aura';
 import { globalHttpErrorInterceptor } from './interceptor/global-http-error.interceptor';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideHotToastConfig } from '@ngxpert/hot-toast';
 import { ToasterService } from './services/toaster.service';
 import { SignalService } from './services/signal.service';
+import { provideSignalFormsConfig } from '@angular/forms/signals';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes, withViewTransitions()),
-    provideAnimationsAsync(),
     provideHttpClient(withInterceptors([TokenInterceptor, globalHttpErrorInterceptor]),
       withFetch()),
     providePrimeNG(
@@ -35,6 +34,17 @@ export const appConfig: ApplicationConfig = {
     }),
     provideEnvironmentInitializer(() => {
       inject(SignalService,);
+    }),
+    provideSignalFormsConfig({
+      classes: {
+        'app-touched': s => s.touched(),
+        'app-untouched': s => !s.touched(),
+        'app-dirty': s => s.dirty(),
+        'app-pristine': s => !s.dirty(),
+        'app-valid': s => s.valid(),
+        'app-invalid': s => s.invalid() && s.touched(),
+        'app-pending': s => s.pending(),
+      }
     })
   ]
 };

@@ -10,7 +10,7 @@ export class AuthService {
   private http = inject(HttpClient);
   private BASE_ROUTE = environment.AUTHENTICATION_PATH;
 
-  login(loginRequest: any) {
+  login(loginRequest: { email: string, password: string }) {
     const url = this.BASE_ROUTE + 'Login';
     return this.http.post<Response>(url, loginRequest);
   }

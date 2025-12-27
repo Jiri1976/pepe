@@ -1,8 +1,6 @@
-import { Component, computed, inject } from '@angular/core';
-import { Dialog } from '@angular/cdk/dialog';
-import { UserComponent } from '../user/user.component';
-import { UsersService } from '../../../services/users.service';
-import { UsersComponent } from '../../../pages/users/users.component';
+import { Component, inject } from '@angular/core';
+import { UsersStore } from '../../../stores/user-store/users.store';
+import { INITIAL_USER } from '../../../models/users/user.interface';
 
 @Component({
   selector: 'app-users-nav',
@@ -11,21 +9,9 @@ import { UsersComponent } from '../../../pages/users/users.component';
   styleUrl: './users-nav.component.scss'
 })
 export class UsersNavComponent {
-  private dialog = inject(Dialog)
-  private usersService = inject(UsersService);
-  filter = computed(() => this.usersService.filter());
-  role = computed(() => this.usersService.role());
-  selectedList = computed(() => this.usersService.selectedList());
-  usersComponent = inject(UsersComponent);
+  readonly store = inject(UsersStore);
 
   createUser() {
-    this.dialog.open(UserComponent, { disableClose: false });
-  }
-
-  selectList(index: number) {
-    if (index === 1 || index === 2) {
-      this.usersService.role.set('User');
-    }
-    this.usersService.selectList(index);
+    this.store.selectUser(INITIAL_USER);
   }
 }

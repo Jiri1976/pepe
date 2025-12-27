@@ -1,4 +1,4 @@
-<form autocomplete="off" id="form" [formGroup]="userForm">
+<form>
     <div class="row">
         <div class="col-4">
             <div class="avatar" (click)="selectImage()">
@@ -11,10 +11,13 @@
                 </ng-container>
                 } @else {
 
-                @if (user().image === null) {
+                @if (user()?.imageName === null || user()?.imageName === undefined) {
                 <i class="bi bi-person"></i>
                 } @else {
-                <img [src]="user().image" alt="saved image" />
+                <img [src]="apiUrl + '/images/' + user()?.image" />
+                <button class="remove-btn" type="button" (click)="removeImage($event)">
+                    &times;
+                </button>
                 }
                 }
             </div>
@@ -24,104 +27,93 @@
             <div class="card flex justify-end">
                 <div class="row mt-3">
                     <div class="col-6">
-                        <input #input type="text" [class.shake]="nameCanShake()" id="userName" [value]="user().name"
-                            formControlName="name" placeholder="Jméno" autocomplete="off">
+                        @let nameError = getError(form.name());
+                        <input type="text" id="userName" [field]="form.name" placeholder="Jméno" autocomplete="off">
                         <div class="blockError">
-                            <div class="error"
-                                [style.display]="(name?.touched && name?.hasError('required')  || name?.untouched && name?.dirty && name?.hasError('required')) ? 'block' : 'none'">
-                                * Jméno je povinný údaj</div>
-                            <div class="error" [style.display]="name?.hasError('maxlength') ? 'block' : 'none'">
-                                * Prosím pouze 15 znaků</div>
+                            @if(nameError) {
+                            <div class="error" [style.display]="'block'">
+                                {{ nameError }}</div>
+                            }
                         </div>
                     </div>
                     <div class="col-6">
-                        <input type="text" id="userSurname" [value]="user().surname" formControlName="surname"
-                            placeholder="Příjmení" autocomplete="no" [class.shake]="surnameCanShake()">
+                        @let surnameError = getError(form.surname());
+                        <input type="text" id="userSurname" [field]="form.surname" placeholder="Příjmení"
+                            autocomplete="no">
                         <div class="blockError">
-                            <div class="error"
-                                [style.display]="(surname?.touched && surname?.hasError('required') || surname?.untouched && surname?.dirty && surname?.hasError('required')) ? 'block' : 'none'">
-                                * Příjmení je povinný údaj</div>
-                            <div class="error" [style.display]="surname?.hasError('maxlength') ? 'block' : 'none'">
-                                * Prosím pouze 20 znaků</div>
+                            @if(surnameError) {
+                            <div class="error" [style.display]="'block'">
+                                {{ surnameError }}</div>
+                            }
                         </div>
                     </div>
                 </div>
                 <div class="row mt-4">
                     <div class="col-6">
-                        <input type="text" placeholder="Email" autocomplete="no" id="email" [value]="user().email"
-                            formControlName="email" [class.shake]="emailCanShake()">
+                        @let emailError = getError(form.email());
+                        <input type="text" placeholder="Email" autocomplete="no" id="email" [field]="form.email">
                         <div class="blockError">
-                            <div class="error"
-                                [style.display]="(email?.touched && email?.hasError('required') || email?.untouched && email?.dirty && email?.hasError('required')) ? 'block' : 'none'">
-                                * Email je povinný údaj</div>
-                            <div class="error"
-                                [style.display]="email?.touched && email?.hasError('email') ? 'block' : 'none'">
-                                * Email má špatný formát</div>
+                            @if(emailError) {
+                            <div class="error" [style.display]="'block'">
+                                {{ emailError }}</div>
+                            }
                         </div>
                     </div>
                     <div class="col-6">
-                        <input type="password" placeholder="Heslo" autocomplete="no" formControlName="password"
-                            [class.shake]="passwordCanShake()">
+                        @let passwordError = getError(form.password());
+                        <input type="password" placeholder="Heslo" autocomplete="no" [field]="form.password">
                         <div class="blockError">
-                            <div class="error"
-                                [style.display]="(password?.touched && password?.hasError('required') || password?.untouched && password?.dirty && password?.hasError('required')) ? 'block' : 'none'">
-                                * Heslo je povinný údaj</div>
-                            <div class="error" [style.display]="password?.hasError('maxlength') ? 'block' : 'none'">
-                                * Prosím pouze 14 znaků</div>
+                            @if(passwordError) {
+                            <div class="error" [style.display]="'block'">
+                                {{ passwordError }}</div>
+                            }
                         </div>
                     </div>
                 </div>
                 <div class="row p-4">
                     <div class="col-10 offset-1">
                         <div class="btn-group selectors" role="group">
-                            <input type="radio" class="btn-check" name="role" id="btnrole1" autocomplete="off"
-                                value="Admin" formControlName="role">
-                            <label class="btn btn-outline-primary left-one" for="btnrole1"
-                                [class.disabled]="isRoleDisabled()" style="width: 33%;">Admin</label>
+                            <input type="radio" class="btn-check" id="btnrole1" [field]="form.role" value="Admin">
+                            <label class="btn btn-outline-primary no-border-radius" for="btnrole1"
+                                [class.disabled]="form.role().disabled()">Admin</label>
 
-                            <input type="radio" class="btn-check" name="role" id="btnrole2" autocomplete="off"
-                                value="Master" formControlName="role">
-                            <label class="btn btn-outline-primary center-one" for="btnrole2" style="width: 33%;"
-                                [class.disabled]="isRoleDisabled()">Master</label>
+                            <input type="radio" class="btn-check" id="btnrole2" [field]="form.role" value="Master">
+                            <label class="btn btn-outline-primary center-one" for="btnrole2"
+                                [class.disabled]="form.role().disabled()">Master</label>
 
-                            <input type="radio" class="btn-check" name="role" id="btnrole3" autocomplete="off"
-                                value="User" formControlName="role">
-                            <label class="btn btn-outline-primary right-one" for="btnrole3" style="width: 33%;"
-                                [class.disabled]="isRoleDisabled()">User</label>
+                            <input type="radio" class="btn-check" id="btnrole3" [field]="form.role" value="User">
+                            <label class="btn btn-outline-primary no-border-radius" for="btnrole3"
+                                [class.disabled]="form.role().disabled()">User</label>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="row mt-3" formArrayName="destinations">
-        <div class="col-6" [formGroupName]="0">
+    <div class="row mt-3">
+        <div class="col-6">
             <p-fieldset legend="F-M">
-                <div formArrayName="positions" class="options">
-                    <div class="flex items-center" [formGroupName]="0">
-                        <p-checkbox binary="true" formControlName="position"
-                            (onChange)="onCheckboxChange(0,0, $event)" />
+                <div class="options">
+                    <div class="flex items-center">
+                        <p-checkbox binary="true" [field]="form.destinations.fmCook" />
                         <label class="ml-2">Kuchař</label>
                     </div>
-                    <div class="flex items-center" [formGroupName]="1">
-                        <p-checkbox binary="true" formControlName="position"
-                            (onChange)="onCheckboxChange(0,1, $event)" />
+                    <div class="flex items-center">
+                        <p-checkbox binary="true" [field]="form.destinations.fmDriver" />
                         <label class="ml-2">Řidič</label>
                     </div>
                 </div>
             </p-fieldset>
         </div>
-        <div class="col-6" [formGroupName]="1">
+        <div class="col-6">
             <p-fieldset legend="OVA">
-                <div formArrayName="positions" class="options">
-                    <div class="flex items-center" [formGroupName]="0">
-                        <p-checkbox binary="true" formControlName="position"
-                            (onChange)="onCheckboxChange(1,0, $event)" />
+                <div class="options">
+                    <div class="flex items-center">
+                        <p-checkbox binary="true" [field]="form.destinations.ovaCook" />
                         <label class="ml-2">Kuchař</label>
                     </div>
-                    <div class="flex items-center" [formGroupName]="1">
-                        <p-checkbox binary="true" formControlName="position"
-                            (onChange)="onCheckboxChange(1,1, $event)" />
+                    <div class="flex items-center">
+                        <p-checkbox binary="true" [field]="form.destinations.ovaDriver" />
                         <label class="ml-2">Řidič</label>
                     </div>
                 </div>
@@ -130,7 +122,7 @@
     </div>
     <div class="row mt-3">
         <div class="col-4 offset-4 isActive">
-            <p-checkbox binary="true" formControlName="isActive" />
+            <p-checkbox binary="true" [field]="form.isActive" />
             <label class="ml-2"> Aktivní </label>
         </div>
     </div>
@@ -138,17 +130,24 @@
         <div class="col-8 offset-2 buttons">
             <button class="cancel" (click)="onGoBack()" type="button"><i
                     class="bi bi-caret-left"></i>&nbsp;Zpět</button>
-            @if (user().id > 1) {
-            <button class="delete" (click)="onDelete()" type="button"><i class="bi bi-trash"></i>&nbsp;Smazat</button>
+            @if (user()!.id > 1) {
+            <button class="delete" (click)="onDelete()" type="button" [disabled]="store.isDeleting()">
+                @if (!store.isDeleting()) {
+                <i class="bi bi-trash"></i>&nbsp;Smazat
+                } @else {
+                <span class="spinner-border spinner-border-sm text-white me-1" aria-hidden="true"></span>
+                Odtraňuji
+                }
+            </button>
             }
-            @if (!isLoading()) {
-            <button type="submit" class="submit" (click)="onSubmit()"
-                [disabled]="userForm.invalid || nothingChanged()"><i class="bi bi-plus"></i> {{
-                user().id === 0 ? 'Přidat' : 'Upravit' }}</button>
+            @if (!store.isSaving()) {
+            <button type="button" class="submit" (click)="onSubmit()"
+                [disabled]="form().invalid() || nothingChanged()"><i class="bi bi-plus"></i> {{
+                user()?.id === 0 ? 'Přidat' : 'Upravit' }}</button>
             } @else {
             <button class="submit loading" type="button">
                 <span class="spinner-border spinner-border-sm text-white me-1" aria-hidden="true"></span>
-                {{ actionText() }}
+                {{ user()?.id === 0 ? 'Přidávám ...' : 'Upravuji ...' }}
             </button>
             }
         </div>

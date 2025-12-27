@@ -1,16 +1,19 @@
-@if (users().length > 0) {
+@if (store.users().length > 0) {
 <div class="flex items-center gap-1">
-    <button class="prev-next" [class]="!hasPreviousPage() ? 'disabled' : ''" (click)="setPage(currentPage() - 1)">
+    <button class="prev-next" [class]="!store.hasPreviousPage() ? 'disabled' : ''"
+        (click)="store.setCurrentPage(store.currentPage() - 1)">
         <i class="bi bi-caret-left"></i>
     </button>
 
-    @for (page of buttonArray; track $index) {
-    <button class="butt" [class]="currentPage() === $index + 1 ? 'active' : ''" (click)="setPage($index + 1)">
+    @for (page of store.buttonArray(); track $index) {
+    <button class="butt" [class]="store.currentPage() === $index + 1 ? 'active' : ''"
+        (click)="store.setCurrentPage($index + 1)">
         {{ $index + 1 }}
     </button>
     }
 
-    <button class="prev-next" [class]="!hasNextPage() ? 'disabled' : ''" (click)="setPage(currentPage() + 1)">
+    <button class="prev-next" [class]="!store.hasNextPage() ? 'disabled' : ''"
+        (click)="store.setCurrentPage(store.currentPage() + 1)">
         <i class="bi bi-caret-right"></i>
     </button>
 </div>

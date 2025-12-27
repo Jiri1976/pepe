@@ -1,4 +1,5 @@
 export const environment = {
+    apiUrl: 'http://localhost:5000',
     AUTHENTICATION_PATH: 'http://localhost:5000/api/authentication/',
     SHIFTS_PATH: 'http://localhost:5000/api/shifts/',
     PROPOSALS_PATH: 'http://localhost:5000/api/proposals/',

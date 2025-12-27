@@ -221,7 +221,7 @@ form {
         pointer-events: none;
     }
 
-    input.shake {
+    input.app-invalid.app-dirty {
         animation: shake 0.82s cubic-bezier(.36, .07, .19, .97) both;
     }
 
@@ -249,13 +249,10 @@ form {
             box-shadow: none !important;
             font-weight: bold;
             font-size: 13px;
+            width: 33%;
         }
 
-        label.left-one {
-            border-radius: 0;
-        }
-
-        label.right-one {
+        label.no-border-radius {
             border-radius: 0;
         }
 

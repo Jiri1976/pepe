@@ -5,6 +5,7 @@ import { UserComponent } from '../user/user.component';
 import { User } from '../../../models/users/user.interface';
 import { map } from 'rxjs';
 import { ToasterService } from '../../../services/toaster.service';
+import { UsersStore } from '../../../stores/user-store/users.store';
 
 @Component({
   selector: 'app-user-item',
@@ -13,6 +14,7 @@ import { ToasterService } from '../../../services/toaster.service';
   styleUrl: './user-item.component.scss'
 })
 export class UserItemComponent {
+  readonly store = inject(UsersStore);
   private usersService = inject(UsersService);
   private toaster = inject(ToasterService);
   private dialog = inject(Dialog);
@@ -21,7 +23,8 @@ export class UserItemComponent {
   isLoading = signal(false);
 
   editUser() {
-    this.uploadUser();
+    this.store.selectUser(this.user());
+    //this.uploadUser();
   }
 
   hasPosition(position: 'Driver' | 'Cook'): boolean {
@@ -42,7 +45,7 @@ export class UserItemComponent {
         } else if (response.isSuccess === false) {
           this.toaster.error(response.errorMessage);
         } else if (response.isSuccess) {
-          this.usersService.setUser(response.result);
+          //this.usersService.setUser(response.result);
           this.dialog.open(UserComponent, { disableClose: false });
         }
       }),

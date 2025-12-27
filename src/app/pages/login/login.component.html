@@ -16,7 +16,7 @@
                             <input type="password" class="input" id="pass" [field]="form.password"
                                 (keydown.enter)="onSubmit()">
                         </div>
-                        @if (!authStore.isLoading()) {
+                        @if (!store.isLoading()) {
                         <button type="button" class="submit" (click)="onSubmit()"
                             [disabled]="form().invalid()">Přihlásit
                             se</button>

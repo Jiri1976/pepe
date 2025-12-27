@@ -1,14 +1,14 @@
 <div class="box">
-    @if (!isLoading()) {
+    @if (!store.isLoading()) {
 
     <div class="users" animate.enter="fade-in" animate.leave="fade-out">
         <div class="row">
-            @if(filteredUsers().length > 0) {
-            @for(user of filteredUsers(); track $index; let i = $index) {
+            @if(store.filteredUsers().length > 0) {
+            @for(user of store.filteredUsers(); track $index; let i = $index) {
             <app-user-item [user]="user" />
             }
 
-            @for(i of getEmptyLines(); track $index) {
+            @for(i of store.fakeArray(); track $index) {
             <app-empty-block />
             }
             } @else {
@@ -27,7 +27,7 @@
 
     <app-users-nav animate.enter="fade-in" animate.leave="fade-out" />
 
-    @if (filteredUsers().length > 0) {
+    @if (store.filteredUsers().length > 0) {
     <div class="pagination-div" animate.enter="fade-in" animate.leave="fade-out">
         <app-user-pagination />
     </div>
