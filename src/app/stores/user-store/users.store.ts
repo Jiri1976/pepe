@@ -1,7 +1,7 @@
-import { patchState, signalStore, withComputed, withHooks, withMethods, withProps, withState } from "@ngrx/signals";
+import { patchState, signalStore, withComputed, withMethods, withProps, withState } from "@ngrx/signals";
 import { initialUsersSlice } from "./users.slice";
 import { User } from "../../models/users/user.interface";
-import { selectUser, setRole, setLoading, setFilter, setUsers, setCurrentPage, isSaving, isDeleting } from "./users.updaters";
+import { selectUser, setRole, setFilter, setUsers, setCurrentPage } from "./users.updaters";
 import { Dialog, DialogRef } from '@angular/cdk/dialog';
 import { computed, inject } from "@angular/core";
 import { UserComponent } from "../../components/users/user/user.component";
@@ -11,11 +11,14 @@ import { tap, switchMap } from "rxjs";
 import { UsersService } from "../../services/users.service";
 import { ToasterService } from "../../services/toaster.service";
 import { getFakeArray, onRemoveUser, selectUsers, onUpdateUser } from "./users.helpers";
+import { withLoading } from "../custome-features/withLoading/with-loading.feature";
+import { setNotLoading, setIsLoading, setIsSaving, setNotSaving, setIsDeleting, setNotDeleting } from "../custome-features/withLoading/with-loading.updaters";
 
 export const UsersStore = signalStore({
     providedIn: 'root'
 },
     withState(initialUsersSlice),
+    withLoading(),
     withProps(_ => {
         const _PER_PAGE = 10;
         const _dialog = inject(Dialog);
@@ -59,11 +62,11 @@ export const UsersStore = signalStore({
     }),
     withMethods(store => {
         const uploadUsers = rxMethod<void>(input$ => input$.pipe(
-            tap(_ => patchState(store, setLoading(true), setRole('User'), setFilter('All'))),
+            tap(_ => patchState(store, setIsLoading(), setRole('User'), setFilter('All'))),
             switchMap(_ => store._usersService.getUsers(true).pipe(
                 tapResponse({
                     next: response => {
-                        patchState(store, setLoading(false));
+                        patchState(store, setNotLoading());
                         if (response === null) {
                             store._toaster.error('Něco se pokazilo, zkus to znovu.');
                         } else if (response.isSuccess === false) {
@@ -72,17 +75,17 @@ export const UsersStore = signalStore({
                             patchState(store, setUsers(response.result));
                         }
                     },
-                    error: () => patchState(store, setLoading(false))
+                    error: () => patchState(store, setNotLoading())
                 })
             ))
         ));
 
         const createUser = rxMethod<User>(input$ => input$.pipe(
-            tap(_ => patchState(store, isSaving(true))),
+            tap(_ => patchState(store, setIsSaving())),
             switchMap(user => store._usersService.createUser(user).pipe(
                 tapResponse({
                     next: response => {
-                        patchState(store, isSaving(false));
+                        patchState(store, setNotSaving());
                         if (response === null) {
                             store._toaster.error('Něco se pokazilo, zkus to znovu.');
                         } else if (response.isSuccess === false) {
@@ -96,17 +99,17 @@ export const UsersStore = signalStore({
                             store._dialog.closeAll();
                         }
                     },
-                    error: () => patchState(store, isSaving(false))
+                    error: () => patchState(store, setNotSaving())
                 })
             ))
         ));
 
         const updateUser = rxMethod<User>(input$ => input$.pipe(
-            tap(_ => patchState(store, isSaving(true))),
+            tap(_ => patchState(store, setIsSaving())),
             switchMap(user => store._usersService.updateUser(user).pipe(
                 tapResponse({
                     next: response => {
-                        patchState(store, isSaving(false));
+                        patchState(store, setNotSaving());
                         if (response === null) {
                             store._toaster.error('Něco se pokazilo, zkus to znovu.');
                         } else if (response.isSuccess === false) {
@@ -118,17 +121,17 @@ export const UsersStore = signalStore({
                             store._dialog.closeAll();
                         }
                     },
-                    error: () => patchState(store, isSaving(false))
+                    error: () => patchState(store, setNotSaving())
                 })
             ))
         ));
 
         const deleteUser = rxMethod<void>(input$ => input$.pipe(
-            tap(_ => patchState(store, isDeleting(true))),
+            tap(_ => patchState(store, setIsDeleting())),
             switchMap(_ => store._usersService.deleteUser(store.selectedUser()?.id!).pipe(
                 tapResponse({
                     next: response => {
-                        patchState(store, isDeleting(false));
+                        patchState(store, setNotDeleting());
                         if (response === null) {
                             store._toaster.error('Něco se pokazilo, zkus to znovu.');
                         } else if (response.isSuccess === false) {
@@ -139,7 +142,7 @@ export const UsersStore = signalStore({
                             store._dialog.closeAll();
                         }
                     },
-                    error: () => patchState(store, isDeleting(false))
+                    error: () => patchState(store, setNotDeleting())
                 })
             ))
         ));

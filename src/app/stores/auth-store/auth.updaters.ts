@@ -42,7 +42,3 @@ export function onLogin(token: string, router: Router, signalService: SignalServ
         return { user: loggedUser }
     }
 }
-
-export function isLoading(isLoading: boolean): PartialStateUpdater<AuthSlice> {
-    return _ => ({ isLoading });
-}

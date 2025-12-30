@@ -1,5 +1,4 @@
 import { Component, ElementRef, inject, signal, viewChild } from '@angular/core';
-import { ConfirmService } from '../../../services/confirm.service';
 import { FieldsetModule } from 'primeng/fieldset';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ToasterService } from '../../../services/toaster.service';
@@ -7,6 +6,7 @@ import { UsersStore } from '../../../stores/user-store/users.store';
 import { customError, disabled, email, Field, FieldState, form, maxLength, required, validate } from '@angular/forms/signals';
 import { INITIAL_USER, User } from '../../../models/users/user.interface';
 import { environment } from '../../../../environments/environment';
+import { ConfirmationComponent } from "../../confirmation/confirmation.component";
 
 interface Positions {
   fmDriver: boolean;
@@ -40,20 +40,22 @@ function atLeastOnePositionSelected(destinations: Positions) {
 @Component({
   selector: 'app-user',
   standalone: true,
-  imports: [FieldsetModule, CheckboxModule, Field],
+  imports: [FieldsetModule, CheckboxModule, Field, ConfirmationComponent],
   templateUrl: './user.component.html',
   styleUrl: './user.component.scss'
 })
 export class UserComponent {
   readonly store = inject(UsersStore);
   private toaster = inject(ToasterService);
-  private confirmService = inject(ConfirmService);
   user = this.store.selectedUser!;
   imagePicker = viewChild<ElementRef<HTMLInputElement>>('imagePicker');
   selectedImage: string | null = null;
   selectedImageName = this.user()?.imageName ?? null;
   selectedFile: File | undefined = undefined;
   apiUrl = environment.apiUrl;
+  confirmationOpened = signal(false);
+  confirmationText = signal('');
+  confirmationAction = signal<string>('');
 
   protected model = signal<UForm>({
     id: this.user()!.id,
@@ -162,18 +164,11 @@ export class UserComponent {
     if (this.user()!.id === 0) {
       this.store.createUser(_user);
     } else {
-      if (_user.password !== '') {
-        this.confirmService.confirm('Opravdu chceš změnit heslo?')
-          .then((confirmed) => {
-            if (confirmed) {
-              this.updateUser(_user);
-            } else {
-              return;
-            }
-          });
-      } else {
-        this.updateUser(_user);
+      if (this.user()?.role === 'Admin' || this.user()?.role === 'Master') {
+        _user.role = this.user()!.role;
+        _user.isActive = true;
       }
+      this.store.updateUser(_user);
     }
   }
 
@@ -196,18 +191,23 @@ export class UserComponent {
   }
 
   onDelete() {
-    this.confirmService.confirm('Opravdu chceš smazat uživatele?')
-      .then((confirmed) => {
-        if (confirmed) {
-          this.store.deleteUser();
-        }
-      });
+    this.confirmationText.set('Opravdu chceš smazat uživatele?');
+    this.confirmationOpened.set(true);
+    this.confirmationAction.set('delete-user');
+  }
+
+  doConfirmedAction() {
+    this.confirmationText.set('');
+    this.confirmationOpened.set(false);
+    if (this.confirmationAction() === 'delete-user') {
+      this.store.deleteUser();
+      this.confirmationAction.set('');
+    }
   }
 
   nothingChanged() {
     let fmDriver = this.user()?.destinations[0].positions?.find(p => p.position === 'Driver') ? true : false;
     let fmCook = this.user()?.destinations[0].positions?.find(p => p.position === 'Cook') ? true : false;
-
     let ovaDriver = this.user()?.destinations[1].positions?.find(p => p.position === 'Driver') ? true : false;
     let ovaCook = this.user()?.destinations[1].positions?.find(p => p.position === 'Cook') ? true : false;
 
@@ -222,14 +222,6 @@ export class UserComponent {
       (ovaDriver === this.form().value().destinations.ovaDriver) &&
       this.user()?.isActive === this.form().value().isActive &&
       this.user()?.imageName === this.selectedImageName;
-  }
-
-  private updateUser(_user: any) {
-    if (this.user()?.role === 'Admin' || this.user()?.role === 'Master') {
-      _user.role = this.user()?.role;
-      _user.isActive = true;
-    }
-    this.store.updateUser(_user);
   }
 
   createPositions() {

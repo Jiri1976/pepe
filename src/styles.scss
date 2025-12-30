@@ -60,16 +60,15 @@ p-dialog {
     }
 }
 
-p-dialog {
+//p-dialog {
+//     .p-dialog-mask.p-overlay-mask {
+//         z-index: 9999 !important;
+//     }
+// }
 
-    .p-dialog-mask.p-overlay-mask {
-        z-index: 9999 !important;
-    }
-}
-
-.p-dialog-mask.p-overlay-mask {
-    z-index: 9999 !important;
-}
+// .p-dialog-mask.p-overlay-mask {
+//     z-index: 9999 !important;
+// }
 
 .p-dialog.p-confirmdialog {
     border-radius: 0 !important;

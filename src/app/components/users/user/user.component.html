@@ -102,6 +102,10 @@
                         <p-checkbox binary="true" [field]="form.destinations.fmDriver" />
                         <label class="ml-2">Řidič</label>
                     </div>
+                    <!-- <div class="flex items-center">
+                        <p-checkbox binary="true" />
+                        <label class="ml-2">Pomocka</label>
+                    </div> -->
                 </div>
             </p-fieldset>
         </div>
@@ -116,6 +120,10 @@
                         <p-checkbox binary="true" [field]="form.destinations.ovaDriver" />
                         <label class="ml-2">Řidič</label>
                     </div>
+                    <!-- <div class="flex items-center">
+                        <p-checkbox binary="true" />
+                        <label class="ml-2">Pomocka</label>
+                    </div> -->
                 </div>
             </p-fieldset>
         </div>
@@ -153,3 +161,8 @@
         </div>
     </div>
 </form>
+
+@if (confirmationOpened()) {
+<app-confirmation [text]="confirmationText()" [(confirmationOpened)]="confirmationOpened"
+    (confirmed)="doConfirmedAction()" />
+}

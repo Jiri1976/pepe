@@ -4,7 +4,7 @@ import { effect, inject } from "@angular/core";
 import { Dialog } from '@angular/cdk/dialog';
 import { WarehouseService } from "../../services/warehouse.service";
 import { SignalService } from "../../services/signal.service";
-import { isLoading, onLogin, onLogout } from "./auth.updaters";
+import { onLogin, onLogout } from "./auth.updaters";
 import { Router } from "@angular/router";
 import { ToasterService } from "../../services/toaster.service";
 import { getToken, isTokenExpired } from "./auth.helpers";
@@ -12,11 +12,14 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { switchMap, tap } from "rxjs";
 import { AuthService } from "../../services/auth.service";
 import { tapResponse } from '@ngrx/operators';
+import { withLoading } from "../custome-features/withLoading/with-loading.feature";
+import { setIsLoading, setNotLoading } from "../custome-features/withLoading/with-loading.updaters";
 
 export const AuthStore = signalStore({
     providedIn: 'root'
 },
     withState(initialAuthSlice),
+    withLoading(),
     withProps(_ => {
         const _dialog = inject(Dialog);
         const _warehouseService = inject(WarehouseService);
@@ -36,22 +39,22 @@ export const AuthStore = signalStore({
     }),
     withMethods(store => {
         const onSubmit = rxMethod<{ email: string, password: string }>(input$ => input$.pipe(
-            tap(_ => patchState(store, isLoading(true))),
+            tap(_ => patchState(store, setIsLoading())),
             switchMap(data => store._authService.login(data).pipe(
                 tapResponse({
                     next: response => {
                         if (response === null) {
-                            patchState(store, isLoading(false));
+                            patchState(store, setNotLoading());
                             store._toaster.error('Něco se pokazilo, zkus to znovu.');
                         } else if (response.isSuccess === false) {
-                            patchState(store, isLoading(false));
+                            patchState(store, setNotLoading());
                             store._toaster.error(response.errorMessage);
                         } else {
                             patchState(store, onLogin(response.result, store._router, store._signalService))
                             store._router.navigate(['main']);
                         }
                     },
-                    error: () => patchState(store, isLoading(false))
+                    error: () => patchState(store, setNotLoading())
                 })
             ))
         ))
