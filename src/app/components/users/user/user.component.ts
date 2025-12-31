@@ -7,6 +7,7 @@ import { customError, disabled, email, Field, FieldState, form, maxLength, requi
 import { INITIAL_USER, User } from '../../../models/users/user.interface';
 import { environment } from '../../../../environments/environment';
 import { ConfirmationComponent } from "../../confirmation/confirmation.component";
+import { ConfirmationStore } from '../../../stores/confirmation-store/confirmation.store';
 
 interface Positions {
   fmDriver: boolean;
@@ -46,6 +47,7 @@ function atLeastOnePositionSelected(destinations: Positions) {
 })
 export class UserComponent {
   readonly store = inject(UsersStore);
+  readonly confirmation = inject(ConfirmationStore);
   private toaster = inject(ToasterService);
   user = this.store.selectedUser!;
   imagePicker = viewChild<ElementRef<HTMLInputElement>>('imagePicker');
@@ -53,9 +55,6 @@ export class UserComponent {
   selectedImageName = this.user()?.imageName ?? null;
   selectedFile: File | undefined = undefined;
   apiUrl = environment.apiUrl;
-  confirmationOpened = signal(false);
-  confirmationText = signal('');
-  confirmationAction = signal<string>('');
 
   protected model = signal<UForm>({
     id: this.user()!.id,
@@ -191,17 +190,14 @@ export class UserComponent {
   }
 
   onDelete() {
-    this.confirmationText.set('Opravdu chceš smazat uživatele?');
-    this.confirmationOpened.set(true);
-    this.confirmationAction.set('delete-user');
+    this.confirmation.open('Opravdu chceš smazat uživatele?', 'delete-user');
   }
 
   doConfirmedAction() {
-    this.confirmationText.set('');
-    this.confirmationOpened.set(false);
-    if (this.confirmationAction() === 'delete-user') {
+    this.confirmation.close();
+    if (this.confirmation.action() === 'delete-user') {
       this.store.deleteUser();
-      this.confirmationAction.set('');
+      this.confirmation.close()
     }
   }
 

@@ -13,6 +13,7 @@
     --main-red: #e7000b;
     --main-back: #79716b;
     --black: #000000;
+    --toaster-green: #61D345
 }
 
 * {
@@ -732,4 +733,13 @@ p-checkbox {
 
 .col-4 p-checkbox {
     margin-right: 10px;
+}
+
+.hot-toast-bar-base {
+    .hot-toast-message {
+        div {
+            font-weight: 400;
+            color: var(--main-dark);
+        }
+    }
 }

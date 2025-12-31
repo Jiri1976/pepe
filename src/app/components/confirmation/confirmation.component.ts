@@ -1,4 +1,5 @@
-import { Component, input, model, output } from '@angular/core';
+import { Component, inject, output } from '@angular/core';
+import { ConfirmationStore } from '../../stores/confirmation-store/confirmation.store';
 
 @Component({
   selector: 'app-confirmation',
@@ -7,11 +8,6 @@ import { Component, input, model, output } from '@angular/core';
   styleUrl: './confirmation.component.scss',
 })
 export class ConfirmationComponent {
-  text = input.required<string>();
-  confirmationOpened = model<boolean>(false);
+  readonly confirmation = inject(ConfirmationStore);
   confirmed = output<void>();
-
-  onCancel() {
-    this.confirmationOpened.set(false);
-  }
 }
