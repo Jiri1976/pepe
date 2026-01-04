@@ -91,7 +91,7 @@ export const UsersStore = signalStore({
                         } else if (response.isSuccess === false) {
                             store._toaster.error(response.errorMessage);
                         } else {
-                            user.id = response.result;
+                            user = response.result;
                             user.password = '';
                             const users = [...store.users(), user];
                             patchState(store, setUsers(users));

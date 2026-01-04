@@ -12,7 +12,7 @@
 
     .col-4,
     .col-5,
-    .col-1 {
+    .col-3 {
         font-weight: 600;
         padding: 8px 6px 6px 10px;
     }
@@ -24,16 +24,15 @@
 
     .col-4.false,
     .col-5.false,
-    .col-1.false {
+    .col-3.false {
         color: var(--main-disabled);
     }
 
-    .col-1 {
+    .col-3 {
         text-align: right;
     }
 
-    .role,
-    .pos {
+    .role {
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -41,17 +40,8 @@
         color: var(--white);
         height: 30px;
         width: 30px;
-        margin-left: auto;
-        margin-right: auto;
         margin-top: 1px;
         padding: 0;
-    }
-
-    .pos {
-        img {
-            height: 35px;
-            width: 35px;
-        }
     }
 
     .role.Admin {

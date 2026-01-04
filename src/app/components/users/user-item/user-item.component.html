@@ -1,27 +1,7 @@
 <div class="row line mt-1" (click)="editUser()" [class]="!user().isActive ? 'disabled' : 'active'">
-    @if (!isLoading()) {
     <div [class]="`col-4 ${user().isActive}`">{{ user().name }}</div>
     <div [class]="`col-5 ${user().isActive}`">{{ user().surname }}</div>
-    <div [class]="`col-1 role ${user().role} ${user().isActive}`">{{
-        user().role.substring(0,1) }}</div>
-
-    @if (hasPosition('Driver')) {
-    <div class="col-1 pos"><img [src]="user().isActive ? '/car.png' : '/disabledcar.png'" alt="Car driver" /></div>
-    }
-
-    @if (hasPosition('Cook')) {
-    <div class="col-1 pos"><img [src]="user().isActive ? '/chef.png' : '/disabledchef.png'" alt="Car driver" /></div>
-    @if(!hasPosition('Driver')) {
-    <div class="col-1"></div>
-    }
-    }
-    @else {
-    <div class="col-1"></div>
-    <div class="col-1"></div>
-    }
-    } @else {
-    <div class="loading">
-        <span class="spinner-border spinner-border-sm text-white me-1"></span>
+    <div [class]="`col-3 role ${user().role} ${user().isActive}`">{{
+        user().role.substring(0,1) }}
     </div>
-    }
 </div>

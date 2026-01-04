@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, signal, viewChild } from '@angular/core';
+import { Component, computed, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { FieldsetModule } from 'primeng/fieldset';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ToasterService } from '../../../services/toaster.service';
@@ -8,12 +8,23 @@ import { INITIAL_USER, User } from '../../../models/users/user.interface';
 import { environment } from '../../../../environments/environment';
 import { ConfirmationComponent } from "../../confirmation/confirmation.component";
 import { ConfirmationStore } from '../../../stores/confirmation-store/confirmation.store';
+import { UserDestination } from '../../../models/users/userDestination.interface';
+
+const DESTINATIONS = ['F-M', 'OVA'] as const;
+const POSITIONS = ['Driver', 'Cook', 'Helper', 'Pizza'] as const;
+
+type Destination = typeof DESTINATIONS[number];
+type Position = typeof POSITIONS[number];
 
 interface Positions {
   fmDriver: boolean;
   fmCook: boolean;
+  fmHelper: boolean;
+  fmPizza: boolean;
   ovaDriver: boolean;
   ovaCook: boolean;
+  ovaHelper: boolean;
+  ovaPizza: boolean;
 }
 
 interface UForm {
@@ -29,13 +40,14 @@ interface UForm {
 }
 
 function atLeastOnePositionSelected(destinations: Positions) {
-  if (!destinations.fmDriver && !destinations.fmCook && !destinations.ovaDriver && !destinations.ovaCook) {
-    return customError({
+  const hasAny = Object.values(destinations).some(Boolean);
+
+  return hasAny
+    ? null
+    : customError({
       kind: 'destinationsInvalid',
       message: 'Musí být vybrána alespoň jedna pozice',
     });
-  }
-  return null;
 }
 
 @Component({
@@ -51,10 +63,46 @@ export class UserComponent {
   private toaster = inject(ToasterService);
   user = this.store.selectedUser!;
   imagePicker = viewChild<ElementRef<HTMLInputElement>>('imagePicker');
-  selectedImage: string | null = null;
-  selectedImageName = this.user()?.imageName ?? null;
-  selectedFile: File | undefined = undefined;
+  selectedFile = signal<File | undefined>(undefined);
+  selectedImageName = signal<string | null>(this.user()?.imageName ?? null);
+  selectedImage = signal<string | null>(null);
   apiUrl = environment.apiUrl;
+
+  readonly isUnchanged = computed(() => {
+    const original = this.originalUser();
+    const current = this.formSnapshot();
+
+    if (!original) return true;
+
+    if (this.imageChangeIntent() !== 'unchanged') {
+      return false;
+    }
+
+    return (
+      original.name === current.name &&
+      original.surname === current.surname &&
+      original.email === current.email &&
+      original.role === current.role &&
+      original.isActive === current.isActive &&
+      JSON.stringify(original.destinations) ===
+      JSON.stringify(current.destinations)
+    );
+  });
+
+  readonly displayedImageSrc = computed<string | null>(() => {
+    if (this.selectedImage()) {
+      return this.selectedImage();
+    }
+
+    if (this.selectedImageName() === null) {
+      return null;
+    }
+
+    if (this.originalImageName()) {
+      return `${this.apiUrl}/images/${this.user()?.image}`;
+    }
+    return null;
+  });
 
   protected model = signal<UForm>({
     id: this.user()!.id,
@@ -102,63 +150,78 @@ export class UserComponent {
 
   onFileSelected(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0];
-    if (file) {
-      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
-
-      if (!allowedTypes.includes(file.type)) {
-        this.toaster.error('Nepovolený formát! Povoleny jsou pouze JPG, PNG, GIF, nebo WEBP.');
-        this.imagePicker()!.nativeElement.value = '';
-        return;
-      }
-
-      if (file.size > 1 * 1024 * 1024) {
-        this.toaster.error('Soubor je příliš velký! Maximální velikost je 1 MB.');
-        this.imagePicker()!.nativeElement.value = '';
-        return;
-      }
-      this.selectedFile = file;
-      this.selectedImageName = file.name;
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.selectedImage = reader.result as string;
-      };
-      reader.readAsDataURL(file);
+    if (!file) {
+      return;
     }
+
+    const allowedTypes = new Set([
+      'image/jpeg',
+      'image/jpg',
+      'image/png'
+    ]);
+
+    if (!allowedTypes.has(file.type)) {
+      this.toaster.error('Nepovolený formát! Povoleny jsou pouze JPEG, JPG nebo PNG.');
+      this.imagePicker()!.nativeElement.value = '';
+      return;
+    }
+
+    if (file.size > 1 * 1024 * 1024) {
+      this.toaster.error('Soubor je příliš velký! Maximální velikost je 1 MB.');
+      this.imagePicker()!.nativeElement.value = '';
+      return;
+    }
+    this.selectedFile.set(file);
+    this.selectedImageName.set(file.name);
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.selectedImage.set(reader.result as string);
+    };
+    reader.readAsDataURL(file);
   }
 
   removeImage(event: MouseEvent) {
     event.stopPropagation();
-    this.selectedImage = null;
+    this.selectedImage.set(null);
+    this.selectedImageName.set(null);
+    this.selectedFile.set(undefined);
     this.imagePicker()!.nativeElement.value = '';
-    let _user = { ...this.user()! };
-    _user.image = null;
-    _user.imageName = undefined;
-    this.selectedImageName = null;
-    this.store.removeImage(_user);
-    this.selectedFile = undefined;
   }
 
   onSubmit() {
-    if (this.form().invalid()) {
+    if (this.form().invalid() || this.isUnchanged()) {
       return;
     }
+
+    const v = this.form().value();
     let _user = { ...this.user()! };
-    _user.nick = this.form().value().name.substring(0, 1) + this.form().value().surname!.substring(0, 1);
-    _user.name = this.form().value().name;
-    _user.surname = this.form().value().surname;
-    _user.email = this.form().value().email;
-    _user.password = this.form().value().password;
-    _user.role = this.form().value().role;
+    _user.nick = `${v.name[0]}${v.surname[0]}`;
+    _user.name = v.name;
+    _user.surname = v.surname;
+    _user.email = v.email;
+    _user.password = v.password;
+    _user.role = v.role;
+    _user.destinations = this.computedDestinations();
+    _user.isActive = v.isActive;
 
-    this.refreshPositions(_user, 'F-M', 'Driver', this.form().value().destinations.fmDriver);
-    this.refreshPositions(_user, 'F-M', 'Cook', this.form().value().destinations.fmCook);
-    this.refreshPositions(_user, 'OVA', 'Driver', this.form().value().destinations.ovaDriver);
-    this.refreshPositions(_user, 'OVA', 'Cook', this.form().value().destinations.ovaCook);
+    const imageIntent = this.imageChangeIntent();
 
-    _user.isActive = this.form().value().isActive;
-    _user.image = this.selectedFile ? null : _user.image;
-    _user.imageFile = this.selectedFile;
-    _user.imageName = this.selectedFile ? undefined : _user.imageName;
+    if (imageIntent === 'added') {
+      _user.image = null;
+      _user.imageFile = this.selectedFile()!;
+      _user.imageName = undefined;
+    }
+
+    if (imageIntent === 'removed') {
+      _user.image = null;
+      _user.imageFile = undefined;
+      _user.imageName = undefined;
+      this.store.removeImage(_user);
+    }
+
+    if (imageIntent === 'unchanged') {
+      _user.imageFile = undefined;
+    }
 
     if (this.user()!.id === 0) {
       this.store.createUser(_user);
@@ -171,21 +234,33 @@ export class UserComponent {
     }
   }
 
-  refreshPositions(user: User, destination: 'F-M' | 'OVA', position: 'Driver' | 'Cook', checked: boolean) {
-    let _destination = user.destinations.find(d => d.destination === destination)!;
-    const positionExists = _destination.positions?.find(p => p.position === position);
+  refreshPositions(
+    user: User,
+    destination: Destination,
+    position: Position,
+    checked: boolean
+  ) {
+    const dest = user.destinations.find(d => d.destination === destination);
+    if (!dest) return user;
 
-    if (positionExists) {
-      user.destinations.find(d => d.destination === destination)!.positions!.find(p => p.id === positionExists.id)!.position = checked ? position : null
-    } else {
-      if (checked) {
-        user.destinations.find(d => d.destination === destination)!.positions!.push({
-          id: 0,
-          userDestinationId: this.user()!.destinations[0].positions?.find(p => p.position === position)?.userDestinationId ?? 0,
-          position: position
-        })
-      }
+    const existing = dest.positions?.find(p => p.position === position);
+
+    if (checked && !existing) {
+      dest.positions!.push({
+        id: 0,
+        userDestinationId:
+          this.user()!.destinations
+            .find(d => d.destination === destination)
+            ?.positions?.find(p => p.position === position)
+            ?.userDestinationId ?? 0,
+        position
+      });
     }
+
+    if (!checked && existing) {
+      existing.position = null;
+    }
+
     return user;
   }
 
@@ -201,33 +276,108 @@ export class UserComponent {
     }
   }
 
-  nothingChanged() {
-    let fmDriver = this.user()?.destinations[0].positions?.find(p => p.position === 'Driver') ? true : false;
-    let fmCook = this.user()?.destinations[0].positions?.find(p => p.position === 'Cook') ? true : false;
-    let ovaDriver = this.user()?.destinations[1].positions?.find(p => p.position === 'Driver') ? true : false;
-    let ovaCook = this.user()?.destinations[1].positions?.find(p => p.position === 'Cook') ? true : false;
+  createPositions(): Positions {
+    const result = {} as Positions;
 
-    return (this.user()?.name === this.form().value().name) &&
-      (this.user()?.surname === this.form().value().surname) &&
-      (this.user()?.email === this.form().value().email) &&
-      (this.user()?.role === this.form().value().role) &&
-      (this.form().value().password === '') &&
-      (fmCook === this.form().value().destinations.fmCook) &&
-      (fmDriver === this.form().value().destinations.fmDriver) &&
-      (ovaCook === this.form().value().destinations.ovaCook) &&
-      (ovaDriver === this.form().value().destinations.ovaDriver) &&
-      this.user()?.isActive === this.form().value().isActive &&
-      this.user()?.imageName === this.selectedImageName;
-  }
+    for (const destination of DESTINATIONS) {
+      for (const position of POSITIONS) {
+        const key = `${destination === 'F-M' ? 'fm' : 'ova'}${position}` as keyof Positions;
 
-  createPositions() {
-    return {
-      fmDriver: this.user()?.destinations.find(d => d.destination === 'F-M')?.positions?.find(p => p.position === 'Driver')?.position === 'Driver',
-      fmCook: this.user()?.destinations.find(d => d.destination === 'F-M')?.positions?.find(p => p.position === 'Cook')?.position === 'Cook',
-      ovaDriver: this.user()?.destinations.find(d => d.destination === 'OVA')?.positions?.find(p => p.position === 'Driver')?.position === 'Driver',
-      ovaCook: this.user()?.destinations.find(d => d.destination === 'OVA')?.positions?.find(p => p.position === 'Cook')?.position === 'Cook'
+        result[key] =
+          !!this.user()?.destinations
+            .find(d => d.destination === destination)
+            ?.positions?.some(p => p.position === position);
+      }
     }
+
+    return result;
   }
+
+  private formSnapshot = computed(() => {
+    const v = this.form().value();
+
+    return {
+      name: v.name,
+      surname: v.surname,
+      email: v.email,
+      role: v.role,
+      isActive: v.isActive,
+      imageName: this.selectedImageName(),
+      hasNewImage: !!this.selectedFile(),
+      destinations: v.destinations
+    };
+  });
+
+  private readonly originalImageName = signal<string | null>(
+    this.user()?.imageName ?? null
+  );
+
+  private getUserDestination(
+    user: User,
+    destination: Destination
+  ) {
+    return user.destinations.find(d => d.destination === destination);
+  }
+
+  private originalUser = computed(() => {
+    const u = this.user();
+    if (!u) return null;
+
+    return {
+      name: u.name,
+      surname: u.surname,
+      email: u.email,
+      role: u.role,
+      isActive: u.isActive,
+      imageName: u.imageName ?? null,
+      destinations: this.createPositions()
+    };
+  });
+
+  private computedDestinations = computed<UserDestination[]>(() => {
+    const user = this.user();
+    const formPositions = this.form().value().destinations;
+
+    if (!user) return [];
+
+    return DESTINATIONS.map(destination => {
+      const existing = this.getUserDestination(user, destination)!;
+
+      return {
+        id: existing.id,
+        userId: existing.userId,
+        destination,
+        positions: POSITIONS
+          .filter(position => {
+            const key =
+              `${destination === 'F-M' ? 'fm' : 'ova'}${position}` as keyof Positions;
+            return formPositions[key];
+          })
+          .map(position => {
+            const existingPosition =
+              existing.positions?.find(p => p.position === position);
+
+            return {
+              id: existingPosition?.id ?? 0,
+              userDestinationId:
+                existingPosition?.userDestinationId ?? existing.id,
+              position
+            };
+          })
+      };
+    });
+  });
+
+  private imageChangeIntent = computed(() => {
+    if (this.selectedFile()) return 'added';
+    if (
+      this.originalImageName() &&
+      !this.selectedImageName()
+    ) {
+      return 'removed';
+    }
+    return 'unchanged';
+  });
 
   protected getError = (field: FieldState<string, string>) => {
     if (!(field.touched() && field.dirty())) {
