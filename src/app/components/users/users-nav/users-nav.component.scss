@@ -29,13 +29,10 @@
     transition: 0.3s;
     box-shadow: none !important;
     color: var(--white);
-}
-
-.menu li.main {
     background-color: var(--main-dark);
 }
 
-.menu li.disabled {
+.menu li.inactive {
     background-color: var(--main-disabled);
 }
 

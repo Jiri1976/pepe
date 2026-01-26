@@ -1,31 +1,30 @@
-<div class="select-user" [style]="sectionStyles()">
-    @if (users()!.length > 11) {
+<div #scrollContainer class="select-user" [style]="sectionStyles()">
+    @if (users().length > 10) {
     <div class="close_btn" (click)="onClose()">
         <i class="bi bi-x"></i>
     </div>
     }
-    @for(user of uniqueUsers; track $index) {
-    <div class="user">
 
-        <div class="line">{{ user.user.name }} {{ user.user.surname }}
+    <h4>
+        @switch (this.store.selectedInactive()) {
+        @case ('Helper') {
+        POMOCKY
+        }
+        @case ('Driver') {
+        ŘIDIČI
+        }
+        @case ('Cook') {
+        KUCHYŇ
+        }
+        @case ('Pizza') {
+        PIZZAŘI
+        }
+        }
+    </h4>
 
-            @let onlyOneRole = user.roles.length === 1;
-
-            <div class="user-roles">
-                @if (user.roles.includes('Driver')) {
-                <div class="role" (click)="onSelectUser(user.user, 'Driver')"
-                    [style.margin-right]="onlyOneRole ? '30px' : ''">
-                    Ř
-                </div>
-                }
-
-                @if (user.roles.includes('Cook')) {
-                <div class="role" (click)="onSelectUser(user.user, 'Cook')"
-                    [style.margin-right]="onlyOneRole ? '30px' : ''" [style.margin-left]="onlyOneRole ? '' : '10px'">
-                    K
-                </div>
-                }
-            </div>
+    @for(user of users(); track $index) {
+    <div class="user" (click)="onSelectUser(user)">
+        <div class="line">{{ user.name }} {{ user.surname }}
         </div>
     </div>
     }

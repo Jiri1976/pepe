@@ -33,4 +33,3 @@ export function setUserDetail(token: string): AuthUser | null {
         expireTime: expirationTime
     });
 }
-

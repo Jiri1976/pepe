@@ -1,40 +1,64 @@
 <div class="menu">
     <ul>
-        <li hide class="first" (click)="plansComponent.toggleCalendar()">
-            <a [style.--background]="'#864912'">
+        <li hide #toggleBtn>
+            <a (click)="onToggleCalendar($event)">
                 <i class="bi bi-calendar"></i>
             </a>
         </li>
 
-        @if ((currentCard()?.inactiveUsers?.length ?? 0) > 0) {
-        <li (click)="openModal()">
-            <a [style.--background]="'#864912'">
-                <i class="bi bi-people"></i>
+        @if (store.pizza().length > 0) {
+        <li>
+            <a (click)="openModal('Pizza')">
+                <p>PZ</p>
             </a>
         </li>
         }
 
-        <li hide (click)="onChangeDestination('F-M')">
-            <a [style.--background]="destination() === 'F-M' ? '#864912' : '#f7d3af'">
+        @if (store.cooks().length > 0) {
+        <li>
+            <a (click)="openModal('Cook')">
+                <p>K</p>
+            </a>
+        </li>
+        }
+
+        @if (store.helpers().length > 0) {
+        <li>
+            <a (click)="openModal('Helper')">
+                <p>P</p>
+            </a>
+        </li>
+        }
+
+        @if (store.drivers().length > 0) {
+        <li>
+            <a (click)="openModal('Driver')">
+                <p>Ř</p>
+            </a>
+        </li>
+        }
+
+        <li hide [class.inactive]="store.destination() !== 'F-M'">
+            <a (click)="onChangeDestination('F-M')">
                 <p>F-M</p>
             </a>
         </li>
 
-        <li hide (click)="onChangeDestination('OVA')">
-            <a [style.--background]="destination() === 'OVA' ? '#864912' : '#f7d3af'">
+        <li hide [class.inactive]="store.destination() !== 'OVA'">
+            <a (click)="onChangeDestination('OVA')">
                 <p>OVA</p>
             </a>
         </li>
 
-        <li hide (click)="plansComponent.onReset()">
-            <a [style.--background]="'#864912'">
+        <li (click)="onReset()">
+            <a>
                 <i class="bi bi-arrow-clockwise"></i>
             </a>
         </li>
 
-        <li hide (click)="plansComponent.onOpenPDF()" [class.disabled]="currentCard()?.users?.length === 0">
-            <a [style.--background]="'#864912'">
-                @if (!pdfLoading()) {
+        <li hide [class.disabled]="!store.atLeastOneSavedShift()">
+            <a (click)="onOpenPDF()">
+                @if (!store.isPdfLoading()) {
                 <i class="bi bi-filetype-pdf"></i>
                 } @else {
                 <div class="spinner-border" role="status">
@@ -44,33 +68,16 @@
             </a>
         </li>
 
-        <li hide (click)="plansComponent.onDelete()" [class.disabled]="currentCard()?.users?.length === 0">
-            <a [style.--background]="'#fc0202'">
+        <li hide class="delete" [class.disabled]="!store.atLeastOneSavedShift()">
+            <a
+                (click)="store.requestDeleteProposalCard(`Odstranit plán směn pro ${store.destination()} - ${store.currentCard()!.monthYearName.toLowerCase()}?`)">
                 <i class="bi bi-trash"></i>
             </a>
         </li>
 
-        <li hide (click)="plansComponent.onSave()" [class.disabled]="plansComponent.nothingChanched()">
-            <a [style.--background]="'#05C46B'">
-                @if (!isSaving()) {
-                <i class="bi bi-floppy"></i>
-                } @else {
-                <div class="spinner-border" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                }
-            </a>
-        </li>
-
-        <li hideAdmin (click)="plansComponent.onReset()">
-            <a [style.--background]="'#864912'">
-                <i class="bi bi-arrow-clockwise"></i>
-            </a>
-        </li>
-
-        <li hideAdmin (click)="plansComponent.onSave()" [class.disabled]="plansComponent.nothingChanched()">
-            <a [style.--background]="'#05C46B'">
-                @if (!isSaving()) {
+        <li class="save" [class.disabled]="store.isUnchanged()">
+            <a (click)="store.saveProposals()">
+                @if (!store.isSaving()) {
                 <i class="bi bi-floppy"></i>
                 } @else {
                 <div class="spinner-border" role="status">

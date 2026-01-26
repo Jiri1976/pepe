@@ -1,8 +1,6 @@
 import { Component, computed, effect, ElementRef, HostListener, inject, signal, viewChild } from '@angular/core';
 import { ProposalsService } from '../../services/proposals.service';
-import { UpdateProposalComponent } from "./update-proposal/update-proposal.component";
 import { ProposalSkeletonComponent } from "./proposal-skeleton/proposal-skeleton.component";
-import { Dialog } from '@angular/cdk/dialog';
 import { CdkDrag, CdkDragHandle, CdkDragPlaceholder, CdkDragDrop, CdkDropList, CdkDropListGroup } from '@angular/cdk/drag-drop';
 import * as signalR from '@microsoft/signalr';
 import { environment } from '../../../environments/environment';
@@ -11,9 +9,11 @@ import { DisabledClassDirective } from '../../directives/disabled-class.directiv
 import { SetBackgroundDirective } from '../../directives/set-background.directive';
 import { ProposalTableStyleDirective } from '../../directives/proposal-table-style.directive';
 import { ProposalUser } from '../../models/proposals/proposalUser.interface';
-import { ConfirmService } from '../../services/confirm.service';
 import { ToasterService } from '../../services/toaster.service';
 import { AuthStore } from '../../stores/auth-store/auth.store';
+import { ProposalStore } from '../../stores/proposal-store/proposal.store';
+import { ProposalUserBackgroundDirective } from '../../directives/proposal-user-background.directive';
+import { ProposalShift } from '../../models/proposals/proposalShift.interface';
 
 @Component({
   selector: 'app-proposals',
@@ -22,6 +22,7 @@ import { AuthStore } from '../../stores/auth-store/auth.store';
     ProposalShiftComponent,
     DisabledClassDirective,
     SetBackgroundDirective,
+    ProposalUserBackgroundDirective,
     ProposalTableStyleDirective,
     CdkDropList,
     CdkDropListGroup,
@@ -34,24 +35,19 @@ import { AuthStore } from '../../stores/auth-store/auth.store';
 })
 export class ProposalsComponent {
   readonly authStore = inject(AuthStore);
+  readonly propStore = inject(ProposalStore);
   private PEPE_HUB = environment.PEPE_HUB;
   private toaster = inject(ToasterService);
-  private dialog = inject(Dialog)
-  private confirmService = inject(ConfirmService);
   dashboard = viewChild.required<ElementRef>('dashboard');
   proposalsService = inject(ProposalsService);
-  proposalsLoading = computed(() => this.proposalsService.isProposalLoading());
-  unsavedProposalCardErrorText = '';
   hubUser = `${this.authStore.user()?.name}`;
   token = this.authStore.user()?.token;
   updateHub = computed(() => this.proposalsService.updateHub());
-  planCard = computed(() => this.proposalsService.schedules().find(c => c.destination === this.proposalsService.destination())!);
-  days = computed(() => this.proposalsService.days());
   bodyStyles = signal<any>({});
 
   hubEffect = effect(() => {
     if (this.updateHub()) {
-      this.updateProposals(this.proposalsService.destination(), true);
+      this.updateProposals(this.propStore.destination(), true);
     }
     this.setBodyStyles();
   });
@@ -68,6 +64,17 @@ export class ProposalsComponent {
     .configureLogging(signalR.LogLevel.Error)
     .withAutomaticReconnect()
     .build();
+
+  readonly warning = computed(() => {
+    if (this.propStore.isUnsavedPassedCard()) {
+      return `Rozpis směn pro ${this.propStore.currentCard()!.monthYearName.toLowerCase()} není uložen.`
+    } else if (this.propStore.currentCard()?.users?.length === 0 && this.propStore.currentCard()?.inactiveUsers?.length === 0) {
+      return `Chybí evidovaní pracovníci na pobočce - ${this.propStore.currentCard()?.destination}`
+    } else if (this.propStore.currentCard()?.users?.length === 0 && this.propStore.currentCard()!.inactiveUsers!.length > 0) {
+      return `Přidej pracovníky z ${this.propStore.currentCard()?.destination} pro ${this.propStore.currentCard()!.monthYearName.toLowerCase()}`
+    }
+    return null;
+  });
 
   constructor() {
     // this.start();
@@ -90,7 +97,7 @@ export class ProposalsComponent {
   }
 
   ngOnInit(): void {
-    this.proposalsService.uploadSchedulesShifts();
+    this.propStore.uploadSchedulesShifts();
     this.setBodyStyles();
   }
 
@@ -129,24 +136,12 @@ export class ProposalsComponent {
   }
 
   remove(user: ProposalUser, index: number) {
-    this.confirmService.confirm(`Odstranit uživatele - ${user.name} ${user.surname}?`)
-      .then((confirmed) => {
-        if (confirmed) {
-          this.proposalsService.removeFromActive(user, index);
-        }
-      });
+    const userShifts = user.shifts.filter(s => s.from !== null && s.to !== null && s.from !== 'F-M' && s.from !== 'OVA');
+    this.propStore.removeFromActive(user, index, userShifts);
   }
 
   drop(event: CdkDragDrop<number, any>) {
-    this.proposalsService.updatePositions(event.previousIndex, event.currentIndex);
-  }
-
-  isFridayOrSaturday(date: string) {
-    var day = new Date(parseInt(date.split('.')[2]), parseInt(date.split('.')[1]) - 1, parseInt(date.split('.')[0]));
-    if (day.getDay() == 5 || day.getDay() == 6) {
-      return true;
-    }
-    return false;
+    this.propStore.updatePositions(event.previousIndex, event.currentIndex);
   }
 
   isWeekend(date: string) {
@@ -163,38 +158,11 @@ export class ProposalsComponent {
     return days[day.getDay()];
   }
 
-  onCreateUpdateProposal(userIndex: number, shiftIndex: number) {
-    let selectedProposal = { ...this.planCard()!.users![userIndex].shifts[shiftIndex] };
+  onCreateUpdateProposal(selectedProposal: ProposalShift) {
     if (this.authStore.user()?.role === 'Master' && this.isPassedTime(selectedProposal.proposalDate)) {
       return;
     }
-
-    if (selectedProposal.from === null) {
-      selectedProposal.from = '11:00';
-    }
-
-    if (selectedProposal.to === null) {
-      selectedProposal.to = this.isFridayOrSaturday(selectedProposal.proposalDate) ? '23:00' : '22:00'
-    }
-
-    this.proposalsService.setIndexes(userIndex, shiftIndex);
-    this.proposalsService.setSelectedProposal(selectedProposal);
-    this.dialog.open(UpdateProposalComponent, { disableClose: false });
-  }
-
-
-  isUnsavedPassedCard() {
-    let today = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-    let day = new Date(parseInt(this.planCard()!.monthYear.substring(2, 6)), parseInt(this.planCard()!.monthYear.substring(0, 2)) - 1, 1);
-    if (day >= today) {
-      return false;
-    }
-
-    if (this.planCard()!.users?.length > 0) {
-      return false;
-    }
-    this.unsavedProposalCardErrorText = `Rozpis směn pro ${this.planCard()?.monthYearName.toLowerCase()} není uložen.`;
-    return true;
+    this.propStore.selectProposal(selectedProposal);
   }
 
   isPassedTime(date: string) {
@@ -214,14 +182,14 @@ export class ProposalsComponent {
   }
 
   private setBodyStyles() {
-    if (this.planCard()?.users) {
+    if (this.propStore.currentCard()?.users) {
       if (window.innerHeight < 700) {
         this.bodyStyles.set({
           'maxHeight': '500px',
           'overflow-y': 'auto'
         });
       } else if (window.innerHeight > 700 && window.innerHeight < 920) {
-        if (this.planCard() && this.planCard()!.users.length > 16) {
+        if (this.propStore.currentCard() && this.propStore.currentCard()!.users.length > 16) {
           this.bodyStyles.set({
             'maxHeight': '680px',
             'overflow-y': 'auto'

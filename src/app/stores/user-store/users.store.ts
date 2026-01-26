@@ -13,6 +13,8 @@ import { ToasterService } from "../../services/toaster.service";
 import { getFakeArray, onRemoveUser, selectUsers, onUpdateUser } from "./users.helpers";
 import { withLoading } from "../custome-features/withLoading/with-loading.feature";
 import { setNotLoading, setIsLoading, setIsSaving, setNotSaving, setIsDeleting, setNotDeleting } from "../custome-features/withLoading/with-loading.updaters";
+import { ConfirmationStore } from "../custome-features/withConfirmation/confirmation.store";
+import { CONFIRM_ACTIONS } from "../custome-features/withConfirmation/confirmation.actions";
 
 export const UsersStore = signalStore({
     providedIn: 'root'
@@ -61,6 +63,8 @@ export const UsersStore = signalStore({
         }
     }),
     withMethods(store => {
+        const confirmationStore = inject(ConfirmationStore);
+
         const uploadUsers = rxMethod<void>(input$ => input$.pipe(
             tap(_ => patchState(store, setIsLoading(), setRole('User'), setFilter('All'))),
             switchMap(_ => store._usersService.getUsers(true).pipe(
@@ -147,6 +151,10 @@ export const UsersStore = signalStore({
             ))
         ));
 
+        confirmationStore.registerHandler(CONFIRM_ACTIONS.DELETE_USER, () => {
+            deleteUser();
+        });
+
         return {
             getUsers: () => uploadUsers(),
             selectUser: (user: User) => {
@@ -161,6 +169,12 @@ export const UsersStore = signalStore({
             deleteUser: () => deleteUser(),
             removeImage: (user: User) => patchState(store, { selectedUser: user }),
             updateUser: (user: User) => updateUser(user),
+            requestDeleteUser: () => {
+                confirmationStore.openConfirmation(
+                    CONFIRM_ACTIONS.DELETE_USER,
+                    'Opravdu chceš smazat uživatele?'
+                );
+            }
         }
     })
 )

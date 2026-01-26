@@ -1,14 +1,5 @@
 :host {
-    position: absolute;
-    z-index: 2;
-    backdrop-filter: blur(2px);
-    top: 0;
-    left: 0;
-    border-radius: inherit;
-    width: 100%;
-    height: 100%;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
     box-sizing: border-box;
@@ -18,12 +9,12 @@
         flex-direction: column;
         align-items: center;
         position: relative;
-        width: 350px;
+        min-width: 350px;
         height: 175px;
         padding: 10px 20px;
         background: #000;
         border-radius: inherit;
-        color: #fff;
+        color: var(--white);
 
 
         h4 {
@@ -48,7 +39,7 @@
                 height: 30px;
                 font-weight: bold;
                 border: none;
-                color: #fff;
+                color: var(--white);
                 margin: 0 5px;
                 display: flex;
                 align-items: center;

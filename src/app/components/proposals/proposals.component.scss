@@ -8,8 +8,8 @@
 
     h4 {
         font-weight: bold;
-        color: #864912;
-        margin-top: 30%;
+        color: var(--main-dark);
+        margin-top: 150px;
     }
 
     .wrapper {
@@ -29,10 +29,9 @@
                 .user-name {
                     min-width: 150px !important;
                     margin-right: 10px;
-                    border: 1px solid #864912;
-                    background: #864912;
-                    color: #fff;
-                    border-radius: 5px;
+                    border: 1px solid var(--main-dark);
+                    background: var(--main-dark);
+                    color: var(--white);
                     display: flex;
                     flex-direction: column;
                     justify-content: center;
@@ -47,22 +46,23 @@
                     display: flex;
                     flex-direction: column;
                     justify-content: center;
-                    border: 1px solid #864912;
+                    border: 1px solid var(--main-dark);
                     padding: 0 8px;
-                    border-radius: 5px;
                     background-color: var(--background-color);
                     width: 35px !important;
                     height: 35px !important;
-                    color: #864912;
+                    color: var(--black);
 
                     .cell-date {
                         font-size: 0.8rem;
                         text-align: center;
+                        font-weight: 700;
                     }
 
                     .cell-week-day {
                         font-size: 0.7rem;
                         text-align: center;
+                        font-weight: 700;
                     }
                 }
 
@@ -71,6 +71,13 @@
                     border: none;
                     width: 35px !important;
                     height: 35px !important;
+                }
+
+                .cell-lastone-passed {
+                    margin-right: 10px;
+                    border: none;
+                    width: 5px !important;
+                    height: 5px !important;
                 }
             }
 
@@ -84,8 +91,7 @@
                         height: 35px;
                         width: 150px !important;
                         background-color: var(--background-color);
-                        border: 1px solid #864912;
-                        border-radius: 5px;
+                        border: 1px solid var(--main-dark);
                         margin-right: 10px;
                         display: flex;
                         flex-direction: column;
@@ -93,8 +99,9 @@
                         overflow: hidden;
                         white-space: nowrap;
                         text-overflow: ellipsis;
-                        color: #864912;
+                        color: var(--black);
                         padding-left: 5px;
+                        font-weight: 600;
                     }
 
                     .user-name-cell[cdkDragHandle] {
@@ -116,9 +123,8 @@
                     .drop-zone {
                         width: 35px !important;
                         height: 35px !important;
-                        border: 1px solid #864912;
+                        border: 1px solid var(--main-dark);
                         padding: 0 8px;
-                        border-radius: 5px;
                         display: flex;
                         flex-direction: column;
                         justify-content: center;
@@ -128,9 +134,9 @@
                     }
 
                     .drop-zone.last {
-                        border-color: #fc0202;
-                        background: #fc0202;
-                        color: #fff;
+                        border-color: var(--main-red);
+                        background: var(--main-red);
+                        color: var(--white);
                         margin-left: 10px;
 
                         .bi {

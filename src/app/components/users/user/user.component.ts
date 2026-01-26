@@ -6,8 +6,6 @@ import { UsersStore } from '../../../stores/user-store/users.store';
 import { customError, disabled, email, Field, FieldState, form, maxLength, required, validate } from '@angular/forms/signals';
 import { INITIAL_USER, User } from '../../../models/users/user.interface';
 import { environment } from '../../../../environments/environment';
-import { ConfirmationComponent } from "../../confirmation/confirmation.component";
-import { ConfirmationStore } from '../../../stores/confirmation-store/confirmation.store';
 import { UserDestination } from '../../../models/users/userDestination.interface';
 
 const DESTINATIONS = ['F-M', 'OVA'] as const;
@@ -53,15 +51,14 @@ function atLeastOnePositionSelected(destinations: Positions) {
 @Component({
   selector: 'app-user',
   standalone: true,
-  imports: [FieldsetModule, CheckboxModule, Field, ConfirmationComponent],
+  imports: [FieldsetModule, CheckboxModule, Field],
   templateUrl: './user.component.html',
   styleUrl: './user.component.scss'
 })
 export class UserComponent {
-  readonly store = inject(UsersStore);
-  readonly confirmation = inject(ConfirmationStore);
+  readonly usersStore = inject(UsersStore);
   private toaster = inject(ToasterService);
-  user = this.store.selectedUser!;
+  user = this.usersStore.selectedUser!;
   imagePicker = viewChild<ElementRef<HTMLInputElement>>('imagePicker');
   selectedFile = signal<File | undefined>(undefined);
   selectedImageName = signal<string | null>(this.user()?.imageName ?? null);
@@ -140,8 +137,8 @@ export class UserComponent {
   });
 
   onGoBack() {
-    this.store.selectUser(INITIAL_USER);
-    this.store.close();
+    this.usersStore.selectUser(INITIAL_USER);
+    this.usersStore.close();
   }
 
   selectImage() {
@@ -216,7 +213,7 @@ export class UserComponent {
       _user.image = null;
       _user.imageFile = undefined;
       _user.imageName = undefined;
-      this.store.removeImage(_user);
+      this.usersStore.removeImage(_user);
     }
 
     if (imageIntent === 'unchanged') {
@@ -224,13 +221,13 @@ export class UserComponent {
     }
 
     if (this.user()!.id === 0) {
-      this.store.createUser(_user);
+      this.usersStore.createUser(_user);
     } else {
       if (this.user()?.role === 'Admin' || this.user()?.role === 'Master') {
         _user.role = this.user()!.role;
         _user.isActive = true;
       }
-      this.store.updateUser(_user);
+      this.usersStore.updateUser(_user);
     }
   }
 
@@ -265,15 +262,7 @@ export class UserComponent {
   }
 
   onDelete() {
-    this.confirmation.open('Opravdu chceš smazat uživatele?', 'delete-user');
-  }
-
-  doConfirmedAction() {
-    this.confirmation.close();
-    if (this.confirmation.action() === 'delete-user') {
-      this.store.deleteUser();
-      this.confirmation.close()
-    }
+    this.usersStore.requestDeleteUser();
   }
 
   createPositions(): Positions {

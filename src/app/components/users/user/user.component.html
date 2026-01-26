@@ -141,8 +141,8 @@
             <button class="cancel" (click)="onGoBack()" type="button"><i
                     class="bi bi-caret-left"></i>&nbsp;Zpět</button>
             @if (user()!.id > 1) {
-            <button class="delete" (click)="onDelete()" type="button" [disabled]="store.isDeleting()">
-                @if (!store.isDeleting()) {
+            <button class="delete" (click)="onDelete()" type="button" [disabled]="usersStore.isDeleting()">
+                @if (!usersStore.isDeleting()) {
                 <i class="bi bi-trash"></i>&nbsp;Smazat
                 } @else {
                 <span class="spinner-border spinner-border-sm text-white me-1" aria-hidden="true"></span>
@@ -150,7 +150,7 @@
                 }
             </button>
             }
-            @if (!store.isSaving()) {
+            @if (!usersStore.isSaving()) {
             <button type="button" class="submit" (click)="onSubmit()" [disabled]="form().invalid() || isUnchanged()"><i
                     class="bi bi-plus"></i> {{
                 user()?.id === 0 ? 'Přidat' : 'Upravit' }}</button>
@@ -163,7 +163,3 @@
         </div>
     </div>
 </form>
-
-@if (confirmation.isOpen()) {
-<app-confirmation (confirmed)="doConfirmedAction()" />
-}

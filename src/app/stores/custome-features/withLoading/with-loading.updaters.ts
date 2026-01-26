@@ -28,3 +28,15 @@ export function setNotDeleting(): PartialStateUpdater<LoadingSlice> {
 export function toggleIsLoading(): PartialStateUpdater<LoadingSlice> {
     return state => ({ isLoading: !state.isLoading });
 }
+
+export function toggleIsPdfLoading(): PartialStateUpdater<LoadingSlice> {
+    return state => ({ isPdfLoading: !state.isPdfLoading });
+}
+
+export function toggleCalendar(): PartialStateUpdater<LoadingSlice> {
+    return state => ({ showCalendar: !state.showCalendar });
+}
+
+export function closeCalendar(): PartialStateUpdater<LoadingSlice> {
+    return _ => ({ showCalendar: false });
+}

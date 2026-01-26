@@ -1,7 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { UserItemComponent } from '../../components/users/user-item/user-item.component';
 import { UserPaginationComponent } from '../../components/users/user-pagination/user-pagination.component';
-import { ConfirmComponent } from '../../components/confirm/confirm.component';
 import { EmptyBlockComponent } from "../../components/users/empty-block/empty-block.component";
 import { UsersNavComponent } from '../../components/users/users-nav/users-nav.component';
 import { UsersStore } from '../../stores/user-store/users.store';
@@ -11,7 +10,6 @@ import { UsersStore } from '../../stores/user-store/users.store';
   imports: [
     UserItemComponent,
     UserPaginationComponent,
-    ConfirmComponent,
     EmptyBlockComponent,
     UsersNavComponent,
   ],

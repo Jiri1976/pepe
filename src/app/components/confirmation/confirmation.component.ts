@@ -1,5 +1,6 @@
-import { Component, inject, output } from '@angular/core';
-import { ConfirmationStore } from '../../stores/confirmation-store/confirmation.store';
+import { Component, inject, Inject } from '@angular/core';
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
+import { ConfirmationStore } from '../../stores/custome-features/withConfirmation/confirmation.store';
 
 @Component({
   selector: 'app-confirmation',
@@ -8,6 +9,20 @@ import { ConfirmationStore } from '../../stores/confirmation-store/confirmation.
   styleUrl: './confirmation.component.scss',
 })
 export class ConfirmationComponent {
-  readonly confirmation = inject(ConfirmationStore);
-  confirmed = output<void>();
+  private readonly confirmationStore = inject(ConfirmationStore);
+
+  constructor(
+    @Inject(DIALOG_DATA) public data: { action: string; text: string },
+    private dialogRef: DialogRef<boolean>
+  ) { }
+
+  confirm() {
+    this.confirmationStore.confirm();
+    this.dialogRef.close(true);
+  }
+
+  cancel() {
+    this.dialogRef.close(false);
+    this.confirmationStore.cancel();
+  }
 }

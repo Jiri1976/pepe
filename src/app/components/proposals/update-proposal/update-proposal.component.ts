@@ -1,12 +1,13 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
-import { ProposalsService } from '../../../services/proposals.service';
 import { DatePickerModule } from 'primeng/datepicker';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { DateValidator } from '../../../helpers/proposal-times.validator';
 import { DialogRef } from '@angular/cdk/dialog';
-import { ProposalCard } from '../../../models/proposals/proposalCard.interface';
+import { ProposalStore } from '../../../stores/proposal-store/proposal.store';
+import { Field, FieldState, form } from '@angular/forms/signals';
+import { buildProposal } from '../../../stores/proposal-store/proposal.helpers';
+import { DPickerComponent } from '../d-picker/d-picker.component';
+import { isFridayOrSaturday } from '../../../helpers/is-friday-saturday.helper';
 
 @Component({
   selector: 'app-update-proposal',
@@ -14,123 +15,99 @@ import { ProposalCard } from '../../../models/proposals/proposalCard.interface';
     DialogModule,
     ButtonModule,
     DatePickerModule,
-    FormsModule,
-    ReactiveFormsModule
+    Field,
+    DPickerComponent
   ],
   templateUrl: './update-proposal.component.html',
   styleUrl: './update-proposal.component.scss'
 })
-export class UpdateProposalComponent implements OnInit {
+export class UpdateProposalComponent {
+  readonly store = inject(ProposalStore);
   private dialogRef = inject(DialogRef, { optional: true });
-  proposalsService = inject(ProposalsService);
-  selectedProposal = computed(() => this.proposalsService.selectedProposal());
-  proposalForm!: FormGroup;
+  isFridayOrSaturday = isFridayOrSaturday;
+  selectedProposal = this.store.selectedProposal;
   errorMessage = signal<string | null>(null);
-  planCard = computed(() => this.proposalsService.schedules().find(c => c.destination === this.proposalsService.destination()));
 
-  get timeFrom() {
-    return this.proposalForm.get('timeFrom');
-  }
+  readonly form = form(this.store.proposalModel, s => {
+    buildProposal(s);
+  });
 
-  get timeTo() {
-    return this.proposalForm.get('timeTo');
-  }
-
-  ngOnInit(): void {
-    this.initializeProposalForm();
-  }
+  readonly position = computed<string>(() => {
+    switch (this.store.selectedProposal()?.position) {
+      case 'Helper':
+        return 'pomocka';
+      case 'Driver':
+        return 'řidič';
+      case 'Cook':
+        return 'kuchyň';
+      case 'Pizza':
+        return 'pizzař';
+      default:
+        return '';
+    }
+  });
 
   onClearErrorMessage() {
     this.errorMessage.set(null);
   }
 
   onUpdate(shiftType?: string) {
-    const inputs = this.checkInputShiftTimes(shiftType);
-    if (inputs === undefined) {
-      return;
-    }
-    let cards = [...this.proposalsService.schedules()];
-    let currentCard = cards.find(c => c.destination === this.proposalsService.destination());
-    let nextCard = cards.find(c => c.destination !== this.proposalsService.destination());
-    const sameUsers = nextCard!.users.filter(u => u.id === this.selectedProposal()?.userId);
-    let shifts = cards.flatMap(c => c.users).flatMap(u => u.shifts.filter(s => s.proposalDate === this.selectedProposal()!.proposalDate && s.userId === this.selectedProposal()!.userId && s.from !== null && s.to !== null && s.id !== this.selectedProposal()!.id));
-    if (shifts.length === 0) {
-      this.updateAndSave(currentCard!, nextCard!, inputs, sameUsers, cards);
+    const inputs = this.checkInputTimes(shiftType);
+    let shifts = this.store.schedules().flatMap(c => c.users).flatMap(u => u.shifts.filter(s => s.proposalDate === this.selectedProposal()!.proposalDate && s.userId === this.selectedProposal()!.userId && s.from !== null && s.to !== null));
+
+    if (!shifts || shifts.length === 0) {
+      this.store.updateProposal(inputs);
+      this.onClose();
     } else {
-      let selectedShift = { ...this.selectedProposal() };
-      selectedShift.from = shiftType === 'OVA' || shiftType === 'F-M' ? '11:00' : `${inputs.hoursFrom}:${inputs.minutesFrom}`;
+      let selectedShift = { ...this.store.selectedProposal() };
+      selectedShift.from = `${inputs.hoursFrom}:${inputs.minutesFrom}`;
       selectedShift.to = `${inputs.hoursTo}:${inputs.minutesTo}`;
 
       let isColliding = false;
       shifts?.forEach(shift => {
-        if (!((shiftType === 'OVA' || shiftType === 'F-M') && (shift.destination !== shiftType))) {
-          if (shift.from !== 'OVA' && shift.from !== 'F-M') {
-            if (this.proposalsService.collideShifts(selectedShift.from!, selectedShift.to!, shift.from!, shift.to!)) {
-              isColliding = true;
-              this.errorMessage.set(`POZOR: Směna ${shift.destination} - ${shift.from} - ${shift.to}`);
-              return;
-            }
+        if (shift.from !== 'OVA' && shift.from !== 'F-M' && selectedShift.position !== shift.position) {
+          if (this.collideShifts(selectedShift.from!, selectedShift.to!, shift.from!, shift.to!)) {
+            isColliding = true;
+            this.errorMessage.set(`POZOR: Směna ${shift.destination} - ${shift.from} - ${shift.to}`);
+            return;
           }
         }
       });
 
       if (!isColliding) {
-        this.updateAndSave(currentCard!, nextCard!, inputs, sameUsers, cards);
+        this.store.updateProposal(inputs);
+        this.onClose();
       }
     }
   }
 
-  private updateAndSave(currentCard: ProposalCard, nextCard: ProposalCard, inputs: any, sameUsers: any[], cards: ProposalCard[]) {
-    let samePositionExists = sameUsers.flatMap(u => u.shifts).some(s => s.position === this.selectedProposal()!.position)
-    if (samePositionExists) {
-      if (nextCard!.users.find(u => u.id === this.selectedProposal()?.userId && u.position === this.selectedProposal()?.position)!.shifts.find(s => s.proposalDate === this.selectedProposal()!.proposalDate)!.from === null) {
-        nextCard!.users.find(u => u.id === this.selectedProposal()?.userId && u.position === this.selectedProposal()?.position)!.shifts.find(s => s.proposalDate === this.selectedProposal()!.proposalDate)!.from = this.proposalsService.destination();
-        nextCard!.users.find(u => u.id === this.selectedProposal()?.userId && u.position === this.selectedProposal()?.position)!.shifts.find(s => s.proposalDate === this.selectedProposal()!.proposalDate)!.to = `${inputs.hoursTo}:${inputs.minutesTo}`;
-      }
+  collideShifts(inputShiftFrom: string, inputShiftTo: string, timeFrom: string, timeTo: string) {
+    timeFrom = timeFrom === 'OVA' || timeFrom === 'F-M' ? '11:00' : timeFrom;
+    if (inputShiftFrom === '11:00' && (inputShiftTo === '22:00' || inputShiftTo === '23:00')) {
+      return true;
     }
-    currentCard!.users[this.proposalsService.selectedUserIndex()]!.shifts[this.proposalsService.selectedShiftIndex()].from = `${inputs.hoursFrom}:${inputs.minutesFrom}`;
-    currentCard!.users[this.proposalsService.selectedUserIndex()]!.shifts[this.proposalsService.selectedShiftIndex()].to = `${inputs.hoursTo}:${inputs.minutesTo}`;
-    this.proposalsService.updateSchedulesAndCheckChanges(cards);
-    this.onClose();
-    return;
-  }
 
+    if (inputShiftFrom === timeFrom && inputShiftTo === timeTo) {
+      return true;
+    }
+
+    const inputFrom = parseFloat(inputShiftFrom.replace(':', ''));
+    const inputTo = parseFloat(inputShiftTo.replace(':', ''));
+    const listedFrom = parseFloat(timeFrom.replace(':', ''));
+    const listedTo = parseFloat(timeTo.replace(':', ''));
+
+    if ((listedFrom > inputFrom && listedFrom < inputTo) || (listedTo > inputFrom && listedTo < inputTo) || (inputFrom >= listedFrom && inputTo <= listedTo)) {
+      return true;
+    }
+    return false;
+  }
 
   onDelete() {
-    let _cards = [...this.proposalsService.schedules()];
-    let _users = _cards.find(c => c.destination === this.proposalsService.destination())!.users!;
-    let shiftToDelete = { ..._users![this.proposalsService.selectedUserIndex()]!.shifts[this.proposalsService.selectedShiftIndex()] };
-    if (shiftToDelete.from === 'F-M' || shiftToDelete.from === 'OVA') {
-      this.errorMessage.set('Směnu odstraníš na druhé kartě.');
+    if (this.selectedProposal()!.from === 'F-M' || this.selectedProposal()!.from === 'OVA') {
+      this.errorMessage.set(`Směnu odstraníš na kartě - ${this.store.destination() === 'F-M' ? 'OVA' : 'F-M'}.`);
       return;
     }
-    let secondCard = _cards.find(c => c.destination !== this.proposalsService.destination());
-    let _oppositeUsers = secondCard!.users;
-    let _oppositeUser = _oppositeUsers.find(u => u.id === shiftToDelete.userId && u.shifts.some(s => s.position === this.selectedProposal()?.position));
-
-    if (_oppositeUser) {
-      let _card2 = _cards.find(c => c.destination !== this.proposalsService.destination());
-      let shift = _oppositeUser.shifts.find(s => s.proposalDate === this.selectedProposal()?.proposalDate)!;
-
-      if (shift.from === 'F-M' || shift.from === 'OVA' || shiftToDelete.from === 'F-M' || shiftToDelete.from === 'OVA') {
-        shift.from = null;
-        shift.to = null;
-        _card2!.users = _oppositeUsers;
-      }
-
-      if (shift.from !== null && shift.from !== 'F-M' && shift.from !== 'OVA') {
-        _users![this.proposalsService.selectedUserIndex()]!.shifts[this.proposalsService.selectedShiftIndex()].from = shift.destination;
-        _users![this.proposalsService.selectedUserIndex()]!.shifts[this.proposalsService.selectedShiftIndex()].to = shift.to;
-      } else {
-        _users![this.proposalsService.selectedUserIndex()]!.shifts[this.proposalsService.selectedShiftIndex()].from = null;
-        _users![this.proposalsService.selectedUserIndex()]!.shifts[this.proposalsService.selectedShiftIndex()].to = null;
-      }
-    } else {
-      _users![this.proposalsService.selectedUserIndex()]!.shifts[this.proposalsService.selectedShiftIndex()].from = null;
-      _users![this.proposalsService.selectedUserIndex()]!.shifts[this.proposalsService.selectedShiftIndex()].to = null;
-    }
-    this.proposalsService.schedules.set(_cards);
-    this.proposalsService.checkNothingChanged();
+    this.store.deleteProposal();
     this.onClose();
   }
 
@@ -138,39 +115,12 @@ export class UpdateProposalComponent implements OnInit {
     this.dialogRef?.close();
   }
 
-  isFridayOrSaturday(date: string) {
-    var day = new Date(parseInt(date.split('.')[2]), parseInt(date.split('.')[1]) - 1, parseInt(date.split('.')[0]));
-    if (day.getDay() == 5 || day.getDay() == 6) {
-      return true;
-    }
-    return false;
-  }
-
-  private checkInputShiftTimes(shiftType?: string) {
-    let isFridaySaturday = this.isFridayOrSaturday(this.selectedProposal()!.proposalDate);
-    let hoursFrom = new Date(this.timeFrom?.value).getHours() < 10 ? '0' + new Date(this.timeFrom?.value).getHours() : new Date(this.timeFrom?.value).getHours();
-    let minutesFrom = new Date(this.timeFrom?.value).getMinutes() < 10 ? '0' + new Date(this.timeFrom?.value).getMinutes() : new Date(this.timeFrom?.value).getMinutes();
-    let hoursTo = new Date(this.timeTo?.value).getHours() < 10 ? '0' + new Date(this.timeTo?.value).getHours() : new Date(this.timeTo?.value).getHours();
-    let minutesTo = new Date(this.timeTo?.value).getMinutes() < 10 ? '0' + new Date(this.timeTo?.value).getMinutes() : new Date(this.timeTo?.value).getMinutes();
-
-    if (parseInt(hoursFrom.toString()) < 11) {
-      this.errorMessage.set('Směna musí začínat v 11:00.');
-      return;
-    }
-
-    if (isFridaySaturday) {
-      if (parseInt(hoursTo.toString()) === 23 && (parseInt(minutesTo.toString()) > 0)) {
-        this.errorMessage.set('Směna musí končit ve 23:00.');
-        return;
-      }
-    }
-
-    if (!isFridaySaturday) {
-      if (parseInt(hoursTo.toString()) > 22 || (parseInt(hoursTo.toString()) === 22 && (parseInt(minutesTo.toString()) > 0))) {
-        this.errorMessage.set('Směna musí končit ve 22:00.');
-        return;
-      }
-    }
+  private checkInputTimes(shiftType?: string) {
+    let isFridaySaturday = this.form().value().timeFrom?.getDay() == 5 || this.form().value().timeFrom?.getDay() == 6;
+    let hoursFrom = new Date(this.form().value().timeFrom!).getHours() < 10 ? '0' + new Date(this.form().value().timeFrom!).getHours() : new Date(this.form().value().timeFrom!).getHours();
+    let minutesFrom = new Date(this.form().value().timeFrom!).getMinutes() < 10 ? '0' + new Date(this.form().value().timeFrom!).getMinutes() : new Date(this.form().value().timeFrom!).getMinutes();
+    let hoursTo = new Date(this.form().value().timeTo!).getHours() < 10 ? '0' + new Date(this.form().value().timeTo!).getHours() : new Date(this.form().value().timeTo!).getHours();
+    let minutesTo = new Date(this.form().value().timeTo!).getMinutes() < 10 ? '0' + new Date(this.form().value().timeTo!).getMinutes() : new Date(this.form().value().timeTo!).getMinutes();
 
     if (shiftType === 'W') {
       hoursFrom = '11';
@@ -188,38 +138,16 @@ export class UpdateProposalComponent implements OnInit {
       hoursTo = isFridaySaturday ? '23' : '22';
       minutesTo = '00';
     }
-    return { isFridaySaturday, hoursFrom, minutesFrom, hoursTo, minutesTo };
+    return { hoursFrom, minutesFrom, hoursTo, minutesTo };
   }
 
-  private initializeProposalForm() {
-    this.proposalForm = new FormGroup({
-      'timeFrom': new FormControl({
-        value: this.setTimeFrom(),
-        disabled: false,
-      }, [Validators.required]),
-      'timeTo': new FormControl({
-        value: this.setTimeTo(),
-        disabled: false
-      }, [Validators.required,])
-    }, { validators: DateValidator.ProposalTimesValidator });
-  }
+  protected showTimeFromError = computed(() =>
+    this.setShowError(this.form.timeFrom()));
 
-  private setTimeFrom() {
-    if (this.selectedProposal()!.from === null) {
-      return null;
-    }
-    if (this.selectedProposal()!.from === 'F-M' || this.selectedProposal()!.from === 'OVA') {
-      return new Date(parseInt(this.selectedProposal()!.proposalDate.split('.')[2]), parseInt(this.selectedProposal()!.proposalDate.split('.')[1]) - 1, parseInt(this.selectedProposal()!.proposalDate.split('.')[0]), 11, 0);
-    }
-    else {
-      return new Date(parseInt(this.selectedProposal()!.proposalDate.split('.')[2]), parseInt(this.selectedProposal()!.proposalDate.split('.')[1]) - 1, parseInt(this.selectedProposal()!.proposalDate.split('.')[0]), parseInt(this.selectedProposal()!.from?.split(':')[0]!), parseInt(this.selectedProposal()!.from?.split(':')[1]!));
-    }
-  }
+  protected showTimeToError = computed(() =>
+    this.setShowError(this.form.timeTo()));
 
-  private setTimeTo() {
-    if (this.selectedProposal()!.to === null) {
-      return null;
-    }
-    return new Date(parseInt(this.selectedProposal()!.proposalDate.split('.')[2]), parseInt(this.selectedProposal()!.proposalDate.split('.')[1]) - 1, parseInt(this.selectedProposal()!.proposalDate.split('.')[0]), parseInt(this.selectedProposal()!.to?.split(':')[0]!), parseInt(this.selectedProposal()!.to?.split(':')[1]!));
+  private setShowError(field: FieldState<Date | null>) {
+    return field.invalid();
   }
 }

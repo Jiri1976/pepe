@@ -1,22 +1,28 @@
 <div>
-    @if(shift().from === '11:00' && (shift().to === '22:00' || shift().to === '23:00')) {
+    @switch (shiftType) {
+    @case ('whole') {
     <div class="shift whole">X</div>
-    } @else if (shift().from === 'F-M' || shift().from === 'OVA') {
+    }
+    @case ('destination') {
     <div class="shift dest">{{ shift().from }}</div>
-    } @else if (shift().from === '11:00' && shift().to === '17:00') {
+    }
+    @case ('morning') {
     <div class="shift morning">
         <div class="upper">11</div>
         <div class="lower">17</div>
     </div>
-    } @else if(shift().from === '17:00' && (shift().to === '22:00' || shift().to === '23:00')) {
+    }
+    @case ('afternoon') {
     <div class="shift afternoon">
         <div class="upper">17</div>
         <div class="lower">{{ shift().to!.substring(0,2) }}</div>
     </div>
-    } @else if (shift().from !== null && shift().to !== null){
+    }
+    @case ('custom') {
     <div class="shift custom">
-        <div class="upper">{{shift().from}}</div>
-        <div class="lower">{{shift().to}}</div>
+        <div class="upper">{{ shift().from }}</div>
+        <div class="lower">{{ shift().to }}</div>
     </div>
+    }
     }
 </div>

@@ -9,6 +9,6 @@ export class SetBackgroundDirective {
 
     @HostBinding('style.--background-color')
     get backgroundColor(): string {
-        return this.isFridayOrSaturday ? '#f7d3af' : '#fff';
+        return this.isFridayOrSaturday ? 'var(--orange)' : '#fff';
     }
 }

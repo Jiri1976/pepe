@@ -1,32 +1,48 @@
-import { Component, computed, inject, model } from '@angular/core';
+import { Component, ElementRef, inject, ViewChild } from '@angular/core';
 import { HideElementDirective } from '../../../directives/hide-element.directive';
-import { HideWhenAdminDirective } from '../../../directives/hide-when-admin.directive';
-import { ProposalsService } from '../../../services/proposals.service';
-import { PlansComponent } from '../../../pages/plans/plans.component';
 import { InactiveUsersComponent } from '../inactive-users/inactive-users.component';
 import { Dialog } from '@angular/cdk/dialog';
+import { ProposalStore } from '../../../stores/proposal-store/proposal.store';
 
 @Component({
   selector: 'app-proposals-nav',
-  imports: [HideElementDirective, HideWhenAdminDirective],
+  imports: [HideElementDirective],
   templateUrl: './proposals-nav.component.html',
   styleUrl: './proposals-nav.component.scss'
 })
 export class ProposalsNavComponent {
-  private proposalsService = inject(ProposalsService);
-  private dialog = inject(Dialog)
-  plansComponent = inject(PlansComponent);
-  calendarTitle = computed(() => this.proposalsService.calendarTitle());
-  destination = computed(() => this.proposalsService.destination());
-  pdfLoading = model(false);
-  isSaving = computed(() => this.proposalsService.isSaving());
-  currentCard = computed(() => this.proposalsService.schedules().find(c => c.destination === this.proposalsService.destination()))!;
+  readonly store = inject(ProposalStore);
+  private dialog = inject(Dialog);
+  @ViewChild('toggleBtn', { static: true })
+  toggleBtn!: ElementRef<HTMLElement>;
 
-  openModal() {
+  openModal(selectedInactive: 'Cook' | 'Driver' | 'Pizza' | 'Helper') {
+    this.store.setSelectedInactive(selectedInactive);
     this.dialog.open(InactiveUsersComponent, { disableClose: false });
   }
 
   onChangeDestination(destination: string) {
-    this.proposalsService.destination.set(destination);
+    this.store.setDestination(destination);
+  }
+
+  onReset() {
+    if (!this.store.isUnchanged()) {
+      this.store.requestResetProposals();
+    } else {
+      this.store.uploadSchedulesShifts();
+    }
+  }
+
+  onOpenPDF() {
+    if (!this.store.isUnchanged()) {
+      this.store.requestGetPdf();
+    } else {
+      this.store.getPdf();
+    }
+  }
+
+  onToggleCalendar(event: MouseEvent) {
+    event.stopPropagation();
+    this.store.toggleCalendar();
   }
 }

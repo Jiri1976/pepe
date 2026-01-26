@@ -1,11 +1,11 @@
 <div class="sidenav">
     <div class="proposal-calendar" hide>
-        <p-datepicker #calendar name="deadline" [(ngModel)]="defaultDate" view="month" dateFormat="mm-yy"
-            [readonlyInput]="true" [maxDate]="maxDate" (onSelect)="onSelectMonth()" />
+        <p-datepicker #calendar name="deadline" (ngModel)="propStore.defaultDate()" view="month" dateFormat="mm-yy"
+            [readonlyInput]="true" (onSelect)="onSelectMonth($event)"
+            (onClickOutside)="onCalendarClickOutside($event, nav.toggleBtn.nativeElement)" />
     </div>
-    <app-proposals-nav [(pdfLoading)]="pdfLoading" cdkDrag />
+    <app-proposals-nav #nav />
 </div>
 <div class="box">
     <app-proposals />
 </div>
-<app-confirm />

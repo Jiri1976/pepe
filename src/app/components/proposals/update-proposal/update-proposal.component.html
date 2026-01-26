@@ -1,10 +1,11 @@
 <div class="wrapper">
-    <form autocomplete="off" id="form" [formGroup]="proposalForm">
+    <form autocomplete="off" id="form">
+        @let proposal = store.selectedProposal();
         <div class="title">
-            <h1>{{ `${selectedProposal()?.userName} ${selectedProposal()?.userSurname?.substring(0,1)}. -
-                ${selectedProposal()?.position === 'Driver' ? 'řidič' : 'kuchyň'}
+            <h1>{{ `${proposal?.userName} ${proposal?.userSurname?.substring(0,1)}. -
+                ${position()}
                 -
-                ${selectedProposal()?.proposalDate}` }}</h1>
+                ${proposal?.proposalDate}` }}</h1>
         </div>
 
         <div class="row mt-1 mb-4 buttons-line">
@@ -15,40 +16,47 @@
             </div>
             <div class="afternoon" (click)="onUpdate('A')">
                 <div class="upper">17</div>
-                <div class="lower">{{ isFridayOrSaturday(selectedProposal()?.proposalDate!) ? '23' : '22' }}</div>
+                <div class="lower">{{ isFridayOrSaturday(proposal?.proposalDate!) ? '23' : '22' }}</div>
             </div>
-            <!-- <button type="button" class="btn destination" (click)="onUpdate(proposalsService.destination() === 'F-M' ?
-                'OVA' : 'F-M')">{{
-                proposalsService.destination() === 'F-M' ?
-                'OVA' : 'F-M'}}</button> -->
 
             <button type="button" class="btn delete" (click)="onDelete()"><i class="bi bi-trash"></i></button>
         </div>
 
         <div class="row proposal-times">
-            <p-datepicker size="small" id="timeFrom" inputId="datepicker-timeFrom" [timeOnly]="true"
-                formControlName="timeFrom" (input)="onClearErrorMessage()" />
-            <div class="minus">
-                -
+            <div class="from">
+                <app-d-picker [field]="form.timeFrom" [proposalDate]="proposal!.proposalDate" />
             </div>
-            <p-datepicker size="small" id="timeTo" inputId="datepicker-timeTo" [timeOnly]="true"
-                formControlName="timeTo" (input)="onClearErrorMessage()" />
+            <div class="to">
+                <app-d-picker [field]="form.timeTo" [proposalDate]="proposal!.proposalDate" />
+            </div>
         </div>
 
         <div class="error">
+            @if (showTimeFromError()) {
+            @for (error of form.timeFrom().errors(); track error.kind) {
+            <p>{{ error.message }}</p>
+            }
+            }
+            @if (showTimeToError()) {
+            @for (error of form.timeTo().errors(); track error.kind) {
+            <p>{{ error.message }}</p>
+            }
+            }
+
             @if (errorMessage()) {
             <p>{{ errorMessage() }}</p>
             }
         </div>
 
-        <div class="row mt-5">
+        <div class="row mt-5 pt-4">
             <div class="col-6 right">
-                <button type="button" class="btn cancel" (click)="onClose()"><i
-                        class="bi bi-arrow-left-circle"></i>&nbsp;Zpět</button>
+                <button type="button" class="btn cancel" (click)="onClose()">
+                    <i class="bi bi-arrow-left-circle"></i>&nbsp;Zpět</button>
             </div>
             <div class="col-6">
-                <button type="submit" class="btn submit" (click)="onUpdate()" [disabled]="proposalForm.invalid"><i
-                        class="bi bi-pencil-square"></i>&nbsp;Upravit</button>
+                <button type="submit" class="btn submit" (click)="onUpdate()" [disabled]="form().invalid()">
+                    <i class="bi bi-pencil-square"></i>&nbsp;Upravit
+                </button>
             </div>
         </div>
     </form>

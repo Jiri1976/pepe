@@ -28,20 +28,6 @@ export class UsersService {
 
     createUser(user: User) {
         const data = this.createFormData(user);
-        // const formData = new FormData();
-        // formData.append('id', user.id.toString());
-        // formData.append('name', user.name);
-        // formData.append('surname', user.surname);
-        // formData.append('email', user.email);
-        // formData.append('password', user.password ? user.password : '');
-        // formData.append('role', user.role);
-        // formData.append('destinations', JSON.stringify(user.destinations));
-        // formData.append('nick', user.nick);
-        // formData.append('isActive', user.isActive.toString());
-        // if (user.imageFile) { formData.append('imageFile', user.imageFile); }
-        // formData.append('imageName', user.imageName ? user.imageName : '');
-        // formData.append('image', user.image ? user.image : '');
-
         const url = this.BASE_ROUTE + 'Register';
         return this.http.post<Response>(url, data);
     }

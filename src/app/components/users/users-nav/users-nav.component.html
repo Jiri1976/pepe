@@ -1,12 +1,12 @@
 <div class="menu">
     <ul>
-        <li class="main">
+        <li>
             <a (click)="createUser()">
                 <i class="bi bi-person-add"></i>
             </a>
         </li>
-        <li class="main" (click)="store.getUsers()">
-            <a>
+        <li>
+            <a (click)="store.getUsers()">
                 @if (!store.isLoading()) {
                 <i class="bi bi-arrow-clockwise"></i>
                 } @else {
@@ -20,32 +20,32 @@
         @let filter = store.filter;
         @let role = store.role;
 
-        <li [class]="filter() === 'F-M' ? 'main' : 'disabled'">
+        <li [class.inactive]="filter() !== 'F-M'">
             <a (click)="store.setFilter('F-M')">
                 <p>F-M</p>
             </a>
         </li>
-        <li [class]="filter() === 'OVA' ? 'main' : 'disabled'">
+        <li [class.inactive]="filter() !== 'OVA'">
             <a (click)="store.setFilter('OVA')">
                 <p>OVA</p>
             </a>
         </li>
-        <li [class]="role() === 'User' ? 'main' : 'disabled'">
+        <li [class.inactive]="role() !== 'User'">
             <a (click)="store.setRole('User')">
                 <p>U</p>
             </a>
         </li>
-        <li [class]="role() === 'Master' ? 'main' : 'disabled'">
+        <li [class.inactive]="role() !== 'Master'">
             <a (click)="store.setRole('Master')">
                 <p>M</p>
             </a>
         </li>
-        <li [class]="role() === 'Admin' ? 'main' : 'disabled'">
+        <li [class.inactive]="role() !== 'Admin'">
             <a (click)="store.setRole('Admin')">
                 <p>A</p>
             </a>
         </li>
-        <li [class]="filter() === 'All' && role() === '' ? 'main' : 'disabled'">
+        <li [class.inactive]="filter() !== 'All' || role() !== ''">
             <a (click)="store.setFilter('All')">
                 <p>VŠE</p>
             </a>

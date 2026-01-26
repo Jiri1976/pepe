@@ -1,4 +1,3 @@
-import { ProposalShift } from "./proposalShift.interface";
 import { ProposalUser } from "./proposalUser.interface";
 
 export interface ProposalCard {
