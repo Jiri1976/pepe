@@ -41,14 +41,13 @@
             swiper-slide {
                 background: #fff !important;
                 box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-                border-radius: 10px;
             }
         }
     }
 
     h4 {
         font-weight: bold;
-        color: #864912;
+        color: var(--main-dark);
         text-align: center;
         margin-top: 60px;
     }
@@ -62,7 +61,6 @@
         padding: 0 20px;
         min-width: 750px;
         height: 750px;
-
         background: linear-gradient(90deg,
                 #eee 25%,
                 #fff 50%,
@@ -73,7 +71,6 @@
 
         .head {
             border: 2px solid #e0e0e0;
-            border-radius: 5px;
             padding: 5px;
             margin-top: 20px;
             margin-bottom: 10px;
@@ -110,7 +107,7 @@
                 th,
                 td {
                     font-size: 0.8rem;
-                    color: #864912;
+                    color: var(--main-dark);
                     height: 15px !important;
                     padding: 0 !important;
                     vertical-align: middle !important;
@@ -128,7 +125,6 @@
                             justify-content: center;
                             align-items: center;
                             width: 15px;
-                            border-radius: 5px;
 
                             i {
                                 font-size: 0.5rem;
@@ -136,8 +132,8 @@
                         }
 
                         button.edit {
-                            background: #05C46B;
-                            color: #fff;
+                            background: var(--main-green);
+                            color: var(--white);
                         }
                     }
 
@@ -146,7 +142,7 @@
 
                         .bi {
                             font-size: 10px;
-                            color: #EF4444 !important;
+                            color: var(--main-red) !important;
                         }
                     }
 

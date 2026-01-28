@@ -14,6 +14,7 @@ import { DialogRef } from '@angular/cdk/dialog';
 import { tap } from 'rxjs';
 import { ToasterService } from '../../../services/toaster.service';
 import { AuthStore } from '../../../stores/auth-store/auth.store';
+import { ShiftsStore } from '../../../stores/shifts-store/shifts.store';
 
 @Component({
   selector: 'app-shift-form',
@@ -34,6 +35,7 @@ import { AuthStore } from '../../../stores/auth-store/auth.store';
   styleUrl: './shift-form.component.scss'
 })
 export class ShiftFormComponent implements OnInit, AfterViewInit {
+  readonly shiftsStore = inject(ShiftsStore);
   readonly authStore = inject(AuthStore);
   private shiftService = inject(ShiftService);
   private confirmService = inject(ConfirmService);
@@ -52,7 +54,7 @@ export class ShiftFormComponent implements OnInit, AfterViewInit {
   fromIsOpen = signal(false);
   toIsOpen = signal(false);
   oldAndNewValuesAreSame = true;
-  monthYear = computed(() => this.shiftService.monthYear());
+  monthYear = this.shiftsStore.monthYear;
   minDate = this.getMinDate(this.monthYear()!);
   maxDate = new Date();
   loading = signal(false);

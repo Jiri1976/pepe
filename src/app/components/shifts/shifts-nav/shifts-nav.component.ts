@@ -5,7 +5,7 @@ import { HideElementDirective } from '../../../directives/hide-element.directive
 import { HideWhenAdminDirective } from '../../../directives/hide-when-admin.directive';
 import { Dialog } from '@angular/cdk/dialog';
 import { SelectUserComponent } from '../select-user/select-user.component';
-import { AuthStore } from '../../../stores/auth-store/auth.store';
+import { ShiftsStore } from '../../../stores/shifts-store/shifts.store';
 
 @Component({
   selector: 'app-shifts-nav',
@@ -14,12 +14,10 @@ import { AuthStore } from '../../../stores/auth-store/auth.store';
   styleUrl: './shifts-nav.component.scss'
 })
 export class ShiftsNavComponent {
-  readonly authStore = inject(AuthStore);
+  readonly shiftsStore = inject(ShiftsStore);
   private shiftService = inject(ShiftService);
   private dialog = inject(Dialog)
   shiftsComponent = inject(ShiftsComponent);
-  calendarText = model('');
-  destination = model('');
   pdfOn = model(false);
   pdfCards = computed(() => this.shiftService.pdfCards());
 

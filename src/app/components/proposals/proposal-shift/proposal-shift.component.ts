@@ -1,7 +1,7 @@
 import { Component, input } from '@angular/core';
 import { ProposalShift } from '../../../models/proposals/proposalShift.interface';
 import { CommonModule } from '@angular/common';
-import { isFridayOrSaturday } from '../../../helpers/is-friday-saturday.helper';
+import { isFridayOrSaturday } from '../../../helpers/common-functions.helper';
 
 @Component({
   selector: 'app-proposal-shift',

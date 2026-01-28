@@ -7,12 +7,6 @@ export function getToken(): string | null {
     return localStorage.getItem('token');
 };
 
-export function initializeMonthYear(): string {
-    const month = new Date().getMonth() + 1 < 10 ? '0' + (new Date().getMonth() + 1).toString() : (new Date().getMonth() + 1).toString();
-    const year = (new Date().getFullYear()).toString();
-    return month + year;
-}
-
 export function deepEqual(a: unknown, b: unknown): boolean {
     return JSON.stringify(a) === JSON.stringify(b);
 }

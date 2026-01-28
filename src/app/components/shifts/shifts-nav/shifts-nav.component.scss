@@ -1,5 +1,5 @@
 :host {
-    position: absolute;
+    position: fixed;
     left: 10px;
     bottom: 10px;
 }
@@ -13,9 +13,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    border-radius: 10px;
-    background: #fff;
-    box-shadow: 0 3px 10px 2px rgba(0, 0, 0, 0.2);
+    background: var(--white);
+    border: 1px solid var(--main-border-color);
     transition: 0.2s;
 
     ul {
@@ -28,14 +27,22 @@
     margin: 10px 0;
     list-style: none;
     transition: 0.3s;
-    border-radius: 10px;
     box-shadow: none !important;
-    border: 1px solid var(--border);
+    color: var(--white);
+    background-color: var(--main-dark);
+}
+
+.menu li.inactive {
+    background-color: var(--main-disabled);
+}
+
+.menu li.save {
+    background-color: var(--main-green);
 }
 
 .menu li.disabled {
     pointer-events: none;
-    opacity: 0.7;
+    opacity: 0.5;
 }
 
 .menu li a {
@@ -45,13 +52,11 @@
     flex-direction: column;
     align-items: center !important;
     justify-content: center !important;
-    background-color: var(--background, #fff);
-    border-radius: 10px;
-    color: var(--color);
     text-decoration: none;
 
     .bi {
         font-size: 1.5rem;
+        margin-top: 2px;
     }
 
     p {
@@ -64,14 +69,6 @@
     .spinner-border {
         --bs-spinner-width: 1.4rem;
         --bs-spinner-height: 1.4rem;
-    }
-}
-
-.menu li.first a {
-
-    .bi {
-        font-size: 1.5rem;
-        margin-bottom: 3px;
     }
 }
 

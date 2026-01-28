@@ -10,16 +10,16 @@
         grid-row: 1;
 
         .head {
-            border: 2px solid #864912;
-            border-radius: 5px;
+            border: 2px solid var(--main-dark);
             padding: 5px;
             margin-bottom: 10px;
             background: #f8f8f4;
-            color: #864912;
+            color: var(--main-dark);
             justify-content: space-between;
             align-items: center;
             display: flex;
             min-width: 700px;
+            font-size: 18px;
 
             .right,
             .left {
@@ -36,6 +36,7 @@
                 justify-content: center;
                 align-items: center;
                 flex-direction: row;
+                font-weight: 500;
 
                 img {
                     width: 33px;
@@ -46,7 +47,7 @@
                 }
 
                 img:not(.onlyOne):hover {
-                    border: 1px solid #864912;
+                    border: 1px solid var(--main-dark);
                     cursor: pointer;
                     transform: scale(1.2);
                 }
@@ -64,7 +65,7 @@
             margin-bottom: 20px;
 
             thead {
-                --bs-table-bg: #864912 !important;
+                --bs-table-bg: var(--main-dark) !important;
                 --bs-table-border-color: none;
                 display: table;
                 width: 100%;
@@ -81,19 +82,18 @@
                 border-top: none;
                 max-height: 580px;
                 display: block;
-                // overflow-y: scroll;
 
                 th,
                 td {
                     font-size: 0.8rem;
-                    color: #864912;
+                    color: var(--main-dark);
                     height: 15px !important;
                     padding: 0 !important;
                     vertical-align: middle !important;
                 }
 
                 tr {
-                    border-color: #864912 !important;
+                    border-color: var(--main-dark) !important;
                     display: table;
                     width: 100%;
                     table-layout: fixed;
@@ -111,7 +111,6 @@
                             justify-content: center;
                             align-items: center;
                             width: 15px;
-                            border-radius: 5px;
 
                             i {
                                 font-size: 0.5rem;
@@ -141,7 +140,7 @@
         h4 {
             margin-top: 60px;
             margin-bottom: 30px;
-            color: #864912;
+            color: var(--main-dark);
             font-weight: bold;
         }
 
@@ -155,7 +154,6 @@
                 flex-direction: row;
                 justify-content: center;
                 align-items: center;
-                border-radius: 5px;
                 height: 30px;
                 width: 120px;
                 font-size: 13px;
@@ -187,10 +185,9 @@
                 flex-direction: row;
                 justify-content: center;
                 align-items: center;
-                border-radius: 5px;
                 height: 30px;
                 width: 120px;
-                background: #864912;
+                background: var(--main-dark)2;
                 color: #fff;
                 border: none;
                 transition: ease 0.3s all;
@@ -242,7 +239,6 @@
                 #eee 75%);
         background-size: 400% 100%;
         animation: shimmer 2s infinite linear;
-        border-radius: 8px;
 
         .title {
             font-size: 1.5rem;

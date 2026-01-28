@@ -4,7 +4,7 @@ import { ProposalCard } from "../../models/proposals/proposalCard.interface";
 import { ProposalUser } from "../../models/proposals/proposalUser.interface";
 import { ProposalShift } from "../../models/proposals/proposalShift.interface";
 import { getSelectedMonthYear } from "./proposal.helpers";
-import { isFridayOrSaturday } from "../../helpers/is-friday-saturday.helper";
+import { isFridayOrSaturday } from "../../helpers/common-functions.helper";
 import { Inputs } from "../../models/proposals/proposal.interface";
 
 export function resetCalendar(): PartialStateUpdater<ProposalSlice> {

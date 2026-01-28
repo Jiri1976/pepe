@@ -25,7 +25,7 @@ export class ShiftService {
         position: '',
         destination: ''
     };
-    monthYear = signal<string>('');
+    // monthYear = signal<string>('');
     selectedShift = signal<InitShift>(this.initialShift);
     cardShiftMonthYear = signal<string>('');
     selectedUserId = signal<number>(-1);
@@ -34,7 +34,7 @@ export class ShiftService {
     pdfCards = signal<ShiftCard[]>([]);
 
     setMonthYear(monthYear: string) {
-        this.monthYear.set(monthYear);
+        //this.monthYear.set(monthYear);
     }
 
     setSelectedShift(shift: Shift) {

@@ -7,7 +7,7 @@ import { ProposalStore } from '../../../stores/proposal-store/proposal.store';
 import { Field, FieldState, form } from '@angular/forms/signals';
 import { buildProposal } from '../../../stores/proposal-store/proposal.helpers';
 import { DPickerComponent } from '../d-picker/d-picker.component';
-import { isFridayOrSaturday } from '../../../helpers/is-friday-saturday.helper';
+import { isFridayOrSaturday } from '../../../helpers/common-functions.helper';
 
 @Component({
   selector: 'app-update-proposal',
