@@ -1,0 +1,29 @@
+<div class="skeleton">
+    <div class="head" animate.enter="fade-in" animate.leave="fade-out">
+    </div>
+
+    <table class="table table-striped" animate.enter="fade-in" animate.leave="fade-out">
+        <thead class="table-dark">
+            <tr>
+                <th class="user-name" style="width: 5% !important; text-align: right;"></th>
+                <th class="user-name" style="width: 15% !important; text-align: center;"></th>
+                <th class="user-name" style="width: 15% !important; text-align: center;"></th>
+                <th class="user-name" style="width: 15% !important; text-align: center;"></th>
+                <th class="user-name" style="width: 10% !important; text-align: center;"></th>
+                <th class="user-name" style="width: 35% !important; text-align: center;"></th>
+            </tr>
+        </thead>
+        <tbody class="table-group-divider">
+            @for(e of empty; track $index) {
+            <tr>
+                <th scope="row" style="width: 5% !important; text-align: right !important;"></th>
+                <td style="width: 15% !important; text-align: center !important;"></td>
+                <td style="width: 15% !important; text-align: center !important;"></td>
+                <td style="width: 15% !important; text-align: center !important;"></td>
+                <td style="width: 10% !important; text-align: center !important;"></td>
+                <td class="perso" style="width: 35% !important;"></td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>

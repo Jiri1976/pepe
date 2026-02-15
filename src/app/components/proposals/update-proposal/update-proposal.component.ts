@@ -6,8 +6,8 @@ import { DialogRef } from '@angular/cdk/dialog';
 import { ProposalStore } from '../../../stores/proposal-store/proposal.store';
 import { Field, FieldState, form } from '@angular/forms/signals';
 import { buildProposal } from '../../../stores/proposal-store/proposal.helpers';
-import { DPickerComponent } from '../d-picker/d-picker.component';
 import { isFridayOrSaturday } from '../../../helpers/common-functions.helper';
+import { DPickerComponent } from '../../d-picker/d-picker.component';
 
 @Component({
   selector: 'app-update-proposal',

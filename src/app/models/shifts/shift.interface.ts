@@ -9,8 +9,15 @@ export interface Shift {
     to?: string,
     hours?: string,
     perso?: string,
-    createdAt?: string,
-    createdBy?: string,
-    updatedAt?: string,
-    updatedBy?: string
+    createdAt: string | null,
+    createdBy: string | null,
+    updatedAt: string | null,
+    updatedBy: string | null
+}
+
+export interface ShiftModel {
+    date: string,
+    from: Date | null,
+    to: Date | null,
+    perso: string
 }

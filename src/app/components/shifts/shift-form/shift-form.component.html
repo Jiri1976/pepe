@@ -1,100 +1,87 @@
 <div class="form-div">
-    <form [formGroup]="shiftForm">
+    @let shift = selectedShift();
+    <form>
         <div class="row">
             <div class="title">
-                <h1>{{ shiftForm.get('id')?.value === 0 ? 'Nová směna' : 'Upravit směnu' }} - {{ userName()}}</h1>
-                @if (card()?.userPosition === 'Driver') {
-                <img src="./colored_car.png" alt="Car" />
-                }
-                @if (card()?.userPosition === 'Cook') {
-                <img src="./colored_chef.png" alt="Chef" />
-                }
+                <h1>{{ shift.id === 0 ? 'Nová směna' : 'Upravit směnu' }} - {{ card()!.userName }} {{
+                    card()!.userSurname.charAt(0).toUpperCase() }}. - {{ getPosition(card()!.userPosition) }}</h1>
             </div>
         </div>
         <div class="row">
             <div class="col-6">
-                <div class="label mt-2" [class.invalid]="dateError" [class.focused]="calendarFocus()">
+                <div class="label mt-2">
                     <label for="username" class="font-semibold w-6rem">Datum</label>
                 </div>
                 <div>
-                    <div class="card flex justify-content-center" [class.shake]="dateError">
-                        <div class="calendarDivShift" [style.--calendar-top]="dateError ? '50px' : '35px'"
-                            (click)="onOpenCalendar()">
-                            <p-datepicker #calendar dateFormat="dd.mm.yy" (onInput)="onInput('calendar')"
-                                (onSelect)="onBlur('calendar')" (onShow)="calendarFocus.set(true)"
-                                (onClose)="calendarFocus.set(false)" formControlName="shiftDate" [minDate]="minDate"
-                                [maxDate]="maxDate" />
+                    <div class="card flex justify-content-center">
+                        <div class="calendarDivShift" (click)="datePicker.open()">
+                            <app-date-picker #datePicker [minDate]="minDate" [maxDate]="maxDate" [field]="form.date"
+                                [date]="shift.date" />
                         </div>
                     </div>
-                    @if (dateError) {
-                    <div class="error">
-                        <p>* Chybné datum směny</p>
-                    </div>
-                    }
                 </div>
-                <div class="label mt-2" [class.invalid]="fromError">
+                <div class="label mt-2">
                     <label for="username" class="font-semibold w-6rem">Začátek</label>
                 </div>
                 <div>
-                    <div class="card flex justify-content-center timefromDiv"
-                        [style.--timeslot-top]="fromError ? '50px' : '35px'" [class.shake]="fromError"
-                        (click)="onOpenFrom()" [style]="`--visibility: ${calendarFocus() ? 'hidden' : 'visible'}`">
-                        <p-datepicker class="shiftFrom" [timeOnly]="true" formControlName="shiftFrom" #timeFrom
-                            (onInput)="onInput('from')" (onSelect)="onBlur('from')"
-                            (onClose)="fromIsOpen.set(false);" />
+                    <div class="card flex justify-content-center timefromDiv">
+                        <app-d-picker [field]="form.from" [proposalDate]="form.date().value()" />
                     </div>
-                    @if (fromError) {
-                    <div class="error" [style]="`--visibility: ${calendarFocus() ? 'hidden' : 'visible'}`">
-                        <p>* Zkontroluj začátek směny</p>
+
+                    @if (showTimeFromError()) {
+                    <div class="error">
+                        @for (error of form.from().errors(); track error.kind) {
+                        <p>{{ error.message }}</p>
+                        }
                     </div>
                     }
                 </div>
-                <div class="label mt-2" [class.invalid]="toError">
+                <div class="label mt-2">
                     <label for="username" class="font-semibold w-6rem">Konec</label>
                 </div>
+
                 <div>
-                    <div class="card flex justify-content-center timetoDiv"
-                        [style.--timeslot-top]="toError ? '50px' : '35px'" [class.shake]="toError" (click)="onOpenTo()"
-                        [style]="`--visibility: ${calendarFocus() || (fromError && fromIsOpen()) ? 'hidden' : 'visible'}`">
-                        <p-datepicker class="shiftTo" [timeOnly]="true" formControlName="shiftTo" #timeTo
-                            (onInput)="onInput('to')" (onSelect)="onBlur('to')" (onClose)="toIsOpen.set(false);" />
+                    <div class="card flex justify-content-center timetoDiv">
+                        <app-d-picker [field]="form.to" [proposalDate]="form.date().value()" />
                     </div>
-                    @if (toError) {
-                    <div class="error"
-                        [style]="`--visibility: ${calendarFocus() || (fromError && fromIsOpen()) ? 'hidden' : 'visible'}`">
-                        <p>* Zkontroluj konec směny</p>
+                    @if (showTimeToError()) {
+                    <div class="error">
+                        @for (error of form.to().errors(); track error.kind) {
+                        <p>{{ error.message }}</p>
+                        }
                     </div>
                     }
                 </div>
             </div>
             <div class="col-6">
-                <div class="label mt-2" [class.invalid]="persoError">
+                <div class="label mt-2">
                     <label for="float-input">Perso</label>
                 </div>
-                <div class="persoDiv"
-                    [style]="`--visibility: ${calendarFocus() || (toError && toIsOpen()) ? 'hidden' : 'visible'}`">
-                    <textarea class="" id="float-input" rows="6" cols="34" pInputTextarea #perso
-                        formControlName="shiftPerso" (input)="checkPerso()" [class.shake]="persoError">
+                <div class="persoDiv">
+                    <textarea id="float-input" rows="7" cols="34" [value]="form.perso().value()"
+                        (input)="onPersoInput($event)" (blur)="form.perso().markAsTouched()">
                     </textarea>
-                    @if (persoError) {
-                    <div class="error"
-                        [style]="`--visibility: ${calendarFocus() || (toError && toIsOpen()) ? 'hidden' : 'visible'}`">
-                        <p>* Text je příliš dlouhý.</p>
+
+                    @if (showPersoError()) {
+                    <div class="error">
+                        @for (error of form.perso().errors(); track error.kind) {
+                        <p class="perso">{{ error.message }}</p>
+                        }
                     </div>
                     }
                 </div>
             </div>
         </div>
 
-        @if (selectedShift().id > 0 && authStore.user()?.role === 'Admin') {
-        <div class="row">
+        @if (shift && shift.id > 0) {
+        <div class="row" hide>
             <div class="col-6">
                 <div class="label mt-2">
                     <label class="font-semibold w-6rem">Zapsal</label>
                 </div>
                 <div>
                     <div class="card flex justify-content-center">
-                        <input [placeholder]="selectedShift().createdBy" disabled />
+                        <input [placeholder]="shift.createdBy" disabled />
                     </div>
                 </div>
             </div>
@@ -104,21 +91,21 @@
                 </div>
                 <div>
                     <div class="card flex justify-content-center">
-                        <input [placeholder]="getTime(selectedShift().createdAt!)" disabled />
+                        <input [placeholder]="getTime(shift.createdAt!)" disabled />
                     </div>
                 </div>
             </div>
         </div>
 
-        @if (selectedShift().updatedBy !== null) {
-        <div class="row">
+        @if (shift.updatedBy !== null) {
+        <div class="row" hide>
             <div class="col-6">
                 <div class="label">
                     <label class="font-semibold w-6rem">Upravil</label>
                 </div>
                 <div>
                     <div class="card flex justify-content-center">
-                        <input [placeholder]="selectedShift().updatedBy" disabled />
+                        <input [placeholder]="shift.updatedBy" disabled />
                     </div>
                 </div>
             </div>
@@ -128,37 +115,42 @@
                 </div>
                 <div>
                     <div class="card flex justify-content-center">
-                        <input [placeholder]="getTime(selectedShift().updatedAt!)" disabled />
+                        <input [placeholder]="getTime(shift.updatedAt!)" disabled />
                     </div>
                 </div>
             </div>
         </div>
         }
-
         }
 
         <div class="row">
             <div class="col-6 inline">
-                @if (selectedShift().id === 0) {
+                @if (shift.id === 0) {
                 <button type="button" class="w-100 cancel" (click)="onHideForm()"><i
-                        class="bi bi-x"></i>&nbsp;Zpět</button>
+                        class="bi bi-caret-left"></i>&nbsp;Zpět</button>
                 } @else {
                 <button type="button" class="w-50 cancel me-1" (click)="onHideForm()"><i
                         class="bi bi-x"></i>&nbsp;Zpět</button>
-                <button type="button" class="w-50 delete ms-1" (click)="onDelete()"><i
-                        class="bi bi-trash"></i>&nbsp;Smazat</button>
+                <button type="button" class="w-50 delete ms-1" (click)="!shiftsStore.isDeleting() && onDelete()">
+                    @if(!shiftsStore.isDeleting()) {
+                    <i class="bi bi-trash"></i>&nbsp;Smazat
+                    } @else {
+                    <span class="spinner-border spinner-border-sm text-white me-1"></span>
+                    Odstraňuji...
+                    }
+                </button>
                 }
             </div>
             <div class="col-6">
-                @if(!loading()) {
+                @if(!shiftsStore.isSaving()) {
                 <button type="submit" id="addBtn" class="btn w-100" (click)="onSave()"
-                    [disabled]="persoError || fromError || toError || dateError"><i
-                        class="bi bi-plus"></i>&nbsp;{{selectedShift().id
+                    [disabled]="form().invalid() || (isUnchanged() && shift.id > 0)"><i
+                        class="bi bi-plus"></i>&nbsp;{{shift.id
                     === 0 ? 'Zapsat' : 'Upravit'}}</button>
                 } @else {
                 <button class="btn w-100 loading" id="loadingBtn" type="button">
                     <span class="spinner-border spinner-border-sm text-white me-1"></span>
-                    {{ loadingText() }}
+                    {{ shift.id > 0 ? 'Ukládám...' : 'Upravuji...' }}
                 </button>
                 }
             </div>

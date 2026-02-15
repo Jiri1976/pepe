@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, effect, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePickerModule } from 'primeng/datepicker';
 
@@ -9,19 +9,36 @@ import { DatePickerModule } from 'primeng/datepicker';
   templateUrl: './d-picker.component.html',
   styleUrl: './d-picker.component.scss',
 })
-export class DPickerComponent implements OnInit {
+export class DPickerComponent {
   @Input({ required: true }) field!: () => any;
   @Input({ required: true }) proposalDate!: string;
-
   value: Date | null = null;
 
-  ngOnInit() {
-    const v = this.field().value();
-    this.value = v ? new Date(v) : null;
+  constructor() {
+    effect(() => {
+      const fieldValue = this.field().value();
+
+      if (!fieldValue && !this.value) return;
+
+      if (
+        fieldValue &&
+        this.value &&
+        fieldValue.getHours() === this.value.getHours() &&
+        fieldValue.getMinutes() === this.value.getMinutes()
+      ) {
+        return;
+      }
+
+      this.value = fieldValue ? new Date(fieldValue) : null;
+    });
   }
 
   onChange(v: Date | null) {
-    if (!v) return;
+    if (!v) {
+      this.value = null;
+      this.field().value.set(null);
+      return;
+    }
 
     const current = this.field().value();
     const baseDate = this.parseDate(this.proposalDate);

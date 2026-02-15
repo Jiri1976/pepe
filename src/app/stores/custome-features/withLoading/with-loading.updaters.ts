@@ -21,6 +21,10 @@ export function setIsDeleting(): PartialStateUpdater<LoadingSlice> {
     return _ => ({ isDeleting: true });
 }
 
+export function toggleIsDeleting(): PartialStateUpdater<LoadingSlice> {
+    return state => ({ isDeleting: !state.isDeleting });
+}
+
 export function setNotDeleting(): PartialStateUpdater<LoadingSlice> {
     return _ => ({ isDeleting: false });
 }
@@ -35,6 +39,14 @@ export function toggleIsPdfLoading(): PartialStateUpdater<LoadingSlice> {
 
 export function toggleCalendar(): PartialStateUpdater<LoadingSlice> {
     return state => ({ showCalendar: !state.showCalendar });
+}
+
+export function togglePdfButtonLoading(): PartialStateUpdater<LoadingSlice> {
+    return state => ({ pdfButtonLoading: !state.pdfButtonLoading });
+}
+
+export function toggleIsSaving(): PartialStateUpdater<LoadingSlice> {
+    return state => ({ isSaving: !state.isSaving });
 }
 
 export function closeCalendar(): PartialStateUpdater<LoadingSlice> {

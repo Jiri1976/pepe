@@ -1,8 +1,8 @@
-import { Component, computed, effect, ElementRef, inject, signal, viewChild } from '@angular/core';
+import { Component, effect, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { DialogRef } from '@angular/cdk/dialog';
-import { ShiftService } from '../../../services/shift.service';
+import { ShiftsStore } from '../../../stores/shifts-store/shifts.store';
 
 @Component({
   selector: 'app-select-user',
@@ -11,9 +11,8 @@ import { ShiftService } from '../../../services/shift.service';
   styleUrl: './select-user.component.scss'
 })
 export class SelectUserComponent {
-  private shiftService = inject(ShiftService);
+  readonly store = inject(ShiftsStore);
   private dialogRef = inject(DialogRef, { optional: true });
-  uniqueUsers = computed(() => this.shiftService.uniqueUsers());
   scrollContainer = viewChild<ElementRef<HTMLDivElement>>('scrollContainer');
 
   constructor() {
@@ -32,11 +31,12 @@ export class SelectUserComponent {
   sectionStyles = signal<any>({
     'width': '25rem',
     'maxHeight': '500px',
-    'overflow-y': this.uniqueUsers()!.length > 11 ? 'auto' : 'hidden'
+    'overflow-y': this.store.uniqueUsers()!.length > 11 ? 'auto' : 'hidden'
   });
 
   onSelectUser(userId: number) {
-    this.shiftService.selectedUserId.set(userId);
+    let index = this.store.uniqueUsers().findIndex(u => u.userId === userId);
+    this.store.slideTo(index);
     this.dialogRef?.close();
   }
 

@@ -44,7 +44,7 @@ export class PlansComponent {
           this.calendar()?.cd.detectChanges();
         }
       }
-    })
+    });
   }
 
   onCalendarClickOutside(event: MouseEvent, toggleBtn: HTMLElement) {

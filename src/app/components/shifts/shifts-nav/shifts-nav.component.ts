@@ -1,11 +1,10 @@
-import { Component, computed, inject, model } from '@angular/core';
-import { ShiftService } from '../../../services/shift.service';
-import { ShiftsComponent } from '../../../pages/shifts/shifts.component';
+import { Component, effect, ElementRef, inject, ViewChild } from '@angular/core';
 import { HideElementDirective } from '../../../directives/hide-element.directive';
 import { HideWhenAdminDirective } from '../../../directives/hide-when-admin.directive';
 import { Dialog } from '@angular/cdk/dialog';
 import { SelectUserComponent } from '../select-user/select-user.component';
 import { ShiftsStore } from '../../../stores/shifts-store/shifts.store';
+import { ShiftFormComponent } from '../shift-form/shift-form.component';
 
 @Component({
   selector: 'app-shifts-nav',
@@ -14,14 +13,36 @@ import { ShiftsStore } from '../../../stores/shifts-store/shifts.store';
   styleUrl: './shifts-nav.component.scss'
 })
 export class ShiftsNavComponent {
-  readonly shiftsStore = inject(ShiftsStore);
-  private shiftService = inject(ShiftService);
+  readonly store = inject(ShiftsStore);
   private dialog = inject(Dialog)
-  shiftsComponent = inject(ShiftsComponent);
-  pdfOn = model(false);
-  pdfCards = computed(() => this.shiftService.pdfCards());
+  @ViewChild('toggleBtn', { static: true })
+  toggleBtn!: ElementRef<HTMLElement>;
+
+  constructor() {
+    effect(() => {
+      if (!this.store.isAddShiftDialogRequested()) return;
+      if (this.dialog.openDialogs.length > 0) return;
+
+      this.dialog.open(ShiftFormComponent, { disableClose: false })
+        .closed.subscribe(() => {
+          this.store.clearAddShiftDialogRequest();
+        });
+    });
+  }
 
   openModal() {
     this.dialog.open(SelectUserComponent, { disableClose: false });
+  }
+
+  onToggleCalendar(event: MouseEvent) {
+    event.stopPropagation();
+    this.store.toggleCalendar();
+  }
+
+  changeDestination(destination: 'F-M' | 'OVA') {
+    if (destination !== this.store.destination()) {
+      this.store.setDestination(destination);
+    }
+    return;
   }
 }

@@ -4,7 +4,9 @@ export const CONFIRM_ACTIONS = {
     DELETE_PROPOSAL_CARD: 'delete-proposal-card',
     RESET_PROPOSALS: 'reset-proposals',
     SELECT_MONTH: 'select-month',
-    GET_PDF: 'get-pdf'
+    GET_PDF: 'get-pdf',
+    DELETE_SHIFT_CARD: 'delete-shift-card',
+    DELETE_SHIFT: 'delete-shift'
 } as const;
 
 export type ConfirmAction =

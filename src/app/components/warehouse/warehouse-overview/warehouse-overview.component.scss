@@ -91,7 +91,7 @@
                         overflow: hidden;
                         white-space: nowrap;
                         text-overflow: ellipsis;
-                        background: #f7d3af;
+                        background: var(--table-row-hover);
                         color: #864912;
                         font-size: 0.9rem;
                         font-weight: 700;
@@ -109,8 +109,8 @@
                         font-size: 0.7rem;
 
                         .input-success {
-                            border: 2px solid #f7d3af;
-                            box-shadow: 0 0 5px #f7d3af;
+                            border: 2px solid var(--table-row-hover);
+                            box-shadow: 0 0 5px var(--table-row-hover);
                             transition: border 0.3s, box-shadow 0.3s;
                         }
 
@@ -154,7 +154,7 @@
                         input:active,
                         input:focus {
                             cursor: default;
-                            background: #f7d3af;
+                            background: var(--table-row-hover);
                             color: #864912;
                             border: 2px solid #864912;
                         }
@@ -164,7 +164,7 @@
 
                         input {
                             cursor: pointer;
-                            background: #f7d3af;
+                            background: var(--table-row-hover);
                             border: 2px solid #864912;
                             color: #864912;
                         }

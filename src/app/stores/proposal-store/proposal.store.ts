@@ -12,13 +12,14 @@ import { ProposalCard } from "../../models/proposals/proposalCard.interface";
 import { ProposalsService } from "../../services/proposals.service";
 import { addFromInactive, removeFromActive, resetCalendar, setMonthYear, setOriginal, setSchedules, updatePositions, setSelectedProposal, deleteProposal, updateProposal } from "./proposals.updaters";
 import { ProposalUser } from "../../models/proposals/proposalUser.interface";
-import { deepEqual, setTime, sortInactiveUsers } from "./proposal.helpers";
+import { deepEqual, sortInactiveUsers } from "./proposal.helpers";
 import { withConfirmation } from "../custome-features/withConfirmation/with-confirmation.feature";
 import { ConfirmationStore } from "../custome-features/withConfirmation/confirmation.store";
 import { CONFIRM_ACTIONS } from "../custome-features/withConfirmation/confirmation.actions";
 import { ProposalShift } from "../../models/proposals/proposalShift.interface";
 import { UpdateProposalComponent } from "../../components/proposals/update-proposal/update-proposal.component";
 import { Inputs, Proposal } from "../../models/proposals/proposal.interface";
+import { setTime } from "../../helpers/common-functions.helper";
 
 export const ProposalStore = signalStore({
     providedIn: 'root'

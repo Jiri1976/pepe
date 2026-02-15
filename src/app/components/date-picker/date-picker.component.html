@@ -1,0 +1,3 @@
+<p-datepicker #datePicker [(ngModel)]="date" dateFormat="dd.mm.yy" [minDate]="minDate()" [maxDate]="maxDate()"
+    [readonlyInput]="true" [showIcon]="false" [showOnFocus]="false" (onBlur)="field().markAsTouched()"
+    (ngModelChange)="onChange($event)" />

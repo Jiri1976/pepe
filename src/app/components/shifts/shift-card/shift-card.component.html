@@ -1,28 +1,35 @@
 <div class="card-wrapper">
-    @if (!cardLoading()) {
     <div class="user-card-table" animate.enter="fade-in" animate.leave="fade-out">
         <div class="head">
             <div class="right">
+                @if (card()) {
                 <b>{{convertMonthYear(card()!.monthYear)}}</b>
+                }
+
             </div>
             <div class="center">
                 @let userName = card()!.userName + " " + card()!.userSurname;
                 <b>{{ userName }}</b>
 
-                @if (hasDriver()) {
-                @if (firstCard() === 'Driver') {
-                <img src="./dark_car.png" alt="Car" [class.onlyOne]="userCards()?.length === 1" />
-                } @else {
-                <img src="./colored_car.png" alt="Car" (click)="changeCard('Driver')" />
-                }
-                }
-
-                @if (hasCook()) {
-                @if (firstCard() === 'Cook') {
-                <img src="./dark_chef.png" alt="Chef" [class.onlyOne]="userCards()?.length === 1" />
-                } @else {
-                <img src="./colored_chef.png" alt="Chef" (click)="changeCard('Cook')" />
-                }
+                @for(position of shiftsStore.currentPositions(); track $index) {
+                <div class="position" [class.one-position]="shiftsStore.currentPositions().length == 1"
+                    [class.active]="position === shiftsStore.selectedCardPosition()"
+                    (click)="shiftsStore.currentPositions().length > 1 && shiftsStore.setSelectedCardPosition(position)">
+                    @switch (position) {
+                    @case ('Helper') {
+                    P
+                    }
+                    @case ('Driver') {
+                    Ř
+                    }
+                    @case ('Cook') {
+                    K
+                    }
+                    @case ('Pizza') {
+                    PZ
+                    }
+                    }
+                </div>
                 }
             </div>
             <div class="left">
@@ -35,12 +42,12 @@
         <table class="table">
             <thead class="table-dark">
                 <tr>
-                    <th style="width: 5% !important; text-align: right; border-top-left-radius: 10px;">#</th>
+                    <th style="width: 5% !important; text-align: right;">#</th>
                     <th style="width: 15% !important; text-align: center;">Datum</th>
                     <th style="width: 15% !important; text-align: center;">Začátek</th>
                     <th style="width: 15% !important; text-align: center;">Konec</th>
                     <th style="width: 15% !important; text-align: center;">Hodiny</th>
-                    <th style="width: 40% !important; text-align: center; border-top-right-radius: 10px;">Perso</th>
+                    <th style="width: 40% !important; text-align: center;">Perso</th>
                 </tr>
             </thead>
             <tbody [style]="sectionStyles()">
@@ -53,16 +60,20 @@
                     <td style="width: 15% !important; text-align: center !important;">{{shift.from}}</td>
                     <td style="width: 15% !important; text-align: center !important;">{{shift.to}}</td>
                     <td style="width: 15% !important; text-align: center !important;">{{shift.hours}}</td>
-                    <td class="perso" style="width: 40% !important;">{{shift.perso}}</td>
+                    <td class="perso" style="width: 40% !important; vertical-align: middle !important;">{{shift.perso}}
+                    </td>
                 </tr>
                 }
             </tbody>
         </table>
         <div class="action-buttons">
             @if (authStore.user()?.role === 'Admin') {
-            <button class="deleteCardBtn" (click)="onDeleteCard()"><i class="bi bi-x"></i> Smazat kartu</button>
-            <button class="pdfBtn" (click)="onToPdf()">
-                @if (!pdfLoading()) {
+            <button class="deleteCardBtn" (click)="shiftsStore.requestDeleteCard()"><i class="bi bi-x"></i> Smazat
+                kartu</button>
+            @if (shiftsStore.currentCard() && shiftsStore.currentCard()!.id > 0 &&
+            shiftsStore.currentCard()!.shifts.length > 0) {
+            <button class="pdfBtn" (click)="shiftsStore.toPdfCard()">
+                @if (!shiftsStore.pdfButtonLoading()) {
                 <i class="bi bi-filetype-pdf"></i>&nbsp;Stáhnout PDF
                 } @else {
                 <div class="spinner-border" role="status">
@@ -70,6 +81,7 @@
                 </div>
                 }
             </button>
+            }
             }
         </div>
         }
@@ -79,10 +91,17 @@
         </div>
         <div class="action-buttons">
             @if (authStore.user()?.role === 'Admin' && card()!.id > 0 && card()!.shifts.length > 0) {
-            <button class="deleteCardBtn" (click)="onDeleteCard()"><i class="bi bi-x"></i> Smazat kartu</button>
+            <button class="deleteCardBtn" (click)="shiftsStore.requestDeleteCard()">
+                @if (!shiftsStore.isDeleting()) {
+                <i class="bi bi-x"></i> Smazat kartu
+                } @else {
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                }
+            </button>
             }
         </div>
         }
     </div>
-    }
 </div>

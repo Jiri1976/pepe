@@ -1,60 +1,31 @@
 <div class="sidenav">
-    <app-shifts-nav animate.enter="fade-in" animate.leave="fade-out" [(pdfOn)]="pdfOn" />
+    <app-shifts-nav animate.enter="fade-in" animate.leave="fade-out" #nav />
 </div>
 
 <div class="shifts-calendar">
-    <p-datepicker #calendar name="deadline" [(ngModel)]="defaultDate" view="month" dateFormat="mm-yy"
-        [readonlyInput]="true" [maxDate]="maxDate" (onSelect)="onSelectMonth()" />
+    <p-datepicker #calendar name="deadline" [(ngModel)]="shiftsStore.defaultDate" view="month" dateFormat="mm-yy"
+        [readonlyInput]="true" [maxDate]="shiftsStore.maxDate()" (onSelect)="onSelectMonth()"
+        (onClickOutside)="onCalendarClickOutside($event, nav.toggleBtn.nativeElement)" />
 </div>
 
 <div class="box">
-    @if(!isLoading()) {
+    @if(!shiftsStore.isLoading()) {
 
-    @if (uniqueUsers().length > 0) {
+    @if (shiftsStore.uniqueUsers().length > 0) {
     <div class="shift-card" animate.enter="fade-in">
-        <swiper-container #swiperRef effect="cards" grab-cursor="true" (swiperinit)="onSwiperInit($event)"
+        <swiper-container #swiperRef effect="cards" grab-cursor="false" (swiperinit)="onSwiperInit()"
             (swiperslidechange)="onSlideChange($event)">
-            @for(user of uniqueUsers(); track $index) {
+            @for(user of shiftsStore.uniqueUsers(); track $index) {
             <swiper-slide>
-                <app-shift-card [userCards]="user.cards" [currentIndex]="$index" />
+                <app-shift-card />
             </swiper-slide>
             }
-
         </swiper-container>
     </div>
     } @else {
-    <h4>{{ missingCardsMessage() }}</h4>
+    <h4>{{ shiftsStore.missingCardsMessage() }}</h4>
     }
     } @else {
-    <div class="skeleton">
-        <div class="head" animate.enter="fade-in" animate.leave="fade-out">
-        </div>
-
-        <table class="table table-striped" animate.enter="fade-in" animate.leave="fade-out">
-            <thead class="table-dark">
-                <tr>
-                    <th class="user-name" style="width: 5% !important; text-align: right;"></th>
-                    <th class="user-name" style="width: 15% !important; text-align: center;"></th>
-                    <th class="user-name" style="width: 15% !important; text-align: center;"></th>
-                    <th class="user-name" style="width: 15% !important; text-align: center;"></th>
-                    <th class="user-name" style="width: 10% !important; text-align: center;"></th>
-                    <th class="user-name" style="width: 35% !important; text-align: center;"></th>
-                </tr>
-            </thead>
-            <tbody class="table-group-divider">
-                @for(e of empty; track $index) {
-                <tr>
-                    <th scope="row" style="width: 5% !important; text-align: right !important;"></th>
-                    <td style="width: 15% !important; text-align: center !important;"></td>
-                    <td style="width: 15% !important; text-align: center !important;"></td>
-                    <td style="width: 15% !important; text-align: center !important;"></td>
-                    <td style="width: 10% !important; text-align: center !important;"></td>
-                    <td class="perso" style="width: 35% !important;"></td>
-                </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+    <app-shift-skeleton />
     }
 </div>
-<app-confirm />

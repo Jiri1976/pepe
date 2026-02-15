@@ -23,18 +23,6 @@ export function sortInactiveUsers(users: ProposalUser[]): ProposalUser[] {
     });
 }
 
-export function setTime(time: string | null, date: string | null): Date | null {
-    if (time === null || date == null) {
-        return null;
-    }
-    if (time === 'F-M' || time === 'OVA') {
-        return new Date(parseInt(date.split('.')[2]), parseInt(date.split('.')[1]) - 1, parseInt(date.split('.')[0]), 11, 0);
-    }
-    else {
-        return new Date(parseInt(date.split('.')[2]), parseInt(date.split('.')[1]) - 1, parseInt(date.split('.')[0]), parseInt(time.split(':')[0]), parseInt(time.split(':')[1]));
-    }
-}
-
 export function prepareForDeleteing(cards: ProposalCard[], destination: string): ProposalCard[] {
     let currentCard = cards.find(c => c.destination === destination);
     let oppositeCard = cards.find(c => c.destination === destination);

@@ -19,6 +19,8 @@
     --proposal-yellow: #ffdf20;
     --proposal-lime: #9ae600;
     --proposal-orange: #f54a00;
+    --table-head: #f8f8f4;
+    --table-row-hover: #f7d3af;
 }
 
 * {
@@ -232,9 +234,14 @@ p-dialog.create-unit {
 
         .p-datepicker-panel.p-component {
             .p-datepicker-month-view {
+                .p-ripple.p-datepicker-month {
+                    font-weight: 400 !important;
+                }
+
                 .p-datepicker-month.p-datepicker-month-selected {
                     background: var(--main-dark) !important;
                     color: var(--white) !important;
+                    font-weight: 700;
                 }
             }
 
@@ -281,14 +288,19 @@ p-datepicker {
 
 .calendarDivShift {
     p-datepicker {
+        font-weight: 700;
 
         .p-datepicker-panel.p-component {
             border: 1px solid var(--main-dark);
+            border-radius: 0;
 
             .p-datepicker-month-view {
+                font-weight: 700;
+
                 .p-datepicker-month.p-datepicker-month-selected {
                     background: var(--main-dark) !important;
                     color: var(--white) !important;
+                    font-weight: 700;
                 }
             }
         }
@@ -307,6 +319,8 @@ p-datepicker {
             font-size: 0.9rem;
             color: var(--main-dark);
             box-shadow: none !important;
+            border-radius: 0;
+            font-weight: 600;
         }
 
         .p-datepicker-panel.p-component {
@@ -323,6 +337,7 @@ p-datepicker {
                             .p-datepicker-select-month,
                             .p-datepicker-select-year {
                                 color: var(--main-dark) !important;
+                                font-weight: 700;
                             }
                         }
 
@@ -330,6 +345,7 @@ p-datepicker {
                         p-button {
                             .p-button-text {
                                 color: var(--main-dark) !important;
+                                font-weight: 700;
                             }
                         }
 
@@ -346,6 +362,7 @@ p-datepicker {
                         .p-datepicker-day-selected {
                             background: var(--main-dark) !important;
                             color: var(--white) !important;
+                            font-weight: 700;
                         }
                     }
                 }
@@ -532,7 +549,7 @@ p-datepicker.proposal {
 
 .drag-item.cdk-drag-dragging {
     border: 2px solid #e2e2e2 !important;
-    border-radius: 20px !important;
+    // border-radius: 20px !important;
     color: var(--main-dark);
     background: #e2e2e2;
 }
@@ -541,7 +558,7 @@ p-datepicker.proposal {
     max-width: 100% !important;
     box-sizing: border-box !important;
     border: 2px solid #e2e2e2 !important;
-    border-radius: 20px !important;
+    // border-radius: 20px !important;
     overflow: hidden !important;
     background: #e2e2e2;
     color: var(--main-dark);

@@ -3,8 +3,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    border-radius: 0.375em;
-    background-color: #fff;
+    background-color: var(--white);
     filter: drop-shadow(0 0 2em rgba(#000, 0.5));
     padding: 2em 2em;
 }
@@ -25,17 +24,13 @@
         height: 30px;
         justify-content: center;
         align-items: center;
-        border-radius: 5px;
-        border: 1px solid #864912;
+        border: 1px solid var(--main-dark);
         margin: 10px 0;
-        transition: 0.3s;
 
         p {
-            color: #864912;
+            color: var(--main-dark);
             font-weight: 500;
             margin-bottom: 0 !important;
-            transition: 0.3s;
-            font-family: "Poppins", sans-serif;
             font-size: 14px;
         }
     }
@@ -43,10 +38,10 @@
     .user:hover {
         cursor: pointer;
         box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-        background: #864912;
+        background: var(--main-dark);
 
         p {
-            color: #fff;
+            color: var(--white);
         }
     }
 
@@ -54,15 +49,13 @@
         margin-top: 15px;
 
         .closeBtn {
-            background: #864912;
-            color: #fff;
-            border-radius: 5px;
-            border: 1px solid #864912;
+            background: var(--main-dark);
+            color: var(--white);
+            border: 1px solid var(--main-dark);
             font-weight: bold;
             height: 30px;
             width: 120px;
             transform: 0.3s;
-            font-family: "Poppins", sans-serif;
             font-size: 14px;
         }
 
@@ -81,9 +74,8 @@
         width: 20px;
         right: 10px;
         top: 10px;
-        background-color: #EF4444;
-        color: #fff;
-        border-radius: 5px;
+        background-color: var(--main-red);
+        color: var(--white);
         transition: 0.2s;
         cursor: pointer;
 

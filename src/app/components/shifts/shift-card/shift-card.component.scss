@@ -1,19 +1,16 @@
 .card-wrapper {
     margin: 20px;
-    display: grid;
 
     .user-card-table {
         display: flex;
         flex-direction: column;
         justify-content: center;
-        grid-column: 1;
-        grid-row: 1;
 
         .head {
             border: 2px solid var(--main-dark);
             padding: 5px;
             margin-bottom: 10px;
-            background: #f8f8f4;
+            background: var(--table-head);
             color: var(--main-dark);
             justify-content: space-between;
             align-items: center;
@@ -24,6 +21,7 @@
             .right,
             .left {
                 width: 20%;
+                font-weight: 500;
             }
 
             .left {
@@ -38,26 +36,35 @@
                 flex-direction: row;
                 font-weight: 500;
 
-                img {
+                b {
+                    margin: 0 10px;
+                }
+
+                .position {
                     width: 33px;
                     height: 33px;
-                    margin: 0 10px;
-                    border-radius: 50%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    margin: 0 5px;
+                    border: 1px solid var(--main-dark);
+                    color: var(--main-dark);
+                    font-weight: 500;
                     transition: 0.2s;
                 }
 
-                img:not(.onlyOne):hover {
-                    border: 1px solid var(--main-dark);
+                .position:hover {
                     cursor: pointer;
-                    transform: scale(1.2);
                 }
 
-                .onlyOne,
-                .onlyOne:hover {
+                .position.one-position:hover {
                     cursor: default;
-                    transform: scale(1);
                 }
 
+                .position.active {
+                    color: var(--white);
+                    background: var(--main-dark);
+                }
             }
         }
 
@@ -70,11 +77,14 @@
                 display: table;
                 width: 100%;
                 table-layout: fixed;
+                font-weight: 500;
 
                 tr th {
                     height: 25px !important;
                     font-size: 0.9rem;
                     padding: 0 !important;
+                    font-weight: 500;
+                    vertical-align: middle !important;
                 }
             }
 
@@ -83,15 +93,6 @@
                 max-height: 580px;
                 display: block;
 
-                th,
-                td {
-                    font-size: 0.8rem;
-                    color: var(--main-dark);
-                    height: 15px !important;
-                    padding: 0 !important;
-                    vertical-align: middle !important;
-                }
-
                 tr {
                     border-color: var(--main-dark) !important;
                     display: table;
@@ -99,6 +100,12 @@
                     table-layout: fixed;
 
                     td {
+                        font-size: 0.8rem;
+                        color: var(--main-dark);
+                        height: 20px !important;
+                        padding: 0 !important;
+                        vertical-align: middle !important;
+                        font-weight: 500;
                         transition: 0.2s ease-in-out;
 
                         .bi {
@@ -128,12 +135,9 @@
                 }
 
                 tr:hover td {
-                    background: #f7d3af !important;
+                    background: var(--table-row-hover) !important;
+                    cursor: pointer;
                 }
-            }
-
-            tbody:hover {
-                cursor: grab;
             }
         }
 
@@ -155,15 +159,16 @@
                 justify-content: center;
                 align-items: center;
                 height: 30px;
-                width: 120px;
+                width: 130px;
                 font-size: 13px;
-                background: #EF4444;
-                color: #fff;
+                background: var(--main-red);
+                color: var(--white);
                 border: none;
                 transition: ease 0.3s all;
                 position: absolute;
                 bottom: 10px;
                 left: 20px;
+                font-weight: 600;
 
                 i {
                     font-size: 1.3rem;
@@ -176,25 +181,22 @@
                 }
             }
 
-            .deleteCardBtn:hover {
-                box-shadow: 0 0 10px 3px #EF4444;
-            }
-
             .pdfBtn {
                 display: flex;
                 flex-direction: row;
                 justify-content: center;
                 align-items: center;
                 height: 30px;
-                width: 120px;
-                background: var(--main-dark)2;
-                color: #fff;
+                width: 130px;
+                background: var(--main-dark);
+                color: var(--white);
                 border: none;
                 transition: ease 0.3s all;
                 position: absolute;
                 bottom: 10px;
                 right: 20px;
                 font-size: 13px;
+                font-weight: 600;
 
                 i {
                     font-size: 1.1rem;
@@ -207,10 +209,6 @@
                     height: 15px;
                 }
             }
-
-            .pdfBtn:hover {
-                box-shadow: 0 0 10px 3px #864912;
-            }
         }
     }
 
@@ -218,42 +216,5 @@
         margin-top: 15%;
         margin-left: auto;
         margin-right: auto;
-    }
-
-    .skeleton {
-        grid-column: 1;
-        grid-row: 1;
-        display: flex;
-        justify-content: center;
-        flex-direction: column;
-        align-items: center;
-        box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-        min-width: 760px;
-        height: 810px;
-        position: absolute;
-        top: -20px;
-        left: -20px;
-        background: linear-gradient(90deg,
-                #eee 25%,
-                #fff 50%,
-                #eee 75%);
-        background-size: 400% 100%;
-        animation: shimmer 2s infinite linear;
-
-        .title {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #cecece;
-        }
-    }
-}
-
-@keyframes shimmer {
-    0% {
-        background-position: -200% 0;
-    }
-
-    100% {
-        background-position: 200% 0;
     }
 }
