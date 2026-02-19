@@ -10,3 +10,15 @@ export interface WarehouseCard {
     position: number,
     units: WarehouseUnit[]
 }
+
+export interface OverViewDay {
+    amount: string;
+}
+
+export interface OverviewLine {
+    days: OverViewDay[];
+}
+
+export interface OverviewCard {
+    lines: OverviewLine[]
+}

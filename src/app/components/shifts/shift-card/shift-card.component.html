@@ -34,7 +34,12 @@
             </div>
             <div class="left">
                 <i class="bi bi-watch"></i>&nbsp;
-                <b>{{card()!.totalHours ? card()!.totalHours : '00:00'}}</b>
+                <b>
+                    {{card()!.totalHours ? card()!.totalHours : '00:00'}}
+                    @if (shiftsStore.currentTotalHours()) {
+                    / {{ shiftsStore.currentTotalHours() }}
+                    }
+                </b>
             </div>
         </div>
 

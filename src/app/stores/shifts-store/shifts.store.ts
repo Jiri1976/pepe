@@ -6,7 +6,7 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { switchMap, tap } from "rxjs";
 import { tapResponse } from '@ngrx/operators';
 import { withLoading } from "../custome-features/withLoading/with-loading.feature";
-import { closeCalendar, setIsLoading, toggleIsSaving, togglePdfButtonLoading, setNotLoading, setIsDeleting, setNotDeleting, toggleCalendar, toggleIsPdfLoading, toggleIsDeleting } from "../custome-features/withLoading/with-loading.updaters";
+import { closeCalendar, setIsLoading, toggleIsSaving, togglePdfButtonLoading, setNotLoading, toggleCalendar, toggleIsPdfLoading, toggleIsDeleting } from "../custome-features/withLoading/with-loading.updaters";
 import { withConfirmation } from "../custome-features/withConfirmation/with-confirmation.feature";
 import { ConfirmationStore } from "../custome-features/withConfirmation/confirmation.store";
 import { initialShiftsSlice } from "./shifts.slice";
@@ -17,6 +17,7 @@ import { setSelectedCardPosition, setSlideIndexAndPosition, updateAfterDeleteCar
 import { convertMonthYear, setTime } from '../../helpers/common-functions.helper';
 import { CONFIRM_ACTIONS } from "../custome-features/withConfirmation/confirmation.actions";
 import { Shift, ShiftModel } from "../../models/shifts/shift.interface";
+import { MONTHS } from "../../helpers/common-constants.helper";
 
 export const ShiftsStore = signalStore({
     providedIn: 'root'
@@ -28,8 +29,6 @@ export const ShiftsStore = signalStore({
         const _dialog = inject(Dialog);
         const _toaster = inject(ToasterService);
         const _shiftService = inject(ShiftService);
-        const MONTHS = ["LEDEN", "ÚNOR", "BŘEZEN", "DUBEN", "KVĚTEN", "ČERVEN", "ČERVENEC", "SRPEN", "ZÁŘÍ", "ŘÍJEN", "LISTOPAD", "PROSINEC"];
-        const MONTHS_NUM = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
         const slideToIndex = signal<number | null>(null);
         const shiftModel = signal<ShiftModel>({
             date: '',
@@ -42,8 +41,6 @@ export const ShiftsStore = signalStore({
             _dialog,
             _toaster,
             _shiftService,
-            MONTHS,
-            MONTHS_NUM,
             slideToIndex,
             shiftModel
         };
@@ -108,7 +105,30 @@ export const ShiftsStore = signalStore({
         });
 
         const currentPositions = computed(() => currentGroup()?.cards.map(c => c.userPosition) ?? []);
-        // const currentTotalHours = computed(() => currentGroup()?.cards.map(c => {}))
+        const currentTotalHours = computed(() => {
+            let total = null;
+            let hours = 0;
+            let minutes = 0;
+            if (currentGroup() && currentGroup().cards.length > 1) {
+                currentGroup().cards.forEach(card => {
+                    if (card.totalHours) {
+                        hours += parseInt(card.totalHours.split(":")[0]);
+                        minutes += parseInt(card.totalHours.split(":")[1]);
+                        if (minutes >= 60) {
+                            hours += 1;
+                            minutes = minutes - 60;
+                        }
+                    }
+                });
+
+                if (hours > 0 && minutes > 0) {
+                    const _hours = hours < 10 ? `0${hours.toString()}` : `${hours.toString()}`;
+                    const _minutes = minutes < 10 ? `0${minutes.toString()}` : `${minutes.toString()}`;
+                    total = `${_hours}:${_minutes}`;
+                }
+            }
+            return total;
+        })
         const userCards = computed(() => currentGroup()?.cards ?? []);
         const pdfCards = computed(() => (store.cards() ?? []).filter(card => card.id > 0 && card.shifts.length > 0));
 
@@ -124,7 +144,7 @@ export const ShiftsStore = signalStore({
 
         const missingCardsMessage = computed(() => {
             if (isPastCard()) {
-                return `Směny pro ${store.MONTHS[parseInt(store.monthYear().substring(0, 2)) - 1].toLowerCase()} ${store.monthYear().substring(2, 6)} nejsou uloženy.`;
+                return `Směny pro ${MONTHS[parseInt(store.monthYear().substring(0, 2)) - 1].toLowerCase()} ${store.monthYear().substring(2, 6)} nejsou uloženy.`;
             } else {
                 return `Chybí uživatelé na pobočce - ${store.destination()}.`;
             }
@@ -138,7 +158,8 @@ export const ShiftsStore = signalStore({
             currentCard,
             userCards,
             currentPositions,
-            initialShift
+            initialShift,
+            currentTotalHours
         };
 
     }),
@@ -175,7 +196,7 @@ export const ShiftsStore = signalStore({
 
         const onAllToPdf = rxMethod<void>(input$ => input$.pipe(
             tap(_ => patchState(store, toggleIsPdfLoading())),
-            switchMap(_ => store._shiftService.generateAllToPDF(store.pdfCards(), store.destination()).pipe(
+            switchMap(_ => store._shiftService.generateAllToPDF(store.pdfCards()).pipe(
                 tapResponse({
                     next: response => {
                         patchState(store, toggleIsPdfLoading());
@@ -193,7 +214,7 @@ export const ShiftsStore = signalStore({
                             var url = window.URL.createObjectURL(blob);
                             const a = document.createElement('a')
                             a.href = url;
-                            a.download = `${store.MONTHS[parseInt(store.monthYear().substring(0, 2)) - 1]} ${store.monthYear().substring(2, 6)} - ${store.destination()}.pdf`;
+                            a.download = `${MONTHS[parseInt(store.monthYear().substring(0, 2)) - 1]} ${store.monthYear().substring(2, 6)} - ${store.destination()}.pdf`;
                             a.click();
                             URL.revokeObjectURL(url);
                         }

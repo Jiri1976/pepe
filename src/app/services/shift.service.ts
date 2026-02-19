@@ -5,7 +5,6 @@ import { Response } from '../models/response.interface';
 import { Shift } from "../models/shifts/shift.interface";
 import { ShiftCard } from "../models/shifts/shiftCard.interface";
 import { AuthStore } from "../stores/auth-store/auth.store";
-import { User } from "../models/users/user.interface";
 
 @Injectable({
     providedIn: 'root'
@@ -59,7 +58,7 @@ export class ShiftService {
         return this.http.post<Response>(url, card);
     }
 
-    generateAllToPDF(cards: ShiftCard[], destination: string) {
+    generateAllToPDF(cards: ShiftCard[]) {
         const url = this.BASE_ROUTE + 'generateAllToPDF';
         return this.http.post<Response>(url, cards);
     }

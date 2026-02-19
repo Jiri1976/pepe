@@ -6,6 +6,7 @@ import { HideWhenAdminDirective } from '../../../directives/hide-when-admin.dire
 import { Router } from '@angular/router';
 import { Dialog } from '@angular/cdk/dialog';
 import { ItemsListComponent } from '../items-list/items-list.component';
+import { WarehouseStore } from '../../../stores/warehouse-store/warehouse.store';
 
 @Component({
   selector: 'app-warehouse-nav',
@@ -14,6 +15,7 @@ import { ItemsListComponent } from '../items-list/items-list.component';
   styleUrl: './warehouse-nav.component.scss'
 })
 export class WarehouseNavComponent {
+  readonly store = inject(WarehouseStore);
   private warehouseService = inject(WarehouseService);
   private router = inject(Router);
   private dialog = inject(Dialog)
@@ -49,14 +51,14 @@ export class WarehouseNavComponent {
     this.warehouseService.reloadItems.set(true);
   }
 
-  onSelectDestination(destination: string) {
-    this.warehouseService.destination.set(destination);
-    this.warehouseService.reloadCards.set(true);
-  }
+  // onSelectDestination(destination: string) {
+  //   this.warehouseService.destination.set(destination);
+  //   this.warehouseService.reloadCards.set(true);
+  // }
 
-  onReloadCards() {
-    this.warehouseService.reloadCards.set(true);
-  }
+  // onReloadCards() {
+  //   this.warehouseService.reloadCards.set(true);
+  // }
 
   onShowBoard() {
     this.router.navigate(['warehouse']);

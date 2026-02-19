@@ -67,13 +67,13 @@ export class ShiftFormComponent {
   getPosition(position: string) {
     switch (position) {
       case ('Helper'):
-        return 'pomocka';
+        return 'pomocka'.toUpperCase();
       case ('Driver'):
-        return 'řidič';
+        return 'řidič'.toUpperCase();
       case ('Cook'):
-        return 'kuchař';
+        return 'kuchař'.toUpperCase();
       case ('Pizza'):
-        return 'pizzař';
+        return 'pizzař'.toUpperCase();
       default:
         return '';
     }
@@ -107,8 +107,6 @@ export class ShiftFormComponent {
     _shift.from = this.timeToString(this.form.from().value());
     _shift.to = this.timeToString(this.form.to().value());
     _shift.perso = this.form.perso().value();
-    console.log("shift", _shift);
-
     this.shiftsStore.setSelectedShift(_shift);
     this.shiftsStore.createUpdateShift();
   }

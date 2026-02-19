@@ -1,35 +1,33 @@
-@if (warehouseNav() === 'units' || warehouseNav() === 'board') {
+@let nav = store.warehouseNav();
+@if (warehouseNav() === 'units' || nav === '/warehouse') {
 <div class="menu" animate.enter="fade-in" animate.leave="fade-out">
     <ul>
-        <li (click)="onReloadCards()" animate.enter="fade-in" animate.leave="fade-out">
-            <a [style.--background]="'#864912'" [style.--color]="'#fff'" [style.--color]="'#fff'">
+        <li animate.enter="fade-in" animate.leave="fade-out">
+            <a (click)="store.getWarehouseCards()">
                 <i class="bi bi-arrow-clockwise"></i>
             </a>
         </li>
 
-        <li (click)="warehouseComp.toggleCalendar()" class="cal" animate.enter="fade-in" animate.leave="fade-out" hide>
-            <a [style.--background]="'#864912'" [style.--color]="'#fff'">
+        <li hide animate.enter="fade-in" animate.leave="fade-out">
+            <a (click)="warehouseComp.toggleCalendar()">
                 <i class="bi bi-calendar"></i>
             </a>
         </li>
 
-        <li (click)="onSelectDestination('F-M')" animate.enter="fade-in" animate.leave="fade-out" hide>
-            <a [style.--background]="destination() === 'F-M' ? '#864912' : '#f7d3af'" [style.--color]="'#fff'"
-                [style.--color]="'#fff'">
+        <li hide animate.enter="fade-in" animate.leave="fade-out" [class.inactive]="store.destination() !== 'F-M'">
+            <a (click)="store.setDestination('F-M')">
                 <p>F-M</p>
             </a>
         </li>
 
-        <li (click)="onSelectDestination('OVA')" animate.enter="fade-in" animate.leave="fade-out" hide>
-            <a [style.--background]="destination() === 'OVA' ? '#864912' : '#f7d3af'" [style.--color]="'#fff'"
-                [style.--color]="'#fff'">
+        <li hide animate.enter="fade-in" animate.leave="fade-out" [class.inactive]="store.destination() !== 'OVA'">
+            <a (click)="store.setDestination('OVA')">
                 <p>OVA</p>
             </a>
         </li>
 
-        <li (click)="warehouseComp.onOpenPDF()" animate.enter="fade-in" animate.leave="fade-out" hide
-            [class.disabled]="this.cards().length === 0">
-            <a [style.--background]="'#864912'" [style.--color]="'#fff'">
+        <li hide animate.enter="fade-in" animate.leave="fade-out" [class.disabled]="store.cards().length === 0">
+            <a (click)="warehouseComp.onOpenPDF()">
                 @if (!pdfLoading()) {
                 <i class="bi bi-filetype-pdf"></i>
                 } @else {
@@ -40,42 +38,40 @@
             </a>
         </li>
 
-        <li animate.enter="fade-in" animate.leave="fade-out" (click)="onDeleteCards()" hide
-            [class.disabled]="this.cards().length === 0">
-            <a [style.--background]="'#EF4444'" [style.--color]="'#fff'">
+        <li hide animate.enter="fade-in" animate.leave="fade-out" [class.disabled]="store.cards().length === 0">
+            <a (click)="onDeleteCards()">
                 <i class="bi bi-trash"></i>
             </a>
         </li>
 
         @if (warehouseNav() !== 'board') {
-        <li (click)="onShowList()" hide>
-            <a [style.--background]="'#864912'" [style.--color]="'#fff'">
+        <li hide>
+            <a (click)="onShowList()">
                 <i class="bi bi-list-check"></i>
             </a>
         </li>
 
-        <li (click)="onShowList()" hideAdmin>
-            <a [style.--background]="'#864912'" [style.--color]="'#fff'">
+        <li hideAdmin>
+            <a (click)="onShowList()">
                 <i class="bi bi-list-ul"></i>
             </a>
         </li>
         }
 
-        <li (click)="onShowUnits()" [class.no-action]="warehouseNav() === 'units'"
-            [class.disabled]="this.cards().length === 0">
-            <a [style.--background]="warehouseNav() === 'units' ? '#864912' : '#f7d3af'" [style.--color]="'#fff'">
+        <li [class.disabled]="store.cards().length === 0">
+            <a (click)="onShowUnits()">
                 <i class="bi bi-table"></i>
             </a>
         </li>
 
-        <li (click)="onShowItems()" hide>
-            <a [style.--background]="'#f7d3af'" [style.--color]="'#fff'">
+        <li hide>
+            <a (click)="onShowItems()">
                 <i class="bi bi-list-ul"></i>
             </a>
         </li>
 
-        <li (click)="onShowBoard()" [class.no-action]="warehouseNav() === 'board'">
-            <a [style.--background]="warehouseNav() === 'board' ? '#864912' : '#f7d3af'" [style.--color]="'#fff'">
+        <li [class.disabled]="warehouseNav() === 'board'">
+            <a (click)="onShowBoard()">
                 <i class="bi bi-house"></i>
             </a>
         </li>
@@ -86,33 +82,32 @@
 @if (warehouseNav() === 'items') {
 <div class="menu" animate.enter="fade-in" animate.leave="fade-out">
     <ul>
-        <li (click)="onReloadItems()" animate.enter="fade-in" animate.leave="fade-out"
-            [class.disabled]="items().length === 0">
-            <a [style.--background]="'#864912'" [style.--color]="'#fff'" [style.--color]="'#fff'">
+        <li animate.enter="fade-in" animate.leave="fade-out" [class.disabled]="items().length === 0">
+            <a (click)="onReloadItems()">
                 <i class="bi bi-arrow-clockwise"></i>
             </a>
         </li>
 
-        <li animate.enter="fade-in" animate.leave="fade-out" (click)="onAddItem()">
-            <a [style.--background]="'#864912'" [style.--color]="'#fff'" [style.--color]="'#fff'">
+        <li animate.enter="fade-in" animate.leave="fade-out">
+            <a (click)="onAddItem()">
                 <i class="bi bi-plus"></i>
             </a>
         </li>
 
-        <li (click)="onShowUnits()" hide [class.disabled]="this.cards().length === 0">
-            <a [style.--background]="'#f7d3af'" [style.--color]="'#fff'">
+        <li hide [class.disabled]="store.cards().length === 0">
+            <a (click)="onShowUnits()">
                 <i class="bi bi-table"></i>
             </a>
         </li>
 
-        <li hide class="no-action">
-            <a [style.--background]="'#864912'" [style.--color]="'#fff'">
+        <li hide class="disabled">
+            <a>
                 <i class="bi bi-list-ul"></i>
             </a>
         </li>
 
-        <li (click)="onShowBoard()">
-            <a [style.--background]="'#f7d3af'" [style.--color]="'#fff'">
+        <li>
+            <a (click)="onShowBoard()">
                 <i class="bi bi-house"></i>
             </a>
         </li>

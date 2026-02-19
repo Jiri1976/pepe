@@ -1,5 +1,5 @@
 <div class="block">
-    @if (!uploadingCards()) {
+    @if (!warehouseStore.isLoading()) {
     <div class="wrapper" animate.enter="fade-in" animate.leave="fade-out">
         @if (cards().length > 0) {
         <div class="table">
@@ -18,9 +18,10 @@
             </div>
 
             <div class="body">
+
                 @for(card of cards(); track $index; let x = $index) {
                 <div class="table-row">
-                    <div class="first-table-cell">{{ items()[x] }}</div>
+                    <div class="first-table-cell">{{ overviewItems()[x] }}</div>
                     @for (day of days(); track $index; let y = $index) {
                     <div class="cell">
                         @if (overviewCard()!.lines[x].days[y].amount === 'L') {
@@ -53,7 +54,7 @@
         <div class="empty-table">
             <div class="empty-table-head">
                 <div class="empty-first-head-cell"></div>
-                @for (day of emptyDays(); track $index) {
+                @for (day of days(); track $index) {
                 <div class="empty-head-cell"></div>
                 }
             </div>
@@ -62,7 +63,7 @@
                 @for(card of emptyCards; track $index) {
                 <div class="empty-table-row">
                     <div class="empty-first-table-cell"></div>
-                    @for (day of emptyDays(); track $index) {
+                    @for (day of days(); track $index) {
                     <div class="empty-cell">
                     </div>
                     }

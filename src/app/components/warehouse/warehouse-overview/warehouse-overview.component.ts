@@ -6,6 +6,8 @@ import { ConfirmService } from '../../../services/confirm.service';
 import { ToasterService } from '../../../services/toaster.service';
 import { SignalService } from '../../../services/signal.service';
 import { AuthStore } from '../../../stores/auth-store/auth.store';
+import { MONTHS_NUM } from '../../../helpers/common-constants.helper';
+import { WarehouseStore } from '../../../stores/warehouse-store/warehouse.store';
 
 interface OverViewDay {
   amount: string;
@@ -27,36 +29,47 @@ interface OverviewCard {
 })
 export class WarehouseOverviewComponent implements OnInit {
   readonly authStore = inject(AuthStore);
-  private MONTHS_NUM = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
+  readonly warehouseStore = inject(WarehouseStore);
+  // private MONTHS_NUM = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
   private warehouseService = inject(WarehouseService);
   private toaster = inject(ToasterService);
   private destroyRef = inject(DestroyRef);
   private confirmService = inject(ConfirmService);
   private signalService = inject(SignalService);
   uploadingCards = signal(false);
-  cards = signal<WarehouseCard[]>([]);
-  items = signal<string[]>([]);
-  days = signal<Array<number>>(Array(0));
-  destination = computed(() => this.warehouseService.destination());
-  monthYear = computed(() => this.warehouseService.monthYear());
-  overviewCard = signal<OverviewCard | null>(null);
+  // cards = signal<WarehouseCard[]>([]);
+  cards = this.warehouseStore.cards;
+  // items = signal<string[]>([]);
+  overviewItems = this.warehouseStore.overviewItems;
+  //days = signal<Array<number>>(Array(0));
+  days = this.warehouseStore.countOfDays;
+
+  // destination = computed(() => this.warehouseService.destination());
+  destination = this.warehouseStore.destination;
+  // monthYear = computed(() => this.warehouseService.monthYear());
+  monthYear = this.warehouseStore.monthYear;
+  // overviewCard = signal<OverviewCard | null>(null);
+  overviewCard = this.warehouseStore.overviewCard;
   isUpdating = signal(false);
   reloadCards = computed(() => this.warehouseService.reloadCards());
   deleteCards = computed(() => this.warehouseService.deleteCards());
-  emptyCards = Array(10);
-  emptyDays = computed(() => Array(this.warehouseService.numberOfDays()));
+  emptyCards = Array(12);
+  // emptyDays = computed(() => Array(this.warehouseService.numberOfDays())); // set before uploading
+  //emptyDays = this.warehouseStore.countOfDays;
+  // emptyDays = computed(() => Array(28));
   highlightedInputs = new Set<string>();
 
   ngOnInit(): void {
-    this.warehouseService.monthYear.set(this.MONTHS_NUM[new Date().getMonth()] + new Date().getFullYear());
-    this.warehouseService.resetDefaultDate();
+    this.warehouseStore.resetMonthYaer();
+    // this.warehouseService.monthYear.set(MONTHS_NUM[new Date().getMonth()] + new Date().getFullYear());
+    // this.warehouseService.resetDefaultDate();
     this.warehouseService.warehouseNav.set('board');
-    this.getCards();
+    //this.getCards();
   }
 
   reload = effect(() => {
     if (this.reloadCards()) {
-      this.getCards();
+      //this.getCards();
     }
     if (this.deleteCards()) {
       this.onDeleteCards();
@@ -84,7 +97,7 @@ export class WarehouseOverviewComponent implements OnInit {
     this.isUpdating.set(true);
     let _card = structuredClone(this.overviewCard());
     _card!.lines[x].days[y].amount = 'L';
-    this.overviewCard.set(_card);
+    //this.overviewCard.set(_card);
 
     let updatingCard = structuredClone(this.cards()[x]);
     updatingCard.units[y].amount = value;
@@ -93,17 +106,17 @@ export class WarehouseOverviewComponent implements OnInit {
       tap(response => {
         if (response === null) {
           _card!.lines[x].days[y].amount = value.toString();
-          this.overviewCard.set(_card);
+          //this.overviewCard.set(_card);
           this.isUpdating.set(false);
           this.toaster.error('Něco se pokazilo, zkus to znovu.');
         } else if (response.isSuccess === false) {
           _card!.lines[x].days[y].amount = value.toString();
-          this.overviewCard.set(_card);
+          //this.overviewCard.set(_card);
           this.isUpdating.set(false);
           this.toaster.error(response.errorMessage);
         } else if (response.isSuccess) {
           _card!.lines[x].days[y].amount = value.toString();
-          this.overviewCard.set(_card);
+          //this.overviewCard.set(_card);
           this.toaster.success('Položka byla aktualizována!');
           this.signalService.sendCards(this.destination(), true, false);
           this.isUpdating.set(false);
@@ -116,31 +129,31 @@ export class WarehouseOverviewComponent implements OnInit {
     this.destroyRef.onDestroy(() => subscription.unsubscribe());
   }
 
-  getCards() {
-    this.uploadingCards.set(true);
-    const subscription = this.warehouseService.getWarehouseCards(this.monthYear(), this.destination()).pipe(
-      tap(response => {
-        if (response === null) {
-          this.uploadingCards.set(false);
-          this.toaster.error('Něco se pokazilo, zkus to znovu.');
-        } else if (response.isSuccess === false) {
-          this.uploadingCards.set(false);
-          this.toaster.error(response.errorMessage);
-        } else if (response.isSuccess) {
-          this.warehouseService.reloadCards.set(false);
-          this.warehouseService.cards.set(response.result);
-          this.cards.set(response.result);
-          this.getData();
-          this.initData();
-          this.uploadingCards.set(false);
-        }
-      }),
-    ).subscribe({
-      error: () => this.uploadingCards.set(false)
-    });
+  // getCards() {
+  //   this.uploadingCards.set(true);
+  //   const subscription = this.warehouseService.getWarehouseCards(this.monthYear(), this.destination()).pipe(
+  //     tap(response => {
+  //       if (response === null) {
+  //         this.uploadingCards.set(false);
+  //         this.toaster.error('Něco se pokazilo, zkus to znovu.');
+  //       } else if (response.isSuccess === false) {
+  //         this.uploadingCards.set(false);
+  //         this.toaster.error(response.errorMessage);
+  //       } else if (response.isSuccess) {
+  //         this.warehouseService.reloadCards.set(false);
+  //         this.warehouseService.cards.set(response.result);
+  //         this.cards.set(response.result);
+  //         this.getData();
+  //         this.initData();
+  //         this.uploadingCards.set(false);
+  //       }
+  //     }),
+  //   ).subscribe({
+  //     error: () => this.uploadingCards.set(false)
+  //   });
 
-    this.destroyRef.onDestroy(() => subscription.unsubscribe());
-  }
+  //   this.destroyRef.onDestroy(() => subscription.unsubscribe());
+  // }
 
   isDisabled(date: string) {
     const day = parseInt(date.split('.')[0]);
@@ -202,7 +215,7 @@ export class WarehouseOverviewComponent implements OnInit {
                 this.toaster.error(response.errorMessage);
               } else {
                 this.warehouseService.isUpdating.set(true);
-                this.getCards();
+                //this.getCards();
               }
             })
           ).subscribe({
@@ -216,32 +229,32 @@ export class WarehouseOverviewComponent implements OnInit {
       });
   }
 
-  private initData() {
-    if (this.cards().length > 0) {
-      this.items.set([]);
-      this.days.set(Array(0));
-      let _items: string[] = [];
-      this.cards().forEach(card => {
-        _items.push(card.warehouseItemName);
-      });
-      this.items.set(_items);
-      this.days.set(Array(this.cards()[0].units.length));
-    }
-  }
+  // private initData() {
+  //   if (this.cards().length > 0) {
+  //     this.items.set([]);
+  //     //this.days.set(Array(0));
+  //     let _items: string[] = [];
+  //     this.cards().forEach(card => {
+  //       _items.push(card.warehouseItemName);
+  //     });
+  //     this.items.set(_items);
+  //     //this.days.set(Array(this.cards()[0].units.length));
+  //   }
+  // }
 
-  private getData() {
-    if (this.cards().length > 0) {
-      let overCard: OverviewCard = { lines: [] };
-      this.cards().forEach(card => {
-        let overviewLine: OverviewLine = { days: [] };
-        card.units.forEach(unit => {
-          let day: OverViewDay = { amount: '' };
-          day.amount = unit?.amount !== null ? unit.amount!.toString() : '';
-          overviewLine.days.push(day);
-        });
-        overCard.lines.push(overviewLine)
-      });
-      this.overviewCard.set(overCard)
-    }
-  }
+  // private getData() {
+  //   if (this.cards().length > 0) {
+  //     let overCard: OverviewCard = { lines: [] };
+  //     this.cards().forEach(card => {
+  //       let overviewLine: OverviewLine = { days: [] };
+  //       card.units.forEach(unit => {
+  //         let day: OverViewDay = { amount: '' };
+  //         day.amount = unit?.amount !== null ? unit.amount!.toString() : '';
+  //         overviewLine.days.push(day);
+  //       });
+  //       overCard.lines.push(overviewLine)
+  //     });
+  //     this.overviewCard.set(overCard)
+  //   }
+  // }
 }

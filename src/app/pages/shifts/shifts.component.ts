@@ -9,6 +9,7 @@ import { DatePicker, DatePickerModule } from 'primeng/datepicker';
 import { AuthStore } from '../../stores/auth-store/auth.store';
 import { ShiftsStore } from '../../stores/shifts-store/shifts.store';
 import { ShiftSkeletonComponent } from '../../components/shifts/shift-skeleton/shift-skeleton.component';
+import { MONTHS_NUM } from '../../helpers/common-constants.helper';
 
 @Component({
   selector: 'app-plans',
@@ -86,7 +87,7 @@ export class ShiftsComponent implements OnInit {
   }
 
   onSelectMonth() {
-    let _monthYear = this.shiftsStore.MONTHS_NUM[this.calendar()?.value.getMonth()] + this.calendar()?.value.getFullYear();
+    let _monthYear = MONTHS_NUM[this.calendar()?.value.getMonth()] + this.calendar()?.value.getFullYear();
     this.shiftsStore.setMonthYear(_monthYear);
   }
 }

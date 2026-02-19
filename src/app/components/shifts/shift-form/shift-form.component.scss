@@ -74,14 +74,6 @@
                 margin: 0px;
             }
 
-            // img {
-            //     border-radius: 50%;
-            //     width: 30px;
-            //     height: 30px;
-            //     margin-left: 10px;
-            //     border: 1px solid #864912;
-            // }
-
             .notification {
                 position: relative;
                 right: -20px;
@@ -133,7 +125,6 @@
             textarea:active,
             textarea:focus {
                 border: 1px solid var(--main-dark) !important;
-                // outline: 1px solid var(--main-dark) !important;
                 outline: none;
             }
 
@@ -206,11 +197,8 @@
         .error {
             text-align: left;
             width: 100%;
-            //animation: shake 0.82s cubic-bezier(.36, .07, .19, .97) both;
-            //visibility: var(--visibility);
 
             p {
-                //font-size: 0.9rem;
                 font-size: 0.7rem;
                 color: var(--main-red);
                 font-weight: bold;
