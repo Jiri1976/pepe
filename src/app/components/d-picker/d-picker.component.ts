@@ -10,13 +10,13 @@ import { DatePickerModule } from 'primeng/datepicker';
   styleUrl: './d-picker.component.scss',
 })
 export class DPickerComponent {
-  @Input({ required: true }) field!: () => any;
+  @Input({ required: true }) formField!: () => any;
   @Input({ required: true }) proposalDate!: string;
   value: Date | null = null;
 
   constructor() {
     effect(() => {
-      const fieldValue = this.field().value();
+      const fieldValue = this.formField().value();
 
       if (!fieldValue && !this.value) return;
 
@@ -36,11 +36,11 @@ export class DPickerComponent {
   onChange(v: Date | null) {
     if (!v) {
       this.value = null;
-      this.field().value.set(null);
+      this.formField().value.set(null);
       return;
     }
 
-    const current = this.field().value();
+    const current = this.formField().value();
     const baseDate = this.parseDate(this.proposalDate);
 
     const merged = new Date(baseDate);
@@ -54,7 +54,7 @@ export class DPickerComponent {
       return;
     }
 
-    this.field().value.set(merged);
+    this.formField().value.set(merged);
   }
 
   private parseDate(dateStr: string): Date {

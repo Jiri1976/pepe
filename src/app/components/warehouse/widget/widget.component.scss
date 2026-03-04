@@ -1,6 +1,5 @@
 :host {
     display: block;
-    border-radius: 10px;
 }
 
 .container {
@@ -12,9 +11,8 @@
     height: 40px;
     width: 400px;
     padding: 10px 20px;
-    border-radius: inherit;
     overflow: hidden;
-    background: #fff;
+    background: var(--white);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     border: none;
     margin: 5px 20px;
@@ -22,7 +20,8 @@
 
     p {
         margin: 0;
-        color: #864912 !important;
+        color: var(--main-dark) !important;
+        font-weight: 500;
     }
 
     .buttons {
@@ -33,7 +32,7 @@
 
         .settings-button {
             border: none;
-            background: #fff;
+            background: var(--white);
             border-radius: 50%;
             display: flex;
             flex-direction: column;
@@ -41,18 +40,18 @@
             align-items: center;
             height: 28px;
             width: 28px;
-            color: #864912;
+            color: var(--main-dark);
             transition: all .3s ease-in-out;
         }
 
         .settings-button:hover {
-            background: #864912;
-            color: #fff;
+            background: var(--main-dark);
+            color: var(--white);
         }
 
         .delete-button {
             border: none;
-            background: #fff;
+            background: var(--white);
             border-radius: 50%;
             display: flex;
             flex-direction: column;
@@ -60,13 +59,13 @@
             align-items: center;
             height: 28px;
             width: 28px;
-            color: #864912;
+            color: var(--main-dark);
             transition: all .3s ease-in-out;
         }
 
         .delete-button:hover {
-            background: #EF4444;
-            color: #fff;
+            background: var(--main-red);
+            color: var(--white);
         }
     }
 }

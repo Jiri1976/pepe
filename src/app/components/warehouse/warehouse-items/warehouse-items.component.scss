@@ -23,7 +23,6 @@
 .delete {
     width: 70px;
     height: 70px;
-    border-radius: 16px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -43,7 +42,7 @@
 
 .delete:hover {
     cursor: pointer;
-    background: #EF4444;
+    background: var(--main-red);
 
     .bi {
         color: #FFF;
@@ -61,7 +60,7 @@
     position: absolute;
 
     h4 {
-        color: #864912;
+        color: var(--main-dark);
         font-weight: bold;
     }
 }
@@ -79,7 +78,6 @@
     .empty-widget {
         height: 40px;
         width: 400px;
-        border-radius: 10px;
         overflow: hidden;
         background: #fff;
         box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;

@@ -12,46 +12,25 @@ import { WarehouseItemsComponent } from "../components/warehouse/warehouse-items
     providedIn: 'root'
 })
 export class WarehouseService {
-    private MONTHS_NUM = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
+    // private MONTHS_NUM = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
     private http = inject(HttpClient);
     private BASE_ROUTE = environment.WAREHOUSE_PATH;
-    private compRef = new BehaviorSubject<WarehouseItemsComponent | null>(null);
-    items = signal<WarehouseItem[]>([]);
-    warehouseCard = signal<WarehouseCard>({ id: 0, warehouseItemId: 0, warehouseItemName: '', monthYear: '', monthYearName: '', destination: '', position: 0, units: [] });
-    selectedUnit = signal<WarehouseUnit>({ id: 0, warehouseCardId: 0, warehouseItemId: 0, date: '', amount: 0 });
-    selectedListItemId = signal<number>(-1);
-    selectedIndex = signal<number>(0);
-    isUpdating = signal(false);
-    cards = signal<WarehouseCard[]>([]);
-    reloadItems = signal(false);
-    reloadCards = signal(false);
-    monthYear = signal<string>(this.MONTHS_NUM[new Date().getMonth()] + new Date().getFullYear());
-    defaultDate = signal<Date>(new Date(new Date().getFullYear(), new Date().getMonth()));
-    destination = signal<string>('F-M');
-    deleteCards = signal(false);
-    warehouseNav = signal<'units' | 'items' | 'board'>('units');
-    numberOfDays = signal<number>(31);
+    // private compRef = new BehaviorSubject<WarehouseItemsComponent | null>(null);
+    // items = signal<WarehouseItem[]>([]);
+    // warehouseCard = signal<WarehouseCard>({ id: 0, warehouseItemId: 0, warehouseItemName: '', monthYear: '', monthYearName: '', destination: '', position: 0, units: [] });
+    // selectedUnit = signal<WarehouseUnit>({ id: 0, warehouseCardId: 0, warehouseItemId: 0, date: '', amount: 0 });
+    // selectedListItemId = signal<number>(-1);
+    // selectedIndex = signal<number>(0);
+    // isUpdating = signal(false);
+    // cards = signal<WarehouseCard[]>([]);
+    // reloadItems = signal(false);
+    // reloadCards = signal(false);
+    // monthYear = signal<string>(this.MONTHS_NUM[new Date().getMonth()] + new Date().getFullYear());
+    // defaultDate = signal<Date>(new Date(new Date().getFullYear(), new Date().getMonth()));
 
-    resetDefaultDate() {
-        this.defaultDate.set(new Date(new Date().getFullYear(), new Date().getMonth()));
-    }
-
-    setComponent(comp: WarehouseItemsComponent) {
-        this.compRef.next(comp);
-    }
-
-    getComponent(): Observable<WarehouseItemsComponent | null> {
-        return this.compRef.asObservable();
-    }
-
-    callOnAddItem() {
-        const comp = this.compRef.getValue();
-        comp?.onAddItem();
-    }
-
-    setItems(_items: WarehouseItem[]) {
-        this.items.set(_items);
-    }
+    // setItems(_items: WarehouseItem[]) {
+    //     this.items.set(_items);
+    // }
 
     getAllWarehouseItems() {
         const url = this.BASE_ROUTE + `GetAllWarehouseItems`;
@@ -96,23 +75,6 @@ export class WarehouseService {
     updateWarehouseCards(cards: WarehouseCard[]) {
         const url = this.BASE_ROUTE + `UpdateWarehouseCards`;
         return this.http.post<Response>(url, cards);
-    }
-
-    updateWidgetPosition(sourceWidgetId: number, targetWidgetId: number) {
-        const sourceIndex = this.items().findIndex((w) => w.position === sourceWidgetId);
-        if (sourceIndex === -1) {
-            return;
-        }
-        const newWidgets = [...this.items()];
-        const sourceWidget = newWidgets.splice(sourceIndex, 1)[0];
-        const targetIndex = newWidgets.findIndex((w) => w.position === targetWidgetId);
-
-        if (targetIndex === -1) {
-            return;
-        }
-        const insertAt = targetIndex === sourceIndex ? targetIndex + 1 : targetIndex;
-        newWidgets.splice(insertAt, 0, sourceWidget);
-        this.items.set(newWidgets);
     }
 
     createPDF(cards: WarehouseCard[]) {

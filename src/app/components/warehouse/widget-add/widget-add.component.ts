@@ -1,97 +1,49 @@
-import { Component, computed, DestroyRef, ElementRef, inject, input, signal, viewChild } from '@angular/core';
-import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Component, inject, input } from '@angular/core';
 import { WarehouseItem } from '../../../models/warehouse/warehouse-item.interface';
-import { WarehouseService } from '../../../services/warehouse.service';
-import { tap } from 'rxjs';
-import { NotificationComponent } from "../../notification/notification.component";
-import { WarehouseItemsComponent } from '../warehouse-items/warehouse-items.component';
-import { ToasterService } from '../../../services/toaster.service';
-import { SignalService } from '../../../services/signal.service';
+import { WarehouseStore } from '../../../stores/warehouse-store/warehouse.store';
+import { form, FormField } from '@angular/forms/signals';
+import { buildWarehouseItem } from '../../../stores/warehouse-store/warehouse.helpers';
+
 
 @Component({
   selector: 'app-widget-add',
-  imports: [ReactiveFormsModule, NotificationComponent],
+  imports: [FormField],
   templateUrl: './widget-add.component.html',
   styleUrl: './widget-add.component.scss'
 })
 export class WidgetAddComponent {
-  private warehouseService = inject(WarehouseService);
-  private toaster = inject(ToasterService);
-  private destroyRef = inject(DestroyRef);
-  private signalServie = inject(SignalService);
-  private warehouseItemsComp = inject(WarehouseItemsComponent);
-  itemForm!: FormGroup;
-  items = computed(() => this.warehouseService.items());
-  isLoading = signal<boolean>(false);
+  readonly store = inject(WarehouseStore);
   item = input.required<WarehouseItem>();
-  inputField = viewChild<ElementRef>('input');
 
-  get name() {
-    return this.itemForm.get('name');
-  }
+  readonly form = form(this.store.warehouseItemModel, s => {
+    buildWarehouseItem(s);
+  });
 
   ngOnInit() {
-    this.initializedItemForm();
+    this.form.name().value.set('');
   }
 
   ngAfterViewInit() {
-    this.inputField()?.nativeElement.focus();
+    this.form.name().focusBoundControl();
   }
 
-  onSave() {
-    if (this.name?.value === '') {
+  onSave(event?: Event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    if (this.form.name().value() === '') {
       return;
     }
     const newItem: WarehouseItem = {
       id: 0,
-      name: this.itemForm.get('name')?.value,
+      name: this.form.name().value(),
       position: 1
     }
-    this.isLoading.set(true);
-    const subscription = this.warehouseService.createWarehouseItem(newItem).pipe(
-      tap(response => {
-        if (response === null) {
-          this.toaster.error('Něco se pokazilo, zkus to znovu.');
-          this.isLoading.set(false);
-        } else if (response.isSuccess === false) {
-          this.isLoading.set(false);
-          this.toaster.error(response.errorMessage);
-        } else if (response.isSuccess) {
-          newItem.id = response.result.id;
-          let _items = [newItem, ...this.items()];
-          _items = _items.filter(i => i.id !== 0);
-          this.warehouseService.setItems(_items);
-          this.signalServie.sendCards('F-M', false, true);
-          this.isLoading.set(false);
-          this.toaster.success('Položka byla uložena!');
-        }
-      }),
-
-    ).subscribe({
-      next: () => {
-
-      },
-      error: () => this.isLoading.set(false)
-    });
-
-    this.destroyRef.onDestroy(() => {
-      subscription.unsubscribe();
-    });
+    this.store.createWarehouseItem(newItem);
   }
 
   onDelete() {
-    this.warehouseItemsComp.onDelete(this.item());
-  }
-
-  private initializedItemForm() {
-    this.itemForm = new FormGroup({
-      'name': new FormControl({
-        value: '',
-        disabled: false
-      }, [
-        Validators.maxLength(30)
-      ]
-      )
-    });
+    this.store.removeWarehouseItem(this.item());
   }
 }

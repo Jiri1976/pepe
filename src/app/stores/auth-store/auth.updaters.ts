@@ -3,11 +3,10 @@ import { AuthSlice } from "./auth.slice";
 import { SignalService } from "../../services/signal.service";
 import { Dialog } from '@angular/cdk/dialog';
 import { ToasterService } from "../../services/toaster.service";
-import { WarehouseService } from "../../services/warehouse.service";
 import { Router } from "@angular/router";
 import { setUserDetail } from "./auth.helpers";
 
-export function onLogout(dialog: Dialog, router: Router, toaster: ToasterService, warehouseService: WarehouseService, signalService: SignalService): PartialStateUpdater<AuthSlice> {
+export function onLogout(dialog: Dialog, router: Router, toaster: ToasterService, signalService: SignalService): PartialStateUpdater<AuthSlice> {
     return _ => {
         dialog.closeAll();
         localStorage.removeItem('notifications');
@@ -16,9 +15,6 @@ export function onLogout(dialog: Dialog, router: Router, toaster: ToasterService
         localStorage.removeItem('userDestination');
         localStorage.removeItem('token');
         toaster.notifications.set([]);
-        warehouseService.items.set([]);
-        warehouseService.selectedUnit.set({ id: 0, warehouseCardId: 0, warehouseItemId: 0, date: '', amount: 0 });
-        warehouseService.warehouseCard.set({ id: 0, warehouseItemId: 0, warehouseItemName: '', monthYear: '', monthYearName: '', destination: '', position: 0, units: [] });
         signalService.leaveRoom();
         router.navigate(['login']);
         return { user: null, isLoading: false, _tokenExpirationTimer: null };

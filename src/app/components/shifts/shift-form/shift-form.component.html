@@ -15,7 +15,7 @@
                 <div>
                     <div class="card flex justify-content-center">
                         <div class="calendarDivShift" (click)="datePicker.open()">
-                            <app-date-picker #datePicker [minDate]="minDate" [maxDate]="maxDate" [field]="form.date"
+                            <app-date-picker #datePicker [minDate]="minDate" [maxDate]="maxDate" [formField]="form.date"
                                 [date]="shift.date" />
                         </div>
                     </div>
@@ -25,7 +25,7 @@
                 </div>
                 <div>
                     <div class="card flex justify-content-center timefromDiv">
-                        <app-d-picker [field]="form.from" [proposalDate]="form.date().value()" />
+                        <app-d-picker [formField]="form.from" [proposalDate]="form.date().value()" />
                     </div>
 
                     @if (showTimeFromError()) {
@@ -42,7 +42,7 @@
 
                 <div>
                     <div class="card flex justify-content-center timetoDiv">
-                        <app-d-picker [field]="form.to" [proposalDate]="form.date().value()" />
+                        <app-d-picker [formField]="form.to" [proposalDate]="form.date().value()" />
                     </div>
                     @if (showTimeToError()) {
                     <div class="error">

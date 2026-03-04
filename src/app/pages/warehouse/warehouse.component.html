@@ -1,9 +1,9 @@
 <div class="sidenav">
-    <app-warehouse-nav [(pdfLoading)]="pdfLoading" animate.enter="fade-in" />
+    <app-warehouse-nav animate.enter="fade-in" #nav />
 </div>
 <div class="warehouse-calendar">
-    <p-datepicker #calendar name="deadline" [ngModel]="defaultDate()" view="month" dateFormat="mm-yy"
-        [readonlyInput]="true" [maxDate]="maxDate" (onSelect)="onSelectMonth()" />
+    <p-datepicker #calendar name="deadline" [(ngModel)]="store.defaultDate" view="month" dateFormat="mm-yy"
+        [readonlyInput]="true" [maxDate]="store.maxDate()" (onSelect)="onSelectMonth()"
+        (onClickOutside)="onCalendarClickOutside($event, nav.toggleBtn.nativeElement)" />
 </div>
 <router-outlet />
-<app-confirm />

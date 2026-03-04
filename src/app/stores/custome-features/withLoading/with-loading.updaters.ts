@@ -52,3 +52,7 @@ export function toggleIsSaving(): PartialStateUpdater<LoadingSlice> {
 export function closeCalendar(): PartialStateUpdater<LoadingSlice> {
     return _ => ({ showCalendar: false });
 }
+
+export function toggleIsDeletingCard(): PartialStateUpdater<LoadingSlice> {
+    return state => ({ isDeletingCard: !state.isDeletingCard });
+}

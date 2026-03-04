@@ -71,7 +71,6 @@
                 }
             }
 
-
             .body {
                 .table-row {
                     display: flex;
@@ -89,10 +88,8 @@
                         overflow: hidden;
                         white-space: nowrap;
                         text-overflow: ellipsis;
-                        // background: var(--table-row-hover);
                         background: var(--table-head);
                         color: var(--main-dark);
-                        //color: var(--white);
                         font-size: 0.9rem;
                         font-weight: 700;
                     }
@@ -109,9 +106,7 @@
                         font-size: 0.7rem;
 
                         .input-success {
-                            //border: 2px solid var(--table-row-hover);
                             border: 2px solid var(--main-dark);
-                            //box-shadow: 0 0 5px var(--table-row-hover);
                             box-shadow: 0 0 5px var(--main-dark);
                             transition: border 0.3s, box-shadow 0.3s;
                         }
@@ -154,7 +149,6 @@
                         input:active,
                         input:focus {
                             cursor: default;
-                            //background: var(--table-row-hover);
                             background: var(--table-head);
                             color: var(--main-dark);
                             border: 2px solid var(--main-dark);
@@ -164,7 +158,6 @@
                     .cell:hover {
                         input {
                             cursor: pointer;
-                            // background: var(--table-row-hover);
                             background: var(--table-head);
                             border: 2px solid var(--main-dark);
                             color: var(--main-dark);
@@ -197,92 +190,5 @@
                 font-weight: bold;
             }
         }
-    }
-
-    .skeleton {
-        grid-column: 1;
-        grid-row: 1;
-        margin: 130px 0 0 0;
-        display: flex;
-        justify-content: center;
-        flex-direction: column;
-
-        .empty-table {
-            .empty-table-head {
-                display: flex;
-                flex-direction: row;
-                margin-bottom: 10px;
-
-                .empty-first-head-cell {
-                    min-width: 150px !important;
-                    margin-right: 10px;
-                    border: 1px solid #666;
-                    height: 35px !important;
-                    background: linear-gradient(90deg,
-                            #eee 25%,
-                            #fff 50%,
-                            #eee 75%);
-                    background-size: 400% 100%;
-                    animation: shimmer 2s infinite linear;
-                }
-
-                .empty-head-cell {
-                    border: 1px solid #666;
-                    width: 35px !important;
-                    height: 35px !important;
-                    margin-right: 2px;
-                    background: linear-gradient(90deg,
-                            #eee 25%,
-                            #fff 50%,
-                            #eee 75%);
-                    background-size: 400% 100%;
-                    animation: shimmer 2s infinite linear;
-                }
-            }
-
-            .empty-body {
-                .empty-table-row {
-                    display: flex;
-                    flex-direction: row;
-                    margin: 5px 0;
-
-                    .empty-first-table-cell {
-                        height: 35px;
-                        width: 150px !important;
-                        border: 1px solid #666;
-                        margin-right: 10px;
-                        background: linear-gradient(90deg,
-                                #eee 25%,
-                                #fff 50%,
-                                #eee 75%);
-                        background-size: 400% 100%;
-                        animation: shimmer 2s infinite linear;
-                    }
-
-                    .empty-cell {
-                        width: 35px !important;
-                        height: 35px !important;
-                        border: 1px solid #666;
-                        margin-right: 2px;
-                        background: linear-gradient(90deg,
-                                #eee 25%,
-                                #fff 50%,
-                                #eee 75%);
-                        background-size: 400% 100%;
-                        animation: shimmer 2s infinite linear;
-                    }
-                }
-            }
-        }
-    }
-}
-
-@keyframes shimmer {
-    0% {
-        background-position: -200% 0;
-    }
-
-    100% {
-        background-position: 200% 0;
     }
 }

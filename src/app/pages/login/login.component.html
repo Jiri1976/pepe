@@ -8,12 +8,12 @@
                     <form>
                         <div class="input-field">
                             <i class="bi bi-envelope"></i>
-                            <input type="text" class="input" id="email" autocomplete="off" [field]="form.email"
+                            <input type="text" class="input" id="email" autocomplete="off" [formField]="form.email"
                                 (keydown.enter)="onSubmit()">
                         </div>
                         <div class="input-field second">
                             <i class="bi bi-lock"></i>
-                            <input type="password" class="input" id="pass" [field]="form.password"
+                            <input type="password" class="input" id="pass" [formField]="form.password"
                                 (keydown.enter)="onSubmit()">
                         </div>
                         @if (!store.isLoading()) {

@@ -1,10 +1,9 @@
-import { Component, computed, inject, input, model, signal } from '@angular/core';
+import { Component, inject, input, signal } from '@angular/core';
 import { WidgetUpdateComponent } from "../widget-update/widget-update.component";
 import { CdkDrag, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
 import { WarehouseItem } from '../../../models/warehouse/warehouse-item.interface';
-import { WarehouseService } from '../../../services/warehouse.service';
 import { WidgetAddComponent } from "../widget-add/widget-add.component";
-import { WarehouseItemsComponent } from '../warehouse-items/warehouse-items.component';
+import { WarehouseStore } from '../../../stores/warehouse-store/warehouse.store';
 
 @Component({
   selector: 'app-widget',
@@ -13,29 +12,20 @@ import { WarehouseItemsComponent } from '../warehouse-items/warehouse-items.comp
   styleUrl: './widget.component.scss'
 })
 export class WidgetComponent {
-  private warehouseService = inject(WarehouseService);
-  private warehouseItems = inject(WarehouseItemsComponent);
+  readonly store = inject(WarehouseStore);
   updateVisible = signal(false);
   item = input.required<WarehouseItem>();
   index = input.required<number>();
-  items = computed(() => this.warehouseService.items());
-  selected = model<WarehouseItem>();
-  isDragged = model<boolean>(false);
 
   onUpdate() {
     this.updateVisible.set(true);
   }
 
-  onDragMoved(item: WarehouseItem) {
-    this.selected.set(item);
-    this.isDragged.set(true);
-  }
-
-  onDragEnded(event: any) {
-    this.isDragged.set(false);
-  }
-
   onDelete() {
-    this.warehouseItems.onDelete(this.item());
+    if (this.item().id <= 0) {
+      this.store.removeWarehouseItem(this.item());
+    } else {
+      this.store.requestDeleteWarehouseItem(this.item());
+    }
   }
 }

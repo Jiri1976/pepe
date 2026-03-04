@@ -2,7 +2,6 @@ import { patchState, signalStore, withHooks, withMethods, withProps, withState }
 import { initialAuthSlice } from "./auth.slice";
 import { effect, inject } from "@angular/core";
 import { Dialog } from '@angular/cdk/dialog';
-import { WarehouseService } from "../../services/warehouse.service";
 import { SignalService } from "../../services/signal.service";
 import { onLogin, onLogout } from "./auth.updaters";
 import { Router } from "@angular/router";
@@ -22,7 +21,6 @@ export const AuthStore = signalStore({
     withLoading(),
     withProps(_ => {
         const _dialog = inject(Dialog);
-        const _warehouseService = inject(WarehouseService);
         const _signalService = inject(SignalService);
         const _router = inject(Router);
         const _toaster = inject(ToasterService);
@@ -30,7 +28,6 @@ export const AuthStore = signalStore({
 
         return {
             _dialog,
-            _warehouseService,
             _signalService,
             _router,
             _toaster,
@@ -66,12 +63,12 @@ export const AuthStore = signalStore({
                 store._router.navigate(['main']);
             },
             logOut: () => {
-                patchState(store, onLogout(store._dialog, store._router, store._toaster, store._warehouseService, store._signalService));
+                patchState(store, onLogout(store._dialog, store._router, store._toaster, store._signalService));
             },
             autoLogout: (expirationDuration: number) => {
                 patchState(store, {
                     _tokenExpirationTimer: setTimeout(() => {
-                        patchState(store, onLogout(store._dialog, store._router, store._toaster, store._warehouseService, store._signalService));
+                        patchState(store, onLogout(store._dialog, store._router, store._toaster, store._signalService));
                     }, expirationDuration)
                 });
             }

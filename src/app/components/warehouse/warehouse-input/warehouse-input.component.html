@@ -1,29 +1,20 @@
 <div class="line w-100 mt-1">
     <div class="column first">{{unit().date}}</div>
-    <form autocomplete="off" id="form" [formGroup]="unitForm">
+    <form>
         <div class="column second">
-            @if (checkDate(unit().date)) {
-            <input type="text" formControlName="amount" name="amount" />
-
+            @if (isNotTomorrow(unit().date)) {
+            <input type="text" [formField]="form.amount" (keydown.enter)="onSave($event)" />
             <div class="buttons">
-                @if ((isToday(unit().date) && user().role === 'Master') || user().role === 'Admin') {
-                @if (isLoading() && submitAction() === 'add') {
-                <div class="spinner-border" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                } @else {
-                <button class="save-button" (click)="onSave('add')" [disabled]="amount?.invalid"><i
-                        class="bi bi-check-lg"></i></button>
-                }
-
-                @if (isLoading() && submitAction() === 'delete') {
-                <div class="spinner-border" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                } @else {
-                <button class="delete-button" (click)="onSave('delete')" [disabled]="amount?.invalid"><i
-                        class="bi bi-trash"></i></button>
-                }
+                @if ((isToday(unit().date) && user()!.role === 'Master') || user()!.role === 'Admin') {
+                <button class="save-button" type="button" (click)="onSave($event)" [disabled]="form().invalid()">
+                    @if (warehouseStore.isSaving() && unit().date === warehouseStore.selectedUnit()?.date) {
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    } @else {
+                    <i class="bi bi-check-lg"></i>
+                    }
+                </button>
                 }
             </div>
             }

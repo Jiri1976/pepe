@@ -2,7 +2,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { ToasterService } from '../../services/toaster.service';
 import { SignalService } from '../../services/signal.service';
 import { AuthStore } from '../../stores/auth-store/auth.store';
-import { form, Field, required, email } from '@angular/forms/signals';
+import { form, email, required, FormField, } from '@angular/forms/signals';
 
 interface LoginForm {
   email: string;
@@ -11,7 +11,7 @@ interface LoginForm {
 
 @Component({
   selector: 'app-login',
-  imports: [Field],
+  imports: [FormField],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })

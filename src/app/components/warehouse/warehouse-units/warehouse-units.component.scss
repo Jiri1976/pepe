@@ -1,6 +1,7 @@
 .container {
     display: grid;
     width: 100%;
+    // justify-content: center;
 
     .unit-card {
         margin: 150px 0 0 0;
@@ -92,6 +93,11 @@
 
                             .bi {
                                 font-size: 0.9rem;
+                            }
+
+                            .spinner-border {
+                                --bs-spinner-width: 1.1rem;
+                                --bs-spinner-height: 1.1rem;
                             }
                         }
 

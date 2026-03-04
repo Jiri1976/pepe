@@ -1,20 +1,18 @@
-<div class="container" cdkDropListGroup>
-    @if (!isLoading()) {
+<div class="container">
+    @if (!store.isLoading()) {
     <div class="block" animate.enter="fade-in" [style]="bodyStyles()">
-        @if (items().length > 0) {
-        <div #dashboard class="widget-wrapper">
-            @for(item of items(); track $index) {
-            <div>
-                <app-widget [item]="item" [index]="$index" [(selected)]="selected" cdkDropList
-                    (cdkDropListDropped)="drop($event)" [cdkDropListData]="item.position" [(isDragged)]="isDragged" />
+        @if (items()!.length > 0) {
+        <div class="widget-wrapper" cdkDropList [cdkDropListData]="items()" (cdkDropListDropped)="drop($event)">
+            @for(item of items(); track item.id) {
+            <div cdkDrag>
+                <app-widget [item]="item" [index]="$index" />
             </div>
             }
-            <div cdkDropList></div>
         </div>
         }
     </div>
 
-    @if (items().length === 0 && !isDroppedToDelete()) {
+    @if (items().length === 0) {
     <div class="empty-item" animate.enter="fade-in">
         <h4>Žádné uložené položky.</h4>
     </div>

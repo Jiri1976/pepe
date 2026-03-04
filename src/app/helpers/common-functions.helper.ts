@@ -12,6 +12,25 @@ export function initializeMonthYear(): string {
     return month + year;
 }
 
+export function isToday(date: string) {
+    let d = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+    let today = d.getDate() + "-" + (d.getMonth() + 1) + "-" + d.getFullYear();
+    let fromDate = new Date(parseInt(date.split('.')[2]), parseInt(date.split('.')[1]) - 1, parseInt(date.split('.')[0]));
+    let day = fromDate.getDate() + "-" + (fromDate.getMonth() + 1) + "-" + fromDate.getFullYear();
+    if (today === day) {
+        return true;
+    }
+    return false;
+}
+
+export function isNotTomorrow(date: string) {
+    let _date = new Date(parseInt(date.split('.')[2]), parseInt(date.split('.')[1]) - 1, parseInt(date.split('.')[0]));
+    if (_date > new Date()) {
+        return false;
+    }
+    return true;
+}
+
 export function convertMonthYear(monthYear: string) {
     let month = monthYear.substring(0, 2);
     let year = monthYear.substring(2, 6);

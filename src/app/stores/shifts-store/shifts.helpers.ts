@@ -1,4 +1,4 @@
-import { customError, maxLength, required, SchemaPathTree, validate } from "@angular/forms/signals";
+import { maxLength, required, SchemaPathTree, validate } from "@angular/forms/signals";
 import { ShiftModel } from "../../models/shifts/shift.interface";
 
 export function buildShift(a: SchemaPathTree<ShiftModel>) {
@@ -20,10 +20,14 @@ function shiftTimesValidator(timeFrom: Date | null, timeTo: Date | null) {
         return null;
     }
     if (timeFrom >= timeTo) {
-        return customError({
+        // return customError({
+        //     kind: 'shiftTimesInvalid',
+        //     message: 'Zkontroluj časy',
+        // });
+        return {
             kind: 'shiftTimesInvalid',
             message: 'Zkontroluj časy',
-        });
+        };
     }
     return null;
 }

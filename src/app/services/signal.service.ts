@@ -36,24 +36,24 @@ export class SignalService {
                 const minutes = new Date(messageTime).getMinutes() < 10 ? `0${new Date(messageTime).getMinutes()}` : new Date(messageTime).getMinutes();
 
                 if (isUpdate && user !== this.hubUser && this.userRole() === 'Admin' && !updateItems) {
-                    if (destination === this.warehouseService.destination()) {
-                        this.warehouseService.reloadCards.set(true);
-                    }
+                    // if (destination === this.warehouseService.destination()) {
+                    //     this.warehouseService.reloadCards.set(true);
+                    // }
                     this.toaster.checkNotifications(`${hours}:${minutes} Sklad pro ${destination} upraven - ${user}.`, `Sklad pro ${destination} upraven - ${user}`);
                 }
 
                 if (isUpdate && user !== this.hubUser && this.userRole() === 'Master' && !updateItems && this.userDestination() === destination) {
-                    this.warehouseService.reloadCards.set(true);
+                    // this.warehouseService.reloadCards.set(true);
                     this.toaster.checkNotifications(`${hours}:${minutes} Skladové položky upraveny - ${user}.`, `Skladové položky upraveny - ${user}`);
                 }
 
                 if (!isUpdate && user !== this.hubUser && this.userRole() === 'Admin' && updateItems) {
-                    this.warehouseService.reloadCards.set(true);
+                    // this.warehouseService.reloadCards.set(true);
                     this.toaster.checkNotifications(`${hours}:${minutes} Skladové položky upraveny - ${user}.`, `Skladové položky upraveny - ${user}`);
                 }
 
                 if (!isUpdate && user !== this.hubUser && this.userRole() === 'Master' && updateItems) {
-                    this.warehouseService.reloadCards.set(true);
+                    // this.warehouseService.reloadCards.set(true);
                     this.toaster.checkNotifications(`${hours}:${minutes} Skladové položky upraveny - ${user}.`, `Skladové položky upraveny - ${user}`);
                 }
             });

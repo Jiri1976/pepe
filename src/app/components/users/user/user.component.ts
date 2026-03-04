@@ -3,7 +3,7 @@ import { FieldsetModule } from 'primeng/fieldset';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ToasterService } from '../../../services/toaster.service';
 import { UsersStore } from '../../../stores/user-store/users.store';
-import { customError, disabled, email, Field, FieldState, form, maxLength, required, validate } from '@angular/forms/signals';
+import { disabled, email, FormField, FieldState, form, maxLength, required, validate } from '@angular/forms/signals';
 import { INITIAL_USER, User } from '../../../models/users/user.interface';
 import { environment } from '../../../../environments/environment';
 import { UserDestination } from '../../../models/users/userDestination.interface';
@@ -42,16 +42,16 @@ function atLeastOnePositionSelected(destinations: Positions) {
 
   return hasAny
     ? null
-    : customError({
+    : {
       kind: 'destinationsInvalid',
       message: 'Musí být vybrána alespoň jedna pozice',
-    });
+    };
 }
 
 @Component({
   selector: 'app-user',
   standalone: true,
-  imports: [FieldsetModule, CheckboxModule, Field],
+  imports: [FieldsetModule, CheckboxModule, FormField],
   templateUrl: './user.component.html',
   styleUrl: './user.component.scss'
 })

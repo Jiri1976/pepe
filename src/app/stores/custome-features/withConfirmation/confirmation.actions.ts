@@ -6,7 +6,10 @@ export const CONFIRM_ACTIONS = {
     SELECT_MONTH: 'select-month',
     GET_PDF: 'get-pdf',
     DELETE_SHIFT_CARD: 'delete-shift-card',
-    DELETE_SHIFT: 'delete-shift'
+    DELETE_SHIFT: 'delete-shift',
+    DELETE_WAREHOUSE_CARDS: 'delete-warehouse-cards',
+    DELETE_WAREHOUSE_CARD: 'delete-warehouse-card',
+    DELETE_WAREHOUSE_ITEM: 'delete-warehouse-item'
 } as const;
 
 export type ConfirmAction =

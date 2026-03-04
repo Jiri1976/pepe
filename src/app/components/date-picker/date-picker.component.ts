@@ -13,7 +13,7 @@ import { isFridayOrSaturday, setTime } from '../../helpers/common-functions.help
 })
 export class DatePickerComponent {
   readonly store = inject(ShiftsStore);
-  @Input({ required: true }) field!: () => any;
+  @Input({ required: true }) formField!: () => any;
   @Input({ required: true }) date!: string;
   minDate = input<Date>();
   maxDate = input<Date>();
@@ -22,7 +22,7 @@ export class DatePickerComponent {
   value: Date | null = null;
 
   ngOnInit() {
-    const v = this.field().value();
+    const v = this.formField().value();
     this.value = v ? new Date(v) : null;
   }
 
@@ -33,7 +33,7 @@ export class DatePickerComponent {
   onChange(v: Date | null) {
     if (!v) return;
     const formattedDate = ((v.getDate() > 9) ? v.getDate() : ('0' + v.getDate())) + '.' + ((v.getMonth() > 8) ? (v.getMonth() + 1) : ('0' + (v.getMonth() + 1))) + '.' + v.getFullYear()
-    this.field().value.set(formattedDate);
+    this.formField().value.set(formattedDate);
     this.store.shiftModel.set({
       date: formattedDate,
       from: setTime('11:00', formattedDate),

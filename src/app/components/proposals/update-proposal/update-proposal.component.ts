@@ -4,7 +4,7 @@ import { ButtonModule } from 'primeng/button';
 import { DatePickerModule } from 'primeng/datepicker';
 import { DialogRef } from '@angular/cdk/dialog';
 import { ProposalStore } from '../../../stores/proposal-store/proposal.store';
-import { Field, FieldState, form } from '@angular/forms/signals';
+import { FormField, FieldState, form } from '@angular/forms/signals';
 import { buildProposal } from '../../../stores/proposal-store/proposal.helpers';
 import { isFridayOrSaturday } from '../../../helpers/common-functions.helper';
 import { DPickerComponent } from '../../d-picker/d-picker.component';
@@ -15,7 +15,7 @@ import { DPickerComponent } from '../../d-picker/d-picker.component';
     DialogModule,
     ButtonModule,
     DatePickerModule,
-    Field,
+    FormField,
     DPickerComponent
   ],
   templateUrl: './update-proposal.component.html',

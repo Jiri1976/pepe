@@ -1,4 +1,4 @@
-import { customError, required, SchemaPathTree, validate } from "@angular/forms/signals";
+import { required, SchemaPathTree, validate } from "@angular/forms/signals";
 import { ProposalUser } from "../../models/proposals/proposalUser.interface";
 import { Proposal } from "../../models/proposals/proposal.interface";
 import { ProposalCard } from "../../models/proposals/proposalCard.interface";
@@ -98,10 +98,10 @@ function proposalTimesValidator(timeFrom: Date | null, timeTo: Date | null) {
         return null;
     }
     if (timeFrom >= timeTo) {
-        return customError({
+        return {
             kind: 'destinationsInvalid',
             message: 'Zkontroluj časy',
-        });
+        };
     }
     return null;
 }

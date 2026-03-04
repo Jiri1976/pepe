@@ -1,8 +1,9 @@
 <div class="container">
-    @if (!isLoading()) {
+    @if (!warehouseStore.isLoading()) {
     <div class="unit-card" animate.enter="fade-in">
         @if (cards().length > 0) {
-        <swiper-container #swiperRef effect="cards" grab-cursor="true" (swiperinit)="onSwiperInit($event)">
+        <swiper-container #swiperRef effect="cards" grab-cursor="true" (swiperinit)="onSwiperInit($event)"
+            (swiperslidechange)="onSlideChange($event)">
             @for(card of cards(); track $index) {
             <swiper-slide>
                 @if (card.units.length > 0) {
@@ -17,17 +18,17 @@
                     </div>
                     <div class="col-4">
                         @for(unit of card.units | slice:0:11; track $index) {
-                        <app-warehouse-input [unit]="unit" [user]="authStore.user()!" [card]="card" />
+                        <app-warehouse-input [unit]="unit" />
                         }
                     </div>
                     <div class="col-4">
                         @for(unit of card.units | slice:11:22; track $index) {
-                        <app-warehouse-input [unit]="unit" [user]="authStore.user()!" [card]="card" />
+                        <app-warehouse-input [unit]="unit" />
                         }
                     </div>
                     <div class="col-4">
                         @for(unit of card.units | slice:22:card.units.length; track $index) {
-                        <app-warehouse-input [unit]="unit" [user]="authStore.user()!" [card]="card" />
+                        <app-warehouse-input [unit]="unit" />
                         }
 
                         @switch (card.units.length) {
@@ -71,8 +72,15 @@
                     <div class="row mt-3 foot">
                         {{card.destination === 'F-M' ? 'FRÝDEK-MÍSTEK' : 'OSTRAVA'}}
                         @if (card.id > 0) {
-                        <button hide class="delBtn" (click)="onDeleteCard(card.id)">Smazat&nbsp;<i
-                                class="bi bi-trash"></i></button>
+                        <button hide class="delBtn" (click)="warehouseStore.requestDeleteCard()">
+                            @if (!warehouseStore.isDeletingCard()) {
+                            Smazat&nbsp;<i class="bi bi-trash"></i>
+                            } @else {
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            }
+                        </button>
                         }
                     </div>
                 </div>
@@ -87,6 +95,7 @@
         }
     </div>
     } @else {
+    <!-- <app-units-skeleton /> -->
     <div class="skeleton" animate.leave="fade-out">
         <div class="row unitList">
             <div class="row mb-3 head">

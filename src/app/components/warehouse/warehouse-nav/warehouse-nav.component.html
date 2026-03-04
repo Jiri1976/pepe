@@ -1,5 +1,5 @@
 @let nav = store.warehouseNav();
-@if (warehouseNav() === 'units' || nav === '/warehouse') {
+@if (nav === 'units' || nav === 'board') {
 <div class="menu" animate.enter="fade-in" animate.leave="fade-out">
     <ul>
         <li animate.enter="fade-in" animate.leave="fade-out">
@@ -8,8 +8,8 @@
             </a>
         </li>
 
-        <li hide animate.enter="fade-in" animate.leave="fade-out">
-            <a (click)="warehouseComp.toggleCalendar()">
+        <li #toggleBtn hide animate.enter="fade-in" animate.leave="fade-out">
+            <a (click)="onToggleCalendar($event)">
                 <i class="bi bi-calendar"></i>
             </a>
         </li>
@@ -26,9 +26,9 @@
             </a>
         </li>
 
-        <li hide animate.enter="fade-in" animate.leave="fade-out" [class.disabled]="store.cards().length === 0">
-            <a (click)="warehouseComp.onOpenPDF()">
-                @if (!pdfLoading()) {
+        <li hide animate.enter="fade-in" animate.leave="fade-out" [class.disabled]="!store.somethingForDeleting()">
+            <a (click)="store.createPdf()">
+                @if (!store.isPdfLoading()) {
                 <i class="bi bi-filetype-pdf"></i>
                 } @else {
                 <div class="spinner-border" role="status">
@@ -38,14 +38,21 @@
             </a>
         </li>
 
-        <li hide animate.enter="fade-in" animate.leave="fade-out" [class.disabled]="store.cards().length === 0">
-            <a (click)="onDeleteCards()">
+        <li hide animate.enter="fade-in" animate.leave="fade-out" class="delete"
+            [class.disabled]="!store.somethingForDeleting()">
+            <a (click)="store.requestDeleteCards()">
+                @if (!store.isDeleting()) {
                 <i class="bi bi-trash"></i>
+                } @else {
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                }
             </a>
         </li>
 
-        @if (warehouseNav() !== 'board') {
-        <li hide>
+        @if (nav !== 'board') {
+        <li hide [class.disabled]="store.unitItems().length === 0">
             <a (click)="onShowList()">
                 <i class="bi bi-list-check"></i>
             </a>
@@ -58,19 +65,19 @@
         </li>
         }
 
-        <li [class.disabled]="store.cards().length === 0">
+        <li [class.inactive]="nav !== 'units'">
             <a (click)="onShowUnits()">
                 <i class="bi bi-table"></i>
             </a>
         </li>
 
-        <li hide>
+        <li hide class="inactive">
             <a (click)="onShowItems()">
                 <i class="bi bi-list-ul"></i>
             </a>
         </li>
 
-        <li [class.disabled]="warehouseNav() === 'board'">
+        <li [class.inactive]="nav !== 'board'">
             <a (click)="onShowBoard()">
                 <i class="bi bi-house"></i>
             </a>
@@ -79,34 +86,35 @@
 </div>
 }
 
-@if (warehouseNav() === 'items') {
+@if (nav === 'items') {
 <div class="menu" animate.enter="fade-in" animate.leave="fade-out">
     <ul>
-        <li animate.enter="fade-in" animate.leave="fade-out" [class.disabled]="items().length === 0">
-            <a (click)="onReloadItems()">
+        <li animate.enter="fade-in" animate.leave="fade-out">
+            <a (click)="store.getWarehouseItems()">
                 <i class="bi bi-arrow-clockwise"></i>
             </a>
         </li>
 
-        <li animate.enter="fade-in" animate.leave="fade-out">
-            <a (click)="onAddItem()">
+        <li animate.enter="fade-in" animate.leave="fade-out" class="add-item"
+            [class.disabled]="store.isSomeUnsavedItems()">
+            <a (click)="store.addNewItem()">
                 <i class="bi bi-plus"></i>
             </a>
         </li>
 
-        <li hide [class.disabled]="store.cards().length === 0">
+        <li hide [class.inactive]="nav === 'items'">
             <a (click)="onShowUnits()">
                 <i class="bi bi-table"></i>
             </a>
         </li>
 
-        <li hide class="disabled">
+        <li hide>
             <a>
                 <i class="bi bi-list-ul"></i>
             </a>
         </li>
 
-        <li>
+        <li [class.inactive]="nav === 'items'">
             <a (click)="onShowBoard()">
                 <i class="bi bi-house"></i>
             </a>

@@ -37,13 +37,13 @@ export const appConfig: ApplicationConfig = {
     }),
     provideSignalFormsConfig({
       classes: {
-        'app-touched': s => s.touched(),
-        'app-untouched': s => !s.touched(),
-        'app-dirty': s => s.dirty(),
-        'app-pristine': s => !s.dirty(),
-        'app-valid': s => s.valid(),
-        'app-invalid': s => s.invalid() && s.touched(),
-        'app-pending': s => s.pending(),
+        // 'app-touched': s => s.touched(),
+        // 'app-untouched': s => !s.touched(),
+        // 'app-dirty': s => s.dirty(),
+        // 'app-pristine': s => !s.dirty(),
+        // 'app-valid': s => s.valid(),
+        // 'app-invalid': s => s.invalid() && s.touched(),
+        // 'app-pending': s => s.pending(),
       }
     })
   ]

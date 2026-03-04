@@ -1,156 +1,70 @@
-import { Component, DestroyRef, inject, input, signal } from '@angular/core';
-import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
-import { map } from 'rxjs';
-import { WarehouseCard } from '../../../models/warehouse/warehouse-card.interface';
+import { Component, effect, inject, input, signal } from '@angular/core';
 import { WarehouseUnit } from '../../../models/warehouse/warehouse-unit.interface';
-import { WarehouseService } from '../../../services/warehouse.service';
-import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
+import { WarehouseStore } from '../../../stores/warehouse-store/warehouse.store';
+import { AuthStore } from '../../../stores/auth-store/auth.store';
+import { disabled, form, FormField, pattern } from '@angular/forms/signals';
+import { isToday, isNotTomorrow } from '../../../helpers/common-functions.helper';
 
-import { AuthUser } from '../../../models/auth-user.interface';
-import { ConfirmService } from '../../../services/confirm.service';
-import { WarehouseUnitsComponent } from '../warehouse-units/warehouse-units.component';
-import { ToasterService } from '../../../services/toaster.service';
+interface UnitForm {
+  amount: string;
+}
 
 @Component({
   selector: 'app-warehouse-input',
-  imports: [DialogModule, ButtonModule, ReactiveFormsModule],
+  imports: [ButtonModule, FormField],
   templateUrl: './warehouse-input.component.html',
   styleUrl: './warehouse-input.component.scss'
 })
 export class WarehouseInputComponent {
-  private warehouseUnitsComponent = inject(WarehouseUnitsComponent);
-  private confirmService = inject(ConfirmService);
-  private warehouseService = inject(WarehouseService);
-  private toaster = inject(ToasterService);
-  private destroyRef = inject(DestroyRef);
-  card = input.required<WarehouseCard>();
-  unitForm!: FormGroup;
-  isLoading = signal(false);
+  readonly warehouseStore = inject(WarehouseStore);
+  readonly authStore = inject(AuthStore);
+  isToday = isToday;
+  isNotTomorrow = isNotTomorrow;
+  card = this.warehouseStore.selectedCard;
   unit = input.required<WarehouseUnit>();
-  user = input.required<AuthUser>();
-  selectedIndex!: number;
-  submitAction = signal<'add' | 'delete' | null>(null);
+  user = this.authStore.user;
+  selectedIndex = this.warehouseStore.sliceIndex;
+
+  protected model = signal<UnitForm>({
+    amount: ''
+  });
+
+  protected form = form(this.model, s => {
+    disabled(s.amount!, _ => !isToday(this.unit().date) && this.user()!.role === 'Master');
+    pattern(s.amount!, /^[0-9]*$/);
+  });
 
   ngOnInit() {
-    this.initializedItemForm();
-    this.selectedIndex = this.warehouseUnitsComponent.cards().indexOf(this.card());
+    this.model.set({
+      amount: this.unit().amount?.toString() ?? ''
+    });
   }
 
-  get amount() {
-    return this.unitForm.get('amount');
+  constructor() {
+    effect(() => {
+      this.model.set({
+        amount: this.unit().amount?.toString() ?? ''
+      });
+
+    });
   }
 
-  onSave(action: 'add' | 'delete') {
-    if (this.amount?.value === undefined || this.amount?.value === null) {
+  onSave(event: any) {
+    event.preventDefault();
+    event.stopPropagation();
+    if (this.form().invalid()) {
       return;
     }
-    this.submitAction.set(action);
-    this.amount?.disable();
-
-    let _card = structuredClone(this.card());
-    let _selectedUnit = _card.units.find(u => u.date === this.unit()!.date);
-
-    if (action === 'delete') {
-      this.confirmService.confirm(`Opravdu chceš vynulovat položku ze dne ${this.unit().date}?`)
-        .then((confirmed) => {
-          if (confirmed) {
-            this.isLoading.set(true);
-            _selectedUnit!.amount = undefined;
-            const subscription = this.warehouseService.createUpdateWarehouseCard(_card).pipe(
-              map(response => {
-                if (response === null) {
-                  this.toaster.error('Něco se pokazilo, zkus to znovu.');
-                  this.isLoading.set(false);
-                } else if (response.isSuccess === false) {
-                  this.isLoading.set(false);
-                  this.toaster.error(response.errorMessage);
-                } else if (response.isSuccess) {
-                  this.amount?.setValue(_selectedUnit?.amount);
-                  this.warehouseService.isUpdating.set(true);
-                  this.warehouseUnitsComponent.uploadCards();
-                  this.isLoading.set(false);
-                  this.toaster.success('Položka byla vynulována!');
-                }
-              }),
-
-            ).subscribe({
-              next: () => {
-                this.amount?.enable();
-                this.submitAction.set(null);
-              },
-              error: () => this.isLoading.set(false)
-            });
-
-            this.destroyRef.onDestroy(() => {
-              subscription.unsubscribe();
-            });
-          }
-        });
+    this.warehouseStore.setSelectedUnit(this.unit());
+    let _card = structuredClone(this.card()!);
+    let _selectedUnit = _card.units.find(u => u.date === this.unit()!.date)!;
+    const value = this.form().value().amount;
+    if (value !== undefined) {
+      _selectedUnit.amount = parseInt(this.form().value().amount);
     } else {
-      this.isLoading.set(true);
-      _selectedUnit!.amount = this.amount?.value;
-      const subscription = this.warehouseService.createUpdateWarehouseCard(_card).pipe(
-        map(response => {
-          if (response === null) {
-            this.toaster.error('Něco se pokazilo, zkus to znovu.');
-            this.isLoading.set(false);
-          } else if (response.isSuccess === false) {
-            this.isLoading.set(false);
-            this.toaster.error(response.errorMessage);
-          } else if (response.isSuccess) {
-            this.isLoading.set(false);
-            this.amount?.setValue(_selectedUnit?.amount);
-            this.warehouseService.isUpdating.set(true);
-            this.warehouseService.selectedIndex.set(this.selectedIndex);
-            this.warehouseUnitsComponent.uploadCards();
-            this.toaster.success('Položka byla uložena!');
-          }
-        }),
-
-      ).subscribe({
-        next: () => {
-          this.amount?.enable();
-        },
-        error: () => this.isLoading.set(false)
-      });
-
-      this.destroyRef.onDestroy(() => {
-        subscription.unsubscribe();
-      });
+      _selectedUnit.amount = undefined;
     }
-  }
-
-  checkDate(date: string) {
-    let _date = new Date(parseInt(date.split('.')[2]), parseInt(date.split('.')[1]) - 1, parseInt(date.split('.')[0]));
-    if (_date > new Date()) {
-      return false;
-    }
-    return true;
-  }
-
-  isToday(date: string) {
-    let d = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
-    let today = d.getDate() + "-" + (d.getMonth() + 1) + "-" + d.getFullYear();
-    let fromDate = new Date(parseInt(date.split('.')[2]), parseInt(date.split('.')[1]) - 1, parseInt(date.split('.')[0]));
-    let day = fromDate.getDate() + "-" + (fromDate.getMonth() + 1) + "-" + fromDate.getFullYear();
-    if (today === day) {
-      return true;
-    }
-    return false;
-  }
-
-  private initializedItemForm() {
-    this.unitForm = new FormGroup({
-      'amount': new FormControl({
-        value: this.unit().amount,
-        disabled: !this.isToday(this.unit().date) && this.user().role === 'Master'
-      }, [
-        Validators.required,
-        Validators.pattern("^[0-9]*$")
-      ]
-      )
-    });
-    this.amount?.markAsUntouched();
+    this.warehouseStore.createUpdateWarehouseCard(_card);
   }
 }

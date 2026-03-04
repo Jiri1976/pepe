@@ -10,7 +10,7 @@ import { OverlayModule } from 'primeng/overlay';
 import { DialogRef } from '@angular/cdk/dialog';
 import { AuthStore } from '../../../stores/auth-store/auth.store';
 import { ShiftsStore } from '../../../stores/shifts-store/shifts.store';
-import { Field, FieldState, form } from '@angular/forms/signals';
+import { FormField, FieldState, form } from '@angular/forms/signals';
 import { buildShift } from '../../../stores/shifts-store/shifts.helpers';
 import { DPickerComponent } from '../../d-picker/d-picker.component';
 import { HideElementDirective } from "../../../directives/hide-element.directive";
@@ -29,7 +29,7 @@ import { DatePickerComponent } from "../../date-picker/date-picker.component";
     FloatLabelModule,
     DatePickerModule,
     OverlayModule,
-    Field,
+    FormField,
     DPickerComponent,
     HideElementDirective,
     DatePickerComponent
@@ -69,7 +69,7 @@ export class ShiftFormComponent {
       case ('Helper'):
         return 'pomocka'.toUpperCase();
       case ('Driver'):
-        return 'řidič'.toUpperCase();
+        return 'řiďič'.toUpperCase();
       case ('Cook'):
         return 'kuchař'.toUpperCase();
       case ('Pizza'):

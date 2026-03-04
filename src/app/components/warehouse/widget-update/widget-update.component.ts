@@ -1,100 +1,60 @@
-import { Component, computed, DestroyRef, ElementRef, inject, input, model, signal, viewChild } from '@angular/core';
-import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Component, inject, input, model, signal } from '@angular/core';
 import { WarehouseItem } from '../../../models/warehouse/warehouse-item.interface';
-import { tap } from 'rxjs';
-import { WarehouseService } from '../../../services/warehouse.service';
-import { NotificationComponent } from "../../notification/notification.component";
-import { ToasterService } from '../../../services/toaster.service';
-import { SignalService } from '../../../services/signal.service';
+import { WarehouseStore } from '../../../stores/warehouse-store/warehouse.store';
+import { WarehouseItemForm } from '../../../stores/warehouse-store/warehouse.helpers';
+import { form, FormField, required, validate } from '@angular/forms/signals';
 
 @Component({
   selector: 'app-widget-update',
-  imports: [ReactiveFormsModule, NotificationComponent],
+  imports: [FormField],
   templateUrl: './widget-update.component.html',
   styleUrl: './widget-update.component.scss'
 })
 export class WidgetUpdateComponent {
-  private warehouseService = inject(WarehouseService);
-  private signalService = inject(SignalService);
-  private toaster = inject(ToasterService);
-  private destroyRef = inject(DestroyRef);
-  itemForm!: FormGroup;
+  readonly store = inject(WarehouseStore);
   item = input.required<WarehouseItem>();
   updateVisible = model<boolean>(false);
-  isLoading = signal<boolean>(false);
-  items = computed(() => this.warehouseService.items());
-  inputField = viewChild<ElementRef>('input');
+  warehouseItemModel = signal<WarehouseItemForm>({
+    name: ''
+  });
 
-  get name() {
-    return this.itemForm.get('name');
-  }
+  readonly form = form(this.store.warehouseItemModel, s => {
+    required(s.name, { message: 'Název položky je povinný' });
+    validate(s.name, field =>
+      (field.value()?.length ?? 0) > 30
+        ? { kind: 'maxLength', message: 'Prosím pouze 30 znaků' }
+        : null
+    );
+  });
 
   ngOnInit() {
-    this.initializedItemForm();
+    this.form.name().value.set(this.item().name);
   }
 
   ngAfterViewInit() {
-    this.inputField()?.nativeElement.focus();
+    this.form.name().focusBoundControl();
   }
 
   onClose() {
-    this.updateVisible.set(false)
-    this.itemForm.reset();
+    this.updateVisible.set(false);
   }
 
-  onSave() {
-    if (this.name?.value === '') {
+  onSave(event?: Event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    if (this.form.name().invalid()) {
       return;
     }
 
     const newItem: WarehouseItem = {
       id: this.item().id,
-      name: this.itemForm.get('name')?.value,
+      name: this.form.name().value(),
       position: this.item().position
     }
-    this.isLoading.set(true);
-    const subscription = this.warehouseService.updateWarehouseItem(newItem).pipe(
-      tap(response => {
-        if (response === null) {
-          this.toaster.error('Něco se pokazilo, zkus to znovu.');
-          this.isLoading.set(false);
-        } else if (response.isSuccess === false) {
-          this.isLoading.set(false);
-          this.toaster.error(response.errorMessage);
-        } else if (response.isSuccess) {
-          let _items = [...this.items()];
-          let updatedItem = _items.find(x => x.id === this.item().id);
-          updatedItem!.name = this.itemForm.get('name')?.value;
-          this.warehouseService.setItems(_items);
-          this.updateVisible.set(false);
-          this.signalService.sendCards('F-M', false, true);
-          this.isLoading.set(false);
-          this.toaster.success('Položka byla upravena!');
-        }
-      }),
-
-    ).subscribe({
-      next: () => {
-
-      },
-      error: () => this.isLoading.set(false)
-    });
-
-    this.destroyRef.onDestroy(() => {
-      subscription.unsubscribe();
-    });
+    this.store.updateWarehouseItem(newItem);
+    this.updateVisible.set(false);
   }
 
-  private initializedItemForm() {
-    this.itemForm = new FormGroup({
-      'name': new FormControl({
-        value: this.item().name,
-        disabled: false
-      }, [
-        Validators.required,
-        Validators.maxLength(30)
-      ]
-      ),
-    });
-  }
 }

@@ -1,6 +1,4 @@
-import { Component, computed, inject, model, signal } from '@angular/core';
-import { WarehouseComponent } from '../../../pages/warehouse/warehouse.component';
-import { WarehouseService } from '../../../services/warehouse.service';
+import { Component, ElementRef, inject, ViewChild } from '@angular/core';
 import { HideElementDirective } from '../../../directives/hide-element.directive';
 import { HideWhenAdminDirective } from '../../../directives/hide-when-admin.directive';
 import { Router } from '@angular/router';
@@ -16,27 +14,14 @@ import { WarehouseStore } from '../../../stores/warehouse-store/warehouse.store'
 })
 export class WarehouseNavComponent {
   readonly store = inject(WarehouseStore);
-  private warehouseService = inject(WarehouseService);
   private router = inject(Router);
-  private dialog = inject(Dialog)
-  warehouseComp = inject(WarehouseComponent);
-  isOpened = signal(true);
-  destination = computed(() => this.warehouseService.destination());
-  pdfLoading = model(false);
-  items = computed(() => this.warehouseService.items());
-  cards = computed(() => this.warehouseService.cards());
-  warehouseNav = computed(() => this.warehouseService.warehouseNav());
+  private dialog = inject(Dialog);
+  items = this.store.warehouseItems;
+  @ViewChild('toggleBtn', { static: false })
+  toggleBtn!: ElementRef<HTMLElement>;
 
   onShowList() {
     this.dialog.open(ItemsListComponent, { disableClose: false });
-  }
-
-  onDeleteCards() {
-    this.warehouseService.deleteCards.set(true);
-  }
-
-  onAddItem() {
-    this.warehouseService.callOnAddItem();
   }
 
   onShowItems() {
@@ -47,20 +32,12 @@ export class WarehouseNavComponent {
     this.router.navigate(['warehouse', 'warehouse-units']);
   }
 
-  onReloadItems() {
-    this.warehouseService.reloadItems.set(true);
-  }
-
-  // onSelectDestination(destination: string) {
-  //   this.warehouseService.destination.set(destination);
-  //   this.warehouseService.reloadCards.set(true);
-  // }
-
-  // onReloadCards() {
-  //   this.warehouseService.reloadCards.set(true);
-  // }
-
   onShowBoard() {
     this.router.navigate(['warehouse']);
+  }
+
+  onToggleCalendar(event: MouseEvent) {
+    event.stopPropagation();
+    this.store.toggleCalendar();
   }
 }
