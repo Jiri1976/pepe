@@ -91,3 +91,22 @@ export function setTime(time: string | null, date: string | null): Date | null {
         return new Date(parseInt(date.split('.')[2]), parseInt(date.split('.')[1]) - 1, parseInt(date.split('.')[0]), parseInt(time.split(':')[0]), parseInt(time.split(':')[1]));
     }
 }
+
+export const downloadPdf = (base64: string, filename: string) => {
+    const binary = atob(base64);
+    const uint8Array = new Uint8Array(binary.length);
+
+    for (let i = 0; i < binary.length; i++) {
+        uint8Array[i] = binary.charCodeAt(i);
+    }
+
+    const blob = new Blob([uint8Array], { type: 'application/pdf' });
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+
+    URL.revokeObjectURL(url);
+};

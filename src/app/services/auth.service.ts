@@ -14,11 +14,4 @@ export class AuthService {
     const url = this.BASE_ROUTE + 'Login';
     return this.http.post<Response>(url, loginRequest);
   }
-
-  updateUser(data: { name: string, surname: string, email: string }) {
-    // let _user = { ...this.user() };
-    // _user.name = data.name + ' ' + data.surname;
-    // _user.email = data.email;
-    // this.user.set(_user);
-  }
 }

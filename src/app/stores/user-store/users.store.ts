@@ -5,22 +5,21 @@ import { selectUser, setRole, setFilter, setUsers, setCurrentPage } from "./user
 import { Dialog, DialogRef } from '@angular/cdk/dialog';
 import { computed, inject } from "@angular/core";
 import { UserComponent } from "../../components/users/user/user.component";
-import { tapResponse } from "@ngrx/operators";
-import { rxMethod } from "@ngrx/signals/rxjs-interop";
-import { tap, switchMap } from "rxjs";
 import { UsersService } from "../../services/users.service";
 import { ToasterService } from "../../services/toaster.service";
 import { getFakeArray, onRemoveUser, selectUsers, onUpdateUser } from "./users.helpers";
 import { withLoading } from "../custome-features/withLoading/with-loading.feature";
-import { setNotLoading, setIsLoading, setIsSaving, setNotSaving, setIsDeleting, setNotDeleting } from "../custome-features/withLoading/with-loading.updaters";
+import { toggleIsLoading, toggleIsSaving, toggleIsDeleting } from "../custome-features/withLoading/with-loading.updaters";
 import { ConfirmationStore } from "../custome-features/withConfirmation/confirmation.store";
 import { CONFIRM_ACTIONS } from "../custome-features/withConfirmation/confirmation.actions";
+import { withApiMethods } from "../custome-features/withApiMethods/with-api-methods.feature";
 
 export const UsersStore = signalStore({
     providedIn: 'root'
 },
     withState(initialUsersSlice),
     withLoading(),
+    withApiMethods(),
     withProps(_ => {
         const _PER_PAGE = 10;
         const _dialog = inject(Dialog);
@@ -65,91 +64,57 @@ export const UsersStore = signalStore({
     withMethods(store => {
         const confirmationStore = inject(ConfirmationStore);
 
-        const uploadUsers = rxMethod<void>(input$ => input$.pipe(
-            tap(_ => patchState(store, setIsLoading(), setRole('User'), setFilter('All'))),
-            switchMap(_ => store._usersService.getUsers(true).pipe(
-                tapResponse({
-                    next: response => {
-                        patchState(store, setNotLoading());
-                        if (response === null) {
-                            store._toaster.error('Něco se pokazilo, zkus to znovu.');
-                        } else if (response.isSuccess === false) {
-                            store._toaster.error(response.errorMessage);
-                        } else {
-                            patchState(store, setUsers(response.result));
-                        }
-                    },
-                    error: () => patchState(store, setNotLoading())
-                })
-            ))
-        ));
+        const uploadUsers = store.apiMethod<void, User[]>(
+            _ => store._usersService.getUsers(true),
+            {
+                loading: () => patchState(store, toggleIsLoading()),
+                success: users => {
+                    patchState(store, setRole('User'), setFilter('All')),
+                        patchState(store, setUsers(users))
+                }
+            }
+        );
 
-        const createUser = rxMethod<User>(input$ => input$.pipe(
-            tap(_ => patchState(store, setIsSaving())),
-            switchMap(user => store._usersService.createUser(user).pipe(
-                tapResponse({
-                    next: response => {
-                        patchState(store, setNotSaving());
-                        if (response === null) {
-                            store._toaster.error('Něco se pokazilo, zkus to znovu.');
-                        } else if (response.isSuccess === false) {
-                            store._toaster.error(response.errorMessage);
-                        } else {
-                            user = response.result;
-                            user.password = '';
-                            const users = [...store.users(), user];
-                            patchState(store, setUsers(users));
-                            store._toaster.success(`Úspěšně přidán - ${user.name} ${user.surname}`);
-                            store._dialog.closeAll();
-                        }
-                    },
-                    error: () => patchState(store, setNotSaving())
-                })
-            ))
-        ));
+        const createUser = store.apiMethod<User, User>(
+            user => store._usersService.createUser(user),
+            {
+                loading: () => patchState(store, toggleIsSaving()),
+                successMessage: `Uživatel byl přidán`,
+                success: savedUser => {
+                    let user = savedUser;
+                    user.password = '';
+                    const users = [...store.users(), user];
+                    patchState(store, setUsers(users));
+                    store._dialog.closeAll();
+                }
+            }
+        );
 
-        const updateUser = rxMethod<User>(input$ => input$.pipe(
-            tap(_ => patchState(store, setIsSaving())),
-            switchMap(user => store._usersService.updateUser(user).pipe(
-                tapResponse({
-                    next: response => {
-                        patchState(store, setNotSaving());
-                        if (response === null) {
-                            store._toaster.error('Něco se pokazilo, zkus to znovu.');
-                        } else if (response.isSuccess === false) {
-                            store._toaster.error(response.errorMessage);
-                        } else {
-                            let _users = [...store.users()];
-                            patchState(store, setUsers(onUpdateUser(response.result, _users)));
-                            store._toaster.success('Uživatel byl aktualizován');
-                            store._dialog.closeAll();
-                        }
-                    },
-                    error: () => patchState(store, setNotSaving())
-                })
-            ))
-        ));
+        const updateUser = store.apiMethod<User, User>(
+            user => store._usersService.updateUser(user),
+            {
+                loading: () => patchState(store, toggleIsSaving()),
+                successMessage: `Uživatel byl aktualizován`,
+                success: updatedUser => {
+                    let user = updatedUser;
+                    let _users = [...store.users()];
+                    patchState(store, setUsers(onUpdateUser(user, _users)));
+                    store._dialog.closeAll();
+                }
+            }
+        );
 
-        const deleteUser = rxMethod<void>(input$ => input$.pipe(
-            tap(_ => patchState(store, setIsDeleting())),
-            switchMap(_ => store._usersService.deleteUser(store.selectedUser()?.id!).pipe(
-                tapResponse({
-                    next: response => {
-                        patchState(store, setNotDeleting());
-                        if (response === null) {
-                            store._toaster.error('Něco se pokazilo, zkus to znovu.');
-                        } else if (response.isSuccess === false) {
-                            store._toaster.error(response.errorMessage);
-                        } else {
-                            patchState(store, setUsers(onRemoveUser(store.selectedUser()?.id!, store.users())));
-                            store._toaster.success('Uživatel byl úspěšně smazán.');
-                            store._dialog.closeAll();
-                        }
-                    },
-                    error: () => patchState(store, setNotDeleting())
-                })
-            ))
-        ));
+        const deleteUser = store.apiMethod<void, void>(
+            _ => store._usersService.deleteUser(store.selectedUser()?.id || 0),
+            {
+                loading: () => patchState(store, toggleIsDeleting()),
+                successMessage: `Uživatel byl úspěšně smazán`,
+                success: _ => {
+                    patchState(store, setUsers(onRemoveUser(store.selectedUser()?.id!, store.users())));
+                    store._dialog.closeAll();
+                }
+            }
+        );
 
         confirmationStore.registerHandler(CONFIRM_ACTIONS.DELETE_USER, () => {
             deleteUser();

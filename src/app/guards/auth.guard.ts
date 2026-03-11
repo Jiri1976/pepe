@@ -17,4 +17,3 @@ export const AuthGuard: CanMatchFn = async (route, segments) => {
         throw e;
     }
 };
-

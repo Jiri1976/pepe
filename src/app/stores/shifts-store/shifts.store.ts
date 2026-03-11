@@ -4,7 +4,6 @@ import { Dialog } from '@angular/cdk/dialog';
 import { ToasterService } from "../../services/toaster.service";
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { switchMap, tap } from "rxjs";
-import { tapResponse } from '@ngrx/operators';
 import { withLoading } from "../custome-features/withLoading/with-loading.feature";
 import { closeCalendar, setIsLoading, toggleIsSaving, togglePdfButtonLoading, setNotLoading, toggleCalendar, toggleIsPdfLoading, toggleIsDeleting } from "../custome-features/withLoading/with-loading.updaters";
 import { withConfirmation } from "../custome-features/withConfirmation/with-confirmation.feature";
@@ -14,10 +13,11 @@ import { ShiftService } from "../../services/shift.service";
 import { ShiftCard } from "../../models/shifts/shiftCard.interface";
 import { UniqueUser } from "../../models/shifts/uniqueUser.interface";
 import { setSelectedCardPosition, setSlideIndexAndPosition, updateAfterDeleteCard, setSelectedShift, updateCard } from "./shifts.updaters";
-import { convertMonthYear, setTime } from '../../helpers/common-functions.helper';
+import { convertMonthYear, downloadPdf, setTime } from '../../helpers/common-functions.helper';
 import { CONFIRM_ACTIONS } from "../custome-features/withConfirmation/confirmation.actions";
 import { Shift, ShiftModel } from "../../models/shifts/shift.interface";
 import { MONTHS } from "../../helpers/common-constants.helper";
+import { handleApiResponse } from "../handle-api-response.operator";
 
 export const ShiftsStore = signalStore({
     providedIn: 'root'
@@ -169,27 +169,21 @@ export const ShiftsStore = signalStore({
         const getCards = rxMethod<void>(input$ => input$.pipe(
             tap(_ => patchState(store, setIsLoading())),
             switchMap(_ => store._shiftService.getUsersShiftCards(store.monthYear(), store.destination()).pipe(
-                tapResponse({
-                    next: response => {
+                handleApiResponse(store._toaster, {
+                    onSuccess: (cards) => {
                         patchState(store, setNotLoading());
-                        if (response === null) {
-                            store._toaster.error('Něco se pokazilo, zkus to znovu.');
-                        } else if (response.isSuccess === false) {
-                            store._toaster.error(response.errorMessage);
+                        if (cards.length > 0) {
+                            patchState(store, { cards: cards });
+                            patchState(store, { sliceIndex: 0 });
+                            patchState(store, { selectedCardPosition: store.cards()[0].userPosition });
                         } else {
-                            if (response.result.length > 0) {
-                                patchState(store, { cards: response.result });
-                                patchState(store, { sliceIndex: 0 });
-                                patchState(store, { selectedCardPosition: store.cards()[0].userPosition });
-                            } else {
-                                patchState(store, { cards: [] });
-                                patchState(store, { sliceIndex: 0 });
-                                patchState(store, { selectedCardPosition: '' });
-                            }
-                            patchState(store, closeCalendar());
+                            patchState(store, { cards: [] });
+                            patchState(store, { sliceIndex: 0 });
+                            patchState(store, { selectedCardPosition: '' });
                         }
+                        patchState(store, closeCalendar());
                     },
-                    error: () => patchState(store, setNotLoading())
+                    onError: () => patchState(store, setNotLoading())
                 })
             ))
         ));
@@ -197,29 +191,12 @@ export const ShiftsStore = signalStore({
         const onAllToPdf = rxMethod<void>(input$ => input$.pipe(
             tap(_ => patchState(store, toggleIsPdfLoading())),
             switchMap(_ => store._shiftService.generateAllToPDF(store.pdfCards()).pipe(
-                tapResponse({
-                    next: response => {
+                handleApiResponse(store._toaster, {
+                    onSuccess: (file) => {
                         patchState(store, toggleIsPdfLoading());
-                        if (response === null) {
-                            store._toaster.error('Něco se pokazilo, zkus to znovu.');
-                        } else if (response.isSuccess === false) {
-                            store._toaster.error(response.errorMessage);
-                        } else {
-                            const binary = atob(response.result);
-                            const uint8Array = new Uint8Array(binary.length);
-                            for (let i = 0; i < binary.length; i++) {
-                                uint8Array[i] = binary.charCodeAt(i);
-                            }
-                            const blob = new Blob([uint8Array], { type: 'application/pdf' });
-                            var url = window.URL.createObjectURL(blob);
-                            const a = document.createElement('a')
-                            a.href = url;
-                            a.download = `${MONTHS[parseInt(store.monthYear().substring(0, 2)) - 1]} ${store.monthYear().substring(2, 6)} - ${store.destination()}.pdf`;
-                            a.click();
-                            URL.revokeObjectURL(url);
-                        }
+                        downloadPdf(file, `${MONTHS[parseInt(store.monthYear().substring(0, 2)) - 1]} ${store.monthYear().substring(2, 6)} - ${store.destination()}.pdf`);
                     },
-                    error: () => patchState(store, toggleIsPdfLoading())
+                    onError: () => patchState(store, toggleIsPdfLoading())
                 })
             ))
         ));
@@ -234,29 +211,12 @@ export const ShiftsStore = signalStore({
                     return [];
                 }
                 return store._shiftService.generatePDF(card).pipe(
-                    tapResponse({
-                        next: response => {
+                    handleApiResponse(store._toaster, {
+                        onSuccess: (file) => {
                             patchState(store, togglePdfButtonLoading());
-                            if (response === null) {
-                                store._toaster.error('Něco se pokazilo, zkus to znovu.');
-                            } else if (response.isSuccess === false) {
-                                store._toaster.error(response.errorMessage);
-                            } else {
-                                const binary = atob(response.result);
-                                const uint8Array = new Uint8Array(binary.length);
-                                for (let i = 0; i < binary.length; i++) {
-                                    uint8Array[i] = binary.charCodeAt(i);
-                                }
-                                const blob = new Blob([uint8Array], { type: 'application/pdf' });
-                                var url = window.URL.createObjectURL(blob);
-                                const a = document.createElement('a')
-                                a.href = url;
-                                a.download = `${store.currentCard()!.userName} ${store.currentCard()!.userSurname} - ${convertMonthYear(store.currentCard()!.monthYear)} - ${store.currentCard()!.destination}.pdf`;
-                                a.click();
-                                URL.revokeObjectURL(url);
-                            }
+                            downloadPdf(file, `${store.currentCard()!.userName} ${store.currentCard()!.userSurname} - ${convertMonthYear(store.currentCard()!.monthYear)} - ${store.currentCard()!.destination}.pdf`);
                         },
-                        error: () => patchState(store, togglePdfButtonLoading())
+                        onError: () => patchState(store, togglePdfButtonLoading())
                     })
                 );
             })
@@ -265,19 +225,13 @@ export const ShiftsStore = signalStore({
         const deleteCard = rxMethod<void>(input$ => input$.pipe(
             tap(_ => patchState(store, toggleIsDeleting())),
             switchMap(_ => store._shiftService.deleteShiftCard(store.currentCard()!.id).pipe(
-                tapResponse({
-                    next: response => {
+                handleApiResponse(store._toaster, {
+                    successMessage: 'Karta byla smazána!',
+                    onSuccess: (card) => {
                         patchState(store, toggleIsDeleting());
-                        if (response === null) {
-                            store._toaster.error('Něco se pokazilo, zkus to znovu.');
-                        } else if (response.isSuccess === false) {
-                            store._toaster.error(response.errorMessage);
-                        } else {
-                            patchState(store, updateAfterDeleteCard(store.currentCard()!.id, response.result));
-                            store._toaster.success('Karta byla smazána!');
-                        }
+                        patchState(store, updateAfterDeleteCard(store.currentCard()!.id, card));
                     },
-                    error: () => patchState(store, toggleIsDeleting())
+                    onError: () => patchState(store, toggleIsDeleting())
                 })
             ))
         ));
@@ -285,20 +239,14 @@ export const ShiftsStore = signalStore({
         const createUpdateShift = rxMethod<void>(input$ => input$.pipe(
             tap(_ => patchState(store, toggleIsSaving())),
             switchMap(_ => store._shiftService.createUpdateShift(store.selectedShift()).pipe(
-                tapResponse({
-                    next: response => {
-                        patchState(store, toggleIsSaving())
-                        if (response === null) {
-                            store._toaster.error('Něco se pokazilo, zkus to znovu.');
-                        } else if (response.isSuccess === false) {
-                            store._toaster.error(response.errorMessage);
-                        } else {
-                            patchState(store, updateCard(response.result));
-                            store._toaster.success('Směna byla uložena!');
-                            store._dialog.closeAll();
-                        }
+                handleApiResponse(store._toaster, {
+                    successMessage: 'Směna byla uložena!',
+                    onSuccess: (card) => {
+                        patchState(store, toggleIsSaving());
+                        patchState(store, updateCard(card));
+                        store._dialog.closeAll();
                     },
-                    error: () => patchState(store, toggleIsSaving())
+                    onError: () => patchState(store, toggleIsSaving())
                 })
             ))
         ));
@@ -306,20 +254,14 @@ export const ShiftsStore = signalStore({
         const deleteShift = rxMethod<void>(input$ => input$.pipe(
             tap(_ => patchState(store, toggleIsDeleting())),
             switchMap(_ => store._shiftService.deleteShift(store.selectedShift().id).pipe(
-                tapResponse({
-                    next: response => {
-                        patchState(store, toggleIsDeleting())
-                        if (response === null) {
-                            store._toaster.error('Něco se pokazilo, zkus to znovu.');
-                        } else if (response.isSuccess === false) {
-                            store._toaster.error(response.errorMessage);
-                        } else {
-                            patchState(store, updateCard(response.result));
-                            store._toaster.success('Směna byla smazána!');
-                            store._dialog.closeAll();
-                        }
+                handleApiResponse(store._toaster, {
+                    successMessage: 'Směna byla smazána!',
+                    onSuccess: (card) => {
+                        patchState(store, toggleIsDeleting());
+                        patchState(store, updateCard(card));
+                        store._dialog.closeAll();
                     },
-                    error: () => patchState(store, toggleIsDeleting())
+                    onError: () => patchState(store, toggleIsDeleting())
                 })
             ))
         ));
@@ -408,4 +350,3 @@ export const ShiftsStore = signalStore({
         }
     }),
 )
-

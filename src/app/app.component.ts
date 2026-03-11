@@ -2,16 +2,15 @@ import { Component, inject, OnInit } from '@angular/core';
 import { HeaderComponent } from "./components/header/header.component";
 import { PrimeNG } from 'primeng/config';
 import { RouterOutlet } from '@angular/router';
-import { AuthStore } from './stores/auth-store/auth.store';
+import { IsAuthenticated } from './directives/is-authenticated.directive';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, HeaderComponent],
+  imports: [RouterOutlet, HeaderComponent, IsAuthenticated],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
 export class AppComponent implements OnInit {
-  readonly authStore = inject(AuthStore);
   private primeConfig = inject(PrimeNG);
 
   ngOnInit(): void {

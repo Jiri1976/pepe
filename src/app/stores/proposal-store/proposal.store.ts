@@ -4,7 +4,6 @@ import { Dialog } from '@angular/cdk/dialog';
 import { ToasterService } from "../../services/toaster.service";
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { switchMap, tap } from "rxjs";
-import { tapResponse } from '@ngrx/operators';
 import { withLoading } from "../custome-features/withLoading/with-loading.feature";
 import { closeCalendar, setIsLoading, setIsSaving, setNotSaving, setNotLoading, setIsDeleting, setNotDeleting, toggleCalendar, toggleIsPdfLoading } from "../custome-features/withLoading/with-loading.updaters";
 import { initialProposalSlice } from "./proposal.slice";
@@ -19,7 +18,8 @@ import { CONFIRM_ACTIONS } from "../custome-features/withConfirmation/confirmati
 import { ProposalShift } from "../../models/proposals/proposalShift.interface";
 import { UpdateProposalComponent } from "../../components/proposals/update-proposal/update-proposal.component";
 import { Inputs, Proposal } from "../../models/proposals/proposal.interface";
-import { setTime } from "../../helpers/common-functions.helper";
+import { downloadPdf, setTime } from "../../helpers/common-functions.helper";
+import { handleApiResponse } from "../handle-api-response.operator";
 
 export const ProposalStore = signalStore({
     providedIn: 'root'
@@ -156,19 +156,13 @@ export const ProposalStore = signalStore({
         const uploadSchedulesShifts = rxMethod<void>(input$ => input$.pipe(
             tap(_ => patchState(store, setIsLoading())),
             switchMap(_ => store._proposalService.getScheduledShifts(store.monthYear()).pipe(
-                tapResponse({
-                    next: response => {
+                handleApiResponse(store._toaster, {
+                    onSuccess: (schedules) => {
                         patchState(store, setNotLoading());
-                        if (response === null) {
-                            store._toaster.error('Něco se pokazilo, zkus to znovu.');
-                        } else if (response.isSuccess === false) {
-                            store._toaster.error(response.errorMessage);
-                        } else {
-                            patchState(store, setSchedules(response.result));
-                            patchState(store, closeCalendar());
-                        }
+                        patchState(store, setSchedules(schedules));
+                        patchState(store, closeCalendar());
                     },
-                    error: () => patchState(store, setNotLoading())
+                    onError: () => patchState(store, setNotLoading())
                 })
             ))
         ));
@@ -176,29 +170,12 @@ export const ProposalStore = signalStore({
         const getPdf = rxMethod<void>(input$ => input$.pipe(
             tap(_ => patchState(store, toggleIsPdfLoading())),
             switchMap(_ => store._proposalService.uploadPDF(store.currentCard()!).pipe(
-                tapResponse({
-                    next: response => {
+                handleApiResponse(store._toaster, {
+                    onSuccess: (file) => {
                         patchState(store, toggleIsPdfLoading());
-                        if (response === null) {
-                            store._toaster.error('Něco se pokazilo, zkus to znovu.');
-                        } else if (response.isSuccess === false) {
-                            store._toaster.error(response.errorMessage);
-                        } else {
-                            const binary = atob(response.result);
-                            const uint8Array = new Uint8Array(binary.length);
-                            for (let i = 0; i < binary.length; i++) {
-                                uint8Array[i] = binary.charCodeAt(i);
-                            }
-                            const blob = new Blob([uint8Array], { type: 'application/pdf' });
-                            var url = window.URL.createObjectURL(blob);
-                            const a = document.createElement('a')
-                            a.href = url;
-                            a.download = `Směny - ${store.currentCard()!.destination} - ${store.currentCard()!.monthYearName.toLowerCase()}`;
-                            a.click();
-                            URL.revokeObjectURL(url);
-                        }
+                        downloadPdf(file, `Směny - ${store.currentCard()!.destination} - ${store.currentCard()!.monthYearName.toLowerCase()}`);
                     },
-                    error: () => patchState(store, toggleIsPdfLoading())
+                    onError: () => patchState(store, toggleIsPdfLoading())
                 })
             ))
         ));
@@ -206,19 +183,13 @@ export const ProposalStore = signalStore({
         const saveProposals = rxMethod<void>(input$ => input$.pipe(
             tap(_ => patchState(store, setIsSaving())),
             switchMap(_ => store._proposalService.saveProposals(store.schedules()).pipe(
-                tapResponse({
-                    next: response => {
+                handleApiResponse(store._toaster, {
+                    successMessage: 'Úspěšně uloženo!',
+                    onSuccess: (schedules) => {
                         patchState(store, setNotSaving());
-                        if (response === null) {
-                            store._toaster.error('Něco se pokazilo, zkus to znovu.');
-                        } else if (response.isSuccess === false) {
-                            store._toaster.error(response.errorMessage);
-                        } else {
-                            store._toaster.success('Úspěšně uloženo!');
-                            patchState(store, setSchedules(response.result));
-                        }
+                        patchState(store, setSchedules(schedules));
                     },
-                    error: () => patchState(store, setNotSaving())
+                    onError: () => patchState(store, setNotSaving())
                 })
             ))
         ));
@@ -226,20 +197,14 @@ export const ProposalStore = signalStore({
         const deleteCard = rxMethod<void>(input$ => input$.pipe(
             tap(_ => patchState(store, setIsDeleting())),
             switchMap(_ => store._proposalService.deleteProposalCard(store.monthYear(), store.destination()).pipe(
-                tapResponse({
-                    next: response => {
+                handleApiResponse(store._toaster, {
+                    successMessage: 'Směny byly odstraněny!',
+                    onSuccess: (schedules) => {
                         patchState(store, setNotDeleting());
-                        if (response === null) {
-                            store._toaster.error('Něco se pokazilo, zkus to znovu.');
-                        } else if (response.isSuccess === false) {
-                            store._toaster.error(response.errorMessage);
-                        } else {
-                            store._toaster.success(`Směny byly odstraněny!`);
-                            patchState(store, setSchedules(response.result));
-                            patchState(store, setOriginal());
-                        }
+                        patchState(store, setSchedules(schedules));
+                        patchState(store, setOriginal());
                     },
-                    error: () => patchState(store, setNotDeleting())
+                    onError: () => patchState(store, setNotDeleting())
                 })
             ))
         ));
@@ -315,4 +280,3 @@ export const ProposalStore = signalStore({
         }
     }),
 )
-
