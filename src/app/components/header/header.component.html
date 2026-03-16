@@ -4,7 +4,6 @@
             <img src="/pizza.ico" alt="Pizza icon" width="35" height="35">
             PEPE PIZZA
         </a>
-
         <div class="dropdown" (clickOutside)="close()">
             @if(notifications().length > 0) {
             <div class="bellnoti" (click)="onOpenNotifications()">
@@ -23,13 +22,11 @@
 
             @if (isShown()) {
             <ul class="menu text-center" animate.enter="enter-animation">
-
                 <li hide><a class="dropdown-item" (click)="navigate('/users')">Uživatelé</a></li>
                 <li><a class="dropdown-item" (click)="navigate('/plans')">Rozpis směn</a></li>
                 <li><a class="dropdown-item" (click)="navigate('/shifts')">Směny</a></li>
                 <li><a class="dropdown-item" (click)="navigate('/warehouse')">Sklad</a></li>
                 <li><a class="dropdown-item" (click)="onLogout()">Odhlásit se</a></li>
-
             </ul>
             }
         </div>
