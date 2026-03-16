@@ -19,7 +19,6 @@
             <button id="toggle-btn" class="btn btn-secondary dropdown-toggle" type="button" (click)="toggle()">
                 {{user?.name }} - {{ user?.role }}
             </button>
-
             @if (isShown()) {
             <ul class="menu text-center" animate.enter="enter-animation">
                 <li hide><a class="dropdown-item" (click)="navigate('/users')">Uživatelé</a></li>
