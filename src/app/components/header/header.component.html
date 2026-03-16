@@ -15,7 +15,6 @@
             }
 
             @let user = authStore.user();
-
             <button id="toggle-btn" class="btn btn-secondary dropdown-toggle" type="button" (click)="toggle()">
                 {{user?.name }} - {{ user?.role }}
             </button>
