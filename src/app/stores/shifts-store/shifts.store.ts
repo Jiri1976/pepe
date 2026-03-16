@@ -18,6 +18,7 @@ import { CONFIRM_ACTIONS } from "../custome-features/withConfirmation/confirmati
 import { Shift, ShiftModel } from "../../models/shifts/shift.interface";
 import { MONTHS } from "../../helpers/common-constants.helper";
 import { handleApiResponse } from "../handle-api-response.operator";
+import { AuthStore } from "../auth-store/auth.store";
 
 export const ShiftsStore = signalStore({
     providedIn: 'root'
@@ -36,13 +37,15 @@ export const ShiftsStore = signalStore({
             to: setTime('22:00', '03.02.2026'),
             perso: '',
         });
+        const _auth = inject(AuthStore);
 
         return {
             _dialog,
             _toaster,
             _shiftService,
             slideToIndex,
-            shiftModel
+            shiftModel,
+            _auth
         };
     }),
     withComputed(store => {
@@ -168,24 +171,32 @@ export const ShiftsStore = signalStore({
 
         const getCards = rxMethod<void>(input$ => input$.pipe(
             tap(_ => patchState(store, setIsLoading())),
-            switchMap(_ => store._shiftService.getUsersShiftCards(store.monthYear(), store.destination()).pipe(
-                handleApiResponse(store._toaster, {
-                    onSuccess: (cards) => {
-                        patchState(store, setNotLoading());
-                        if (cards.length > 0) {
-                            patchState(store, { cards: cards });
-                            patchState(store, { sliceIndex: 0 });
-                            patchState(store, { selectedCardPosition: store.cards()[0].userPosition });
-                        } else {
-                            patchState(store, { cards: [] });
-                            patchState(store, { sliceIndex: 0 });
-                            patchState(store, { selectedCardPosition: '' });
-                        }
-                        patchState(store, closeCalendar());
-                    },
-                    onError: () => patchState(store, setNotLoading())
-                })
-            ))
+            switchMap(_ => {
+                if (store._auth.user()?.role !== 'Admin') {
+                    patchState(store, { destination: store._auth.user()?.destination })
+                };
+                const dest = store.destination();
+                const month = store.monthYear();
+                if (!dest) {
+                    patchState(store, setNotLoading()); // prevent loader stuck
+                    return [];
+                }
+
+                return store._shiftService.getUsersShiftCards(month, dest).pipe(
+                    handleApiResponse(store._toaster, {
+                        onSuccess: (cards) => {
+                            patchState(store, setNotLoading());
+                            if (cards.length > 0) {
+                                patchState(store, { cards, sliceIndex: 0, selectedCardPosition: cards[0].userPosition });
+                            } else {
+                                patchState(store, { cards: [], sliceIndex: 0, selectedCardPosition: '' });
+                            }
+                            patchState(store, closeCalendar());
+                        },
+                        onError: () => patchState(store, setNotLoading())
+                    })
+                );
+            })
         ));
 
         const onAllToPdf = rxMethod<void>(input$ => input$.pipe(

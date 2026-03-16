@@ -48,6 +48,10 @@ export class ShiftsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const user = this.authStore.user();
+    if (user?.role === 'master' && user.destination !== this.shiftsStore.destination()) {
+      this.shiftsStore.setDestination(user.destination);
+    }
     this.shiftsStore.getCards();
   }
 

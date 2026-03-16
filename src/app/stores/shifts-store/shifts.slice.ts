@@ -14,7 +14,7 @@ export interface ShiftsSlice {
 }
 
 export const initialShiftsSlice: ShiftsSlice = {
-    destination: '',
+    destination: 'F-M',
     monthYear: initializeMonthYear(),
     cards: [],
     selectedCard: null,

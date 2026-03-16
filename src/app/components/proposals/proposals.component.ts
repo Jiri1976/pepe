@@ -97,6 +97,10 @@ export class ProposalsComponent {
   }
 
   ngOnInit(): void {
+    const user = this.authStore.user();
+    if (user?.role === 'master' && user.destination !== this.propStore.destination()) {
+      this.propStore.setDestination(user.destination);
+    }
     this.propStore.uploadSchedulesShifts();
     this.setBodyStyles();
   }

@@ -21,12 +21,11 @@ export function onLogout(dialog: Dialog, router: Router, toaster: ToasterService
     }
 }
 
-export function onLogin(token: string, router: Router, signalService: SignalService): PartialStateUpdater<AuthSlice> {
+export function onLogin(token: string, signalService: SignalService): PartialStateUpdater<AuthSlice> {
     return _ => {
         localStorage.setItem('token', token);
         const loggedUser = setUserDetail(token);
         if (loggedUser) {
-            router.navigate(['main']);
             signalService.userName.set(loggedUser.name);
             signalService.userRole.set(loggedUser.role);
             signalService.userDestination.set(loggedUser.destination);

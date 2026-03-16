@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { HideElementDirective } from '../../../directives/hide-element.directive';
 import { WarehouseInputComponent } from "../warehouse-input/warehouse-input.component";
 import { WarehouseStore } from '../../../stores/warehouse-store/warehouse.store';
+import { AuthStore } from '../../../stores/auth-store/auth.store';
 
 @Component({
   selector: 'app-warehouse-units',
@@ -13,12 +14,17 @@ import { WarehouseStore } from '../../../stores/warehouse-store/warehouse.store'
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class WarehouseUnitsComponent implements OnInit {
+  readonly authStore = inject(AuthStore);
   readonly warehouseStore = inject(WarehouseStore);
   cards = this.warehouseStore.cards;
   destination = this.warehouseStore.destination;
   swiperRef = viewChild<ElementRef>('swiperRef');
 
   ngOnInit(): void {
+    const user = this.authStore.user();
+    if (user?.role === 'master' && user.destination !== this.warehouseStore.destination()) {
+      this.warehouseStore.setDestination(user.destination);
+    }
     this.warehouseStore.resetMonthYaer();
     this.warehouseStore.setWarehouseNave('units');
     this.warehouseStore.getWarehouseCards();

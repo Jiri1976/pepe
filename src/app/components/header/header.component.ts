@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { HideElementDirective } from '../../directives/hide-element.directive';
 import { Dialog } from '@angular/cdk/dialog';
@@ -20,6 +20,7 @@ export class HeaderComponent implements OnInit {
   private router = inject(Router);
   notifications = computed(() => this.toaster.notifications());
   isShown = signal(false);
+  initialized = signal(false);
 
   ngOnInit(): void {
     let messages: any[] = [];
@@ -28,10 +29,7 @@ export class HeaderComponent implements OnInit {
       messages = JSON.parse(localStorageMessages);
     }
     this.toaster.notifications.set(messages);
-  }
-
-  constructor() {
-    effect(() => { });
+    this.initialized.set(true);
   }
 
   onOpenNotifications() {
@@ -47,7 +45,11 @@ export class HeaderComponent implements OnInit {
   }
 
   navigate(url: string) {
-    this.toggle();
+    this.close();
     this.router.navigateByUrl(url);
+  }
+
+  close() {
+    this.isShown.set(false);
   }
 }

@@ -1,3 +1,6 @@
+import { inject } from "@angular/core";
+import { AuthStore } from "../stores/auth-store/auth.store";
+
 export function isFridayOrSaturday(date: string) {
     var day = new Date(parseInt(date.split('.')[2]), parseInt(date.split('.')[1]) - 1, parseInt(date.split('.')[0]));
     if (day.getDay() == 5 || day.getDay() == 6) {
@@ -110,3 +113,15 @@ export const downloadPdf = (base64: string, filename: string) => {
 
     URL.revokeObjectURL(url);
 };
+
+export function getInitialDestination(defaultDest: string): string {
+    const authStore = inject(AuthStore);
+    const user = authStore.user();
+
+    // Only override for master users
+    if (user?.role === 'master' && user.destination) {
+        return user.destination;
+    }
+
+    return defaultDest;
+}

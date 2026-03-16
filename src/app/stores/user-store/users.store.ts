@@ -2,7 +2,7 @@ import { patchState, signalStore, withComputed, withMethods, withProps, withStat
 import { initialUsersSlice } from "./users.slice";
 import { User } from "../../models/users/user.interface";
 import { selectUser, setRole, setFilter, setUsers, setCurrentPage } from "./users.updaters";
-import { Dialog, DialogRef } from '@angular/cdk/dialog';
+import { Dialog } from '@angular/cdk/dialog';
 import { computed, inject } from "@angular/core";
 import { UserComponent } from "../../components/users/user/user.component";
 import { UsersService } from "../../services/users.service";
@@ -13,6 +13,9 @@ import { toggleIsLoading, toggleIsSaving, toggleIsDeleting } from "../custome-fe
 import { ConfirmationStore } from "../custome-features/withConfirmation/confirmation.store";
 import { CONFIRM_ACTIONS } from "../custome-features/withConfirmation/confirmation.actions";
 import { withApiMethods } from "../custome-features/withApiMethods/with-api-methods.feature";
+import { rxMethod } from "@ngrx/signals/rxjs-interop";
+import { switchMap, tap } from "rxjs";
+import { handleApiResponse } from "../handle-api-response.operator";
 
 export const UsersStore = signalStore({
     providedIn: 'root'
@@ -23,14 +26,12 @@ export const UsersStore = signalStore({
     withProps(_ => {
         const _PER_PAGE = 10;
         const _dialog = inject(Dialog);
-        const _dialogRef = inject(DialogRef, { optional: true });
         const _usersService = inject(UsersService);
         const _toaster = inject(ToasterService);
 
         return {
             _PER_PAGE,
             _dialog,
-            _dialogRef,
             _usersService,
             _toaster
         };
@@ -64,57 +65,80 @@ export const UsersStore = signalStore({
     withMethods(store => {
         const confirmationStore = inject(ConfirmationStore);
 
-        const uploadUsers = store.apiMethod<void, User[]>(
-            _ => store._usersService.getUsers(true),
-            {
-                loading: () => patchState(store, toggleIsLoading()),
-                success: users => {
-                    patchState(store, setRole('User'), setFilter('All')),
-                        patchState(store, setUsers(users))
-                }
-            }
-        );
+        const uploadUsers = rxMethod<void>(input$ => input$.pipe(
+            tap(_ => patchState(store, toggleIsLoading())),
+            switchMap(_ => store._usersService.getUsers(true).pipe(
+                handleApiResponse(store._toaster, {
+                    onSuccess: (users) => {
+                        patchState(store, toggleIsLoading())
+                        patchState(store, setRole('User'), setFilter('All')),
+                            patchState(store, setUsers(users))
+                    },
+                    onError: () => patchState(store, toggleIsLoading())
+                })
+            ))
+        ));
 
-        const createUser = store.apiMethod<User, User>(
-            user => store._usersService.createUser(user),
-            {
-                loading: () => patchState(store, toggleIsSaving()),
-                successMessage: `Uživatel byl přidán`,
-                success: savedUser => {
-                    let user = savedUser;
-                    user.password = '';
-                    const users = [...store.users(), user];
-                    patchState(store, setUsers(users));
-                    store._dialog.closeAll();
-                }
-            }
-        );
+        const createUser = rxMethod<User>(input$ => input$.pipe(
+            tap(_ => patchState(store, toggleIsSaving())),
+            switchMap(user => store._usersService.createUser(user).pipe(
+                handleApiResponse(store._toaster, {
+                    successMessage: 'Uživatel byl přidán',
+                    onSuccess: (savedUser) => {
+                        let user = savedUser;
+                        user.password = '';
+                        const users = [...store.users(), user];
+                        patchState(store, setUsers(users));
+                        patchState(store, toggleIsSaving())
+                        store._dialog.closeAll();
+                    },
+                    onError: () => patchState(store, toggleIsSaving())
+                })
+            ))
+        ));
+
+        // const updateUser = rxMethod<User>(input$ => input$.pipe(
+        //     tap(_ => patchState(store, toggleIsSaving())),
+        //     switchMap(user => store._usersService.updateUser(user).pipe(
+        //         handleApiResponse(store._toaster, {
+        //             successMessage: 'Uživatel byl aktualizován',
+        //             onSuccess: (updatedUser) => {
+        //                 patchState(store, setUsers(onUpdateUser(updatedUser, [...(store.users() ?? [])])));
+        //                 store._dialog.closeAll();
+        //             },
+        //             onError: () => patchState(store, toggleIsSaving())
+        //         })
+        //     ))
+        // ));
 
         const updateUser = store.apiMethod<User, User>(
             user => store._usersService.updateUser(user),
             {
-                loading: () => patchState(store, toggleIsSaving()),
+                start: () => patchState(store, toggleIsSaving()),
+                finish: () => patchState(store, toggleIsSaving()),
                 successMessage: `Uživatel byl aktualizován`,
-                success: updatedUser => {
-                    let user = updatedUser;
-                    let _users = [...store.users()];
-                    patchState(store, setUsers(onUpdateUser(user, _users)));
-                    store._dialog.closeAll();
-                }
+                // success: updatedUser => () => {
+                //     patchState(store, setUsers(onUpdateUser(updatedUser, [...(store.users() ?? [])])));
+                //     store._dialog.closeAll();
+                // }
+                success: updatedUser => patchState(store, setUsers(onUpdateUser(updatedUser, [...(store.users() ?? [])])))
             }
         );
 
-        const deleteUser = store.apiMethod<void, void>(
-            _ => store._usersService.deleteUser(store.selectedUser()?.id || 0),
-            {
-                loading: () => patchState(store, toggleIsDeleting()),
-                successMessage: `Uživatel byl úspěšně smazán`,
-                success: _ => {
-                    patchState(store, setUsers(onRemoveUser(store.selectedUser()?.id!, store.users())));
-                    store._dialog.closeAll();
-                }
-            }
-        );
+        const deleteUser = rxMethod<void>(input$ => input$.pipe(
+            tap(_ => patchState(store, toggleIsDeleting())),
+            switchMap(_ => store._usersService.deleteUser(store.selectedUser()?.id || 0).pipe(
+                handleApiResponse(store._toaster, {
+                    successMessage: 'Uživatel byl úspěšně smazán',
+                    onSuccess: _ => {
+                        patchState(store, toggleIsDeleting())
+                        patchState(store, setUsers(onRemoveUser(store.selectedUser()?.id!, store.users())));
+                        store._dialog.closeAll();
+                    },
+                    onError: () => patchState(store, toggleIsDeleting())
+                })
+            ))
+        ));
 
         confirmationStore.registerHandler(CONFIRM_ACTIONS.DELETE_USER, () => {
             deleteUser();

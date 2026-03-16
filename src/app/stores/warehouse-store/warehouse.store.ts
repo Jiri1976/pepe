@@ -3,7 +3,7 @@ import { computed, inject, signal } from "@angular/core";
 import { Dialog } from '@angular/cdk/dialog';
 import { ToasterService } from "../../services/toaster.service";
 import { withLoading } from "../custome-features/withLoading/with-loading.feature";
-import { closeCalendar, toggleIsSaving, toggleCalendar, toggleIsPdfLoading, toggleIsDeleting, toggleIsDeletingCard, toggleIsLoading } from "../custome-features/withLoading/with-loading.updaters";
+import { closeCalendar, toggleIsSaving, setIsLoading, toggleCalendar, toggleIsPdfLoading, toggleIsDeleting, toggleIsDeletingCard, toggleIsLoading, setNotLoading } from "../custome-features/withLoading/with-loading.updaters";
 import { withConfirmation } from "../custome-features/withConfirmation/with-confirmation.feature";
 import { ConfirmationStore } from "../custome-features/withConfirmation/confirmation.store";
 import { CONFIRM_ACTIONS } from "../custome-features/withConfirmation/confirmation.actions";
@@ -19,6 +19,9 @@ import { WarehouseItem } from "../../models/warehouse/warehouse-item.interface";
 import { WarehouseItemForm } from "./warehouse.helpers";
 import { downloadPdf } from "../../helpers/common-functions.helper";
 import { withApiMethods } from "../custome-features/withApiMethods/with-api-methods.feature";
+import { rxMethod } from "@ngrx/signals/rxjs-interop";
+import { tap, switchMap } from "rxjs";
+import { handleApiResponse } from "../handle-api-response.operator";
 
 export const WarehouseStore = signalStore({
     providedIn: 'root'
@@ -137,101 +140,157 @@ export const WarehouseStore = signalStore({
     withMethods(store => {
         const confirmationStore = inject(ConfirmationStore);
 
-        const getWarehouseCards = store.apiMethod<void, WarehouseCard[]>(
-            _ => store._warehouseService.getWarehouseCards(store.monthYear(), store.destination()),
-            {
-                loading: () => patchState(store, toggleIsLoading()),
-                success: cards => {
-                    patchState(store, {
-                        cards,
-                        sliceIndex: 0,
-                        ...closeCalendar()
+        const getWarehouseCards = rxMethod<void>(input$ => input$.pipe(
+            tap(_ => patchState(store, setIsLoading())),
+            switchMap(_ => {
+                const dest = store.destination();
+                const month = store.monthYear();
+
+                if (!dest || !month) {
+                    patchState(store, setNotLoading());
+                    return [];
+                }
+
+                return store._warehouseService.getWarehouseCards(month, dest).pipe(
+                    handleApiResponse(store._toaster, {
+                        onSuccess: (cards: WarehouseCard[]) => {
+                            patchState(store, {
+                                cards,
+                                sliceIndex: 0,
+                                ...closeCalendar()
+                            });
+                            patchState(store, setNotLoading());
+                        },
+                        onError: () => patchState(store, setNotLoading())
                     })
-                }
-            }
-        );
+                );
+            })
+        ));
 
-        const createUpdateWarehouseCard = store.apiMethod<WarehouseCard, WarehouseCard>(
-            card => store._warehouseService.createUpdateWarehouseCard(card),
-            {
-                successMessage: 'Položka byla aktualizována!',
-                loading: () => patchState(store, toggleIsSaving()),
-                success: card => {
-                    patchState(store, updateCards(card));
-                    patchState(store, { selectedUnit: null });
-                }
-            }
-        );
+        const createUpdateWarehouseCard = rxMethod<WarehouseCard>(input$ => input$.pipe(
+            tap(_ => patchState(store, toggleIsSaving())),
+            switchMap(card => store._warehouseService.createUpdateWarehouseCard(card).pipe(
+                handleApiResponse(store._toaster, {
+                    successMessage: 'Položka byla aktualizována!',
+                    onSuccess: (card) => {
+                        patchState(store, updateCards(card));
+                        patchState(store, { selectedUnit: null });
+                        patchState(store, toggleIsSaving());
+                    },
+                    onError: () => patchState(store, toggleIsSaving())
+                })
+            ))
+        ));
 
-        const deleteCards = store.apiMethod<void, WarehouseCard[]>(
-            _ => store._warehouseService.deleteWarehouseCards(store.monthYear(), store.destination()),
-            {
-                successMessage: 'Karty byly smazány!',
-                loading: () => patchState(store, toggleIsDeleting()),
-                success: cards => patchState(store, { cards: cards })
-            }
-        );
+        const deleteCards = rxMethod<void>(input$ => input$.pipe(
+            tap(_ => patchState(store, toggleIsDeleting())),
+            switchMap(_ => store._warehouseService.deleteWarehouseCards(store.monthYear(), store.destination()).pipe(
+                handleApiResponse(store._toaster, {
+                    successMessage: 'Karty byly smazány!',
+                    onSuccess: cards => {
+                        patchState(store, { cards: cards });
+                        patchState(store, toggleIsDeleting());
+                    },
+                    onError: () => patchState(store, toggleIsDeleting())
+                })
+            ))
+        ));
 
-        const deleteCard = store.apiMethod<void, WarehouseCard[]>(
-            _ => store._warehouseService.deleteWarehouseCard(store.selectedCard()?.id || 0),
-            {
-                successMessage: 'Karta byly smazána!',
-                loading: () => patchState(store, toggleIsDeletingCard()),
-                success: cards => patchState(store, { cards: cards })
-            }
-        );
+        const deleteCard = rxMethod<void>(input$ => input$.pipe(
+            tap(_ => patchState(store, toggleIsDeletingCard())),
+            switchMap(_ => store._warehouseService.deleteWarehouseCard(store.selectedCard()?.id || 0).pipe(
+                handleApiResponse(store._toaster, {
+                    successMessage: 'Karta byly smazána!',
+                    onSuccess: cards => {
+                        patchState(store, { cards: cards });
+                        patchState(store, toggleIsDeletingCard());
+                    },
+                    onError: () => patchState(store, toggleIsDeleting())
+                })
+            ))
+        ));
 
-        const getWarehouseItems = store.apiMethod<void, WarehouseItem[]>(
-            _ => store._warehouseService.getAllWarehouseItems(),
-            {
-                loading: () => patchState(store, toggleIsLoading()),
-                success: items => patchState(store, { warehouseItems: items })
-            }
-        );
+        const getWarehouseItems = rxMethod<void>(input$ => input$.pipe(
+            tap(_ => patchState(store, toggleIsLoading())),
+            switchMap(_ => store._warehouseService.getAllWarehouseItems().pipe(
+                handleApiResponse(store._toaster, {
+                    onSuccess: items => {
+                        patchState(store, { warehouseItems: items });
+                        patchState(store, toggleIsLoading());
+                    },
+                    onError: () => patchState(store, toggleIsLoading())
+                })
+            ))
+        ));
 
-        const deleteWarehouseItem = store.apiMethod<WarehouseItem, WarehouseItem[]>(
-            warehouseItem => store._warehouseService.deleteWarehouseItem(warehouseItem.id),
-            {
-                successMessage: 'Položka byla smazána',
-                loading: () => patchState(store, toggleIsLoading()),
-                success: items => patchState(store, { warehouseItems: items })
-            }
-        );
+        const deleteWarehouseItem = rxMethod<WarehouseItem>(input$ => input$.pipe(
+            tap(_ => patchState(store, toggleIsLoading())),
+            switchMap(warehouseItem => store._warehouseService.deleteWarehouseItem(warehouseItem.id).pipe(
+                handleApiResponse(store._toaster, {
+                    successMessage: 'Položka byla smazána',
+                    onSuccess: items => {
+                        patchState(store, { warehouseItems: items });
+                        patchState(store, toggleIsLoading());
+                    },
+                    onError: () => patchState(store, toggleIsLoading())
+                })
+            ))
+        ));
 
-        const createPdf = store.apiMethod<void, any>(
-            _ => store._warehouseService.createPDF(store.cards()),
-            {
-                loading: () => patchState(store, toggleIsPdfLoading()),
-                success: file => downloadPdf(file, `Sklad - ${store.cards()[0].monthYearName} - ${store.cards()[0].destination}.pdf`)
-            }
-        );
+        const createPdf = rxMethod<void>(input$ => input$.pipe(
+            tap(_ => patchState(store, toggleIsPdfLoading())),
+            switchMap(_ => store._warehouseService.createPDF(store.cards()).pipe(
+                handleApiResponse(store._toaster, {
+                    onSuccess: file => {
+                        downloadPdf(file, `Sklad - ${store.cards()[0].monthYearName} - ${store.cards()[0].destination}.pdf`);
+                        patchState(store, toggleIsPdfLoading());
+                    },
+                    onError: () => patchState(store, toggleIsPdfLoading())
+                })
+            ))
+        ));
 
-        const createWarehouseItem = store.apiMethod<WarehouseItem, WarehouseItem[]>(
-            item => store._warehouseService.createWarehouseItem(item),
-            {
-                loading: () => patchState(store, toggleIsSaving()),
-                successMessage: 'Položka byla uložena!',
-                success: items => patchState(store, { warehouseItems: items })
-            }
-        );
+        const createWarehouseItem = rxMethod<WarehouseItem>(input$ => input$.pipe(
+            tap(_ => patchState(store, toggleIsSaving())),
+            switchMap(item => store._warehouseService.createWarehouseItem(item).pipe(
+                handleApiResponse(store._toaster, {
+                    successMessage: 'Položka byla uložena!',
+                    onSuccess: items => {
+                        patchState(store, { warehouseItems: items });
+                        patchState(store, toggleIsSaving());
+                    },
+                    onError: () => patchState(store, toggleIsSaving())
+                })
+            ))
+        ));
 
-        const updateWarehouseItem = store.apiMethod<WarehouseItem, WarehouseItem[]>(
-            newItem => store._warehouseService.updateWarehouseItem(newItem),
-            {
-                loading: () => patchState(store, toggleIsSaving()),
-                successMessage: 'Položka byla změněna!',
-                success: items => patchState(store, { warehouseItems: items })
-            }
-        );
+        const updateWarehouseItem = rxMethod<WarehouseItem>(input$ => input$.pipe(
+            tap(_ => patchState(store, toggleIsSaving())),
+            switchMap(newItem => store._warehouseService.updateWarehouseItem(newItem).pipe(
+                handleApiResponse(store._toaster, {
+                    successMessage: 'Položka byla změněna!',
+                    onSuccess: items => {
+                        patchState(store, { warehouseItems: items });
+                        patchState(store, toggleIsSaving());
+                    },
+                    onError: () => patchState(store, toggleIsSaving())
+                })
+            ))
+        ));
 
-        const reorderWarehouseItems = store.apiMethod<WarehouseItem[], WarehouseItem[]>(
-            items => store._warehouseService.reorderWarehouseItems(items),
-            {
-                loading: () => patchState(store, toggleIsLoading()),
-                successMessage: 'Pořadí položek bylo změněno.',
-                success: items => patchState(store, { warehouseItems: items })
-            }
-        );
+        const reorderWarehouseItems = rxMethod<WarehouseItem[]>(input$ => input$.pipe(
+            tap(_ => patchState(store, toggleIsLoading())),
+            switchMap(items => store._warehouseService.reorderWarehouseItems(items).pipe(
+                handleApiResponse(store._toaster, {
+                    successMessage: 'Pořadí položek bylo změněno.',
+                    onSuccess: items => {
+                        patchState(store, { warehouseItems: items });
+                        patchState(store, toggleIsLoading());
+                    },
+                    onError: () => patchState(store, toggleIsLoading())
+                })
+            ))
+        ));
 
         const removeWarehouseItem = (warehouseItem: WarehouseItem) => {
             let warehouseItems = [...store.warehouseItems()]

@@ -20,6 +20,8 @@ import { UpdateProposalComponent } from "../../components/proposals/update-propo
 import { Inputs, Proposal } from "../../models/proposals/proposal.interface";
 import { downloadPdf, setTime } from "../../helpers/common-functions.helper";
 import { handleApiResponse } from "../handle-api-response.operator";
+import { AuthService } from "../../services/auth.service";
+import { AuthStore } from "../auth-store/auth.store";
 
 export const ProposalStore = signalStore({
     providedIn: 'root'
@@ -31,6 +33,7 @@ export const ProposalStore = signalStore({
         const _dialog = inject(Dialog);
         const _toaster = inject(ToasterService);
         const _proposalService = inject(ProposalsService);
+        const _auth = inject(AuthStore);
         const proposalModel = signal<Proposal>({
             timeFrom: null,
             timeTo: null
@@ -40,7 +43,8 @@ export const ProposalStore = signalStore({
             _dialog,
             _toaster,
             _proposalService,
-            proposalModel
+            proposalModel,
+            _auth
         };
     }),
     withComputed(store => {
@@ -81,7 +85,7 @@ export const ProposalStore = signalStore({
 
         const atLeastOneSavedShift = computed(() => {
             const card = store.schedules().find(c => c.destination === store.destination());
-            if (!card) {
+            if (!card || !card.users) {
                 return false;
             }
 
@@ -137,6 +141,13 @@ export const ProposalStore = signalStore({
             return sortInactiveUsers(cooks);
         });
 
+        const hasUsers = computed(() => {
+            const card = currentCard();
+            if (!card) return false;
+            if (!card.users) return false;
+            return card.users.length > 0;
+        });
+
         return {
             currentCard,
             isUnsavedPassedCard,
@@ -147,20 +158,46 @@ export const ProposalStore = signalStore({
             drivers,
             pizza,
             cooks,
-            oppositeCard
+            oppositeCard,
+            hasUsers
         }
     }),
     withMethods(store => {
         const confirmationStore = inject(ConfirmationStore);
 
+        // const uploadSchedulesShifts = rxMethod<void>(input$ => input$.pipe(
+        //     tap(_ => patchState(store, setIsLoading())),
+        //     switchMap(_ => store._proposalService.getScheduledShifts(store.monthYear()).pipe(
+        //         handleApiResponse(store._toaster, {
+        //             onSuccess: (schedules) => {
+        //                 patchState(store, setNotLoading());
+        //                 patchState(store, setSchedules(schedules));
+        //                 patchState(store, closeCalendar());
+        //             },
+        //             onError: () => patchState(store, setNotLoading())
+        //         })
+        //     ))
+        // ));
+
         const uploadSchedulesShifts = rxMethod<void>(input$ => input$.pipe(
             tap(_ => patchState(store, setIsLoading())),
             switchMap(_ => store._proposalService.getScheduledShifts(store.monthYear()).pipe(
                 handleApiResponse(store._toaster, {
-                    onSuccess: (schedules) => {
+                    onSuccess: (schedules: ProposalCard[]) => {
                         patchState(store, setNotLoading());
+
+                        if (store._auth.user()?.role !== 'Admin') {
+                            patchState(store, { destination: store._auth.user()?.destination })
+                        };
+
                         patchState(store, setSchedules(schedules));
                         patchState(store, closeCalendar());
+
+
+                        // If destination not set yet, pick first card
+                        if (!store.destination() && schedules.length > 0) {
+                            patchState(store, { destination: schedules[0].destination });
+                        }
                     },
                     onError: () => patchState(store, setNotLoading())
                 })

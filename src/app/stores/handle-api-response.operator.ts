@@ -12,14 +12,15 @@ export function handleApiResponse<T>(
 ) {
     return tapResponse<ApiResponse<T> | null>({
         next: (response) => {
-
             if (!response) {
                 toaster.error('Něco se pokazilo, zkus to znovu.');
+                config.onError?.();
                 return;
             }
 
             if (!response.isSuccess) {
                 toaster.error(response.errorMessage ?? 'Chyba serveru');
+                config.onError?.();
                 return;
             }
 

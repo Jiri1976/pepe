@@ -1,6 +1,6 @@
-import { patchState, signalStore, withHooks, withMethods, withProps, withState } from "@ngrx/signals";
+import { patchState, signalStore, withComputed, withHooks, withMethods, withProps, withState } from "@ngrx/signals";
 import { initialAuthSlice } from "./auth.slice";
-import { effect, inject } from "@angular/core";
+import { computed, effect, inject } from "@angular/core";
 import { Dialog } from '@angular/cdk/dialog';
 import { SignalService } from "../../services/signal.service";
 import { onLogin, onLogout } from "./auth.updaters";
@@ -34,6 +34,13 @@ export const AuthStore = signalStore({
             _authService
         };
     }),
+    withComputed((store => {
+        const isLoggedIn = computed(() => !!store.user());
+
+        return {
+            isLoggedIn
+        }
+    })),
     withMethods(store => {
         const onSubmit = rxMethod<{ email: string, password: string }>(input$ => input$.pipe(
             tap(_ => patchState(store, setIsLoading())),
@@ -47,7 +54,7 @@ export const AuthStore = signalStore({
                             patchState(store, setNotLoading());
                             store._toaster.error(response.errorMessage);
                         } else {
-                            patchState(store, onLogin(response.result, store._router, store._signalService))
+                            patchState(store, onLogin(response.result, store._signalService))
                             store._router.navigate(['main']);
                         }
                     },
@@ -59,7 +66,7 @@ export const AuthStore = signalStore({
         return {
             submit: (loginRequest: { email: string, password: string }) => { onSubmit(loginRequest) },
             login: (token: string) => {
-                patchState(store, onLogin(token, store._router, store._signalService));
+                patchState(store, onLogin(token, store._signalService));
                 store._router.navigate(['main']);
             },
             logOut: () => {
@@ -71,6 +78,9 @@ export const AuthStore = signalStore({
                         patchState(store, onLogout(store._dialog, store._router, store._toaster, store._signalService));
                     }, expirationDuration)
                 });
+            },
+            restoreLogin: (token: string) => {
+                patchState(store, onLogin(token, store._signalService));
             }
         }
     }),
@@ -78,14 +88,14 @@ export const AuthStore = signalStore({
         onInit: () => {
             const token = getToken();
             if (token) {
-                let expired = isTokenExpired(token);
-                if (expired) {
+                if (isTokenExpired(token)) {
                     store.logOut();
+                } else {
+                    store.restoreLogin(token);
                 }
-                store.login(token);
 
                 if (store._tokenExpirationTimer === null) {
-                    store.autoLogout(store.user()?.expireTime ?? 0)
+                    store.autoLogout(store.user()?.expireTime ?? 0);
                 }
             } else {
                 store.logOut();
@@ -94,7 +104,7 @@ export const AuthStore = signalStore({
             effect(() => {
                 if (store._tokenExpirationTimer !== null) {
                     if (store.user()?.expireTime && store.user()!.expireTime > 0) {
-                        store.autoLogout(store.user()!.expireTime)
+                        store.autoLogout(store.user()!.expireTime);
                     }
                 }
             });

@@ -23,6 +23,10 @@ export class WarehouseOverviewComponent implements OnInit {
   highlightedInputs = new Set<string>();
 
   ngOnInit(): void {
+    const user = this.authStore.user();
+    if (user?.role === 'master' && user.destination !== this.warehouseStore.destination()) {
+      this.warehouseStore.setDestination(user.destination);
+    }
     this.warehouseStore.resetMonthYaer();
     this.warehouseStore.setWarehouseNave('board');
   }

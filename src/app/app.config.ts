@@ -1,4 +1,4 @@
-import { ApplicationConfig, inject, provideEnvironmentInitializer, provideZoneChangeDetection } from '@angular/core';
+import { APP_INITIALIZER, ApplicationConfig, inject, provideAppInitializer, provideEnvironmentInitializer, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter, withViewTransitions } from '@angular/router';
 import { routes } from './app.routes';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
@@ -10,9 +10,11 @@ import { globalHttpErrorInterceptor } from './interceptor/global-http-error.inte
 import { provideHotToastConfig } from '@ngxpert/hot-toast';
 import { ToasterService } from './services/toaster.service';
 import { SignalService } from './services/signal.service';
+import { initializeAuth } from './auth.initializer';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideAppInitializer(initializeAuth),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes, withViewTransitions()),
     provideHttpClient(withInterceptors([TokenInterceptor, globalHttpErrorInterceptor]),

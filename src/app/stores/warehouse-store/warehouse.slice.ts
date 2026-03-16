@@ -15,7 +15,7 @@ export interface WarehouseSlice {
 }
 
 export const initialWarehouseSlice: WarehouseSlice = {
-    destination: '',
+    destination: 'F-M',
     monthYear: initializeMonthYear(),
     cards: [],
     sliceIndex: 0,

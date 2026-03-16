@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
-import { AdminGuard } from './guards/admin.guard';
 import { AuthGuard } from './guards/auth.guard';
-import { AdminMasterGuard } from './guards/admin-master.guard';
+import { RoleGuard } from './guards/role.guard';
 
 export const routes: Routes = [
     {
@@ -17,20 +16,20 @@ export const routes: Routes = [
     {
         path: 'main',
         loadComponent: () => import('./pages/main/main.component'),
-        canMatch: [AuthGuard],
+        canActivate: [AuthGuard],
         title: 'Hlavní strana'
     },
     {
         path: 'users',
         loadComponent: () => import('./pages/users/users.component').then(m => m.UsersComponent),
         title: 'Uživatelé',
-        canMatch: [AdminGuard],
+        canActivate: [RoleGuard],
         data: { role: 'Admin' }
     },
     {
         path: 'warehouse',
         loadComponent: () => import('./pages/warehouse/warehouse.component').then(m => m.WarehouseComponent),
-        canMatch: [AdminMasterGuard],
+        canActivate: [RoleGuard],
         title: 'Sklad',
         data: { role: ['Admin', 'Master'] },
         children: [
@@ -38,21 +37,17 @@ export const routes: Routes = [
                 path: '',
                 loadComponent: () => import('./components/warehouse/warehouse-overview/warehouse-overview.component').then(m => m.WarehouseOverviewComponent),
                 title: 'Celkový přehled',
-                canMatch: [AdminMasterGuard],
-                data: { role: ['Admin', 'Master'] },
             },
             {
                 path: 'warehouse-units',
                 loadComponent: () => import('./components/warehouse/warehouse-units/warehouse-units.component').then(m => m.WarehouseUnitsComponent),
                 title: 'Jednotlivé položky',
-                canMatch: [AdminMasterGuard],
-                data: { role: ['Admin', 'Master'] },
             },
             {
                 path: 'warehouse-items',
                 loadComponent: () => import('./components/warehouse/warehouse-items/warehouse-items.component').then(m => m.WarehouseItemsComponent),
                 title: 'Skladové položky',
-                canMatch: [AdminGuard],
+                canActivate: [RoleGuard],
                 data: { role: 'Admin' }
             }
         ]
@@ -60,14 +55,14 @@ export const routes: Routes = [
     {
         path: 'shifts',
         loadComponent: () => import('./pages/shifts/shifts.component').then(m => m.ShiftsComponent),
-        canMatch: [AdminMasterGuard],
+        canActivate: [RoleGuard],
         title: 'Směny',
         data: { role: ['Admin', 'Master'] }
     },
     {
         path: 'plans',
         loadComponent: () => import('./pages/plans/plans.component').then(m => m.PlansComponent),
-        canMatch: [AdminMasterGuard],
+        canActivate: [RoleGuard],
         title: 'Rozpis směn',
         data: { role: ['Admin', 'Master'] }
     },

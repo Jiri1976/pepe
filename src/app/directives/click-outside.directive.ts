@@ -1,27 +1,27 @@
-import { Directive, output, inject, ElementRef, Renderer2, OnDestroy } from '@angular/core';
+import { Directive, ElementRef, output, HostListener, inject } from '@angular/core';
 
 @Directive({
     selector: '[clickOutside]'
 })
-export class ClickOutsideDirective implements OnDestroy {
+export class ClickOutsideDirective {
+
     clickOutside = output<void>();
-    private readonly elementRef = inject(ElementRef);
-    private readonly renderer = inject(Renderer2);
-    private listener: (() => void) | null = null;
+    private elementRef = inject(ElementRef);
+
+    private initialized = false;
 
     constructor() {
-        this.listener = this.renderer.listen(
-            'document',
-            'click',
-            (e: Event) => {
-                if (!this.elementRef.nativeElement.contains(e.target)) {
-                    this.clickOutside.emit();
-                }
-            }
-        )
+        setTimeout(() => {
+            this.initialized = true;
+        });
     }
 
-    ngOnDestroy() {
-        this.listener?.();
+    @HostListener('document:click', ['$event'])
+    onClick(event: Event) {
+        if (!this.initialized) return;
+
+        if (!this.elementRef.nativeElement.contains(event.target)) {
+            this.clickOutside.emit();
+        }
     }
 }
