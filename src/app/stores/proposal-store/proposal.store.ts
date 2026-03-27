@@ -7,21 +7,18 @@ import { switchMap, tap } from "rxjs";
 import { withLoading } from "../custome-features/withLoading/with-loading.feature";
 import { closeCalendar, setIsLoading, setIsSaving, setNotSaving, setNotLoading, setIsDeleting, setNotDeleting, toggleCalendar, toggleIsPdfLoading } from "../custome-features/withLoading/with-loading.updaters";
 import { initialProposalSlice } from "./proposal.slice";
-import { ProposalCard } from "../../models/proposals/proposalCard.interface";
 import { ProposalsService } from "../../services/proposals.service";
 import { addFromInactive, removeFromActive, resetCalendar, setMonthYear, setOriginal, setSchedules, updatePositions, setSelectedProposal, deleteProposal, updateProposal } from "./proposals.updaters";
-import { ProposalUser } from "../../models/proposals/proposalUser.interface";
 import { deepEqual, sortInactiveUsers } from "./proposal.helpers";
 import { withConfirmation } from "../custome-features/withConfirmation/with-confirmation.feature";
 import { ConfirmationStore } from "../custome-features/withConfirmation/confirmation.store";
 import { CONFIRM_ACTIONS } from "../custome-features/withConfirmation/confirmation.actions";
-import { ProposalShift } from "../../models/proposals/proposalShift.interface";
 import { UpdateProposalComponent } from "../../components/proposals/update-proposal/update-proposal.component";
-import { Inputs, Proposal } from "../../models/proposals/proposal.interface";
 import { downloadPdf, setTime } from "../../helpers/common-functions.helper";
 import { handleApiResponse } from "../handle-api-response.operator";
 import { AuthService } from "../../services/auth.service";
 import { AuthStore } from "../auth-store/auth.store";
+import { Proposal, ProposalCard, ProposalShift, ProposalUser, Inputs } from "../../models/proposals.interface";
 
 export const ProposalStore = signalStore({
     providedIn: 'root'

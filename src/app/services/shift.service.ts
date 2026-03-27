@@ -2,8 +2,7 @@ import { inject, Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { environment } from "../../environments/environment";
 import { Response } from '../models/response.interface';
-import { Shift } from "../models/shifts/shift.interface";
-import { ShiftCard } from "../models/shifts/shiftCard.interface";
+import { Shift, ShiftCard } from "../models/shifts.interface";
 import { AuthStore } from "../stores/auth-store/auth.store";
 
 @Injectable({

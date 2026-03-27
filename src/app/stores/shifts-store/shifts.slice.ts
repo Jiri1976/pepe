@@ -1,6 +1,5 @@
 import { initializeMonthYear } from "../../helpers/common-functions.helper";
-import { Shift } from "../../models/shifts/shift.interface";
-import { ShiftCard } from "../../models/shifts/shiftCard.interface";
+import { Shift, ShiftCard } from "../../models/shifts.interface";
 
 export interface ShiftsSlice {
     readonly destination: string;

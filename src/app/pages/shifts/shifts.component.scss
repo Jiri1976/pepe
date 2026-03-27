@@ -15,39 +15,66 @@
 
 .box {
     width: 100%;
-    float: right;
     flex-direction: row;
     justify-content: center;
     align-items: center;
     position: relative;
     margin-top: 100px;
-    display: grid;
+    display: flex;
 
-    .shift-card {
-        grid-column: 1;
-        grid-row: 1;
-        min-width: 750px;
-        height: 750px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
+    // .shift-card {
+    //     grid-column: 1;
+    //     grid-row: 1;
+    //     min-width: 750px;
+    //     height: 750px;
+    //     display: flex;
+    //     flex-direction: column;
+    //     justify-content: center;
+    //     align-items: center;
 
-        swiper-container {
-            width: 740px;
-            height: 790px;
+    //     swiper-container {
+    //         width: 740px;
+    //         height: 790px;
 
-            swiper-slide {
-                background: var(--white) !important;
-                box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-            }
+    //         swiper-slide {
+    //             background: var(--white) !important;
+    //             box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    //         }
+    //     }
+    // }
+
+    // h4 {
+    //     font-weight: bold;
+    //     color: var(--main-dark);
+    //     text-align: center;
+    //     margin-top: 60px;
+    // }
+}
+
+.shift-card {
+    grid-column: 1;
+    grid-row: 1;
+    min-width: 750px;
+    height: 750px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    swiper-container {
+        width: 740px;
+        height: 790px;
+
+        swiper-slide {
+            background: var(--white) !important;
+            box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
         }
     }
+}
 
-    h4 {
-        font-weight: bold;
-        color: var(--main-dark);
-        text-align: center;
-        margin-top: 60px;
-    }
+h4 {
+    font-weight: bold;
+    color: var(--main-dark);
+    text-align: center;
+    margin-top: 60px;
 }

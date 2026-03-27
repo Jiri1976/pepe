@@ -2,11 +2,9 @@ import { inject, Injectable, signal } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { environment } from "../../environments/environment";
 import { Response } from '../models/response.interface';
-import { WarehouseItem } from "../models/warehouse/warehouse-item.interface";
-import { WarehouseUnit } from "../models/warehouse/warehouse-unit.interface";
-import { WarehouseCard } from "../models/warehouse/warehouse-card.interface";
 import { BehaviorSubject, Observable } from "rxjs";
 import { WarehouseItemsComponent } from "../components/warehouse/warehouse-items/warehouse-items.component";
+import { WarehouseItem, WarehouseCard } from "../models/warehouses.interface";
 
 @Injectable({
     providedIn: 'root'

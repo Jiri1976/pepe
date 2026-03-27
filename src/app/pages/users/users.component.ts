@@ -2,8 +2,10 @@ import { Component, inject, OnInit } from '@angular/core';
 import { UserItemComponent } from '../../components/users/user-item/user-item.component';
 import { UserPaginationComponent } from '../../components/users/user-pagination/user-pagination.component';
 import { EmptyBlockComponent } from "../../components/users/empty-block/empty-block.component";
-import { UsersNavComponent } from '../../components/users/users-nav/users-nav.component';
 import { UsersStore } from '../../stores/user-store/users.store';
+import { NavigationComponent } from "../../components/navigation/navigation.component";
+import { NavButtonComponent } from "../../components/navigation/nav-button.component";
+import { INITIAL_USER } from '../../models/users.interface';
 
 @Component({
   selector: 'app-users',
@@ -11,7 +13,8 @@ import { UsersStore } from '../../stores/user-store/users.store';
     UserItemComponent,
     UserPaginationComponent,
     EmptyBlockComponent,
-    UsersNavComponent,
+    NavigationComponent,
+    NavButtonComponent
   ],
   templateUrl: './users.component.html',
   styleUrl: './users.component.scss'
@@ -21,5 +24,9 @@ export class UsersComponent implements OnInit {
 
   ngOnInit() {
     this.store.getUsers();
+  }
+
+  createUser() {
+    this.store.selectUser(INITIAL_USER);
   }
 }

@@ -1,4 +1,4 @@
-import { User } from "../../models/users/user.interface";
+import { User } from "../../models/users.interface";
 
 export function selectUsers(users: User[], filter: 'All' | 'F-M' | 'OVA', role: 'User' | 'Master' | 'Admin' | ''): User[] {
     if (filter !== 'All') {

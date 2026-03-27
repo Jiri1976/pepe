@@ -1,8 +1,6 @@
 import { PartialStateUpdater } from "@ngrx/signals";
 import { ShiftsSlice } from "./shifts.slice";
-import { UniqueUser } from "../../models/shifts/uniqueUser.interface";
-import { ShiftCard } from "../../models/shifts/shiftCard.interface";
-import { Shift } from "../../models/shifts/shift.interface";
+import { Shift, ShiftCard, UniqueUser } from "../../models/shifts.interface";
 import { isFridayOrSaturday } from "../../helpers/common-functions.helper";
 
 export function setSelectedCardPosition(position: string): PartialStateUpdater<ShiftsSlice> {

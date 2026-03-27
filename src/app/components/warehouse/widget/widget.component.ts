@@ -1,9 +1,9 @@
 import { Component, inject, input, signal } from '@angular/core';
 import { WidgetUpdateComponent } from "../widget-update/widget-update.component";
 import { CdkDrag, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
-import { WarehouseItem } from '../../../models/warehouse/warehouse-item.interface';
 import { WidgetAddComponent } from "../widget-add/widget-add.component";
 import { WarehouseStore } from '../../../stores/warehouse-store/warehouse.store';
+import { WarehouseItem } from '../../../models/warehouses.interface';
 
 @Component({
   selector: 'app-widget',

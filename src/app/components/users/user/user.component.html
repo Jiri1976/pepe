@@ -1,15 +1,17 @@
-<form autocomplete="no">
+<form autocomplete="no" class="p-4 rounded-3 w-100">
     <div class="row">
-        <div class="col-4">
-            <div class="avatar" (click)="selectImage()">
+        <div class="col-4 d-flex flex-column align-items-center">
+            <div class="avatar justify-content-center d-flex align-items-center position-relative rounded-circle mt-2"
+                (click)="selectImage()">
                 @if (displayedImageSrc()) {
-                <img [src]="displayedImageSrc()" alt="Selected" />
-                <button class="remove-btn" type="button" (click)="removeImage($event)">
+                <img [src]="displayedImageSrc()" alt="Selected" class="rounded-circle" />
+                <button class="remove-btn position-absolute text-white rounded-circle text-bold" type="button"
+                    (click)="removeImage($event)">
                     &times;
                 </button>
                 } @else {
-                <img class="blank" src="person.png" alt="No image" />
-                <button class="nofocus-btn" type="button"></button>
+                <img class="blank rounded-circle" src="person.png" alt="No image" />
+                <button class="nofocus-btn bg-white position-absolute" type="button"></button>
                 }
             </div>
             <input #imagePicker type="file" style="display: none;" (change)="onFileSelected($event)" accept="image/*" />
@@ -18,66 +20,55 @@
             <div class="card flex justify-end">
                 <div class="row mt-3">
                     <div class="col-6">
-                        @let nameError = getError(form.name());
-                        <input type="text" id="userName" [formField]="form.name" placeholder="Jméno" autocomplete="no"
-                            (keydown.enter)="onSubmit()">
-                        <div class="blockError">
-                            @if(nameError) {
-                            <div class="error" [style.display]="'block'">
-                                {{ nameError }}</div>
-                            }
-                        </div>
+                        <app-field>
+                            <input type="text" id="userName" [formField]="form.name" placeholder="Jméno"
+                                autocomplete="no" (keydown.enter)="onSubmit()">
+
+                            <div class="counter" [class.counterError]="form.name().touched() && form.name().invalid()">
+                                {{ form.name().value().length }}/ {{ USER_MAX_NAME }}
+                            </div>
+                        </app-field>
                     </div>
                     <div class="col-6">
-                        @let surnameError = getError(form.surname());
-                        <input type="text" id="userSurname" [formField]="form.surname" placeholder="Příjmení"
-                            autocomplete="no" (keydown.enter)="onSubmit()">
-                        <div class="blockError">
-                            @if(surnameError) {
-                            <div class="error" [style.display]="'block'">
-                                {{ surnameError }}</div>
-                            }
-                        </div>
+                        <app-field>
+                            <input type="text" id="userSurname" [formField]="form.surname" placeholder="Příjmení"
+                                autocomplete="no" (keydown.enter)="onSubmit()">
+                            <div class="counter">
+                                {{ form.surname().value().length }}/ {{ USER_MAX_SURNAME }}
+                            </div>
+                        </app-field>
                     </div>
                 </div>
                 <div class="row mt-4">
                     <div class="col-6">
-                        @let emailError = getError(form.email());
-                        <input type="text" placeholder="Email" autocomplete="no" id="email" [formField]="form.email"
-                            (keydown.enter)="onSubmit()">
-                        <div class="blockError">
-                            @if(emailError) {
-                            <div class="error" [style.display]="'block'">
-                                {{ emailError }}</div>
-                            }
-                        </div>
+                        <app-field>
+                            <input type="text" placeholder="Email" autocomplete="no" id="email" [formField]="form.email"
+                                (keydown.enter)="onSubmit()">
+                        </app-field>
                     </div>
                     <div class="col-6">
-                        @let passwordError = getError(form.password());
-                        <input type="password" placeholder="Heslo" autocomplete="no" [formField]="form.password"
-                            (keydown.enter)="onSubmit()">
-                        <div class="blockError">
-                            @if(passwordError) {
-                            <div class="error" [style.display]="'block'">
-                                {{ passwordError }}</div>
-                            }
-                        </div>
+                        <app-field>
+                            <input type="password" placeholder="Heslo" autocomplete="no" [formField]="form.password"
+                                (keydown.enter)="onSubmit()">
+                        </app-field>
                     </div>
                 </div>
                 <div class="row p-4">
                     <div class="col-10 offset-1">
                         <div class="btn-group selectors" role="group">
                             <input type="radio" class="btn-check" id="btnrole1" [formField]="form.role" value="Admin">
-                            <label class="btn btn-outline-primary no-border-radius" for="btnrole1"
-                                [class.disabled]="form.role().disabled()">Admin</label>
+                            <label
+                                class="btn btn-outline-primary left-radius d-flex align-items-center justify-content-center"
+                                for="btnrole1" [class.disabled]="form.role().disabled()">Admin</label>
 
                             <input type="radio" class="btn-check" id="btnrole2" [formField]="form.role" value="Master">
-                            <label class="btn btn-outline-primary center-one" for="btnrole2"
-                                [class.disabled]="form.role().disabled()">Master</label>
-
+                            <label
+                                class="btn btn-outline-primary center-one  d-flex align-items-center justify-content-center"
+                                for="btnrole2" [class.disabled]="form.role().disabled()">Master</label>
                             <input type="radio" class="btn-check" id="btnrole3" [formField]="form.role" value="User">
-                            <label class="btn btn-outline-primary no-border-radius" for="btnrole3"
-                                [class.disabled]="form.role().disabled()">User</label>
+                            <label
+                                class="btn btn-outline-primary right-radius  d-flex align-items-center justify-content-center"
+                                for="btnrole3" [class.disabled]="form.role().disabled()">User</label>
                         </div>
                     </div>
                 </div>
@@ -130,18 +121,19 @@
             </p-fieldset>
         </div>
     </div>
-    <div class="row mt-3">
-        <div class="col-4 offset-4 isActive">
+    <div class="row mt-4">
+        <div class="col-4 offset-4 d-flex flex-row justify-content-center">
             <p-checkbox binary="true" [formField]="form.isActive" />
-            <label class="ml-2"> Aktivní </label>
+            <label class="ml-2 fw-bolder"> Aktivní </label>
         </div>
     </div>
     <div class="row mt-4">
-        <div class="col-8 offset-2 buttons">
-            <button class="cancel" (click)="onGoBack()" type="button"><i
-                    class="bi bi-caret-left"></i>&nbsp;Zpět</button>
+        <div class="col-8 offset-2 buttons d-flex flex-row align-items-center justify-content-between">
+            <button class="cancel d-flex justify-content-center align-items-center p-0 text-white" (click)="onGoBack()"
+                type="button"><i class="bi bi-caret-left"></i>&nbsp;Zpět</button>
             @if (user()!.id > 1) {
-            <button class="delete" (click)="onDelete()" type="button" [disabled]="usersStore.isDeleting()">
+            <button class="delete d-flex justify-content-center align-items-center p-0 text-white" (click)="onDelete()"
+                type="button" [disabled]="usersStore.isDeleting()">
                 @if (!usersStore.isDeleting()) {
                 <i class="bi bi-trash"></i>&nbsp;Smazat
                 } @else {
@@ -150,16 +142,15 @@
                 }
             </button>
             }
-            @if (!usersStore.isSaving()) {
-            <button type="button" class="submit" (click)="onSubmit()" [disabled]="form().invalid() || isUnchanged()"><i
-                    class="bi bi-plus"></i> {{
-                user()?.id === 0 ? 'Přidat' : 'Upravit' }}</button>
-            } @else {
-            <button class="submit loading" type="button">
+            <button type="button" class="submit d-flex justify-content-center align-items-center p-0 text-white fw-bold"
+                (click)="onSubmit()" [disabled]="form().invalid() || isUnchanged() || usersStore.isSaving()">
+                @if (!usersStore.isSaving()) {
+                <i class="bi bi-plus"></i> {{ user()?.id === 0 ? 'Přidat' : 'Upravit' }}
+                } @else {
                 <span class="spinner-border spinner-border-sm text-white me-1" aria-hidden="true"></span>
                 {{ user()?.id === 0 ? 'Přidávám ...' : 'Upravuji ...' }}
+                }
             </button>
-            }
         </div>
     </div>
 </form>

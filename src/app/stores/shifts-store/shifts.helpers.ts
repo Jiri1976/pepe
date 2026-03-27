@@ -1,5 +1,5 @@
 import { maxLength, required, SchemaPathTree, validate } from "@angular/forms/signals";
-import { ShiftModel } from "../../models/shifts/shift.interface";
+import { ShiftModel } from "../../models/shifts.interface";
 
 export function buildShift(a: SchemaPathTree<ShiftModel>) {
     required(a.date, { message: 'Datum je povinný' })

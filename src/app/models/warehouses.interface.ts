@@ -1,5 +1,3 @@
-import { WarehouseUnit } from "./warehouse-unit.interface";
-
 export interface WarehouseCard {
     id: number,
     warehouseItemId: number,
@@ -21,4 +19,18 @@ export interface OverviewLine {
 
 export interface OverviewCard {
     lines: OverviewLine[]
+}
+
+export interface WarehouseUnit {
+    id: number,
+    warehouseCardId: number,
+    warehouseItemId: number,
+    date: string,
+    amount?: number
+}
+
+export interface WarehouseItem {
+    id: number,
+    name: string,
+    position: number
 }

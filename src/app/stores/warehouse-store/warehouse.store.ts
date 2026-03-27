@@ -11,17 +11,15 @@ import { MONTHS_NUM } from "../../helpers/common-constants.helper";
 import { initialWarehouseSlice } from "./warehouse.slice";
 import { WarehouseService } from "../../services/warehouse.service";
 import { SignalService } from "../../services/signal.service";
-import { OverviewCard, OverViewDay, OverviewLine, WarehouseCard } from "../../models/warehouse/warehouse-card.interface";
 import { Router } from "@angular/router";
 import { updateCards } from "./warehouse.updaters";
-import { WarehouseUnit } from "../../models/warehouse/warehouse-unit.interface";
-import { WarehouseItem } from "../../models/warehouse/warehouse-item.interface";
 import { WarehouseItemForm } from "./warehouse.helpers";
 import { downloadPdf } from "../../helpers/common-functions.helper";
 import { withApiMethods } from "../custome-features/withApiMethods/with-api-methods.feature";
 import { rxMethod } from "@ngrx/signals/rxjs-interop";
 import { tap, switchMap } from "rxjs";
 import { handleApiResponse } from "../handle-api-response.operator";
+import { OverviewCard, OverviewLine, OverViewDay, WarehouseCard, WarehouseItem, WarehouseUnit } from "../../models/warehouses.interface";
 
 export const WarehouseStore = signalStore({
     providedIn: 'root'

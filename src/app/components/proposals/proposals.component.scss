@@ -7,10 +7,8 @@
     margin-top: 2rem;
 
     h4 {
-        font-weight: bold;
         color: var(--main-dark);
         margin-top: 150px;
-        text-align: center;
     }
 
     .wrapper {
@@ -19,12 +17,7 @@
         margin-top: 90px;
 
         .table {
-            display: flex;
-            flex-direction: column;
-
             .table-head {
-                display: flex;
-                flex-direction: row;
                 margin-bottom: 10px;
 
                 .user-name {
@@ -32,38 +25,21 @@
                     margin-right: 10px;
                     border: 1px solid var(--main-dark);
                     background: var(--main-dark);
-                    color: var(--white);
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                    align-items: center;
-                    overflow: hidden;
                     white-space: nowrap;
                     text-overflow: ellipsis;
-                    font-weight: bold;
+                    border-radius: 7px;
                 }
 
                 .cell {
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                    border: 1px solid var(--main-dark);
-                    padding: 0 8px;
+                    border: 1px solid var(--main-disabled);
+                    padding: 10px;
                     background-color: var(--background-color);
                     width: 35px !important;
                     height: 35px !important;
-                    color: var(--black);
-
-                    .cell-date {
-                        font-size: 0.8rem;
-                        text-align: center;
-                        font-weight: 700;
-                    }
+                    border-radius: 7px;
 
                     .cell-week-day {
-                        font-size: 0.7rem;
-                        text-align: center;
-                        font-weight: 700;
+                        font-size: 0.8rem;
                     }
                 }
 
@@ -84,25 +60,19 @@
 
             .body {
                 .table-row {
-                    display: flex;
-                    flex-direction: row;
                     margin: 5px 0;
 
                     .user-name-cell {
                         height: 35px;
                         width: 150px !important;
                         background-color: var(--background-color);
-                        border: 1px solid var(--main-dark);
+                        border: 1px solid var(--main-disabled);
                         margin-right: 10px;
-                        display: flex;
-                        flex-direction: column;
-                        justify-content: center;
+                        border-radius: 7px;
                         overflow: hidden;
                         white-space: nowrap;
                         text-overflow: ellipsis;
-                        color: var(--black);
                         padding-left: 5px;
-                        font-weight: 600;
                     }
 
                     .user-name-cell[cdkDragHandle] {
@@ -124,20 +94,16 @@
                     .drop-zone {
                         width: 35px !important;
                         height: 35px !important;
-                        border: 1px solid var(--main-dark);
+                        border: 1px solid var(--main-disabled);
                         padding: 0 8px;
-                        display: flex;
-                        flex-direction: column;
-                        justify-content: center;
-                        align-items: center;
                         margin-right: 2px;
                         background-color: var(--background-color);
+                        border-radius: 7px;
                     }
 
                     .drop-zone.last {
                         border-color: var(--main-red);
                         background: var(--main-red);
-                        color: var(--white);
                         margin-left: 10px;
 
                         .bi {

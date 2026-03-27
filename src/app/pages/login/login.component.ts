@@ -3,6 +3,8 @@ import { ToasterService } from '../../services/toaster.service';
 import { SignalService } from '../../services/signal.service';
 import { AuthStore } from '../../stores/auth-store/auth.store';
 import { form, email, required, FormField, } from '@angular/forms/signals';
+import { FieldWrapperComponent } from "../../components/filed-wrapper/field-wrapper.component";
+import { FieldStyleDirective } from '../../directives/field-styling.directive';
 
 interface LoginForm {
   email: string;
@@ -11,7 +13,7 @@ interface LoginForm {
 
 @Component({
   selector: 'app-login',
-  imports: [FormField],
+  imports: [FormField, FieldWrapperComponent, FieldStyleDirective],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })

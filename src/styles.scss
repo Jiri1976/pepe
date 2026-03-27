@@ -31,115 +31,104 @@
     font-optical-sizing: auto;
 }
 
+// p-dialog {
+//     .p-dialog-mask {
+//         .p-dialog.p-component {
 
-p-dialog {
-    .p-dialog-mask {
-        .p-dialog.p-component {
+//             .p-dialog-header {
+//                 span {
+//                     font-weight: 500;
+//                 }
 
-            .p-dialog-header {
-                span {
-                    font-weight: 500;
-                }
+//                 .p-dialog-header-actions {
+//                     .p-dialog-close-button {
+//                         display: none !important;
+//                     }
+//                 }
+//             }
 
-                .p-dialog-header-actions {
-                    .p-dialog-close-button {
-                        display: none !important;
-                    }
-                }
-            }
+//             .p-dialog-content {
+//                 .buttons {
+//                     display: flex;
+//                     justify-content: end;
+//                     margin-top: 10px;
+//                 }
 
-            .p-dialog-content {
-                .buttons {
-                    display: flex;
-                    justify-content: end;
-                    margin-top: 10px;
-                }
-
-                p-button {
-                    .p-button {
-                        height: 30px !important;
-                        width: 90px !important;
-                        font-size: 0.9rem;
-                    }
-                }
-            }
-        }
-    }
-}
-
-//p-dialog {
-//     .p-dialog-mask.p-overlay-mask {
-//         z-index: 9999 !important;
+//                 p-button {
+//                     .p-button {
+//                         height: 30px !important;
+//                         width: 90px !important;
+//                         font-size: 0.9rem;
+//                     }
+//                 }
+//             }
+//         }
 //     }
 // }
 
-// .p-dialog-mask.p-overlay-mask {
-//     z-index: 9999 !important;
+// .p-dialog.p-confirmdialog {
+//     border-radius: 0 !important;
+//     background: var(--black) !important;
+//     border: 2px solid var(--black) !important;
+//     color: var(--white);
+
+//     .p-dialog-header {
+//         display: flex;
+//         justify-content: center;
+//         text-transform: uppercase;
+
+//         .p-dialog-header-actions {
+//             display: none !important;
+//         }
+//     }
+
+//     .p-dialog-content {
+//         .p-confirmdialog-message {
+//             font-weight: 500;
+//         }
+
+//         .pi {
+//             color: var(--white) !important;
+//         }
+//     }
 // }
 
-.p-dialog.p-confirmdialog {
-    border-radius: 0 !important;
-    background: var(--black) !important;
-    border: 2px solid var(--black) !important;
-    color: var(--white);
+// p-dialog.select-user {
+//     .p-dialog-mask {
+//         .p-dialog.p-component {
+//             margin-left: 10rem !important;
+//         }
+//     }
+// }
 
-    .p-dialog-header {
-        display: flex;
-        justify-content: center;
-        text-transform: uppercase;
+// p-dialog.create-unit {
+//     .p-dialog-mask {
+//         .p-dialog.p-component {
+//             height: 240px !important;
+//         }
+//     }
+// }
 
-        .p-dialog-header-actions {
-            display: none !important;
-        }
-    }
+// .p-button {
+//     border-radius: 0 !important;
+//     margin: 5px;
+//     outline: none;
+//     box-shadow: none;
+//     border: none;
+//     width: 90px;
+// }
 
-    .p-dialog-content {
-        .p-confirmdialog-message {
-            font-weight: 500;
-        }
+// .p-confirm-dialog-accept {
+//     background: var(--main-green);
+//     color: var(--white);
+// }
 
-        .pi {
-            color: var(--white) !important;
-        }
-    }
-}
-
-p-dialog.select-user {
-    .p-dialog-mask {
-        .p-dialog.p-component {
-            margin-left: 10rem !important;
-        }
-    }
-}
-
-p-dialog.create-unit {
-    .p-dialog-mask {
-        .p-dialog.p-component {
-            height: 240px !important;
-        }
-    }
-}
-
-.p-button {
-    border-radius: 0 !important;
-    margin: 5px;
-    outline: none;
-    box-shadow: none;
-    border: none;
-    width: 90px;
-}
-
-.p-confirm-dialog-accept {
-    background: var(--main-green);
-    color: var(--white);
-}
-
-.p-dialog-footer {
-    display: flex;
-    flex-direction: row;
-    justify-content: center !important;
-    align-items: center;
-}
+// .p-dialog-footer {
+//     display: flex;
+//     flex-direction: row;
+//     justify-content: center !important;
+//     align-items: center;
+// }
 
 .proposal-calendar {
     p-datepicker {
@@ -524,7 +513,7 @@ p-datepicker.proposal {
         width: 70px !important;
         border: 1px solid var(--main-dark);
         color: var(--main-dark);
-        border-radius: 0;
+        border-radius: 7px;
         font-weight: 500;
     }
 
@@ -549,7 +538,7 @@ p-datepicker.proposal {
 
 .drag-item.cdk-drag-dragging {
     border: 2px solid #e2e2e2 !important;
-    // border-radius: 20px !important;
+    border-radius: 7px !important;
     color: var(--main-dark);
     background: #e2e2e2;
 }
@@ -558,7 +547,7 @@ p-datepicker.proposal {
     max-width: 100% !important;
     box-sizing: border-box !important;
     border: 2px solid #e2e2e2 !important;
-    // border-radius: 20px !important;
+    border-radius: 7px !important;
     overflow: hidden !important;
     background: #e2e2e2;
     color: var(--main-dark);
@@ -582,7 +571,7 @@ p-datepicker.proposal {
     height: 35px;
     width: 150px !important;
     background-color: var(--background-color);
-    border: 1px solid var(--main-dark);
+    border: 1px solid var(--main-disabled);
     margin-right: 10px;
     display: flex;
     flex-direction: column;
@@ -592,12 +581,13 @@ p-datepicker.proposal {
     text-overflow: ellipsis;
     color: var(--main-dark);
     padding-left: 5px;
+    border-radius: 7px;
 }
 
 .cdk-drag-preview.table-row .drop-zone {
     width: 35px !important;
     height: 35px !important;
-    border: 1px solid var(--main-dark);
+    border: 1px solid var(--main-disabled);
     padding: 0 8px;
     display: flex;
     flex-direction: column;
@@ -605,6 +595,7 @@ p-datepicker.proposal {
     align-items: center;
     margin-right: 2px;
     background-color: var(--background-color);
+    border-radius: 7px;
 }
 
 .cdk-drag-preview.table-row .drop-zone.last {
@@ -612,6 +603,7 @@ p-datepicker.proposal {
     background: var(--main-red);
     color: var(--white);
     margin-left: 10px;
+    border-radius: 7px;
 }
 
 .cdk-drag-preview.table-row .drop-zone.last .bi {
@@ -648,7 +640,7 @@ p-toast {
 }
 
 .p-fieldset {
-    border-radius: 0 !important;
+    border-radius: 7px !important;
     display: flex;
     flex-direction: row;
     width: 100%;
@@ -701,7 +693,7 @@ p-toast {
 
 p-checkbox {
     .p-checkbox-box {
-        border-radius: 0 !important;
+        border-radius: 5px !important;
         border: 1px solid var(--main-dark);
         color: var(--white);
     }

@@ -118,10 +118,15 @@ export function getInitialDestination(defaultDest: string): string {
     const authStore = inject(AuthStore);
     const user = authStore.user();
 
-    // Only override for master users
     if (user?.role === 'master' && user.destination) {
         return user.destination;
     }
-
     return defaultDest;
+}
+
+export function maxLenValidator(max: number, message: string) {
+    return ({ value }: { value: () => string }) =>
+        value().length > max
+            ? { kind: 'maxLength', message }
+            : null;
 }

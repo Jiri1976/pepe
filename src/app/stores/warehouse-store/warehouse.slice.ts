@@ -1,7 +1,5 @@
 import { initializeMonthYear } from "../../helpers/common-functions.helper";
-import { WarehouseCard } from "../../models/warehouse/warehouse-card.interface";
-import { WarehouseItem } from "../../models/warehouse/warehouse-item.interface";
-import { WarehouseUnit } from "../../models/warehouse/warehouse-unit.interface";
+import { WarehouseCard, WarehouseUnit, WarehouseItem } from "../../models/warehouses.interface";
 
 export interface WarehouseSlice {
     readonly destination: string;

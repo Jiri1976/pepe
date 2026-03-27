@@ -1,31 +1,30 @@
-<div class="wrapper">
-    <div class="container main">
+<div class="wrapper d-flex flex-column justify-content-center h-100">
+    <div class="container main d-flex justify-content-center mb-5">
         <div class="row">
-            <div class="col-md-6 side-image">
+            <div class="col-md-6 side-image position-relative">
             </div>
-            <div class="col-md-6 right">
+            <div class="col-md-6 right d-flex justify-content-center align-items-center position-relative">
                 <div class="input-box">
-                    <form>
-                        <div class="input-field">
+                    <form class="d-flex flex-column align-items-center">
+                        <app-field [displayErrors]="false">
                             <i class="bi bi-envelope"></i>
                             <input type="text" class="input" id="email" autocomplete="off" [formField]="form.email"
                                 (keydown.enter)="onSubmit()">
-                        </div>
-                        <div class="input-field second">
+                        </app-field>
+                        <app-field [displayErrors]="false" class="mt-4">
                             <i class="bi bi-lock"></i>
-                            <input type="password" class="input" id="pass" [formField]="form.password"
-                                (keydown.enter)="onSubmit()">
-                        </div>
-                        @if (!store.isLoading()) {
-                        <button type="button" class="submit" (click)="onSubmit()"
-                            [disabled]="form().invalid()">Přihlásit
-                            se</button>
-                        } @else {
-                        <button class="submit loading" type="button" disabled>
+                            <input type="password" class="input" id="pass" autocomplete="off"
+                                [formField]="form.password" (keydown.enter)="onSubmit()">
+                        </app-field>
+                        <button type="button" class="submit mt-4 fw-bold w-75 border-0" (click)="onSubmit()"
+                            [disabled]="form().invalid()" [disabled]="store.isLoading()">
+                            @if (!store.isLoading()) {
+                            Přihlásit se
+                            } @else {
                             <span class="spinner-border spinner-border-sm text-white me-1" aria-hidden="true"></span>
                             Přihlašuji se ...
+                            }
                         </button>
-                        }
                     </form>
                 </div>
             </div>

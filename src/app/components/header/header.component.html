@@ -19,7 +19,7 @@
                 {{user?.name }} - {{ user?.role }}
             </button>
             @if (isShown()) {
-            <ul class="menu text-center" animate.enter="enter-animation">
+            <ul class="dropdown-menu text-center" animate.enter="enter-animation">
                 <li hide><a class="dropdown-item" (click)="navigate('/users')">Uživatelé</a></li>
                 <li><a class="dropdown-item" (click)="navigate('/plans')">Rozpis směn</a></li>
                 <li><a class="dropdown-item" (click)="navigate('/shifts')">Směny</a></li>

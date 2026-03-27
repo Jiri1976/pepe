@@ -1,5 +1,5 @@
 import { Component, inject, input } from '@angular/core';
-import { User } from '../../../models/users/user.interface';
+import { User } from '../../../models/users.interface';
 import { UsersStore } from '../../../stores/user-store/users.store';
 
 @Component({

@@ -25,11 +25,24 @@
     </div>
     }
 
-    <app-users-nav animate.enter="fade-in" animate.leave="fade-out" />
+    @let filter = store.filter;
+    @let role = store.role;
+
+    <app-navigation animate.enter="fade-in" animate.leave="fade-out">
+        <app-nav-button (click)="createUser()" icon="bi-person-add" />
+        <app-nav-button [loading]="store.isLoading()" (click)="store.getUsers()" icon="bi-arrow-clockwise" />
+        <app-nav-button [inactive]="filter() !== 'F-M'" (click)="store.setFilter('F-M')" label="F-M" />
+        <app-nav-button [inactive]="filter() !== 'OVA'" (click)="store.setFilter('OVA')" label="OVA" />
+        <app-nav-button [inactive]="role() !== 'User'" (click)="store.setRole('User')" label="U" />
+        <app-nav-button [inactive]="role() !== 'Master'" (click)="store.setRole('Master')" label="M" />
+        <app-nav-button [inactive]="role() !== 'Admin'" (click)="store.setRole('Admin')" label="A" />
+        <app-nav-button [inactive]="filter() !== 'All' || role() !== ''" (click)="store.setFilter('All')" label="VŠE" />
+    </app-navigation>
 
     @if (store.filteredUsers().length > 0) {
     <div class="pagination-div" animate.enter="fade-in" animate.leave="fade-out">
         <app-user-pagination />
     </div>
     }
+
 </div>

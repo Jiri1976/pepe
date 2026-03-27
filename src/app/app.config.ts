@@ -1,4 +1,4 @@
-import { APP_INITIALIZER, ApplicationConfig, inject, provideAppInitializer, provideEnvironmentInitializer, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, inject, provideAppInitializer, provideEnvironmentInitializer, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter, withViewTransitions } from '@angular/router';
 import { routes } from './app.routes';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
@@ -17,8 +17,10 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(initializeAuth),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes, withViewTransitions()),
-    provideHttpClient(withInterceptors([TokenInterceptor, globalHttpErrorInterceptor]),
-      withFetch()),
+    provideHttpClient(
+      withInterceptors([TokenInterceptor, globalHttpErrorInterceptor]),
+      withFetch()
+    ),
     providePrimeNG(
       {
         theme: {

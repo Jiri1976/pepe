@@ -2,7 +2,7 @@ import { inject, Injectable, signal } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { environment } from "../../environments/environment";
 import { Response } from '../models/response.interface';
-import { ProposalCard } from "../models/proposals/proposalCard.interface";
+import { ProposalCard } from "../models/proposals.interface";
 
 @Injectable({
     providedIn: 'root'

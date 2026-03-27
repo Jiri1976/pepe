@@ -2,13 +2,13 @@
     position: fixed;
     height: 100%;
     z-index: 9999;
-}
 
-.warehouse-calendar {
-    width: 190px;
-    height: 50px;
-    position: absolute;
-    top: 70px;
-    left: 10px !important;
-    z-index: 999999;
+    .warehouse-calendar {
+        width: 190px;
+        height: 50px;
+        position: absolute;
+        top: 70px;
+        left: 10px !important;
+        z-index: 999999;
+    }
 }

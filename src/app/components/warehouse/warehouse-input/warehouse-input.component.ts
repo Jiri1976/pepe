@@ -1,10 +1,10 @@
 import { Component, effect, inject, input, signal } from '@angular/core';
-import { WarehouseUnit } from '../../../models/warehouse/warehouse-unit.interface';
 import { ButtonModule } from 'primeng/button';
 import { WarehouseStore } from '../../../stores/warehouse-store/warehouse.store';
 import { AuthStore } from '../../../stores/auth-store/auth.store';
 import { disabled, form, FormField, pattern } from '@angular/forms/signals';
 import { isToday, isNotTomorrow } from '../../../helpers/common-functions.helper';
+import { WarehouseUnit } from '../../../models/warehouses.interface';
 
 interface UnitForm {
   amount: string;

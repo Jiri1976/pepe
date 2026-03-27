@@ -1,5 +1,22 @@
 <div class="sidenav">
-    <app-shifts-nav animate.enter="fade-in" animate.leave="fade-out" #nav />
+    @let hideForMaster = authStore.user()?.role !== 'Admin';
+
+    <app-navigation animate.enter="fade-in" animate.leave="fade-out" #nav>
+        <app-nav-button [hidden]="hideForMaster" (click)="shiftsStore.addShift()" icon="bi-plus" class="save" />
+        <app-nav-button [hidden]="!hideForMaster" (click)="!shiftsStore.isPastCard() && shiftsStore.addShift()"
+            [disabled]="shiftsStore.isPastCard() === true" icon="bi-plus" class="save" />
+        <app-nav-button (click)="onToggleCalendar($event)" icon="bi-calendar" #toggleBtn />
+
+        <app-nav-button (click)="shiftsStore.uniqueUsers().length > 0 && openModal()" icon="bi-people"
+            [disabled]="shiftsStore.uniqueUsers().length === 0" />
+        <app-nav-button (click)="shiftsStore.getCards()" icon="bi-arrow-clockwise" />
+        <app-nav-button (click)="changeDestination('F-M')" label="F-M" [hidden]="hideForMaster"
+            [inactive]="shiftsStore.destination() !== 'F-M'" />
+        <app-nav-button (click)="changeDestination('OVA')" label="OVA" [hidden]="hideForMaster"
+            [inactive]="shiftsStore.destination() !== 'OVA'" />
+        <app-nav-button [hidden]="hideForMaster" (click)="shiftsStore.allToPdf()" icon="bi-filetype-pdf"
+            [disabled]="shiftsStore.pdfCards().length === 0" [loading]="shiftsStore.isPdfLoading()" />
+    </app-navigation>
 </div>
 
 <div class="shifts-calendar">

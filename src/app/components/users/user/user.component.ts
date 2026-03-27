@@ -3,10 +3,12 @@ import { FieldsetModule } from 'primeng/fieldset';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ToasterService } from '../../../services/toaster.service';
 import { UsersStore } from '../../../stores/user-store/users.store';
-import { disabled, email, FormField, FieldState, form, maxLength, required, validate } from '@angular/forms/signals';
-import { INITIAL_USER, User } from '../../../models/users/user.interface';
+import { disabled, email, FormField, form, required, validate } from '@angular/forms/signals';
+import { INITIAL_USER, User, UserDestination } from '../../../models/users.interface';
 import { environment } from '../../../../environments/environment';
-import { UserDestination } from '../../../models/users/userDestination.interface';
+import { FieldWrapperComponent } from "../../filed-wrapper/field-wrapper.component";
+import { FieldStyleDirective } from '../../../directives/field-styling.directive';
+import { maxLenValidator } from '../../../helpers/common-functions.helper';
 
 const DESTINATIONS = ['F-M', 'OVA'] as const;
 const POSITIONS = ['Driver', 'Cook', 'Helper', 'Pizza'] as const;
@@ -51,13 +53,16 @@ function atLeastOnePositionSelected(destinations: Positions) {
 @Component({
   selector: 'app-user',
   standalone: true,
-  imports: [FieldsetModule, CheckboxModule, FormField],
+  imports: [FieldsetModule, CheckboxModule, FormField, FieldWrapperComponent, FieldStyleDirective],
   templateUrl: './user.component.html',
   styleUrl: './user.component.scss'
 })
 export class UserComponent {
   readonly usersStore = inject(UsersStore);
   private toaster = inject(ToasterService);
+  USER_MAX_NAME = 15;
+  USER_MAX_SURNAME = 20;
+  USER_MAX_PASSWORD = 14;
   user = this.usersStore.selectedUser!;
   imagePicker = viewChild<ElementRef<HTMLInputElement>>('imagePicker');
   selectedFile = signal<File | undefined>(undefined);
@@ -115,9 +120,7 @@ export class UserComponent {
 
   protected form = form(this.model, s => {
     required(s.name, { message: 'Jméno je povinný údaj' });
-    maxLength(s.name, 15, { message: 'Pouze 15 znaků' });
     required(s.surname, { message: 'Příjmení je povinný údaj' });
-    maxLength(s.surname, 20, { message: 'Pouze 20 znaků' });
     required(s.email, { message: 'Email je povinný údaj' });
     email(s.email, { message: 'Email má špatný formát' });
     required(s.role, { message: 'Role je povinný údaj' });
@@ -126,7 +129,6 @@ export class UserComponent {
       message: 'Heslo je povinný údaj',
       when: ({ valueOf }) => valueOf(s.id) === 0
     });
-    maxLength(s.password, 14, { message: 'Max. 14 znaků' });
     required(s.destinations, {
       message: 'Musí existovat destinace'
     });
@@ -134,6 +136,10 @@ export class UserComponent {
       s.destinations,
       ({ value }) => atLeastOnePositionSelected(value())
     );
+
+    validate(s.name, maxLenValidator(this.USER_MAX_NAME, `Max ${this.USER_MAX_NAME} znaků`));
+    validate(s.surname, maxLenValidator(this.USER_MAX_SURNAME, `Max ${this.USER_MAX_SURNAME} znaků`));
+    validate(s.password, maxLenValidator(this.USER_MAX_PASSWORD, `Max ${this.USER_MAX_PASSWORD} znaků`));
   });
 
   onGoBack() {
@@ -367,24 +373,4 @@ export class UserComponent {
     }
     return 'unchanged';
   });
-
-  protected getError = (field: FieldState<string, string>) => {
-    if (!(field.touched() && field.dirty())) {
-      return null;
-    }
-    const errors = field.errors();
-    const required = errors.find(e => e.kind === 'required');
-    if (required) {
-      return required.message;
-    }
-    const invalid = errors.find(e => e.kind === 'email');
-    if (invalid) {
-      return invalid.message;
-    }
-    const maxLength = errors.find(e => e.kind === 'maxLength');
-    if (maxLength) {
-      return maxLength.message;
-    }
-    return null;
-  };
 }

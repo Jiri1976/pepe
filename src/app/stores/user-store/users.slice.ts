@@ -1,4 +1,4 @@
-import { User } from "../../models/users/user.interface";
+import { User } from "../../models/users.interface";
 
 export interface UsersSlice {
     readonly users: User[];

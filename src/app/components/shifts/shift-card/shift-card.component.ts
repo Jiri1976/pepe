@@ -1,5 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
-import { Shift } from '../../../models/shifts/shift.interface';
+import { Shift } from '../../../models/shifts.interface';
 import { AuthStore } from '../../../stores/auth-store/auth.store';
 import { ShiftsStore } from '../../../stores/shifts-store/shifts.store';
 import { convertMonthYear } from '../../../helpers/common-functions.helper';

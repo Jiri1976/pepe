@@ -8,12 +8,11 @@ import { ProposalShiftComponent } from "./proposal-shift/proposal-shift.componen
 import { DisabledClassDirective } from '../../directives/disabled-class.directive';
 import { SetBackgroundDirective } from '../../directives/set-background.directive';
 import { ProposalTableStyleDirective } from '../../directives/proposal-table-style.directive';
-import { ProposalUser } from '../../models/proposals/proposalUser.interface';
 import { ToasterService } from '../../services/toaster.service';
 import { AuthStore } from '../../stores/auth-store/auth.store';
 import { ProposalStore } from '../../stores/proposal-store/proposal.store';
 import { ProposalUserBackgroundDirective } from '../../directives/proposal-user-background.directive';
-import { ProposalShift } from '../../models/proposals/proposalShift.interface';
+import { ProposalUser, ProposalShift } from '../../models/proposals.interface';
 
 @Component({
   selector: 'app-proposals',

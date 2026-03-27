@@ -1,16 +1,9 @@
 .wrapper {
     overflow: hidden !important;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    height: 100%;
 }
 
 .main {
     margin-top: 180px;
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
 }
 
 .side-image {
@@ -19,83 +12,39 @@
     background-size: cover;
     background-repeat: no-repeat;
     border-radius: 10px 0 0 10px;
-    position: relative;
 }
 
 .row {
     width: 500px;
     height: 300px;
     border-radius: 10px;
-    background: #fff;
-    padding: 0px;
     box-shadow: 5px 5px 10px 1px rgba(0, 0, 0, 0.2);
 }
 
 .right {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
     padding: 0 20px;
 }
 
 .input-box {
-    margin-top: 20px;
     width: 330px;
     box-sizing: border-box;
-}
 
-.input-field {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    border-radius: 35px;
-    margin-bottom: 20px;
-
-    .bi {
-        font-size: 1.2rem;
-        color: rgba(0, 0, 0, 0.2);
-        margin: 0 10px;
+    app-field {
+        width: 95%;
     }
 }
 
-.input-field.second {
-    margin-top: 20px;
-}
-
-.input {
-    height: 40px;
-    width: 100%;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: var(--main-dark);
-    font-weight: 500;
-}
-
 .submit {
-    margin-top: 20px;
-    border: none;
     outline: none;
     height: 40px;
     background: var(--main-dark);
     border-radius: 35px;
     transition: 0.4s;
     color: var(--white);
-    width: 100%;
-    font-weight: bold;
 }
 
 .submit:disabled {
     opacity: 1;
-}
-
-.submit.loading:disabled {
-    opacity: 1;
-    background: var(--main-dark);
-    color: var(--white) !important;
 }
 
 @media only screen and (max-width: 768px) {

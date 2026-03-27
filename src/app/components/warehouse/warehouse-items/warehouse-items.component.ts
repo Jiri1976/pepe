@@ -1,9 +1,9 @@
 import { Component, computed, HostListener, inject, OnInit, signal } from '@angular/core';
 import { WidgetComponent } from "../widget/widget.component";
 import { CdkDragDrop, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop';
-import { WarehouseItem } from '../../../models/warehouse/warehouse-item.interface';
 import { ToasterService } from '../../../services/toaster.service';
 import { WarehouseStore } from '../../../stores/warehouse-store/warehouse.store';
+import { WarehouseItem } from '../../../models/warehouses.interface';
 
 @Component({
   selector: 'app-warehouse-items',

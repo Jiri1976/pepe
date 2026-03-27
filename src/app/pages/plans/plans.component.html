@@ -1,11 +1,36 @@
 <div class="sidenav">
-    <div class="proposal-calendar" hide>
+    @let hideForMaster = authStore.user()?.role !== 'Admin';
+
+    @if(!hideForMaster) {
+    <div class="proposal-calendar">
         <p-datepicker #calendar name="deadline" (ngModel)="propStore.defaultDate()" view="month" dateFormat="mm-yy"
             [readonlyInput]="true" (onSelect)="onSelectMonth($event)"
             (onClickOutside)="onCalendarClickOutside($event, nav.toggleBtn.nativeElement)" />
     </div>
-    <app-proposals-nav #nav />
+    }
+
+    <app-navigation animate.enter="fade-in" animate.leave="fade-out" #nav>
+        <app-nav-button [hidden]="hideForMaster" (click)="onToggleCalendar($event)" icon="bi-calendar" #toggleBtn />
+        <app-nav-button (click)="openModal('Pizza')" label="PZ" [hidden]="propStore.pizza().length === 0" />
+        <app-nav-button (click)="openModal('Cook')" label="K" [hidden]="propStore.cooks().length === 0" />
+        <app-nav-button (click)="openModal('Helper')" label="P" [hidden]="propStore.helpers().length === 0" />
+        <app-nav-button (click)="openModal('Driver')" label="Ř" [hidden]="propStore.drivers().length === 0" />
+        <app-nav-button [hidden]="hideForMaster" (click)="onChangeDestination('F-M')" label="F-M"
+            [inactive]="propStore.destination() !== 'F-M'" />
+        <app-nav-button [hidden]="hideForMaster" (click)="onChangeDestination('OVA')" label="OVA"
+            [inactive]="propStore.destination() !== 'OVA'" />
+        <app-nav-button (click)="onReset()" icon="bi-arrow-clockwise" />
+        <app-nav-button [hidden]="hideForMaster" (click)="propStore.atLeastOneSavedShift() && onOpenPDF()"
+            icon="bi-filetype-pdf" [loading]="propStore.isPdfLoading()"
+            [disabled]="!propStore.atLeastOneSavedShift()" />
+        <app-nav-button [hidden]="hideForMaster" class="delete"
+            (click)="propStore.atLeastOneSavedShift() && propStore.requestDeleteProposalCard(`Odstranit plán směn pro ${propStore.destination()} - ${propStore.currentCard()!.monthYearName.toLowerCase()}?`)"
+            icon="bi-trash" [disabled]="!propStore.atLeastOneSavedShift()" />
+        <app-nav-button class="save" (click)="!propStore.isUnchanged() && propStore.saveProposals()" icon="bi-floppy"
+            [disabled]="propStore.isUnchanged()" />
+    </app-navigation>
 </div>
+
 <div class="box">
     <app-proposals />
 </div>

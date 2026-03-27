@@ -1,5 +1,5 @@
 import { PartialStateUpdater } from "@ngrx/signals";
-import { User } from "../../models/users/user.interface";
+import { User } from "../../models/users.interface";
 import { UsersSlice } from "./users.slice";
 import { onSortUsers } from "./users.helpers";
 

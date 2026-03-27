@@ -1,8 +1,8 @@
 import { Component, inject, input, model, signal } from '@angular/core';
-import { WarehouseItem } from '../../../models/warehouse/warehouse-item.interface';
 import { WarehouseStore } from '../../../stores/warehouse-store/warehouse.store';
 import { WarehouseItemForm } from '../../../stores/warehouse-store/warehouse.helpers';
 import { form, FormField, required, validate } from '@angular/forms/signals';
+import { WarehouseItem } from '../../../models/warehouses.interface';
 
 @Component({
   selector: 'app-widget-update',

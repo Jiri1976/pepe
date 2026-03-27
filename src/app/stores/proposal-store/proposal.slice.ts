@@ -1,6 +1,6 @@
 import { initializeMonthYear } from "../../helpers/common-functions.helper";
-import { ProposalCard } from "../../models/proposals/proposalCard.interface";
-import { ProposalShift } from "../../models/proposals/proposalShift.interface";
+import { ProposalCard, ProposalShift } from "../../models/proposals.interface";
+
 
 export interface ProposalSlice {
     readonly destination: string;

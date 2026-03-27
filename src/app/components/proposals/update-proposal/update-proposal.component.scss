@@ -5,6 +5,7 @@
     align-items: center;
     background-color: var(--white);
     filter: drop-shadow(0 0 2em rgba(#000, 0.5));
+    border-radius: 7px;
 }
 
 .wrapper {
@@ -13,11 +14,6 @@
     form {
         width: 100%;
         margin-bottom: 25px;
-
-        .buttons-line {
-            display: flex;
-            justify-content: center;
-        }
 
         .error {
             display: flex;
@@ -42,11 +38,9 @@
             width: 100px;
             background: var(--main-dark);
             border: 1px solid var(--main-dark);
-            color: var(--white);
-            font-weight: 800;
-            font-size: 0.9em;
             cursor: pointer;
             opacity: 1;
+            height: 35px;
             --bs-btn-border-radius: 0;
         }
 
@@ -56,36 +50,22 @@
         }
 
         .cancel {
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            align-items: center;
             width: 100px;
             border: 1px solid var(--main-back);
             background: var(--main-back);
-            color: var(--white);
-            font-weight: 800;
-            font-size: 0.9em;
             cursor: pointer;
             opacity: 1;
+            height: 35px;
             --bs-btn-border-radius: 0;
         }
 
         .delete,
         .whole,
         .destination {
-            font-weight: bold;
-            width: 30px;
-            height: 30px;
+            width: 35px;
+            height: 35px;
             --bs-btn-border-radius: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
             margin: 0 10px;
-            font-size: 1rem;
-            font-weight: 500;
-            color: var(--white);
 
             .bi {
                 font-size: 1.2rem;
@@ -94,53 +74,24 @@
 
         .delete {
             background: var(--main-red);
-
-            .bi {
-                font-size: 1rem;
-            }
         }
 
         .whole {
             background: var(--main-green);
         }
 
-        .destination {
-            background: var(--black);
-            font-size: 0.7rem !important;
-            padding: 2px;
-        }
-
         .morning,
         .afternoon {
-            width: 30px;
-            height: 30px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: var(--white);
+            width: 35px;
+            height: 35px;
             margin: 0 10px;
 
             .upper {
-                position: relative;
                 top: 4px;
-                display: flex;
-                flex-direction: row;
-                width: 100%;
-                justify-content: center;
-                font-weight: 500;
-                font-size: 1.1rem;
             }
 
             .lower {
-                position: relative;
                 bottom: 3px;
-                display: flex;
-                flex-direction: row;
-                width: 100%;
-                justify-content: center;
-                font-weight: 500;
-                font-size: 1rem;
             }
         }
 
@@ -158,52 +109,27 @@
         }
 
         .title {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            height: 30px;
+            height: 35px;
             margin: 20px auto;
-            justify-content: center;
             width: 90%;
             background: var(--main-dark);
         }
 
         .row {
-            .col-6.right {
-                display: flex;
-                justify-content: right;
-            }
-
             .from {
-                position: absolute !important;
-                top: 115px !important;
+                top: 125px !important;
                 left: 80px !important;
             }
 
             .to {
-                position: absolute !important;
-                top: 115px !important;
+                top: 125px !important;
                 left: 180px !important;
             }
         }
 
         .row.proposal-times {
-            margin-left: auto !important;
-            margin-right: auto !important;
             width: 10%;
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            align-items: center;
             margin-bottom: 10px;
-            font-weight: bold;
         }
-    }
-
-    h1 {
-        font-size: 1.2rem;
-        color: var(--white);
-        font-weight: 500;
-        margin: 0 !important;
     }
 }

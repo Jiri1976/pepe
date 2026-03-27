@@ -10,12 +10,10 @@ import { withConfirmation } from "../custome-features/withConfirmation/with-conf
 import { ConfirmationStore } from "../custome-features/withConfirmation/confirmation.store";
 import { initialShiftsSlice } from "./shifts.slice";
 import { ShiftService } from "../../services/shift.service";
-import { ShiftCard } from "../../models/shifts/shiftCard.interface";
-import { UniqueUser } from "../../models/shifts/uniqueUser.interface";
 import { setSelectedCardPosition, setSlideIndexAndPosition, updateAfterDeleteCard, setSelectedShift, updateCard } from "./shifts.updaters";
-import { convertMonthYear, downloadPdf, setTime } from '../../helpers/common-functions.helper';
+import { convertMonthYear, downloadPdf, initializeMonthYear, setTime } from '../../helpers/common-functions.helper';
 import { CONFIRM_ACTIONS } from "../custome-features/withConfirmation/confirmation.actions";
-import { Shift, ShiftModel } from "../../models/shifts/shift.interface";
+import { Shift, ShiftCard, ShiftModel, UniqueUser } from "../../models/shifts.interface";
 import { MONTHS } from "../../helpers/common-constants.helper";
 import { handleApiResponse } from "../handle-api-response.operator";
 import { AuthStore } from "../auth-store/auth.store";
@@ -358,6 +356,7 @@ export const ShiftsStore = signalStore({
                 });
                 patchState(store, { isAddShiftDialogRequested: true });
             },
+            setDefaultMonthYear: () => patchState(store, { monthYear: initializeMonthYear() })
         }
     }),
 )

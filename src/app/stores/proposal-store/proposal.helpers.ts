@@ -1,7 +1,5 @@
 import { required, SchemaPathTree, validate } from "@angular/forms/signals";
-import { ProposalUser } from "../../models/proposals/proposalUser.interface";
-import { Proposal } from "../../models/proposals/proposal.interface";
-import { ProposalCard } from "../../models/proposals/proposalCard.interface";
+import { ProposalUser, ProposalCard, Proposal } from "../../models/proposals.interface";
 
 export function getToken(): string | null {
     return localStorage.getItem('token');

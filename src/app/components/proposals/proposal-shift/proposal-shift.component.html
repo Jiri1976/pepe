@@ -1,27 +1,28 @@
 <div>
     @switch (shiftType) {
     @case ('whole') {
-    <div class="shift whole">X</div>
+    <div class="shift whole fw-bold d-flex flex-column justify-content-center align-items-center text-white">X</div>
     }
     @case ('destination') {
-    <div class="shift dest">{{ shift().from }}</div>
+    <div class="shift dest fw-bold d-flex flex-column justify-content-center align-items-center text-white">{{
+        shift().from }}</div>
     }
     @case ('morning') {
-    <div class="shift morning">
-        <div class="upper">11</div>
-        <div class="lower">17</div>
+    <div class="shift morning d-flex flex-column justify-content-center align-items-center text-white">
+        <div class="upper fw-bold position-relative">11</div>
+        <div class="lower fw-bold position-relative">17</div>
     </div>
     }
     @case ('afternoon') {
-    <div class="shift afternoon">
-        <div class="upper">17</div>
-        <div class="lower">{{ shift().to!.substring(0,2) }}</div>
+    <div class="shift afternoon d-flex flex-column justify-content-center align-items-center text-white">
+        <div class="upper fw-bold position-relative">17</div>
+        <div class="lower fw-bold position-relative">{{ shift().to!.substring(0,2) }}</div>
     </div>
     }
     @case ('custom') {
-    <div class="shift custom">
-        <div class="upper">{{ shift().from }}</div>
-        <div class="lower">{{ shift().to }}</div>
+    <div class="shift custom d-flex flex-column justify-content-center align-items-center text-white">
+        <div class="upper fw-bold position-relative">{{ shift().from }}</div>
+        <div class="lower fw-bold position-relative">{{ shift().to }}</div>
     </div>
     }
     }

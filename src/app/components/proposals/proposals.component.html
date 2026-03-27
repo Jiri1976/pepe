@@ -2,26 +2,29 @@
     @if(!propStore.isLoading()) {
 
     @if (warning()) {
-    <h4>{{ warning() }}</h4>
+    <h4 class="fw-bold text-center">{{ warning() }}</h4>
     }
 
     @if(propStore.hasUsers()) {
     <div class="wrapper">
         @let countOfDays = propStore.currentCard()?.countOfDays ?? 0;
 
-        <div class="table" proposalTableStyle [countOfDays]="countOfDays"
-            [isUnsavedPassedCard]="propStore.isUnsavedPassedCard()">
+        <div class="table d-flex flex-column" proposalTableStyle [countOfDays]="countOfDays"
+            [isUnsavedPassedCard]="propStore.isUnsavedPassedCard()" animate.enter="fade-in">
 
-            <div class="table-head">
-                <div class="user-name">{{ propStore.currentCard()?.monthYearName }}</div>
+            <div class="table-head d-flex flex-row">
+                <div
+                    class="user-name fw-bold overflow-hidden d-flex flex-column justify-content-center align-items-center text-white">
+                    {{ propStore.currentCard()?.monthYearName }}</div>
 
                 @for(shift of propStore.currentCard()?.users?.[0]?.shifts ?? []; track $index) {
                 <th>
-                    <div class="cell" [setBackground]="isWeekend(shift.proposalDate)">
-                        <div class="cell-date">
+                    <div class="cell d-flex flex-column justify-content-center text-dark"
+                        [setBackground]="isWeekend(shift.proposalDate)">
+                        <div class="fs-6 text-center fw-bold">
                             {{ shift.proposalDate.split('.')[0] }}
                         </div>
-                        <div class="cell-week-day">
+                        <div class="cell-week-day text-center fw-bold">
                             {{ dayOfWeek(`${shift.proposalDate}`) }}
                         </div>
                     </div>
@@ -42,14 +45,16 @@
             <div class="body" cdkDropListGroup #dashboard [style]="bodyStyles()">
                 <div cdkDropList (cdkDropListDropped)="drop($event)">
                     @for(user of propStore.currentCard()?.users ?? []; track $index; let i = $index) {
-                    <div class="table-row" cdkDrag
+                    <div class="table-row d-flex flex-row" cdkDrag
                         [cdkDragDisabled]="authStore.user()?.role !== 'Admin' || propStore.isPassedCard()">
-                        <div class="user-name-cell" cdkDragHandle [setProposalUserBackground]="user.position">
+                        <div class="user-name-cell fw-bold d-flex flex-column justify-content-center" cdkDragHandle
+                            [setProposalUserBackground]="user.position">
                             {{ `${user.name} ${user.surname.substring(0,1)}.` }}
                         </div>
 
                         @for(shift of user.shifts; track $index; let j = $index) {
-                        <th class="drop-zone" [setBackground]="isWeekend(shift.proposalDate)"
+                        <th class="drop-zone d-flex flex-column justify-content-center align-items-center"
+                            [setBackground]="isWeekend(shift.proposalDate)"
                             [disabledClass]="isPassedTime(shift.proposalDate)"
                             (click)="!isPassedTime(shift.proposalDate) && onCreateUpdateProposal(shift)">
                             <app-proposal-shift [shift]="shift" />
@@ -57,7 +62,8 @@
                         }
 
                         @if(!propStore.isPassedCard()) {
-                        <th class="drop-zone last" (click)="remove(user, i)">
+                        <th class="drop-zone last text-white d-flex flex-column justify-content-center align-items-center"
+                            (click)="remove(user, i)">
                             <i class="bi bi-x-circle"></i>
                         </th>
                         }

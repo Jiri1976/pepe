@@ -1,8 +1,8 @@
 import { Component, inject, input } from '@angular/core';
-import { WarehouseItem } from '../../../models/warehouse/warehouse-item.interface';
 import { WarehouseStore } from '../../../stores/warehouse-store/warehouse.store';
 import { form, FormField } from '@angular/forms/signals';
 import { buildWarehouseItem } from '../../../stores/warehouse-store/warehouse.helpers';
+import { WarehouseItem } from '../../../models/warehouses.interface';
 
 
 @Component({

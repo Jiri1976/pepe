@@ -1,11 +1,8 @@
 import { PartialStateUpdater } from "@ngrx/signals";
 import { ProposalSlice } from "./proposal.slice";
-import { ProposalCard } from "../../models/proposals/proposalCard.interface";
-import { ProposalUser } from "../../models/proposals/proposalUser.interface";
-import { ProposalShift } from "../../models/proposals/proposalShift.interface";
 import { getSelectedMonthYear } from "./proposal.helpers";
 import { isFridayOrSaturday } from "../../helpers/common-functions.helper";
-import { Inputs } from "../../models/proposals/proposal.interface";
+import { ProposalCard, ProposalShift, ProposalUser, Inputs } from "../../models/proposals.interface";
 
 export function resetCalendar(): PartialStateUpdater<ProposalSlice> {
     return _ => ({

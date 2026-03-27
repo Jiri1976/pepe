@@ -3,13 +3,17 @@ import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { ShiftCardComponent } from '../../components/shifts/shift-card/shift-card.component';
 import Swiper from 'swiper';
-import { ShiftsNavComponent } from "../../components/shifts/shifts-nav/shifts-nav.component";
 import { FormsModule } from '@angular/forms';
 import { DatePicker, DatePickerModule } from 'primeng/datepicker';
 import { AuthStore } from '../../stores/auth-store/auth.store';
 import { ShiftsStore } from '../../stores/shifts-store/shifts.store';
 import { ShiftSkeletonComponent } from '../../components/shifts/shift-skeleton/shift-skeleton.component';
 import { MONTHS_NUM } from '../../helpers/common-constants.helper';
+import { NavigationComponent } from '../../components/navigation/navigation.component';
+import { NavButtonComponent } from '../../components/navigation/nav-button.component';
+import { Dialog } from '@angular/cdk/dialog';
+import { ShiftFormComponent } from '../../components/shifts/shift-form/shift-form.component';
+import { SelectUserComponent } from '../../components/shifts/select-user/select-user.component';
 
 @Component({
   selector: 'app-plans',
@@ -17,11 +21,12 @@ import { MONTHS_NUM } from '../../helpers/common-constants.helper';
     DialogModule,
     ButtonModule,
     ShiftCardComponent,
-    ShiftsNavComponent,
     DatePicker,
     DatePickerModule,
     FormsModule,
-    ShiftSkeletonComponent
+    ShiftSkeletonComponent,
+    NavigationComponent,
+    NavButtonComponent
   ],
   templateUrl: './shifts.component.html',
   styleUrl: './shifts.component.scss',
@@ -30,8 +35,19 @@ import { MONTHS_NUM } from '../../helpers/common-constants.helper';
 export class ShiftsComponent implements OnInit {
   readonly authStore = inject(AuthStore);
   readonly shiftsStore = inject(ShiftsStore);
+  private dialog = inject(Dialog);
   calendar = viewChild<DatePicker>('calendar');
   swiperRef = viewChild<ElementRef>('swiperRef');
+
+  openAddSiftDialogEffect = effect(() => {
+    if (!this.shiftsStore.isAddShiftDialogRequested()) return;
+    if (this.dialog.openDialogs.length > 0) return;
+
+    this.dialog.open(ShiftFormComponent, { disableClose: false })
+      .closed.subscribe(() => {
+        this.shiftsStore.clearAddShiftDialogRequest();
+      });
+  });
 
   constructor() {
     effect(() => {
@@ -49,15 +65,16 @@ export class ShiftsComponent implements OnInit {
 
   ngOnInit(): void {
     const user = this.authStore.user();
+    this.shiftsStore.setDefaultMonthYear();
     if (user?.role === 'master' && user.destination !== this.shiftsStore.destination()) {
       this.shiftsStore.setDestination(user.destination);
     }
     this.shiftsStore.getCards();
   }
 
-  onCalendarClickOutside(event: MouseEvent, toggleBtn: HTMLElement) {
+  onCalendarClickOutside(event: MouseEvent, toggleBtn?: HTMLElement) {
     const target = event.target as HTMLElement;
-    if (toggleBtn.contains(target)) {
+    if (toggleBtn?.contains(target)) {
       return;
     }
     this.shiftsStore.closeCalendar();
@@ -93,5 +110,21 @@ export class ShiftsComponent implements OnInit {
   onSelectMonth() {
     let _monthYear = MONTHS_NUM[this.calendar()?.value.getMonth()] + this.calendar()?.value.getFullYear();
     this.shiftsStore.setMonthYear(_monthYear);
+  }
+
+  onToggleCalendar(event: MouseEvent) {
+    event.stopPropagation();
+    this.shiftsStore.toggleCalendar();
+  }
+
+  openModal() {
+    this.dialog.open(SelectUserComponent, { disableClose: false });
+  }
+
+  changeDestination(destination: 'F-M' | 'OVA') {
+    if (destination !== this.shiftsStore.destination()) {
+      this.shiftsStore.setDestination(destination);
+    }
+    return;
   }
 }

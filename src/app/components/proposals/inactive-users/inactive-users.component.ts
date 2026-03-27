@@ -2,8 +2,8 @@ import { DialogRef } from '@angular/cdk/dialog';
 import { Component, computed, effect, EffectRef, ElementRef, inject, OnDestroy, viewChild } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
-import { ProposalUser } from '../../../models/proposals/proposalUser.interface';
 import { ProposalStore } from '../../../stores/proposal-store/proposal.store';
+import { ProposalUser } from '../../../models/proposals.interface';
 
 @Component({
   selector: 'app-inactive-users',

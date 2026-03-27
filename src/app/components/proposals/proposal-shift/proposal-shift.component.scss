@@ -7,18 +7,11 @@
 }
 
 .shift {
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    font-weight: 500;
-    color: var(--white);
     font-size: 1.3rem;
     padding: 0px !important;
     width: 35px !important;
     height: 35px !important;
-    border: 1px solid var(--main-dark);
+    border-radius: 7px;
 }
 
 .shift.whole {
@@ -45,13 +38,11 @@
     .upper {
         font-size: 0.8rem;
         margin-top: 8px;
-        font-weight: 500;
     }
 
     .lower {
         font-size: 0.8rem;
         margin-bottom: 5px;
-        font-weight: 500;
     }
 }
 
@@ -59,24 +50,12 @@
 .shift.afternoon {
 
     .upper {
-        position: relative;
         top: 4px;
-        display: flex;
-        flex-direction: row;
-        width: 100%;
-        justify-content: center;
-        font-weight: 500;
         font-size: 1rem;
     }
 
     .lower {
-        position: relative;
         bottom: 3px;
-        display: flex;
-        flex-direction: row;
-        width: 100%;
-        justify-content: center;
-        font-weight: 500;
         font-size: 1rem;
     }
 }

@@ -1,9 +1,49 @@
 <div class="sidenav">
-    <app-warehouse-nav animate.enter="fade-in" #nav />
+    <div class="warehouse-calendar">
+        <p-datepicker #calendar name="deadline" [(ngModel)]="store.defaultDate" view="month" dateFormat="mm-yy"
+            [readonlyInput]="true" [maxDate]="store.maxDate()" (onSelect)="onSelectMonth()"
+            (onClickOutside)="onCalendarClickOutside($event)" />
+    </div>
+
+    @let hideForMaster = authStore.user()?.role !== 'Admin';
+
+    <app-navigation animate.enter="fade-in" animate.leave="fade-out" #nav>
+        @if (navRoute() === 'units' || navRoute() === 'board') {
+        <app-nav-button [hidden]="hideForMaster" (click)="onToggleCalendar($event)" icon="bi-calendar" #toggleBtn />
+        <app-nav-button (click)="store.getWarehouseCards()" icon="bi-arrow-clockwise" />
+        <app-nav-button (click)="store.setDestination('F-M')" label="F-M" [hidden]="hideForMaster"
+            [inactive]="store.destination() !== 'F-M'" />
+        <app-nav-button (click)="store.setDestination('OVA')" label="OVA" [hidden]="hideForMaster"
+            [inactive]="store.destination() !== 'OVA'" />
+        <app-nav-button [hidden]="hideForMaster" (click)="store.createPdf()" icon="bi-filetype-pdf"
+            [disabled]="!store.somethingForDeleting()" [loading]="store.isPdfLoading()" />
+        <app-nav-button (click)="store.requestDeleteCards()" [hidden]="hideForMaster"
+            [disabled]="!store.somethingForDeleting()" icon="bi-trash" class="delete" [loading]="store.isDeleting()" />
+        }
+
+        @if (navRoute() !== 'board') {
+        <app-nav-button [hidden]="hideForMaster" (click)="onShowList()" [disabled]="store.unitItems().length === 0"
+            icon="bi-list-check" />
+        <app-nav-button [hidden]="!hideForMaster" (click)="onShowList()" [disabled]="store.unitItems().length === 0"
+            icon="bi-list-ul" />
+        }
+        <app-nav-button (click)="onShowUnits()" icon="bi-table" [inactive]="navRoute() !== 'units'" />
+        <app-nav-button [hidden]="hideForMaster" (click)="onShowItems()" icon="bi-list-ul"
+            [inactive]="navRoute() !== 'items'" />
+        <app-nav-button [hidden]="hideForMaster" (click)="onShowBoard()" icon="bi-house"
+            [inactive]="navRoute() !== 'board'" />
+
+        @if (navRoute() === 'items') {
+        <app-nav-button (click)="store.getWarehouseItems()" icon="bi-arrow-clockwise" />
+        <app-nav-button (click)="!store.isSomeUnsavedItems() && store.addNewItem()" icon="bi-plus"
+            [disabled]="store.isSomeUnsavedItems()" class="save" />
+        <app-nav-button [hidden]="hideForMaster" (click)="onShowUnits()" icon="bi-table"
+            [inactive]="navRoute() === 'items'" />
+        <app-nav-button [hidden]="hideForMaster" (click)="onShowUnits()" icon="bi-list-ul" />
+        <app-nav-button [hidden]="hideForMaster" (click)="onShowBoard()" icon="bi-house"
+            [inactive]="navRoute() === 'items'" />
+        }
+    </app-navigation>
 </div>
-<div class="warehouse-calendar">
-    <p-datepicker #calendar name="deadline" [(ngModel)]="store.defaultDate" view="month" dateFormat="mm-yy"
-        [readonlyInput]="true" [maxDate]="store.maxDate()" (onSelect)="onSelectMonth()"
-        (onClickOutside)="onCalendarClickOutside($event, nav.toggleBtn.nativeElement)" />
-</div>
+
 <router-outlet />
