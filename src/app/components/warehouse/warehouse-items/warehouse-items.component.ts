@@ -1,7 +1,6 @@
 import { Component, computed, HostListener, inject, OnInit, signal } from '@angular/core';
 import { WidgetComponent } from "../widget/widget.component";
 import { CdkDragDrop, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop';
-import { ToasterService } from '../../../services/toaster.service';
 import { WarehouseStore } from '../../../stores/warehouse-store/warehouse.store';
 import { WarehouseItem } from '../../../models/warehouses.interface';
 
@@ -13,7 +12,6 @@ import { WarehouseItem } from '../../../models/warehouses.interface';
 })
 export class WarehouseItemsComponent implements OnInit {
   readonly store = inject(WarehouseStore);
-  private toaster = inject(ToasterService);
   items = this.store.warehouseItems;
   height = signal(window.innerHeight);
 
@@ -40,7 +38,7 @@ export class WarehouseItemsComponent implements OnInit {
     const items = [...this.items()];
 
     if (items.some(i => i.id <= 0)) {
-      this.toaster.error('Nejdříve ulož položku!');
+      this.store.error('Nejdříve ulož položku!');
       return;
     }
 

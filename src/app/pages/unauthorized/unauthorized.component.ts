@@ -1,14 +1,15 @@
 import { Component, inject } from '@angular/core';
+import { AuthStore } from '../../stores/auth-store/auth.store';
 import { Router } from '@angular/router';
 
 @Component({
-    selector: 'app-page-not-found',
+    selector: 'app-unauthorized',
     imports: [],
     template: `
             <div class="wrapper">
-                <img src="./error.png" width="300" height="300">
-                <h2>Stránka nebyla nalezena!</h2>
-                <p>Zpět na <button (click)="backToMain()">hlavní stránku</button>.</p>
+                <img src="./unauthorized.jpg" width="300" height="300">
+                <h2 class="mt-5">Stránka není určena pro tebe!</h2>
+                <p>Zkus se znovu <button (click)="logout()">přihlásit</button> nebo jdi na <button (click)="backToMain()">hlavní stránku</button>.</p>
             </div>
     `,
     styles: [`
@@ -25,10 +26,10 @@ import { Router } from '@angular/router';
 
         .wrapper h2 {
             color: #cf0a0a;
-            font-weight: bold;
+            font-weight: 600;
         }
 
-         p {
+        p {
             color: var(--main-dark);
             font-weight: 500;
             font-size: 1.2rem;
@@ -47,10 +48,15 @@ import { Router } from '@angular/router';
         }
     `]
 })
-export class PageNotFoundComponent {
+export class UnauthorizedComponent {
+    readonly store = inject(AuthStore);
     router = inject(Router);
 
     backToMain() {
         this.router.navigate(['/main']);
+    }
+
+    logout() {
+        this.store.logOut();
     }
 }

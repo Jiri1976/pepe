@@ -8,7 +8,6 @@ import { ProposalShiftComponent } from "./proposal-shift/proposal-shift.componen
 import { DisabledClassDirective } from '../../directives/disabled-class.directive';
 import { SetBackgroundDirective } from '../../directives/set-background.directive';
 import { ProposalTableStyleDirective } from '../../directives/proposal-table-style.directive';
-import { ToasterService } from '../../services/toaster.service';
 import { AuthStore } from '../../stores/auth-store/auth.store';
 import { ProposalStore } from '../../stores/proposal-store/proposal.store';
 import { ProposalUserBackgroundDirective } from '../../directives/proposal-user-background.directive';
@@ -36,7 +35,6 @@ export class ProposalsComponent {
   readonly authStore = inject(AuthStore);
   readonly propStore = inject(ProposalStore);
   private PEPE_HUB = environment.PEPE_HUB;
-  private toaster = inject(ToasterService);
   dashboard = viewChild.required<ElementRef>('dashboard');
   proposalsService = inject(ProposalsService);
   hubUser = `${this.authStore.user()?.name}`;
@@ -109,7 +107,7 @@ export class ProposalsComponent {
       await this.connection.start();
       await this.joinRoom(this.hubUser, 'proposals');
     } catch (error) {
-      this.toaster.warning('Nepodařilo se navázat spojení s hubem.');
+      this.authStore.warning('Nepodařilo se navázat spojení s hubem.');
     }
   }
 

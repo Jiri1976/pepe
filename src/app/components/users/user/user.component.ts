@@ -1,7 +1,6 @@
 import { Component, computed, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { FieldsetModule } from 'primeng/fieldset';
 import { CheckboxModule } from 'primeng/checkbox';
-import { ToasterService } from '../../../services/toaster.service';
 import { UsersStore } from '../../../stores/user-store/users.store';
 import { disabled, email, FormField, form, required, validate } from '@angular/forms/signals';
 import { INITIAL_USER, User, UserDestination } from '../../../models/users.interface';
@@ -59,7 +58,6 @@ function atLeastOnePositionSelected(destinations: Positions) {
 })
 export class UserComponent {
   readonly usersStore = inject(UsersStore);
-  private toaster = inject(ToasterService);
   USER_MAX_NAME = 15;
   USER_MAX_SURNAME = 20;
   USER_MAX_PASSWORD = 14;
@@ -164,13 +162,13 @@ export class UserComponent {
     ]);
 
     if (!allowedTypes.has(file.type)) {
-      this.toaster.error('Nepovolený formát! Povoleny jsou pouze JPEG, JPG nebo PNG.');
+      this.usersStore.error('Nepovolený formát! Povoleny jsou pouze JPEG, JPG nebo PNG.');
       this.imagePicker()!.nativeElement.value = '';
       return;
     }
 
     if (file.size > 1 * 1024 * 1024) {
-      this.toaster.error('Soubor je příliš velký! Maximální velikost je 1 MB.');
+      this.usersStore.error('Soubor je příliš velký! Maximální velikost je 1 MB.');
       this.imagePicker()!.nativeElement.value = '';
       return;
     }

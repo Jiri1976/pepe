@@ -130,3 +130,10 @@ export function maxLenValidator(max: number, message: string) {
             ? { kind: 'maxLength', message }
             : null;
 }
+
+export function createToaster(store: any) {
+    return {
+        success: (msg: string) => store.success(msg),
+        error: (msg: string) => store.error(msg)
+    };
+}

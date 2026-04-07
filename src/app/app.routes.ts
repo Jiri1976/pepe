@@ -1,11 +1,11 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from './guards/auth.guard';
-import { RoleGuard } from './guards/role.guard';
+import { requireRole } from './guards/require-role.guard';
 
 export const routes: Routes = [
     {
         path: '',
-        redirectTo: 'login',
+        redirectTo: 'main',
         pathMatch: 'full'
     },
     {
@@ -23,15 +23,13 @@ export const routes: Routes = [
         path: 'users',
         loadComponent: () => import('./pages/users/users.component').then(m => m.UsersComponent),
         title: 'Uživatelé',
-        canActivate: [RoleGuard],
-        data: { role: 'Admin' }
+        canActivate: [requireRole('Admin')],
     },
     {
         path: 'warehouse',
         loadComponent: () => import('./pages/warehouse/warehouse.component').then(m => m.WarehouseComponent),
-        canActivate: [RoleGuard],
+        canActivate: [requireRole('Admin', 'Master')],
         title: 'Sklad',
-        data: { role: ['Admin', 'Master'] },
         children: [
             {
                 path: '',
@@ -47,24 +45,26 @@ export const routes: Routes = [
                 path: 'warehouse-items',
                 loadComponent: () => import('./components/warehouse/warehouse-items/warehouse-items.component').then(m => m.WarehouseItemsComponent),
                 title: 'Skladové položky',
-                canActivate: [RoleGuard],
-                data: { role: 'Admin' }
+                canActivate: [requireRole('Admin')],
             }
         ]
     },
     {
         path: 'shifts',
         loadComponent: () => import('./pages/shifts/shifts.component').then(m => m.ShiftsComponent),
-        canActivate: [RoleGuard],
-        title: 'Směny',
-        data: { role: ['Admin', 'Master'] }
+        canActivate: [requireRole('Admin', 'Master')],
+        title: 'Směny'
     },
     {
         path: 'plans',
         loadComponent: () => import('./pages/plans/plans.component').then(m => m.PlansComponent),
-        canActivate: [RoleGuard],
-        title: 'Rozpis směn',
-        data: { role: ['Admin', 'Master'] }
+        canActivate: [requireRole('Admin', 'Master')],
+        title: 'Rozpis směn'
+    },
+    {
+        path: 'unauthorized',
+        loadComponent: () => import('./pages/unauthorized/unauthorized.component').then(m => m.UnauthorizedComponent),
+        title: 'Neoprávněný přístup',
     },
     {
         path: '**',

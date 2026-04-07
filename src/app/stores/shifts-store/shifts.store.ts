@@ -1,7 +1,6 @@
 import { patchState, signalStore, withComputed, withMethods, withProps, withState } from "@ngrx/signals";
 import { computed, inject, signal } from "@angular/core";
 import { Dialog } from '@angular/cdk/dialog';
-import { ToasterService } from "../../services/toaster.service";
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { switchMap, tap } from "rxjs";
 import { withLoading } from "../custome-features/withLoading/with-loading.feature";
@@ -11,12 +10,13 @@ import { ConfirmationStore } from "../custome-features/withConfirmation/confirma
 import { initialShiftsSlice } from "./shifts.slice";
 import { ShiftService } from "../../services/shift.service";
 import { setSelectedCardPosition, setSlideIndexAndPosition, updateAfterDeleteCard, setSelectedShift, updateCard } from "./shifts.updaters";
-import { convertMonthYear, downloadPdf, initializeMonthYear, setTime } from '../../helpers/common-functions.helper';
+import { convertMonthYear, createToaster, downloadPdf, initializeMonthYear, setTime } from '../../helpers/common-functions.helper';
 import { CONFIRM_ACTIONS } from "../custome-features/withConfirmation/confirmation.actions";
 import { Shift, ShiftCard, ShiftModel, UniqueUser } from "../../models/shifts.interface";
 import { MONTHS } from "../../helpers/common-constants.helper";
 import { handleApiResponse } from "../handle-api-response.operator";
 import { AuthStore } from "../auth-store/auth.store";
+import { withToaster } from "../custome-features/withToaster/with-toaster.feature";
 
 export const ShiftsStore = signalStore({
     providedIn: 'root'
@@ -24,9 +24,9 @@ export const ShiftsStore = signalStore({
     withConfirmation(),
     withState(initialShiftsSlice),
     withLoading(),
+    withToaster(),
     withProps(_ => {
         const _dialog = inject(Dialog);
-        const _toaster = inject(ToasterService);
         const _shiftService = inject(ShiftService);
         const slideToIndex = signal<number | null>(null);
         const shiftModel = signal<ShiftModel>({
@@ -39,7 +39,6 @@ export const ShiftsStore = signalStore({
 
         return {
             _dialog,
-            _toaster,
             _shiftService,
             slideToIndex,
             shiftModel,
@@ -110,6 +109,7 @@ export const ShiftsStore = signalStore({
             let total = null;
             let hours = 0;
             let minutes = 0;
+
             if (currentGroup() && currentGroup().cards.length > 1) {
                 currentGroup().cards.forEach(card => {
                     if (card.totalHours) {
@@ -122,11 +122,9 @@ export const ShiftsStore = signalStore({
                     }
                 });
 
-                if (hours > 0 && minutes > 0) {
-                    const _hours = hours < 10 ? `0${hours.toString()}` : `${hours.toString()}`;
-                    const _minutes = minutes < 10 ? `0${minutes.toString()}` : `${minutes.toString()}`;
-                    total = `${_hours}:${_minutes}`;
-                }
+                const _hours = hours < 10 ? `0${hours.toString()}` : `${hours.toString()}`;
+                const _minutes = minutes < 10 ? `0${minutes.toString()}` : `${minutes.toString()}`;
+                total = `${_hours}:${_minutes}`;
             }
             return total;
         })
@@ -165,6 +163,7 @@ export const ShiftsStore = signalStore({
 
     }),
     withMethods(store => {
+        const toaster = createToaster(store);
         const confirmationStore = inject(ConfirmationStore);
 
         const getCards = rxMethod<void>(input$ => input$.pipe(
@@ -181,7 +180,7 @@ export const ShiftsStore = signalStore({
                 }
 
                 return store._shiftService.getUsersShiftCards(month, dest).pipe(
-                    handleApiResponse(store._toaster, {
+                    handleApiResponse(toaster, {
                         onSuccess: (cards) => {
                             patchState(store, setNotLoading());
                             if (cards.length > 0) {
@@ -200,7 +199,7 @@ export const ShiftsStore = signalStore({
         const onAllToPdf = rxMethod<void>(input$ => input$.pipe(
             tap(_ => patchState(store, toggleIsPdfLoading())),
             switchMap(_ => store._shiftService.generateAllToPDF(store.pdfCards()).pipe(
-                handleApiResponse(store._toaster, {
+                handleApiResponse(toaster, {
                     onSuccess: (file) => {
                         patchState(store, toggleIsPdfLoading());
                         downloadPdf(file, `${MONTHS[parseInt(store.monthYear().substring(0, 2)) - 1]} ${store.monthYear().substring(2, 6)} - ${store.destination()}.pdf`);
@@ -216,11 +215,11 @@ export const ShiftsStore = signalStore({
                 const card = store.currentCard();
                 if (!card) {
                     patchState(store, togglePdfButtonLoading());
-                    store._toaster.error('Žádná karta není vybrána.');
+                    toaster.error('Žádná karta není vybrána.');
                     return [];
                 }
                 return store._shiftService.generatePDF(card).pipe(
-                    handleApiResponse(store._toaster, {
+                    handleApiResponse(toaster, {
                         onSuccess: (file) => {
                             patchState(store, togglePdfButtonLoading());
                             downloadPdf(file, `${store.currentCard()!.userName} ${store.currentCard()!.userSurname} - ${convertMonthYear(store.currentCard()!.monthYear)} - ${store.currentCard()!.destination}.pdf`);
@@ -234,7 +233,7 @@ export const ShiftsStore = signalStore({
         const deleteCard = rxMethod<void>(input$ => input$.pipe(
             tap(_ => patchState(store, toggleIsDeleting())),
             switchMap(_ => store._shiftService.deleteShiftCard(store.currentCard()!.id).pipe(
-                handleApiResponse(store._toaster, {
+                handleApiResponse(toaster, {
                     successMessage: 'Karta byla smazána!',
                     onSuccess: (card) => {
                         patchState(store, toggleIsDeleting());
@@ -245,10 +244,10 @@ export const ShiftsStore = signalStore({
             ))
         ));
 
-        const createUpdateShift = rxMethod<void>(input$ => input$.pipe(
+        const createUpdateShift = rxMethod<Shift>(input$ => input$.pipe(
             tap(_ => patchState(store, toggleIsSaving())),
-            switchMap(_ => store._shiftService.createUpdateShift(store.selectedShift()).pipe(
-                handleApiResponse(store._toaster, {
+            switchMap(shift => store._shiftService.createUpdateShift(shift).pipe(
+                handleApiResponse(toaster, {
                     successMessage: 'Směna byla uložena!',
                     onSuccess: (card) => {
                         patchState(store, toggleIsSaving());
@@ -263,7 +262,7 @@ export const ShiftsStore = signalStore({
         const deleteShift = rxMethod<void>(input$ => input$.pipe(
             tap(_ => patchState(store, toggleIsDeleting())),
             switchMap(_ => store._shiftService.deleteShift(store.selectedShift().id).pipe(
-                handleApiResponse(store._toaster, {
+                handleApiResponse(toaster, {
                     successMessage: 'Směna byla smazána!',
                     onSuccess: (card) => {
                         patchState(store, toggleIsDeleting());
@@ -345,7 +344,7 @@ export const ShiftsStore = signalStore({
             clearAddShiftDialogRequest: () => {
                 patchState(store, { isAddShiftDialogRequested: false });
             },
-            createUpdateShift: () => { createUpdateShift() },
+            createUpdateShift: (shift: Shift) => { createUpdateShift(shift) },
             updateShift: (shift: Shift) => {
                 patchState(store, setSelectedShift(shift, store.isPastCard(), store.monthYear()));
                 store.shiftModel.set({

@@ -6,7 +6,6 @@ import { Dialog } from '@angular/cdk/dialog';
 import { computed, inject } from "@angular/core";
 import { UserComponent } from "../../components/users/user/user.component";
 import { UsersService } from "../../services/users.service";
-import { ToasterService } from "../../services/toaster.service";
 import { getFakeArray, onRemoveUser, selectUsers, onUpdateUser } from "./users.helpers";
 import { withLoading } from "../custome-features/withLoading/with-loading.feature";
 import { toggleIsLoading, toggleIsSaving, toggleIsDeleting } from "../custome-features/withLoading/with-loading.updaters";
@@ -16,24 +15,25 @@ import { withApiMethods } from "../custome-features/withApiMethods/with-api-meth
 import { rxMethod } from "@ngrx/signals/rxjs-interop";
 import { switchMap, tap } from "rxjs";
 import { handleApiResponse } from "../handle-api-response.operator";
+import { withToaster } from "../custome-features/withToaster/with-toaster.feature";
+import { createToaster } from "../../helpers/common-functions.helper";
 
 export const UsersStore = signalStore({
     providedIn: 'root'
 },
     withState(initialUsersSlice),
     withLoading(),
+    withToaster(),
     withApiMethods(),
     withProps(_ => {
         const _PER_PAGE = 10;
         const _dialog = inject(Dialog);
         const _usersService = inject(UsersService);
-        const _toaster = inject(ToasterService);
 
         return {
             _PER_PAGE,
             _dialog,
-            _usersService,
-            _toaster
+            _usersService
         };
     }),
     withComputed(store => {
@@ -63,12 +63,13 @@ export const UsersStore = signalStore({
         }
     }),
     withMethods(store => {
+        const toaster = createToaster(store);
         const confirmationStore = inject(ConfirmationStore);
 
         const uploadUsers = rxMethod<void>(input$ => input$.pipe(
             tap(_ => patchState(store, toggleIsLoading())),
             switchMap(_ => store._usersService.getUsers(true).pipe(
-                handleApiResponse(store._toaster, {
+                handleApiResponse(toaster, {
                     onSuccess: (users) => {
                         patchState(store, toggleIsLoading())
                         patchState(store, setRole('User'), setFilter('All')),
@@ -82,7 +83,7 @@ export const UsersStore = signalStore({
         const createUser = rxMethod<User>(input$ => input$.pipe(
             tap(_ => patchState(store, toggleIsSaving())),
             switchMap(user => store._usersService.createUser(user).pipe(
-                handleApiResponse(store._toaster, {
+                handleApiResponse(toaster, {
                     successMessage: 'Uživatel byl přidán',
                     onSuccess: (savedUser) => {
                         let user = savedUser;
@@ -100,7 +101,7 @@ export const UsersStore = signalStore({
         const updateUser = rxMethod<User>(input$ => input$.pipe(
             tap(_ => patchState(store, toggleIsSaving())),
             switchMap(user => store._usersService.updateUser(user).pipe(
-                handleApiResponse(store._toaster, {
+                handleApiResponse(toaster, {
                     successMessage: 'Uživatel byl aktualizován',
                     onSuccess: (updatedUser) => {
                         patchState(store, toggleIsSaving());
@@ -129,7 +130,7 @@ export const UsersStore = signalStore({
         const deleteUser = rxMethod<void>(input$ => input$.pipe(
             tap(_ => patchState(store, toggleIsDeleting())),
             switchMap(_ => store._usersService.deleteUser(store.selectedUser()?.id || 0).pipe(
-                handleApiResponse(store._toaster, {
+                handleApiResponse(toaster, {
                     successMessage: 'Uživatel byl úspěšně smazán',
                     onSuccess: _ => {
                         patchState(store, toggleIsDeleting())

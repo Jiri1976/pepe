@@ -5,10 +5,12 @@ import { HideElementDirective } from '../../../directives/hide-element.directive
 import { WarehouseInputComponent } from "../warehouse-input/warehouse-input.component";
 import { WarehouseStore } from '../../../stores/warehouse-store/warehouse.store';
 import { AuthStore } from '../../../stores/auth-store/auth.store';
+import { PagingComponent } from '../../paging/paging.component';
+import { PrevNextButtonComponent } from '../../paging/prev-next-button.component';
 
 @Component({
   selector: 'app-warehouse-units',
-  imports: [CommonModule, HideElementDirective, WarehouseInputComponent],
+  imports: [CommonModule, HideElementDirective, WarehouseInputComponent, PagingComponent, PrevNextButtonComponent],
   templateUrl: './warehouse-units.component.html',
   styleUrl: './warehouse-units.component.scss',
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -52,5 +54,15 @@ export class WarehouseUnitsComponent implements OnInit {
   onSlideChange(event: Event) {
     const swiperInstance = (event.target as any).swiper as Swiper;
     this.warehouseStore.setSlideIndex(swiperInstance.activeIndex);
+  }
+
+  movePrevious() {
+    if (this.warehouseStore.sliceIndex() === 0) return;
+    this.warehouseStore.slideTo(this.warehouseStore.sliceIndex() - 1);
+  }
+
+  moveNext() {
+    if (this.warehouseStore.sliceIndex() === this.warehouseStore.cards().length - 1) return;
+    this.warehouseStore.slideTo(this.warehouseStore.sliceIndex() + 1);
   }
 }

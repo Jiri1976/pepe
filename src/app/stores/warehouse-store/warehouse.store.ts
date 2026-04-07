@@ -1,7 +1,6 @@
 import { patchState, signalStore, withComputed, withMethods, withProps, withState } from "@ngrx/signals";
 import { computed, inject, signal } from "@angular/core";
 import { Dialog } from '@angular/cdk/dialog';
-import { ToasterService } from "../../services/toaster.service";
 import { withLoading } from "../custome-features/withLoading/with-loading.feature";
 import { closeCalendar, toggleIsSaving, setIsLoading, toggleCalendar, toggleIsPdfLoading, toggleIsDeleting, toggleIsDeletingCard, toggleIsLoading, setNotLoading } from "../custome-features/withLoading/with-loading.updaters";
 import { withConfirmation } from "../custome-features/withConfirmation/with-confirmation.feature";
@@ -14,12 +13,13 @@ import { SignalService } from "../../services/signal.service";
 import { Router } from "@angular/router";
 import { updateCards } from "./warehouse.updaters";
 import { WarehouseItemForm } from "./warehouse.helpers";
-import { downloadPdf } from "../../helpers/common-functions.helper";
+import { createToaster, downloadPdf } from "../../helpers/common-functions.helper";
 import { withApiMethods } from "../custome-features/withApiMethods/with-api-methods.feature";
 import { rxMethod } from "@ngrx/signals/rxjs-interop";
 import { tap, switchMap } from "rxjs";
 import { handleApiResponse } from "../handle-api-response.operator";
 import { OverviewCard, OverviewLine, OverViewDay, WarehouseCard, WarehouseItem, WarehouseUnit } from "../../models/warehouses.interface";
+import { withToaster } from "../custome-features/withToaster/with-toaster.feature";
 
 export const WarehouseStore = signalStore({
     providedIn: 'root'
@@ -27,11 +27,11 @@ export const WarehouseStore = signalStore({
     withConfirmation(),
     withState(initialWarehouseSlice),
     withLoading(),
+    withToaster(),
     withApiMethods(),
     withProps(_ => {
         const _router = inject(Router);
         const _dialog = inject(Dialog);
-        const _toaster = inject(ToasterService);
         const _warehouseService = inject(WarehouseService);
         const slideToIndex = signal<number | null>(null);
         const _signalService = inject(SignalService);
@@ -42,7 +42,6 @@ export const WarehouseStore = signalStore({
         return {
             _router,
             _dialog,
-            _toaster,
             _warehouseService,
             slideToIndex,
             _signalService,
@@ -136,6 +135,7 @@ export const WarehouseStore = signalStore({
 
     }),
     withMethods(store => {
+        const toaster = createToaster(store);
         const confirmationStore = inject(ConfirmationStore);
 
         const getWarehouseCards = rxMethod<void>(input$ => input$.pipe(
@@ -150,7 +150,7 @@ export const WarehouseStore = signalStore({
                 }
 
                 return store._warehouseService.getWarehouseCards(month, dest).pipe(
-                    handleApiResponse(store._toaster, {
+                    handleApiResponse(toaster, {
                         onSuccess: (cards: WarehouseCard[]) => {
                             patchState(store, {
                                 cards,
@@ -168,7 +168,7 @@ export const WarehouseStore = signalStore({
         const createUpdateWarehouseCard = rxMethod<WarehouseCard>(input$ => input$.pipe(
             tap(_ => patchState(store, toggleIsSaving())),
             switchMap(card => store._warehouseService.createUpdateWarehouseCard(card).pipe(
-                handleApiResponse(store._toaster, {
+                handleApiResponse(toaster, {
                     successMessage: 'Položka byla aktualizována!',
                     onSuccess: (card) => {
                         patchState(store, updateCards(card));
@@ -183,7 +183,7 @@ export const WarehouseStore = signalStore({
         const deleteCards = rxMethod<void>(input$ => input$.pipe(
             tap(_ => patchState(store, toggleIsDeleting())),
             switchMap(_ => store._warehouseService.deleteWarehouseCards(store.monthYear(), store.destination()).pipe(
-                handleApiResponse(store._toaster, {
+                handleApiResponse(toaster, {
                     successMessage: 'Karty byly smazány!',
                     onSuccess: cards => {
                         patchState(store, { cards: cards });
@@ -197,7 +197,7 @@ export const WarehouseStore = signalStore({
         const deleteCard = rxMethod<void>(input$ => input$.pipe(
             tap(_ => patchState(store, toggleIsDeletingCard())),
             switchMap(_ => store._warehouseService.deleteWarehouseCard(store.selectedCard()?.id || 0).pipe(
-                handleApiResponse(store._toaster, {
+                handleApiResponse(toaster, {
                     successMessage: 'Karta byly smazána!',
                     onSuccess: cards => {
                         patchState(store, { cards: cards });
@@ -211,7 +211,7 @@ export const WarehouseStore = signalStore({
         const getWarehouseItems = rxMethod<void>(input$ => input$.pipe(
             tap(_ => patchState(store, toggleIsLoading())),
             switchMap(_ => store._warehouseService.getAllWarehouseItems().pipe(
-                handleApiResponse(store._toaster, {
+                handleApiResponse(toaster, {
                     onSuccess: items => {
                         patchState(store, { warehouseItems: items });
                         patchState(store, toggleIsLoading());
@@ -224,7 +224,7 @@ export const WarehouseStore = signalStore({
         const deleteWarehouseItem = rxMethod<WarehouseItem>(input$ => input$.pipe(
             tap(_ => patchState(store, toggleIsLoading())),
             switchMap(warehouseItem => store._warehouseService.deleteWarehouseItem(warehouseItem.id).pipe(
-                handleApiResponse(store._toaster, {
+                handleApiResponse(toaster, {
                     successMessage: 'Položka byla smazána',
                     onSuccess: items => {
                         patchState(store, { warehouseItems: items });
@@ -238,7 +238,7 @@ export const WarehouseStore = signalStore({
         const createPdf = rxMethod<void>(input$ => input$.pipe(
             tap(_ => patchState(store, toggleIsPdfLoading())),
             switchMap(_ => store._warehouseService.createPDF(store.cards()).pipe(
-                handleApiResponse(store._toaster, {
+                handleApiResponse(toaster, {
                     onSuccess: file => {
                         downloadPdf(file, `Sklad - ${store.cards()[0].monthYearName} - ${store.cards()[0].destination}.pdf`);
                         patchState(store, toggleIsPdfLoading());
@@ -251,7 +251,7 @@ export const WarehouseStore = signalStore({
         const createWarehouseItem = rxMethod<WarehouseItem>(input$ => input$.pipe(
             tap(_ => patchState(store, toggleIsSaving())),
             switchMap(item => store._warehouseService.createWarehouseItem(item).pipe(
-                handleApiResponse(store._toaster, {
+                handleApiResponse(toaster, {
                     successMessage: 'Položka byla uložena!',
                     onSuccess: items => {
                         patchState(store, { warehouseItems: items });
@@ -265,7 +265,7 @@ export const WarehouseStore = signalStore({
         const updateWarehouseItem = rxMethod<WarehouseItem>(input$ => input$.pipe(
             tap(_ => patchState(store, toggleIsSaving())),
             switchMap(newItem => store._warehouseService.updateWarehouseItem(newItem).pipe(
-                handleApiResponse(store._toaster, {
+                handleApiResponse(toaster, {
                     successMessage: 'Položka byla změněna!',
                     onSuccess: items => {
                         patchState(store, { warehouseItems: items });
@@ -279,7 +279,7 @@ export const WarehouseStore = signalStore({
         const reorderWarehouseItems = rxMethod<WarehouseItem[]>(input$ => input$.pipe(
             tap(_ => patchState(store, toggleIsLoading())),
             switchMap(items => store._warehouseService.reorderWarehouseItems(items).pipe(
-                handleApiResponse(store._toaster, {
+                handleApiResponse(toaster, {
                     successMessage: 'Pořadí položek bylo změněno.',
                     onSuccess: items => {
                         patchState(store, { warehouseItems: items });

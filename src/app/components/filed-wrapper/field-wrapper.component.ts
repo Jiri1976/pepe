@@ -53,6 +53,10 @@ import { FormField } from '@angular/forms/signals';
       margin-right: 8px;
     }
 
+    :host ::ng-deep .field-wrapper.errorField .bi {
+      color: var(--main-red);
+    }
+
     :host ::ng-deep input {
       flex: 1;
       height: 100%;
@@ -76,7 +80,7 @@ import { FormField } from '@angular/forms/signals';
       color: var(--main-disabled);
     }
 
-     :host ::ng-deep .counter.counterError {     
+     :host ::ng-deep .counter.counterError {
       color: var(--main-red);
     }
 

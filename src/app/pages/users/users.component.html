@@ -40,9 +40,16 @@
     </app-navigation>
 
     @if (store.filteredUsers().length > 0) {
-    <div class="pagination-div" animate.enter="fade-in" animate.leave="fade-out">
-        <app-user-pagination />
-    </div>
+    <app-paging animate.enter="fade-in" animate.leave="fade-out">
+        <app-prev-next-button icon="bi-caret-left" [disabled]="!store.hasPreviousPage()"
+            (click)="store.hasPreviousPage() && store.setCurrentPage(store.currentPage() - 1)" />
+        @for (page of store.buttonArray(); track $index) {
+        <app-page-nav-button [active]="store.currentPage() === $index + 1" (click)="store.setCurrentPage($index + 1)">
+            {{ $index + 1 }}
+        </app-page-nav-button>
+        }
+        <app-prev-next-button icon="bi-caret-right" [disabled]="!store.hasNextPage()"
+            (click)="store.hasNextPage() && store.setCurrentPage(store.currentPage() + 1)" />
+    </app-paging>
     }
-
 </div>

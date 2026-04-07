@@ -31,7 +31,7 @@ export class WarehouseInputComponent {
   });
 
   protected form = form(this.model, s => {
-    disabled(s.amount!, _ => !isToday(this.unit().date) && this.user()!.role === 'Master');
+    disabled(s.amount!, _ => !isToday(this.unit().date) && this.user()?.role === 'Master');
     pattern(s.amount!, /^[0-9]*$/);
   });
 
@@ -59,6 +59,11 @@ export class WarehouseInputComponent {
     this.warehouseStore.setSelectedUnit(this.unit());
     let _card = structuredClone(this.card()!);
     let _selectedUnit = _card.units.find(u => u.date === this.unit()!.date)!;
+
+    if (_selectedUnit.amount === null && this.form().value().amount === '') {
+      return;
+    }
+
     const value = this.form().value().amount;
     if (value !== undefined) {
       _selectedUnit.amount = parseInt(this.form().value().amount);

@@ -46,7 +46,8 @@
                 <div cdkDropList (cdkDropListDropped)="drop($event)">
                     @for(user of propStore.currentCard()?.users ?? []; track $index; let i = $index) {
                     <div class="table-row d-flex flex-row" cdkDrag
-                        [cdkDragDisabled]="authStore.user()?.role !== 'Admin' || propStore.isPassedCard()">
+                        [cdkDragDisabled]="authStore.user()?.role !== 'Admin' || propStore.isPassedCard()"
+                        [cdkDragPreviewContainer]="'parent'" [cdkDragBoundary]="dashboard">
                         <div class="user-name-cell fw-bold d-flex flex-column justify-content-center" cdkDragHandle
                             [setProposalUserBackground]="user.position">
                             {{ `${user.name} ${user.surname.substring(0,1)}.` }}

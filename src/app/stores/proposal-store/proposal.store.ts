@@ -1,7 +1,6 @@
 import { patchState, signalStore, withComputed, withMethods, withProps, withState } from "@ngrx/signals";
 import { computed, effect, inject, signal } from "@angular/core";
 import { Dialog } from '@angular/cdk/dialog';
-import { ToasterService } from "../../services/toaster.service";
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { switchMap, tap } from "rxjs";
 import { withLoading } from "../custome-features/withLoading/with-loading.feature";
@@ -14,11 +13,11 @@ import { withConfirmation } from "../custome-features/withConfirmation/with-conf
 import { ConfirmationStore } from "../custome-features/withConfirmation/confirmation.store";
 import { CONFIRM_ACTIONS } from "../custome-features/withConfirmation/confirmation.actions";
 import { UpdateProposalComponent } from "../../components/proposals/update-proposal/update-proposal.component";
-import { downloadPdf, setTime } from "../../helpers/common-functions.helper";
+import { createToaster, downloadPdf, setTime } from "../../helpers/common-functions.helper";
 import { handleApiResponse } from "../handle-api-response.operator";
-import { AuthService } from "../../services/auth.service";
 import { AuthStore } from "../auth-store/auth.store";
 import { Proposal, ProposalCard, ProposalShift, ProposalUser, Inputs } from "../../models/proposals.interface";
+import { withToaster } from "../custome-features/withToaster/with-toaster.feature";
 
 export const ProposalStore = signalStore({
     providedIn: 'root'
@@ -26,9 +25,9 @@ export const ProposalStore = signalStore({
     withConfirmation(),
     withState(initialProposalSlice),
     withLoading(),
+    withToaster(),
     withProps(_ => {
         const _dialog = inject(Dialog);
-        const _toaster = inject(ToasterService);
         const _proposalService = inject(ProposalsService);
         const _auth = inject(AuthStore);
         const proposalModel = signal<Proposal>({
@@ -38,7 +37,6 @@ export const ProposalStore = signalStore({
 
         return {
             _dialog,
-            _toaster,
             _proposalService,
             proposalModel,
             _auth
@@ -160,6 +158,7 @@ export const ProposalStore = signalStore({
         }
     }),
     withMethods(store => {
+        const toaster = createToaster(store);
         const confirmationStore = inject(ConfirmationStore);
 
         // const uploadSchedulesShifts = rxMethod<void>(input$ => input$.pipe(
@@ -179,7 +178,7 @@ export const ProposalStore = signalStore({
         const uploadSchedulesShifts = rxMethod<void>(input$ => input$.pipe(
             tap(_ => patchState(store, setIsLoading())),
             switchMap(_ => store._proposalService.getScheduledShifts(store.monthYear()).pipe(
-                handleApiResponse(store._toaster, {
+                handleApiResponse(toaster, {
                     onSuccess: (schedules: ProposalCard[]) => {
                         patchState(store, setNotLoading());
 
@@ -204,7 +203,7 @@ export const ProposalStore = signalStore({
         const getPdf = rxMethod<void>(input$ => input$.pipe(
             tap(_ => patchState(store, toggleIsPdfLoading())),
             switchMap(_ => store._proposalService.uploadPDF(store.currentCard()!).pipe(
-                handleApiResponse(store._toaster, {
+                handleApiResponse(toaster, {
                     onSuccess: (file) => {
                         patchState(store, toggleIsPdfLoading());
                         downloadPdf(file, `Směny - ${store.currentCard()!.destination} - ${store.currentCard()!.monthYearName.toLowerCase()}`);
@@ -217,7 +216,7 @@ export const ProposalStore = signalStore({
         const saveProposals = rxMethod<void>(input$ => input$.pipe(
             tap(_ => patchState(store, setIsSaving())),
             switchMap(_ => store._proposalService.saveProposals(store.schedules()).pipe(
-                handleApiResponse(store._toaster, {
+                handleApiResponse(toaster, {
                     successMessage: 'Úspěšně uloženo!',
                     onSuccess: (schedules) => {
                         patchState(store, setNotSaving());
@@ -231,7 +230,7 @@ export const ProposalStore = signalStore({
         const deleteCard = rxMethod<void>(input$ => input$.pipe(
             tap(_ => patchState(store, setIsDeleting())),
             switchMap(_ => store._proposalService.deleteProposalCard(store.monthYear(), store.destination()).pipe(
-                handleApiResponse(store._toaster, {
+                handleApiResponse(toaster, {
                     successMessage: 'Směny byly odstraněny!',
                     onSuccess: (schedules) => {
                         patchState(store, setNotDeleting());

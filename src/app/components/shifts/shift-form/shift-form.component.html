@@ -2,7 +2,7 @@
     @let shift = selectedShift();
     <form>
         <div class="row">
-            <div class="title">
+            <div class="title d-flex justify-content-center align-items-center flex-row w-100">
                 <h1>{{ shift.id === 0 ? 'Nová směna' : 'Upravit směnu' }} - {{ card()!.userName }} {{
                     card()!.userSurname.charAt(0).toUpperCase() }}. - {{ getPosition(card()!.userPosition) }}</h1>
             </div>
@@ -55,12 +55,16 @@
             </div>
             <div class="col-6">
                 <div class="label mt-2">
-                    <label for="float-input">Perso</label>
+                    <label for="float-input" class="fw-bold">Perso</label>
                 </div>
                 <div class="persoDiv">
-                    <textarea id="float-input" rows="7" cols="34" [value]="form.perso().value()"
-                        (input)="onPersoInput($event)" (blur)="form.perso().markAsTouched()">
+                    <textarea id="float-input" [class.invalid]="form.perso().invalid()" rows="7" cols="34"
+                        [value]="form.perso().value()" (input)="onPersoInput($event)"
+                        (blur)="form.perso().markAsTouched()">
                     </textarea>
+                    <div class="counter" [class.counterError]="form.perso().value().length > MAX_PERSO">
+                        {{ form.perso().value().length }}/ {{ MAX_PERSO }}
+                    </div>
 
                     @if (showPersoError()) {
                     <div class="error">
@@ -126,12 +130,16 @@
         <div class="row">
             <div class="col-6 inline">
                 @if (shift.id === 0) {
-                <button type="button" class="w-100 cancel" (click)="onHideForm()"><i
-                        class="bi bi-caret-left"></i>&nbsp;Zpět</button>
+                <button type="button"
+                    class="w-100 cancel fw-bold d-flex flex-row justify-content-center align-items-center"
+                    (click)="onHideForm()"><i class="bi bi-caret-left"></i>&nbsp;Zpět</button>
                 } @else {
-                <button type="button" class="w-50 cancel me-1" (click)="onHideForm()"><i
-                        class="bi bi-x"></i>&nbsp;Zpět</button>
-                <button type="button" class="w-50 delete ms-1" (click)="!shiftsStore.isDeleting() && onDelete()">
+                <button type="button"
+                    class="w-50 cancel fw-bold me-1 d-flex flex-row justify-content-center align-items-center"
+                    (click)="onHideForm()"><i class="bi bi-x"></i>&nbsp;Zpět</button>
+                <button type="button"
+                    class="w-50 fw-bold delete ms-1 d-flex flex-row justify-content-center align-items-center"
+                    (click)="!shiftsStore.isDeleting() && onDelete()">
                     @if(!shiftsStore.isDeleting()) {
                     <i class="bi bi-trash"></i>&nbsp;Smazat
                     } @else {
@@ -143,12 +151,14 @@
             </div>
             <div class="col-6">
                 @if(!shiftsStore.isSaving()) {
-                <button type="submit" id="addBtn" class="btn w-100" (click)="onSave()"
-                    [disabled]="form().invalid() || (isUnchanged() && shift.id > 0)"><i
+                <button type="submit" id="addBtn"
+                    class="btn w-100 fw-bold d-flex flex-row justify-content-center align-items-center"
+                    (click)="onSave()" [disabled]="form().invalid() || (isUnchanged() && shift.id > 0)"><i
                         class="bi bi-plus"></i>&nbsp;{{shift.id
                     === 0 ? 'Zapsat' : 'Upravit'}}</button>
                 } @else {
-                <button class="btn w-100 loading" id="loadingBtn" type="button">
+                <button class="btn w-100 loading fw-bold d-flex flex-row justify-content-center align-items-center"
+                    id="loadingBtn" type="button">
                     <span class="spinner-border spinner-border-sm text-white me-1"></span>
                     {{ shift.id > 0 ? 'Ukládám...' : 'Upravuji...' }}
                 </button>

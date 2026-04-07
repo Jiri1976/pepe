@@ -4,7 +4,7 @@
         <div>
             <input type="text" class="form-control" [formField]="form.name" (blur)="form.name().markAsTouched()"
                 (keydown.enter)="onSave($event)">
-            @if (form.name().invalid() && form.name().touched()) {
+            @if (form.name().invalid() && form.name().dirty()) {
             <div class="error">
                 @for (error of form.name().errors(); track error.kind) {
                 <p>{{ error.message }}</p>

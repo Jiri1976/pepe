@@ -1,2 +1,2 @@
-<p-datepicker class="proposal" [timeOnly]="true" [(ngModel)]="value" (ngModelChange)="onChange($event)"
-    (onBlur)="formField().markAsTouched()" />
+<p-datepicker class="proposal" [class.invalid]="formField().invalid()" [timeOnly]="true" [(ngModel)]="value"
+    (ngModelChange)="onChange($event)" (onBlur)="formField().markAsTouched()" />

@@ -6,6 +6,7 @@
     background-color: var(--white);
     filter: drop-shadow(0 0 2em rgba(#000, 0.5));
     padding: 2em 2em;
+    border-radius: 7px;
 }
 
 .select-user {
@@ -25,6 +26,7 @@
         justify-content: center;
         align-items: center;
         font-size: 18px;
+        border-radius: 7px;
     }
 
     .user {
@@ -36,7 +38,8 @@
         align-items: center;
         border: 1px solid var(--main-dark);
         margin: 10px 0;
-        transition: 0.1s;
+        transition: .2s;
+        border-radius: 7px;
 
         .line {
             color: var(--main-dark);
@@ -75,6 +78,7 @@
             transform: 0.3s;
             font-size: 14px;
             letter-spacing: 1px;
+            border-radius: 7px;
         }
 
         .closeBtn:active {

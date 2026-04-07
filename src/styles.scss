@@ -31,104 +31,9 @@
     font-optical-sizing: auto;
 }
 
-// p-dialog {
-//     .p-dialog-mask {
-//         .p-dialog.p-component {
-
-//             .p-dialog-header {
-//                 span {
-//                     font-weight: 500;
-//                 }
-
-//                 .p-dialog-header-actions {
-//                     .p-dialog-close-button {
-//                         display: none !important;
-//                     }
-//                 }
-//             }
-
-//             .p-dialog-content {
-//                 .buttons {
-//                     display: flex;
-//                     justify-content: end;
-//                     margin-top: 10px;
-//                 }
-
-//                 p-button {
-//                     .p-button {
-//                         height: 30px !important;
-//                         width: 90px !important;
-//                         font-size: 0.9rem;
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
-
-// .p-dialog.p-confirmdialog {
-//     border-radius: 0 !important;
-//     background: var(--black) !important;
-//     border: 2px solid var(--black) !important;
-//     color: var(--white);
-
-//     .p-dialog-header {
-//         display: flex;
-//         justify-content: center;
-//         text-transform: uppercase;
-
-//         .p-dialog-header-actions {
-//             display: none !important;
-//         }
-//     }
-
-//     .p-dialog-content {
-//         .p-confirmdialog-message {
-//             font-weight: 500;
-//         }
-
-//         .pi {
-//             color: var(--white) !important;
-//         }
-//     }
-// }
-
-// p-dialog.select-user {
-//     .p-dialog-mask {
-//         .p-dialog.p-component {
-//             margin-left: 10rem !important;
-//         }
-//     }
-// }
-
-// p-dialog.create-unit {
-//     .p-dialog-mask {
-//         .p-dialog.p-component {
-//             height: 240px !important;
-//         }
-//     }
-// }
-
-// .p-button {
-//     border-radius: 0 !important;
-//     margin: 5px;
-//     outline: none;
-//     box-shadow: none;
-//     border: none;
-//     width: 90px;
-// }
-
-// .p-confirm-dialog-accept {
-//     background: var(--main-green);
-//     color: var(--white);
-// }
-
-// .p-dialog-footer {
-//     display: flex;
-//     flex-direction: row;
-//     justify-content: center !important;
-//     align-items: center;
-// }
+.body {
+    overflow-x: hidden;
+}
 
 .proposal-calendar {
     p-datepicker {
@@ -300,15 +205,15 @@ p-datepicker {
             top: 0px !important;
             border: 2px solid var(--white);
             height: 24px !important;
-            border: 1px solid var(--main-dark) !important;
+            border: 1px solid var(--main-disabled) !important;
             outline: none !important;
             width: 256px;
-            text-align: end;
+            text-align: center;
             background: var(--white);
             font-size: 0.9rem;
             color: var(--main-dark);
             box-shadow: none !important;
-            border-radius: 0;
+            border-radius: 7px;
             font-weight: 600;
         }
 
@@ -316,6 +221,8 @@ p-datepicker {
             top: 40px !important;
             left: -25px !important;
             width: 306px !important;
+            border-radius: 7px;
+            border: 1px solid var(--main-disabled) !important;
 
             .p-datepicker-calendar-container {
                 .p-datepicker-calendar {
@@ -379,55 +286,14 @@ p-datepicker {
 .timefromDiv {
     p-datepicker {
 
-        .p-inputtext {
-            color: var(--main-dark);
-        }
-
         input,
         input:disabled {
             position: relative !important;
             top: 0px !important;
-            border: 1px solid var(--main-dark) !important;
+            border: 1px solid var(--main-disabled);
             outline: none !important;
             height: 24px !important;
             width: 256px;
-            text-align: end;
-            background: var(--white);
-            font-size: 0.9rem;
-            color: var(--main-dark) !important;
-            box-shadow: none !important;
-        }
-
-        .p-datepicker-panel.p-component {
-            top: 40px !important;
-            left: -25px !important;
-            width: 306px !important;
-            height: 130px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            border: 1px solid var(--main-dark);
-
-            .p-datepicker-time-picker {
-                p-button {
-                    .p-button-text {
-                        color: var(--main-dark) !important;
-                    }
-
-                    .p-button-text:hover {
-                        background: var(--main-dark);
-                        color: var(--white) !important;
-                        border: none;
-                    }
-                }
-
-                .p-datepicker-hour-picker span,
-                .p-datepicker-separator span,
-                .p-datepicker-minute-picker span {
-                    color: var(--main-dark);
-                }
-            }
         }
     }
 }
@@ -440,51 +306,10 @@ p-datepicker {
         input:disabled {
             position: relative !important;
             top: 0px !important;
-            border: 1px solid var(--main-dark) !important;
+            border: 1px solid var(--main-disabled) !important;
             outline: none !important;
             height: 24px !important;
             width: 256px;
-            text-align: end;
-            background: var(--white);
-            font-size: 0.9rem;
-            color: var(--main-dark) !important;
-            box-shadow: none !important;
-        }
-
-        .p-datepicker-panel.p-component {
-            top: 40px !important;
-            left: -25px !important;
-            width: 306px !important;
-            height: 130px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            border: 1px solid var(--main-dark);
-
-            .p-datepicker-time-picker {
-                p-button {
-                    .p-button-text {
-                        color: var(--main-dark) !important;
-                    }
-
-                    .p-button-text:hover {
-                        background: var(--main-dark);
-                        color: var(--white) !important;
-                        border: none;
-                    }
-
-                    .p-button:focus-visible {
-                        outline: none !important;
-                    }
-                }
-
-                .p-datepicker-hour-picker span,
-                .p-datepicker-separator span,
-                .p-datepicker-minute-picker span {
-                    color: var(--main-dark);
-                }
-            }
         }
     }
 }
@@ -511,7 +336,7 @@ p-datepicker.proposal {
     .p-inputtext {
         text-align: center;
         width: 70px !important;
-        border: 1px solid var(--main-dark);
+        border: 1px solid var(--main-disabled);
         color: var(--main-dark);
         border-radius: 7px;
         font-weight: 500;
@@ -519,7 +344,7 @@ p-datepicker.proposal {
 
     .p-inputtext:enabled:hover,
     .p-inputtext:enabled:focus {
-        border-color: var(--main-dark);
+        border-color: var(--main-disabled);
         box-shadow: none;
         outline: var(--p-inputtext-focus-ring-width) var(--p-inputtext-focus-ring-style) var(--p-inputtext-focus-ring-color);
         outline-offset: var(--p-inputtext-focus-ring-offset);
@@ -527,6 +352,13 @@ p-datepicker.proposal {
 
     .p-datepicker-timeonly {
         display: none !important;
+    }
+}
+
+p-datepicker.proposal.invalid {
+    input {
+        border: 1px solid var(--main-red) !important;
+        color: var(--main-red) !important;
     }
 }
 
@@ -551,6 +383,7 @@ p-datepicker.proposal {
     overflow: hidden !important;
     background: #e2e2e2;
     color: var(--main-dark);
+    pointer-events: none;
 }
 
 .drag-item.cdk-drag-preview .col-4 {
@@ -565,6 +398,9 @@ p-datepicker.proposal {
     display: flex;
     flex-direction: row;
     margin: 5px 0;
+    width: fit-content !important;
+    border-radius: 7px;
+    overflow: hidden !important;
 }
 
 .cdk-drag-preview.table-row .user-name-cell {
@@ -612,6 +448,12 @@ p-datepicker.proposal {
 
 .drag-item.cdk-drag-placeholder.table-row {
     visibility: hidden !important;
+}
+
+.cdk-drop-list {
+    display: flex;
+    flex-direction: column;
+    border-radius: 7px;
 }
 
 p-toast {
@@ -726,7 +568,11 @@ p-checkbox {
 }
 
 .hot-toast-bar-base {
+    border-radius: 7px;
+    z-index: 999999;
+
     .hot-toast-message {
+
         div {
             font-weight: 400;
             color: var(--main-dark);

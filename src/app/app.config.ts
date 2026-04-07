@@ -8,7 +8,6 @@ import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeuix/themes/aura';
 import { globalHttpErrorInterceptor } from './interceptor/global-http-error.interceptor';
 import { provideHotToastConfig } from '@ngxpert/hot-toast';
-import { ToasterService } from './services/toaster.service';
 import { SignalService } from './services/signal.service';
 import { initializeAuth } from './auth.initializer';
 
@@ -29,7 +28,6 @@ export const appConfig: ApplicationConfig = {
       }
     ),
     AuthService,
-    ToasterService,
     provideHotToastConfig({
       position: 'bottom-right'
     }),

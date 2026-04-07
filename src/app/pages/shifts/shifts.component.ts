@@ -14,6 +14,8 @@ import { NavButtonComponent } from '../../components/navigation/nav-button.compo
 import { Dialog } from '@angular/cdk/dialog';
 import { ShiftFormComponent } from '../../components/shifts/shift-form/shift-form.component';
 import { SelectUserComponent } from '../../components/shifts/select-user/select-user.component';
+import { PagingComponent } from '../../components/paging/paging.component';
+import { PrevNextButtonComponent } from '../../components/paging/prev-next-button.component';
 
 @Component({
   selector: 'app-plans',
@@ -26,7 +28,9 @@ import { SelectUserComponent } from '../../components/shifts/select-user/select-
     FormsModule,
     ShiftSkeletonComponent,
     NavigationComponent,
-    NavButtonComponent
+    NavButtonComponent,
+    PagingComponent,
+    PrevNextButtonComponent
   ],
   templateUrl: './shifts.component.html',
   styleUrl: './shifts.component.scss',
@@ -126,5 +130,25 @@ export class ShiftsComponent implements OnInit {
       this.shiftsStore.setDestination(destination);
     }
     return;
+  }
+
+  movePrevious() {
+    if (this.shiftsStore.sliceIndex() === 0) {
+      return;
+    }
+    const swiper = this.swiperRef()?.nativeElement?.swiper;
+    if (swiper && !swiper.animating) {
+      swiper.slidePrev();
+    }
+  }
+
+  moveNext() {
+    if (this.shiftsStore.sliceIndex() === this.shiftsStore.uniqueUsers().length - 1) {
+      return;
+    }
+    const swiper = this.swiperRef()?.nativeElement?.swiper;
+    if (swiper && !swiper.animating) {
+      swiper.slideNext();
+    }
   }
 }

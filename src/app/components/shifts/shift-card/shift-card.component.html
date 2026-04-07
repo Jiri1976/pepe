@@ -1,18 +1,19 @@
 <div class="card-wrapper">
-    <div class="user-card-table" animate.enter="fade-in" animate.leave="fade-out">
-        <div class="head">
+    <div class="user-card-table d-flex flex-column justify-content-center">
+        <div class="head d-flex justify-content-between align-items-center">
             <div class="right">
                 @if (card()) {
                 <b>{{convertMonthYear(card()!.monthYear)}}</b>
                 }
 
             </div>
-            <div class="center">
+            <div class="center text-center d-flex flex-row justify-content-center align-items-center">
                 @let userName = card()!.userName + " " + card()!.userSurname;
                 <b>{{ userName }}</b>
 
                 @for(position of shiftsStore.currentPositions(); track $index) {
-                <div class="position" [class.one-position]="shiftsStore.currentPositions().length == 1"
+                <div class="position d-flex justify-content-center align-items-center"
+                    [class.one-position]="shiftsStore.currentPositions().length == 1"
                     [class.active]="position === shiftsStore.selectedCardPosition()"
                     (click)="shiftsStore.currentPositions().length > 1 && shiftsStore.setSelectedCardPosition(position)">
                     @switch (position) {
@@ -32,7 +33,7 @@
                 </div>
                 }
             </div>
-            <div class="left">
+            <div class="left justify-content-end d-flex">
                 <i class="bi bi-watch"></i>&nbsp;
                 <b>
                     {{card()!.totalHours ? card()!.totalHours : '00:00'}}
@@ -45,19 +46,21 @@
 
         @if(card()!.shifts.length > 0) {
         <table class="table">
-            <thead class="table-dark">
-                <tr>
-                    <th style="width: 5% !important; text-align: right;">#</th>
-                    <th style="width: 15% !important; text-align: center;">Datum</th>
-                    <th style="width: 15% !important; text-align: center;">Začátek</th>
-                    <th style="width: 15% !important; text-align: center;">Konec</th>
-                    <th style="width: 15% !important; text-align: center;">Hodiny</th>
-                    <th style="width: 40% !important; text-align: center;">Perso</th>
+            <thead class="table-dark d-table w-100 fw-bold">
+                <tr class="fw-bold align-items-middle">
+                    <th class="fw-bold align-items-middle" style="width: 5% !important; text-align: right;">#</th>
+                    <th class="fw-bold align-items-middle" style="width: 15% !important; text-align: center;">Datum</th>
+                    <th class="fw-bold align-items-middle" style="width: 15% !important; text-align: center;">Začátek
+                    </th>
+                    <th class="fw-bold align-items-middle" style="width: 15% !important; text-align: center;">Konec</th>
+                    <th class="fw-bold align-items-middle" style="width: 15% !important; text-align: center;">Hodiny
+                    </th>
+                    <th class="fw-bold align-items-middle" style="width: 40% !important; text-align: center;">Perso</th>
                 </tr>
             </thead>
             <tbody [style]="sectionStyles()">
                 @for(shift of card()!.shifts; track $index) {
-                <tr
+                <tr class="d-table w-100"
                     (click)="((isPastCard() === false && authStore.user()?.role === 'Master') || (authStore.user()?.role === 'Admin')) && onUpdate(shift)">
                     <td scope="row" style="width: 5% !important; text-align: right !important; font-weight: bold;">
                         {{$index + 1}}.</td>
@@ -65,7 +68,8 @@
                     <td style="width: 15% !important; text-align: center !important;">{{shift.from}}</td>
                     <td style="width: 15% !important; text-align: center !important;">{{shift.to}}</td>
                     <td style="width: 15% !important; text-align: center !important;">{{shift.hours}}</td>
-                    <td class="perso" style="width: 40% !important; vertical-align: middle !important;">{{shift.perso}}
+                    <td class="perso text-center" style="width: 40% !important; vertical-align: middle !important;">
+                        {{shift.perso}}
                     </td>
                 </tr>
                 }
@@ -73,11 +77,15 @@
         </table>
         <div class="action-buttons">
             @if (authStore.user()?.role === 'Admin') {
-            <button class="deleteCardBtn" (click)="shiftsStore.requestDeleteCard()"><i class="bi bi-x"></i> Smazat
+            <button
+                class="deleteCardBtn common-btn deleteCardBtn text-white fw-bold d-flex flex-row align-items-center justify-content-center position-absolute"
+                (click)="shiftsStore.requestDeleteCard()"><i class="bi bi-x fw-bold"></i> Smazat
                 kartu</button>
             @if (shiftsStore.currentCard() && shiftsStore.currentCard()!.id > 0 &&
             shiftsStore.currentCard()!.shifts.length > 0) {
-            <button class="pdfBtn" (click)="shiftsStore.toPdfCard()">
+            <button
+                class="pdfBtn common-btn text-white fw-bold d-flex flex-row align-items-center justify-content-center position-absolute"
+                (click)="shiftsStore.toPdfCard()">
                 @if (!shiftsStore.pdfButtonLoading()) {
                 <i class="bi bi-filetype-pdf"></i>&nbsp;Stáhnout PDF
                 } @else {
@@ -91,14 +99,16 @@
         </div>
         }
         @if(card()!.shifts.length === 0) {
-        <div class="empty-shifts">
-            <h4>Žádné uložené směny.</h4>
+        <div class="empty-shifts mx-auto">
+            <h4 class="fw-bold">Žádné uložené směny.</h4>
         </div>
-        <div class="action-buttons">
+        <div class="action-buttons d-flex justify-content-between flex-row">
             @if (authStore.user()?.role === 'Admin' && card()!.id > 0 && card()!.shifts.length > 0) {
-            <button class="deleteCardBtn" (click)="shiftsStore.requestDeleteCard()">
+            <button
+                class="deleteCardBtn common-btn text-white position-absolute fw-bold d-flex flex-row align-items-center justify-content-center"
+                (click)="shiftsStore.requestDeleteCard()">
                 @if (!shiftsStore.isDeleting()) {
-                <i class="bi bi-x"></i> Smazat kartu
+                <i class="bi bi-x fw-bold"></i> Smazat kartu
                 } @else {
                 <div class="spinner-border" role="status">
                     <span class="visually-hidden">Loading...</span>

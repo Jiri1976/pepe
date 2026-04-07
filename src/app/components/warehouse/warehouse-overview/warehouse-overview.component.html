@@ -1,22 +1,23 @@
 <div class="block">
     @if (!warehouseStore.isLoading()) {
-    <div class="wrapper" animate.enter="fade-in" animate.leave="fade-out">
+    <div class="wrapper d-flex" animate.enter="fade-in" animate.leave="fade-out">
         @if (cards().length > 0) {
         <div class="table">
-            <div class="table-head">
-                <div class="first-head-cell">
+            <div class="table-head d-flex">
+                <div class="first-head-cell d-flex flex-row align-items-center justify-content-between">
                     {{cards()[0].monthYearName}}
-                    <div class="destination">
+                    <div class="destination d-flex flex-column align-items-center justify-content-center">
                         {{ destination()}}
                     </div>
                 </div>
                 @for (unit of cards()[0].units; track $index) {
-                <div [class]="isToday(unit.date) ? 'today-head-cell' : 'head-cell'">{{$index + 1}}.</div>
+                <div class="d-flex flex-column align-items-center justify-content-center"
+                    [class]="isToday(unit.date) ? 'today-head-cell' : 'head-cell'">{{$index + 1}}.</div>
                 }
             </div>
             <div class="body">
                 @for(card of cards(); track $index; let x = $index) {
-                <div class="table-row">
+                <div class="table-row d-flex flex-row">
                     <div class="first-table-cell">{{ overviewItems()[x] }}</div>
                     @for (day of days(); track $index; let y = $index) {
                     <div class="cell">

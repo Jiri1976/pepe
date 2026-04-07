@@ -2,11 +2,10 @@ import { PartialStateUpdater } from "@ngrx/signals";
 import { AuthSlice } from "./auth.slice";
 import { SignalService } from "../../services/signal.service";
 import { Dialog } from '@angular/cdk/dialog';
-import { ToasterService } from "../../services/toaster.service";
 import { Router } from "@angular/router";
 import { setUserDetail } from "./auth.helpers";
 
-export function onLogout(dialog: Dialog, router: Router, toaster: ToasterService, signalService: SignalService): PartialStateUpdater<AuthSlice> {
+export function onLogout(dialog: Dialog, router: Router, signalService: SignalService): PartialStateUpdater<AuthSlice> {
     return _ => {
         dialog.closeAll();
         localStorage.removeItem('notifications');
@@ -14,7 +13,6 @@ export function onLogout(dialog: Dialog, router: Router, toaster: ToasterService
         localStorage.removeItem('userName');
         localStorage.removeItem('userDestination');
         localStorage.removeItem('token');
-        toaster.notifications.set([]);
         signalService.leaveRoom();
         router.navigate(['login']);
         return { user: null, isLoading: false, _tokenExpirationTimer: null };

@@ -12,7 +12,8 @@ export function requireRole(...roles: string[]): CanActivateFn {
             return true;
         }
 
-        router.navigate(['/main']);
+        //router.navigate(['/main']);
+        return router.createUrlTree(['/unauthorized']);
         return false;
     };
 }

@@ -1,80 +1,38 @@
 .sidenav {
-    position: fixed;
-    height: 100%;
     z-index: 9999;
 }
 
 .shifts-calendar {
     width: 190px;
     height: 50px;
-    position: absolute;
     top: 70px;
     left: 10px !important;
     z-index: 999999;
 }
 
 .box {
-    width: 100%;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    position: relative;
     margin-top: 100px;
-    display: flex;
 
-    // .shift-card {
-    //     grid-column: 1;
-    //     grid-row: 1;
-    //     min-width: 750px;
-    //     height: 750px;
-    //     display: flex;
-    //     flex-direction: column;
-    //     justify-content: center;
-    //     align-items: center;
+    .shift-card {
+        grid-column: 1;
+        grid-row: 1;
+        min-width: 750px;
+        height: 750px;
 
-    //     swiper-container {
-    //         width: 740px;
-    //         height: 790px;
+        swiper-container {
+            width: 740px;
+            height: 790px;
 
-    //         swiper-slide {
-    //             background: var(--white) !important;
-    //             box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-    //         }
-    //     }
-    // }
-
-    // h4 {
-    //     font-weight: bold;
-    //     color: var(--main-dark);
-    //     text-align: center;
-    //     margin-top: 60px;
-    // }
-}
-
-.shift-card {
-    grid-column: 1;
-    grid-row: 1;
-    min-width: 750px;
-    height: 750px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-
-    swiper-container {
-        width: 740px;
-        height: 790px;
-
-        swiper-slide {
-            background: var(--white) !important;
-            box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+            swiper-slide {
+                background: var(--white) !important;
+                box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+                border-radius: 7px;
+            }
         }
     }
-}
 
-h4 {
-    font-weight: bold;
-    color: var(--main-dark);
-    text-align: center;
-    margin-top: 60px;
+    h4 {
+        color: var(--main-dark);
+        margin-top: 60px;
+    }
 }

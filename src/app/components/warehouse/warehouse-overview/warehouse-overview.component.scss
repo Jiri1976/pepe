@@ -7,37 +7,26 @@
         margin: 130px 0 0 0;
         grid-column: 1;
         grid-row: 1;
-        display: flex;
-        justify-content: center;
 
         .table {
             .table-head {
-                display: flex;
-                flex-direction: row;
                 margin-bottom: 10px;
                 font-size: 0.9rem;
 
                 .first-head-cell {
                     min-width: 150px !important;
                     margin-right: 10px;
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: space-between;
-                    align-items: center;
                     border: 1px solid var(--main-dark);
                     background: var(--main-dark);
                     color: var(--white);
                     padding: 8px;
                     font-weight: 700;
                     height: 35px !important;
+                    border-radius: 7px;
 
                     .destination {
                         width: 25px;
                         height: 25px;
-                        display: flex;
-                        flex-direction: column;
-                        justify-content: center;
-                        align-items: center;
                         font-size: 0.6rem;
                         border-radius: 50%;
                         padding: 2px;
@@ -48,16 +37,13 @@
 
                 .head-cell,
                 .today-head-cell {
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                    align-items: center;
                     color: var(--white);
                     padding: 8px;
                     font-weight: 700;
                     width: 35px !important;
                     height: 35px !important;
                     margin-right: 2px;
+                    border-radius: 5px;
                 }
 
                 .head-cell {
@@ -73,8 +59,6 @@
 
             .body {
                 .table-row {
-                    display: flex;
-                    flex-direction: row;
                     margin: 5px 0;
 
                     .first-table-cell {
@@ -82,9 +66,6 @@
                         width: 150px !important;
                         border: 1px solid var(--main-dark);
                         margin-right: 10px;
-                        display: flex;
-                        flex-direction: column;
-                        justify-content: center;
                         overflow: hidden;
                         white-space: nowrap;
                         text-overflow: ellipsis;
@@ -92,16 +73,13 @@
                         color: var(--main-dark);
                         font-size: 0.9rem;
                         font-weight: 700;
+                        border-radius: 7px;
                     }
 
                     .cell {
                         width: 35px !important;
                         height: 35px !important;
                         padding: 0 !important;
-                        display: flex;
-                        flex-direction: column;
-                        justify-content: center;
-                        align-items: center;
                         margin-right: 2px;
                         font-size: 0.7rem;
 
@@ -140,6 +118,7 @@
                             text-align: center;
                             font-weight: 600;
                             color: var(--main-dark);
+                            border-radius: 5px;
                         }
 
                         input.master {

@@ -1,6 +1,6 @@
 import { Component, computed, inject } from '@angular/core';
 import { DialogRef } from '@angular/cdk/dialog';
-import { ToasterService } from '../../services/toaster.service';
+import { AuthStore } from '../../stores/auth-store/auth.store';
 
 @Component({
   selector: 'app-notification-messages',
@@ -9,12 +9,12 @@ import { ToasterService } from '../../services/toaster.service';
   styleUrl: './notification-messages.component.scss'
 })
 export class NotificationMessagesComponent {
-  private toaster = inject(ToasterService);
+  readonly store = inject(AuthStore);
   private dialogRef = inject(DialogRef, { optional: true });
-  notifications = computed(() => this.toaster.notifications());
+  notifications = computed(() => this.store.notifications());
 
   removeNotification(index: number) {
-    this.toaster.removeNotifications(index);
+    this.store.removeNotifications(index);
     if (this.notifications.length === 0) {
       this.dialogRef?.close();
     }

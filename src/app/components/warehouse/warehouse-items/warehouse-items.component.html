@@ -1,8 +1,9 @@
-<div class="container">
+<div class="container d-flex flex-column align-items-center w-100">
     @if (!store.isLoading()) {
     <div class="block" animate.enter="fade-in" [style]="bodyStyles()">
         @if (items()!.length > 0) {
-        <div class="widget-wrapper" cdkDropList [cdkDropListData]="items()" (cdkDropListDropped)="drop($event)">
+        <div class="widget-wrapper d-flex flex-column justify-content-center" cdkDropList [cdkDropListData]="items()"
+            (cdkDropListDropped)="drop($event)">
             @for(item of items(); track item.id) {
             <div cdkDrag>
                 <app-widget [item]="item" [index]="$index" />
@@ -13,15 +14,17 @@
     </div>
 
     @if (items().length === 0) {
-    <div class="empty-item" animate.enter="fade-in">
-        <h4>Žádné uložené položky.</h4>
+    <div class="empty-item d-flex flex-column align-items-center justify-content-center position-absolute"
+        animate.enter="fade-in">
+        <h4 class="fw-bold">Žádné uložené položky.</h4>
     </div>
     }
 
     } @else {
-    <div class="skeleton" animate.enter="fade-out">
+    <div class="skeleton d-flex flex-column align-items-center justify-content-center position-absolute"
+        animate.enter="fade-out">
         @for(i of [1,2,3,4,5,6,7,8]; track i) {
-        <div class="empty-widget">
+        <div class="empty-widget d-flex flex-column align-items-center justify-content-center">
         </div>
         }
     </div>

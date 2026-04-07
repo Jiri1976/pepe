@@ -1,16 +1,18 @@
 import { effect, inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../environments/environment';
 import * as signalR from '@microsoft/signalr';
-import { ToasterService } from './toaster.service';
+// import { ToasterService } from './toaster.service';
 import { WarehouseService } from './warehouse.service';
+import { UsersStore } from '../stores/user-store/users.store';
 
 @Injectable({
     providedIn: 'root'
 })
 export class SignalService {
     private PEPE_HUB = environment.PEPE_HUB;
-    private toaster = inject(ToasterService);
+    // private toaster = inject(ToasterService);
     private warehouseService = inject(WarehouseService);
+    readonly usersStore = inject(UsersStore);
 
     userRole = signal<string>('');
     userName = signal<string>('');
@@ -39,22 +41,22 @@ export class SignalService {
                     // if (destination === this.warehouseService.destination()) {
                     //     this.warehouseService.reloadCards.set(true);
                     // }
-                    this.toaster.checkNotifications(`${hours}:${minutes} Sklad pro ${destination} upraven - ${user}.`, `Sklad pro ${destination} upraven - ${user}`);
+                    //this.toaster.checkNotifications(`${hours}:${minutes} Sklad pro ${destination} upraven - ${user}.`, `Sklad pro ${destination} upraven - ${user}`);
                 }
 
                 if (isUpdate && user !== this.hubUser && this.userRole() === 'Master' && !updateItems && this.userDestination() === destination) {
                     // this.warehouseService.reloadCards.set(true);
-                    this.toaster.checkNotifications(`${hours}:${minutes} Skladové položky upraveny - ${user}.`, `Skladové položky upraveny - ${user}`);
+                    //this.toaster.checkNotifications(`${hours}:${minutes} Skladové položky upraveny - ${user}.`, `Skladové položky upraveny - ${user}`);
                 }
 
                 if (!isUpdate && user !== this.hubUser && this.userRole() === 'Admin' && updateItems) {
                     // this.warehouseService.reloadCards.set(true);
-                    this.toaster.checkNotifications(`${hours}:${minutes} Skladové položky upraveny - ${user}.`, `Skladové položky upraveny - ${user}`);
+                    //this.toaster.checkNotifications(`${hours}:${minutes} Skladové položky upraveny - ${user}.`, `Skladové položky upraveny - ${user}`);
                 }
 
                 if (!isUpdate && user !== this.hubUser && this.userRole() === 'Master' && updateItems) {
                     // this.warehouseService.reloadCards.set(true);
-                    this.toaster.checkNotifications(`${hours}:${minutes} Skladové položky upraveny - ${user}.`, `Skladové položky upraveny - ${user}`);
+                    //this.toaster.checkNotifications(`${hours}:${minutes} Skladové položky upraveny - ${user}.`, `Skladové položky upraveny - ${user}`);
                 }
             });
         }

@@ -19,19 +19,20 @@
             [disabled]="!store.somethingForDeleting()" [loading]="store.isPdfLoading()" />
         <app-nav-button (click)="store.requestDeleteCards()" [hidden]="hideForMaster"
             [disabled]="!store.somethingForDeleting()" icon="bi-trash" class="delete" [loading]="store.isDeleting()" />
-        }
 
-        @if (navRoute() !== 'board') {
+        @if (navRoute() === 'units') {
         <app-nav-button [hidden]="hideForMaster" (click)="onShowList()" [disabled]="store.unitItems().length === 0"
             icon="bi-list-check" />
         <app-nav-button [hidden]="!hideForMaster" (click)="onShowList()" [disabled]="store.unitItems().length === 0"
             icon="bi-list-ul" />
         }
-        <app-nav-button (click)="onShowUnits()" icon="bi-table" [inactive]="navRoute() !== 'units'" />
+
+        <app-nav-button [hidden]="hideForMaster" (click)="onShowUnits()" icon="bi-table"
+            [inactive]="navRoute() !== 'units'" />
         <app-nav-button [hidden]="hideForMaster" (click)="onShowItems()" icon="bi-list-ul"
             [inactive]="navRoute() !== 'items'" />
-        <app-nav-button [hidden]="hideForMaster" (click)="onShowBoard()" icon="bi-house"
-            [inactive]="navRoute() !== 'board'" />
+        <app-nav-button (click)="onShowBoard()" icon="bi-house" [inactive]="navRoute() !== 'board'" />
+        }
 
         @if (navRoute() === 'items') {
         <app-nav-button (click)="store.getWarehouseItems()" icon="bi-arrow-clockwise" />
@@ -40,8 +41,7 @@
         <app-nav-button [hidden]="hideForMaster" (click)="onShowUnits()" icon="bi-table"
             [inactive]="navRoute() === 'items'" />
         <app-nav-button [hidden]="hideForMaster" (click)="onShowUnits()" icon="bi-list-ul" />
-        <app-nav-button [hidden]="hideForMaster" (click)="onShowBoard()" icon="bi-house"
-            [inactive]="navRoute() === 'items'" />
+        <app-nav-button (click)="onShowBoard()" icon="bi-house" [inactive]="navRoute() === 'items'" />
         }
     </app-navigation>
 </div>

@@ -9,7 +9,6 @@ export function buildShift(a: SchemaPathTree<ShiftModel>) {
         return shiftTimesValidator(valueOf(a.from), valueOf(a.to));
     });
     validate(a.to, ({ value, valueOf }) => {
-        //return shiftTimesValidator(valueOf(a.from), value())
         return shiftTimesValidator(valueOf(a.from), valueOf(a.to));
     });
     maxLength(a.perso, 100, { message: 'Maximálně 100 znaků' });
@@ -20,10 +19,6 @@ function shiftTimesValidator(timeFrom: Date | null, timeTo: Date | null) {
         return null;
     }
     if (timeFrom >= timeTo) {
-        // return customError({
-        //     kind: 'shiftTimesInvalid',
-        //     message: 'Zkontroluj časy',
-        // });
         return {
             kind: 'shiftTimesInvalid',
             message: 'Zkontroluj časy',

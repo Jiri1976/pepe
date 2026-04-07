@@ -1,5 +1,4 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { ToasterService } from '../../../services/toaster.service';
 import { AuthStore } from '../../../stores/auth-store/auth.store';
 import { WarehouseStore } from '../../../stores/warehouse-store/warehouse.store';
 import { SkeletonOverviewComponent } from "./skeleton-overview/skeleton-overview.component";
@@ -13,7 +12,6 @@ import { SkeletonOverviewComponent } from "./skeleton-overview/skeleton-overview
 export class WarehouseOverviewComponent implements OnInit {
   readonly authStore = inject(AuthStore);
   readonly warehouseStore = inject(WarehouseStore);
-  private toaster = inject(ToasterService);
   cards = this.warehouseStore.cards;
   overviewItems = this.warehouseStore.overviewItems;
   days = this.warehouseStore.countOfDays;
@@ -50,7 +48,11 @@ export class WarehouseOverviewComponent implements OnInit {
 
     const value = parseInt((event.target as HTMLInputElement).value);
     if (this.isDisabled(this.cards()[x].units[y].date)) {
-      this.toaster.error('Pole nelze aktualizovat!');
+      this.authStore.error('Pole nelze aktualizovat!');
+      return;
+    }
+
+    if (this.cards()[x].units[y].amount === null && input === '') {
       return;
     }
 

@@ -1,9 +1,11 @@
 import { tapResponse } from '@ngrx/operators';
-import { ToasterService } from '../services/toaster.service';
 import { ApiResponse } from './api-response.interface';
 
 export function handleApiResponse<T>(
-    toaster: ToasterService,
+    toaster: {
+        success: (msg: string) => void;
+        error: (msg: string) => void;
+    },
     config: {
         onSuccess: (result: T) => void;
         onError?: () => void;

@@ -1,5 +1,4 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { ToasterService } from '../../services/toaster.service';
 import { SignalService } from '../../services/signal.service';
 import { AuthStore } from '../../stores/auth-store/auth.store';
 import { form, email, required, FormField, } from '@angular/forms/signals';
@@ -20,7 +19,6 @@ interface LoginForm {
 export default class LoginComponent implements OnInit {
   readonly store = inject(AuthStore);
   private signalService = inject(SignalService);
-  private toaster = inject(ToasterService);
   protected model = signal<LoginForm>({
     email: '',
     password: ''
@@ -34,8 +32,6 @@ export default class LoginComponent implements OnInit {
 
   ngOnInit() {
     this.signalService.leaveRoom();
-    localStorage.removeItem('notifications');
-    this.toaster.notifications.set([]);
   }
 
   onSubmit() {

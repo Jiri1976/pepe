@@ -3,7 +3,9 @@
     display: grid;
     flex-direction: column;
     justify-content: center !important;
-    width: calc(100vw - 10rem) !important;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
     margin-top: 2rem;
 
     h4 {
@@ -15,8 +17,13 @@
         grid-column: 1;
         grid-row: 1;
         margin-top: 90px;
+        width: 100%;
+        overflow-x: auto;
 
         .table {
+            width: max-content;
+            min-width: 100%;
+
             .table-head {
                 margin-bottom: 10px;
 

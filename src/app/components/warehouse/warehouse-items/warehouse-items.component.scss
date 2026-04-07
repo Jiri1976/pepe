@@ -1,8 +1,4 @@
 .container {
-    flex-direction: column;
-    width: 100%;
-    align-items: center;
-    display: flex;
     grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
     grid-auto-columns: 600px;
 
@@ -13,39 +9,7 @@
     }
 
     .widget-wrapper {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
         margin-bottom: 50px;
-    }
-}
-
-.delete {
-    width: 70px;
-    height: 70px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-    position: fixed;
-    right: 2rem;
-    top: calc(100vh - 110px);
-    transition: 0.3s;
-
-    .bi {
-        font-size: 2rem;
-        font-weight: bold;
-        color: rgba(73, 73, 81, 0.2);
-    }
-}
-
-.delete:hover {
-    cursor: pointer;
-    background: var(--main-red);
-
-    .bi {
-        color: #FFF;
     }
 }
 
@@ -53,15 +17,9 @@
     grid-column: 1;
     grid-row: 1;
     margin: 15% 0 0 0;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
-    position: absolute;
 
     h4 {
         color: var(--main-dark);
-        font-weight: bold;
     }
 }
 
@@ -69,11 +27,6 @@
     grid-column: 1;
     grid-row: 1;
     margin-top: 110px;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
-    position: absolute;
 
     .empty-widget {
         height: 40px;
@@ -83,10 +36,6 @@
         box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
         border: none;
         margin: 10px 0;
-        display: flex;
-        justify-content: center;
-        flex-direction: column;
-        align-items: center;
 
         background: linear-gradient(90deg,
                 #eee 25%,

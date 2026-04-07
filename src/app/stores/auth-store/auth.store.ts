@@ -5,7 +5,6 @@ import { Dialog } from '@angular/cdk/dialog';
 import { SignalService } from "../../services/signal.service";
 import { onLogin, onLogout } from "./auth.updaters";
 import { Router } from "@angular/router";
-import { ToasterService } from "../../services/toaster.service";
 import { getToken, isTokenExpired } from "./auth.helpers";
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { switchMap, tap } from "rxjs";
@@ -13,24 +12,24 @@ import { AuthService } from "../../services/auth.service";
 import { tapResponse } from '@ngrx/operators';
 import { withLoading } from "../custome-features/withLoading/with-loading.feature";
 import { setIsLoading, setNotLoading } from "../custome-features/withLoading/with-loading.updaters";
+import { withToaster } from "../custome-features/withToaster/with-toaster.feature";
 
 export const AuthStore = signalStore({
     providedIn: 'root'
 },
     withState(initialAuthSlice),
     withLoading(),
+    withToaster(),
     withProps(_ => {
         const _dialog = inject(Dialog);
         const _signalService = inject(SignalService);
         const _router = inject(Router);
-        const _toaster = inject(ToasterService);
         const _authService = inject(AuthService);
 
         return {
             _dialog,
             _signalService,
             _router,
-            _toaster,
             _authService
         };
     }),
@@ -49,10 +48,10 @@ export const AuthStore = signalStore({
                     next: response => {
                         if (response === null) {
                             patchState(store, setNotLoading());
-                            store._toaster.error('Něco se pokazilo, zkus to znovu.');
+                            store.error('Něco se pokazilo, zkus to znovu.');
                         } else if (response.isSuccess === false) {
                             patchState(store, setNotLoading());
-                            store._toaster.error(response.errorMessage);
+                            store.error(response.errorMessage);
                         } else {
                             patchState(store, onLogin(response.result, store._signalService))
                             store._router.navigate(['main']);
@@ -70,12 +69,14 @@ export const AuthStore = signalStore({
                 store._router.navigate(['main']);
             },
             logOut: () => {
-                patchState(store, onLogout(store._dialog, store._router, store._toaster, store._signalService));
+                patchState(store, { notifications: [] });
+                patchState(store, onLogout(store._dialog, store._router, store._signalService));
             },
             autoLogout: (expirationDuration: number) => {
                 patchState(store, {
                     _tokenExpirationTimer: setTimeout(() => {
-                        patchState(store, onLogout(store._dialog, store._router, store._toaster, store._signalService));
+                        patchState(store, { notifications: [] });
+                        patchState(store, onLogout(store._dialog, store._router, store._signalService));
                     }, expirationDuration)
                 });
             },

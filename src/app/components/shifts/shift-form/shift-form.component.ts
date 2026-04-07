@@ -40,6 +40,7 @@ import { DatePickerComponent } from "../../date-picker/date-picker.component";
 export class ShiftFormComponent {
   readonly shiftsStore = inject(ShiftsStore);
   readonly authStore = inject(AuthStore);
+  readonly MAX_PERSO = 100;
   private dialogRef = inject(DialogRef, { optional: true });
   selectedShift = this.shiftsStore.selectedShift;
   card = this.shiftsStore.currentCard;
@@ -107,8 +108,8 @@ export class ShiftFormComponent {
     _shift.from = this.timeToString(this.form.from().value());
     _shift.to = this.timeToString(this.form.to().value());
     _shift.perso = this.form.perso().value();
-    this.shiftsStore.setSelectedShift(_shift);
-    this.shiftsStore.createUpdateShift();
+    //this.shiftsStore.setSelectedShift(_shift);
+    this.shiftsStore.createUpdateShift(_shift);
   }
 
   private timeToString(date: Date | null) {
@@ -177,6 +178,6 @@ export class ShiftFormComponent {
     this.setShowError(this.form.to()));
 
   private setShowError(field: FieldState<Date | string | null>) {
-    return field.invalid() && (field.touched() || field.dirty());
+    return field.invalid() || field.dirty();
   }
 }

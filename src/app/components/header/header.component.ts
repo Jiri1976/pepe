@@ -3,7 +3,6 @@ import { Router, RouterLink } from '@angular/router';
 import { HideElementDirective } from '../../directives/hide-element.directive';
 import { Dialog } from '@angular/cdk/dialog';
 import { NotificationMessagesComponent } from '../notification-messages/notification-messages.component';
-import { ToasterService } from '../../services/toaster.service';
 import { ClickOutsideDirective } from '../../directives/click-outside.directive';
 import { AuthStore } from '../../stores/auth-store/auth.store';
 
@@ -15,20 +14,13 @@ import { AuthStore } from '../../stores/auth-store/auth.store';
 })
 export class HeaderComponent implements OnInit {
   readonly authStore = inject(AuthStore);
-  private toaster = inject(ToasterService);
   private dialog = inject(Dialog)
   private router = inject(Router);
-  notifications = computed(() => this.toaster.notifications());
+  notifications = computed(() => this.authStore.notifications());
   isShown = signal(false);
   initialized = signal(false);
 
   ngOnInit(): void {
-    let messages: any[] = [];
-    let localStorageMessages = localStorage.getItem("notifications");
-    if (localStorageMessages) {
-      messages = JSON.parse(localStorageMessages);
-    }
-    this.toaster.notifications.set(messages);
     this.initialized.set(true);
   }
 

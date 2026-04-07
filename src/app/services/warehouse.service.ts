@@ -1,34 +1,15 @@
-import { inject, Injectable, signal } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { environment } from "../../environments/environment";
 import { Response } from '../models/response.interface';
-import { BehaviorSubject, Observable } from "rxjs";
-import { WarehouseItemsComponent } from "../components/warehouse/warehouse-items/warehouse-items.component";
 import { WarehouseItem, WarehouseCard } from "../models/warehouses.interface";
 
 @Injectable({
     providedIn: 'root'
 })
 export class WarehouseService {
-    // private MONTHS_NUM = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
     private http = inject(HttpClient);
     private BASE_ROUTE = environment.WAREHOUSE_PATH;
-    // private compRef = new BehaviorSubject<WarehouseItemsComponent | null>(null);
-    // items = signal<WarehouseItem[]>([]);
-    // warehouseCard = signal<WarehouseCard>({ id: 0, warehouseItemId: 0, warehouseItemName: '', monthYear: '', monthYearName: '', destination: '', position: 0, units: [] });
-    // selectedUnit = signal<WarehouseUnit>({ id: 0, warehouseCardId: 0, warehouseItemId: 0, date: '', amount: 0 });
-    // selectedListItemId = signal<number>(-1);
-    // selectedIndex = signal<number>(0);
-    // isUpdating = signal(false);
-    // cards = signal<WarehouseCard[]>([]);
-    // reloadItems = signal(false);
-    // reloadCards = signal(false);
-    // monthYear = signal<string>(this.MONTHS_NUM[new Date().getMonth()] + new Date().getFullYear());
-    // defaultDate = signal<Date>(new Date(new Date().getFullYear(), new Date().getMonth()));
-
-    // setItems(_items: WarehouseItem[]) {
-    //     this.items.set(_items);
-    // }
 
     getAllWarehouseItems() {
         const url = this.BASE_ROUTE + `GetAllWarehouseItems`;
