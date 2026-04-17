@@ -2,8 +2,8 @@ import { Component, inject } from '@angular/core';
 import { WarehouseStore } from '../../../../stores/warehouse-store/warehouse.store';
 
 @Component({
-  selector: 'app-skeleton-overview',
-  template: `
+    selector: 'app-skeleton-overview',
+    template: `
           <div class="skeleton d-flex flex-column justify-content-center" animate.enter="fade-in" animate.leave="fade-out">
             <div class="empty-table">
               <div class="empty-table-head d-flex flex-row">
@@ -26,7 +26,7 @@ import { WarehouseStore } from '../../../../stores/warehouse-store/warehouse.sto
             </div>
           </div>
     `,
-  styles: [`
+    styles: [`
             .skeleton {
             grid-column: 1;
             grid-row: 1;
@@ -113,7 +113,7 @@ import { WarehouseStore } from '../../../../stores/warehouse-store/warehouse.sto
   `],
 })
 export class SkeletonOverviewComponent {
-  readonly store = inject(WarehouseStore);
-  days = this.store.countOfDays;
-  emptyCards = Array(12);
+    readonly store = inject(WarehouseStore);
+    days = this.store.countOfDays;
+    emptyCards = Array(12);
 }

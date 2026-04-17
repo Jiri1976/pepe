@@ -18,3 +18,26 @@ export function updateCards(updatedCard: WarehouseCard): PartialStateUpdater<War
         };
     };
 }
+
+export function signalUpdate(updatedCard: WarehouseCard): PartialStateUpdater<WarehouseSlice> {
+    return state => {
+        let cards = [...state.cards];
+
+        const cardIndex = cards.findIndex(card => card.warehouseItemId === updatedCard.warehouseItemId && card.destination === updatedCard.destination);
+
+
+        if (cardIndex === -1) {
+            return state;
+        }
+
+        cards[cardIndex] = {
+            ...cards[cardIndex],
+            units: updatedCard.units
+        };
+
+        return {
+            ...state,
+            cards
+        };
+    };
+}

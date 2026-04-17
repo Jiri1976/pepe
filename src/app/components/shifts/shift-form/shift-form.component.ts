@@ -108,7 +108,6 @@ export class ShiftFormComponent {
     _shift.from = this.timeToString(this.form.from().value());
     _shift.to = this.timeToString(this.form.to().value());
     _shift.perso = this.form.perso().value();
-    //this.shiftsStore.setSelectedShift(_shift);
     this.shiftsStore.createUpdateShift(_shift);
   }
 

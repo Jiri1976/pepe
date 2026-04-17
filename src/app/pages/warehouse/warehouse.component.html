@@ -15,9 +15,9 @@
             [inactive]="store.destination() !== 'F-M'" />
         <app-nav-button (click)="store.setDestination('OVA')" label="OVA" [hidden]="hideForMaster"
             [inactive]="store.destination() !== 'OVA'" />
-        <app-nav-button [hidden]="hideForMaster" (click)="store.createPdf()" icon="bi-filetype-pdf"
-            [disabled]="!store.somethingForDeleting()" [loading]="store.isPdfLoading()" />
-        <app-nav-button (click)="store.requestDeleteCards()" [hidden]="hideForMaster"
+        <app-nav-button [hidden]="hideForMaster" (click)="store.somethingForDeleting() && store.createPdf()"
+            icon="bi-filetype-pdf" [disabled]="!store.somethingForDeleting()" [loading]="store.isPdfLoading()" />
+        <app-nav-button (click)="store.somethingForDeleting() && store.requestDeleteCards()" [hidden]="hideForMaster"
             [disabled]="!store.somethingForDeleting()" icon="bi-trash" class="delete" [loading]="store.isDeleting()" />
 
         @if (navRoute() === 'units') {
@@ -31,7 +31,8 @@
             [inactive]="navRoute() !== 'units'" />
         <app-nav-button [hidden]="hideForMaster" (click)="onShowItems()" icon="bi-list-ul"
             [inactive]="navRoute() !== 'items'" />
-        <app-nav-button (click)="onShowBoard()" icon="bi-house" [inactive]="navRoute() !== 'board'" />
+        <app-nav-button [hidden]="hideForMaster" (click)="onShowBoard()" icon="bi-house"
+            [inactive]="navRoute() !== 'board'" />
         }
 
         @if (navRoute() === 'items') {

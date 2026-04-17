@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
     selector: 'app-unauthorized',
     imports: [],
     template: `
-            <div class="wrapper">
+            <div class="wrapper d-flex flex-column align-items-center">
                 <img src="./unauthorized.jpg" width="300" height="300">
                 <h2 class="mt-5">Stránka není určena pro tebe!</h2>
                 <p>Zkus se znovu <button (click)="logout()">přihlásit</button> nebo jdi na <button (click)="backToMain()">hlavní stránku</button>.</p>
@@ -14,10 +14,7 @@ import { Router } from '@angular/router';
     `,
     styles: [`
         .wrapper {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        height: 100vh;
+            height: 100vh;
         }
 
         .wrapper img {

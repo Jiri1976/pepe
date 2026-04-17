@@ -70,6 +70,6 @@ export class WarehouseInputComponent {
     } else {
       _selectedUnit.amount = undefined;
     }
-    this.warehouseStore.createUpdateWarehouseCard(_card);
+    this.warehouseStore.createUpdateWarehouseCard(_card, `${_card.monthYearName}, ${_card.warehouseItemName.toLocaleLowerCase()} - ${_selectedUnit.amount ? _selectedUnit.amount + 'ks' : 'anulováno'}`);
   }
 }

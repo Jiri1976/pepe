@@ -1,0 +1,1 @@
+var E=["LEDEN","\xDANOR","B\u0158EZEN","DUBEN","KV\u011ATEN","\u010CERVEN","\u010CERVENEC","SRPEN","Z\xC1\u0158\xCD","\u0158\xCDJEN","LISTOPAD","PROSINEC"],N=["01","02","03","04","05","06","07","08","09","10","11","12"];export{E as a,N as b};

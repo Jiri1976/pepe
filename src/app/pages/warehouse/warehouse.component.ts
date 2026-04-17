@@ -1,4 +1,5 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, effect, inject, viewChild } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, effect, inject, OnDestroy, viewChild } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
@@ -30,17 +31,22 @@ import { ItemsListComponent } from '../../components/warehouse/items-list/items-
   styleUrl: './warehouse.component.scss',
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class WarehouseComponent {
+export class WarehouseComponent implements OnDestroy {
   readonly store = inject(WarehouseStore);
   readonly authStore = inject(AuthStore);
+  private document = inject(DOCUMENT);
   private router = inject(Router);
   private dialog = inject(Dialog);
+  private previousBodyOverflowY = '';
   destination = this.store.destination();
   calendar = viewChild<DatePicker>('calendar');
   items = this.store.warehouseItems;
   navRoute = this.store.warehouseNav;
 
   constructor() {
+    this.previousBodyOverflowY = this.document.body.style.overflowY;
+    this.document.body.style.overflowY = 'hidden';
+
     effect(() => {
       if (this.calendar) {
         if (!this.store.showCalendar()) {
@@ -52,6 +58,10 @@ export class WarehouseComponent {
         }
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.document.body.style.overflowY = this.previousBodyOverflowY;
   }
 
   onSelectMonth() {

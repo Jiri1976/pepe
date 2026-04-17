@@ -1,5 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { SignalService } from '../../services/signal.service';
+import { Component, inject, signal } from '@angular/core';
 import { AuthStore } from '../../stores/auth-store/auth.store';
 import { form, email, required, FormField, } from '@angular/forms/signals';
 import { FieldWrapperComponent } from "../../components/filed-wrapper/field-wrapper.component";
@@ -16,9 +15,8 @@ interface LoginForm {
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })
-export default class LoginComponent implements OnInit {
+export default class LoginComponent {
   readonly store = inject(AuthStore);
-  private signalService = inject(SignalService);
   protected model = signal<LoginForm>({
     email: '',
     password: ''
@@ -29,10 +27,6 @@ export default class LoginComponent implements OnInit {
     email(s.email, { message: 'Neplatná emailová adresa' });
     required(s.password, { message: 'Heslo je povinné' });
   });
-
-  ngOnInit() {
-    this.signalService.leaveRoom();
-  }
 
   onSubmit() {
     if (this.form().invalid()) {

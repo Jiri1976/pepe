@@ -137,3 +137,22 @@ export function createToaster(store: any) {
         error: (msg: string) => store.error(msg)
     };
 }
+
+export function getMessageTime() {
+    const day = new Date().getDate() < 10 ? `0${new Date().getDate()}` : new Date().getDate();
+    const month = new Date().getMonth() + 1 < 10 ? `0${new Date().getMonth() + 1}` : new Date().getMonth() + 1;
+    const hours = new Date().getHours();
+    const minutes = new Date().getMinutes() < 10 ? `0${new Date().getMinutes()}` : new Date().getMinutes();
+    return `${day}.${month}. ${hours}:${minutes}`;
+}
+
+export function isCurrentMonthYear(monthYear: string) {
+    let d = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+    const thisMonth = (d.getMonth() + 1) < 10 ? '0' + (d.getMonth() + 1).toString() : (d.getMonth() + 1).toString();
+    const thisYear = d.getFullYear().toString();
+    const thisMonthYear = thisMonth + thisYear;
+    if (monthYear === thisMonthYear) {
+        return true;
+    }
+    return false;
+}

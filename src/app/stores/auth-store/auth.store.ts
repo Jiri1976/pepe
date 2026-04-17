@@ -2,10 +2,9 @@ import { patchState, signalStore, withComputed, withHooks, withMethods, withProp
 import { initialAuthSlice } from "./auth.slice";
 import { computed, effect, inject } from "@angular/core";
 import { Dialog } from '@angular/cdk/dialog';
-import { SignalService } from "../../services/signal.service";
 import { onLogin, onLogout } from "./auth.updaters";
 import { Router } from "@angular/router";
-import { getToken, isTokenExpired } from "./auth.helpers";
+import { getToken, isTokenExpired, setUserDetail } from "./auth.helpers";
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { switchMap, tap } from "rxjs";
 import { AuthService } from "../../services/auth.service";
@@ -13,6 +12,7 @@ import { tapResponse } from '@ngrx/operators';
 import { withLoading } from "../custome-features/withLoading/with-loading.feature";
 import { setIsLoading, setNotLoading } from "../custome-features/withLoading/with-loading.updaters";
 import { withToaster } from "../custome-features/withToaster/with-toaster.feature";
+import { withSignalR } from "../custome-features/wirh-signalR/with-signalR.feature";
 
 export const AuthStore = signalStore({
     providedIn: 'root'
@@ -20,15 +20,14 @@ export const AuthStore = signalStore({
     withState(initialAuthSlice),
     withLoading(),
     withToaster(),
+    withSignalR(),
     withProps(_ => {
         const _dialog = inject(Dialog);
-        const _signalService = inject(SignalService);
         const _router = inject(Router);
         const _authService = inject(AuthService);
 
         return {
             _dialog,
-            _signalService,
             _router,
             _authService
         };
@@ -41,11 +40,21 @@ export const AuthStore = signalStore({
         }
     })),
     withMethods(store => {
+        const initializeSignalRUser = (token: string) => {
+            patchState(store, onLogin(token));
+            store.setToken(token);
+
+            const user = store.user();
+            if (user) {
+                store.setSignalRUser({ name: user.name, destination: user.destination, role: user.role });
+            }
+        };
+
         const onSubmit = rxMethod<{ email: string, password: string }>(input$ => input$.pipe(
             tap(_ => patchState(store, setIsLoading())),
             switchMap(data => store._authService.login(data).pipe(
                 tapResponse({
-                    next: response => {
+                    next: async response => {
                         if (response === null) {
                             patchState(store, setNotLoading());
                             store.error('Něco se pokazilo, zkus to znovu.');
@@ -53,7 +62,8 @@ export const AuthStore = signalStore({
                             patchState(store, setNotLoading());
                             store.error(response.errorMessage);
                         } else {
-                            patchState(store, onLogin(response.result, store._signalService))
+                            initializeSignalRUser(response.result);
+                            await store.start();
                             store._router.navigate(['main']);
                         }
                     },
@@ -64,24 +74,27 @@ export const AuthStore = signalStore({
 
         return {
             submit: (loginRequest: { email: string, password: string }) => { onSubmit(loginRequest) },
-            login: (token: string) => {
-                patchState(store, onLogin(token, store._signalService));
+            login: async (token: string) => {
+                initializeSignalRUser(token);
+                await store.start();
                 store._router.navigate(['main']);
             },
             logOut: () => {
-                patchState(store, { notifications: [] });
-                patchState(store, onLogout(store._dialog, store._router, store._signalService));
+                store.clearSignalRUser();
+                store.leaveRoom();
+                patchState(store, onLogout(store._dialog, store._router));
             },
             autoLogout: (expirationDuration: number) => {
                 patchState(store, {
                     _tokenExpirationTimer: setTimeout(() => {
-                        patchState(store, { notifications: [] });
-                        patchState(store, onLogout(store._dialog, store._router, store._signalService));
+                        store.leaveRoom();
+                        patchState(store, onLogout(store._dialog, store._router));
                     }, expirationDuration)
                 });
             },
-            restoreLogin: (token: string) => {
-                patchState(store, onLogin(token, store._signalService));
+            restoreLogin: async (token: string) => {
+                initializeSignalRUser(token);
+                await store.start();
             }
         }
     }),
@@ -93,6 +106,8 @@ export const AuthStore = signalStore({
                     store.logOut();
                 } else {
                     store.restoreLogin(token);
+                    store.setToken(token);
+                    //store.start(store.user()?.name ?? '');
                 }
 
                 if (store._tokenExpirationTimer === null) {

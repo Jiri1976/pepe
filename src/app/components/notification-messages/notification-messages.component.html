@@ -1,13 +1,14 @@
-<article animate.enter="fast-in" animate.leave="fast-out">
+<article animate.enter="fast-in" animate.leave="fast-out"
+    class="d-flex flex-column justify-content-center align-items-center">
     @for (notification of notifications(); track $index) {
-    <div class="main">
+    <div class="main w-100 d-flex flex-row justify-content-between align-items-center bg-white">
         <div class="text">
             {{ notification }}
         </div>
         <div class="action">
-            <button (click)="removeNotification($index)"><i class="bi bi-x-circle"></i></button>
+            <button (click)="removeNotification($index)"><i class="bi bi-x-circle fw-bold"></i></button>
         </div>
     </div>
     }
-    <button (click)="closeModal()" class="closeBtn">Zavřít</button>
+    <button (click)="closeModal()" class="closeBtn fw-bold">Zavřít</button>
 </article>

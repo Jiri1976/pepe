@@ -16,12 +16,15 @@ export class WarehouseItemsComponent implements OnInit {
   height = signal(window.innerHeight);
 
   bodyStyles = computed(() => {
-    const shouldScroll =
-      this.items()?.length > 11 && this.height() < 700;
+    if (this.items()?.length > 11 && this.height() < 900) {
+      return { maxHeight: '550px', overflowY: 'auto' };
+    }
 
-    return shouldScroll
-      ? { maxHeight: '550px', overflowY: 'auto' }
-      : {};
+    if (this.items()?.length > 14 && this.height() > 900 && this.height() < 920) {
+      return { maxHeight: '650px', overflowY: 'auto' };
+    }
+
+    return {};
   });
 
   @HostListener('window:resize')

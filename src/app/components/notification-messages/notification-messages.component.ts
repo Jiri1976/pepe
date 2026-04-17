@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, effect, inject } from '@angular/core';
 import { DialogRef } from '@angular/cdk/dialog';
 import { AuthStore } from '../../stores/auth-store/auth.store';
 
@@ -15,7 +15,7 @@ export class NotificationMessagesComponent {
 
   removeNotification(index: number) {
     this.store.removeNotifications(index);
-    if (this.notifications.length === 0) {
+    if (this.notifications().length === 0) {
       this.dialogRef?.close();
     }
   }

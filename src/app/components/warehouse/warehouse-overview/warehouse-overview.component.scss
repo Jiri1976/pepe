@@ -2,11 +2,13 @@
     width: 100%;
     display: grid;
     justify-content: center;
+    overflow-y: hidden;
 
     .wrapper {
         margin: 130px 0 0 0;
         grid-column: 1;
         grid-row: 1;
+        overflow-y: hidden;
 
         .table {
             .table-head {
@@ -93,10 +95,6 @@
                             width: 35px !important;
                             height: 35px !important;
                             padding: 0 !important;
-                            display: flex;
-                            flex-direction: column;
-                            justify-content: center;
-                            align-items: center;
                             border: 1px solid #666;
 
                             .spinner-border {
@@ -155,18 +153,10 @@
         }
 
         .empty-item {
-            grid-column: 1;
-            grid-row: 1;
             margin: 5% 0 0 0;
-            display: flex;
-            justify-content: center;
-            flex-direction: column;
-            align-items: center;
-            position: absolute;
 
             h4 {
                 color: var(--main-dark);
-                font-weight: bold;
             }
         }
     }

@@ -1,4 +1,4 @@
-import { ApplicationConfig, inject, provideAppInitializer, provideEnvironmentInitializer, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, provideAppInitializer, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter, withViewTransitions } from '@angular/router';
 import { routes } from './app.routes';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
@@ -8,7 +8,6 @@ import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeuix/themes/aura';
 import { globalHttpErrorInterceptor } from './interceptor/global-http-error.interceptor';
 import { provideHotToastConfig } from '@ngxpert/hot-toast';
-import { SignalService } from './services/signal.service';
 import { initializeAuth } from './auth.initializer';
 
 export const appConfig: ApplicationConfig = {
@@ -30,9 +29,6 @@ export const appConfig: ApplicationConfig = {
     AuthService,
     provideHotToastConfig({
       position: 'bottom-right'
-    }),
-    provideEnvironmentInitializer(() => {
-      inject(SignalService,);
     })
   ]
 };

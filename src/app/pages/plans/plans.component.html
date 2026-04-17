@@ -27,7 +27,7 @@
             (click)="propStore.atLeastOneSavedShift() && propStore.requestDeleteProposalCard(`Odstranit plán směn pro ${propStore.destination()} - ${propStore.currentCard()!.monthYearName.toLowerCase()}?`)"
             icon="bi-trash" [disabled]="!propStore.atLeastOneSavedShift()" />
         <app-nav-button class="save" (click)="!propStore.isUnchanged() && propStore.saveProposals()" icon="bi-floppy"
-            [disabled]="propStore.isUnchanged()" />
+            [disabled]="propStore.isUnchanged()" [loading]="propStore.isSaving()" />
     </app-navigation>
 </div>
 

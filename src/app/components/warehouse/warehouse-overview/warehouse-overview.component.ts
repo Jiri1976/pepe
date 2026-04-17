@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, computed, HostListener, inject, OnInit, signal } from '@angular/core';
 import { AuthStore } from '../../../stores/auth-store/auth.store';
 import { WarehouseStore } from '../../../stores/warehouse-store/warehouse.store';
 import { SkeletonOverviewComponent } from "./skeleton-overview/skeleton-overview.component";
@@ -19,6 +19,7 @@ export class WarehouseOverviewComponent implements OnInit {
   monthYear = this.warehouseStore.monthYear;
   overviewCard = this.warehouseStore.overviewCard;
   highlightedInputs = new Set<string>();
+  height = signal(window.innerHeight);
 
   ngOnInit(): void {
     const user = this.authStore.user();
@@ -28,6 +29,21 @@ export class WarehouseOverviewComponent implements OnInit {
     this.warehouseStore.resetMonthYaer();
     this.warehouseStore.setWarehouseNave('board');
   }
+
+  @HostListener('window:resize')
+  onWindowResize() {
+    this.height.set(window.innerHeight);
+  }
+
+  bodyStyles = computed(() => {
+    const shouldScroll = this.cards() && this.cards().length > 0 && this.height() < 700 ||
+      this.cards() && this.cards().length > 13 && this.height() > 700 && this.height() < 920;
+
+    return shouldScroll ? {
+      'maxHeight': '520px',
+      'overflow-y': 'auto'
+    } : {};
+  });
 
   onChangeInput(x: number, y: number, event: any) {
     const input = (event.target as HTMLInputElement).value;
@@ -62,7 +78,7 @@ export class WarehouseOverviewComponent implements OnInit {
     let updatingCard = structuredClone(this.cards()[x]);
     updatingCard.units[y].amount = value;
 
-    this.warehouseStore.createUpdateWarehouseCard(updatingCard);
+    this.warehouseStore.createUpdateWarehouseCard(updatingCard, `${updatingCard.monthYearName}, ${updatingCard.warehouseItemName.toLocaleLowerCase()} - ${input === '' ? 'anulováno' : value + 'ks'}`);
   }
 
   isDisabled(date: string) {

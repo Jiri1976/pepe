@@ -29,6 +29,14 @@ export function setNotDeleting(): PartialStateUpdater<LoadingSlice> {
     return _ => ({ isDeleting: false });
 }
 
+export function setIsDeletingCard(): PartialStateUpdater<LoadingSlice> {
+    return _ => ({ isDeletingCard: true });
+}
+
+export function setNotDeletingCard(): PartialStateUpdater<LoadingSlice> {
+    return _ => ({ isDeletingCard: false });
+}
+
 export function toggleIsLoading(): PartialStateUpdater<LoadingSlice> {
     return state => ({ isLoading: !state.isLoading });
 }

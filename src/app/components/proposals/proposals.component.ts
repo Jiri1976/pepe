@@ -1,9 +1,7 @@
-import { Component, computed, effect, ElementRef, HostListener, inject, signal, viewChild } from '@angular/core';
+import { Component, computed, ElementRef, HostListener, inject, signal, viewChild } from '@angular/core';
 import { ProposalsService } from '../../services/proposals.service';
 import { ProposalSkeletonComponent } from "./proposal-skeleton/proposal-skeleton.component";
 import { CdkDrag, CdkDragHandle, CdkDragPlaceholder, CdkDragDrop, CdkDropList, CdkDropListGroup } from '@angular/cdk/drag-drop';
-import * as signalR from '@microsoft/signalr';
-import { environment } from '../../../environments/environment';
 import { ProposalShiftComponent } from "./proposal-shift/proposal-shift.component";
 import { DisabledClassDirective } from '../../directives/disabled-class.directive';
 import { SetBackgroundDirective } from '../../directives/set-background.directive';
@@ -34,33 +32,14 @@ import { ProposalUser, ProposalShift } from '../../models/proposals.interface';
 export class ProposalsComponent {
   readonly authStore = inject(AuthStore);
   readonly propStore = inject(ProposalStore);
-  private PEPE_HUB = environment.PEPE_HUB;
   dashboard = viewChild.required<ElementRef>('dashboard');
   proposalsService = inject(ProposalsService);
-  hubUser = `${this.authStore.user()?.name}`;
-  token = this.authStore.user()?.token;
-  updateHub = computed(() => this.proposalsService.updateHub());
   bodyStyles = signal<any>({});
-
-  hubEffect = effect(() => {
-    if (this.updateHub()) {
-      this.updateProposals(this.propStore.destination(), true);
-    }
-    this.setBodyStyles();
-  });
 
   @HostListener('window:resize')
   onWindowResize() {
     this.setBodyStyles();
   }
-
-  connection = new signalR.HubConnectionBuilder()
-    .withUrl(this.PEPE_HUB, {
-      accessTokenFactory: () => this.token!
-    })
-    .configureLogging(signalR.LogLevel.Error)
-    .withAutomaticReconnect()
-    .build();
 
   readonly warning = computed(() => {
     if (this.propStore.isUnsavedPassedCard()) {
@@ -73,26 +52,6 @@ export class ProposalsComponent {
     return null;
   });
 
-  constructor() {
-    // this.start();
-    // this.connection.on("UpdateProposals", (user: string, isUpdate: boolean, destination: string, messageTime: string) => {
-    //   const hours = new Date(messageTime).getHours();
-    //   const minutes = new Date(messageTime).getMinutes() < 10 ? `0${new Date(messageTime).getMinutes()}` : new Date(messageTime).getMinutes();
-
-    //   if (isUpdate && user !== this.hubUser && this.loggedUser.role === 'Admin') {
-    //     if (destination === this.proposalsService.destination()) {
-    //       this.proposalsService.uploadProposals();
-    //     }
-    //     this.alertService.setAlert({ severity: 'info', summary: 'Info', detail: `${hours}:${minutes} Rozpis pro ${destination} aktualizoval ${user}.` });
-    //   } else if (isUpdate && user !== this.hubUser && this.loggedUser.role === 'Master') {
-    //     if (destination === this.proposalsService.destination()) {
-    //       this.proposalsService.uploadProposals();
-    //       this.alertService.setAlert({ severity: 'info', summary: 'Info', detail: `${hours}:${minutes} Rozpis pro ${destination} aktualizoval ${user}.` });
-    //     }
-    //   }
-    // });
-  }
-
   ngOnInit(): void {
     const user = this.authStore.user();
     if (user?.role === 'master' && user.destination !== this.propStore.destination()) {
@@ -100,40 +59,6 @@ export class ProposalsComponent {
     }
     this.propStore.uploadSchedulesShifts();
     this.setBodyStyles();
-  }
-
-  public async start() {
-    try {
-      await this.connection.start();
-      await this.joinRoom(this.hubUser, 'proposals');
-    } catch (error) {
-      this.authStore.warning('Nepodařilo se navázat spojení s hubem.');
-    }
-  }
-
-  public async joinRoom(user: string, room: string) {
-    try {
-      return this.connection.invoke("JoinRoom", { user, room });
-    } catch (error) {
-      console.log('PROPOSALS - JOIN ROOM ERROR: ', error);
-    }
-  }
-
-  public async updateProposals(destination: string, isUpdating: boolean) {
-    try {
-      this.proposalsService.updateHub.set(false);
-      return this.connection.invoke("UpdateProposals", destination, isUpdating);
-    } catch (error) {
-      console.log('PROPOSALS - UPDATE PROPOSALS ERROR: ', error);
-    }
-  }
-
-  public async leaveRoom() {
-    try {
-      return this.connection.stop();
-    } catch (error) {
-      console.log('PROPOSALS - LEAVE CHAT ERROR: ', error);
-    }
   }
 
   remove(user: ProposalUser, index: number) {
@@ -176,10 +101,6 @@ export class ProposalsComponent {
       return false;
     }
     return true;
-  }
-
-  ngOnDestroy(): void {
-    this.leaveRoom();
   }
 
   private setBodyStyles() {
