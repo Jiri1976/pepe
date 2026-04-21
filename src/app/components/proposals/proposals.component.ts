@@ -34,12 +34,46 @@ export class ProposalsComponent {
   readonly propStore = inject(ProposalStore);
   dashboard = viewChild.required<ElementRef>('dashboard');
   proposalsService = inject(ProposalsService);
-  bodyStyles = signal<any>({});
+  height = signal<number>(window.innerHeight);
 
   @HostListener('window:resize')
   onWindowResize() {
-    this.setBodyStyles();
+    this.height.set(window.innerHeight);
   }
+
+
+  bodyStyles = computed(() => {
+    if (this.propStore.currentCard()?.users) {
+      if (this.height() < 700) {
+        return {
+          'maxHeight': '500px',
+          'overflow-y': 'auto'
+        };
+      } else if (this.height() > 700 && this.height() < 920) {
+        if (this.propStore.currentCard() && this.propStore.currentCard()!.users.length > 13) {
+          return {
+            'maxHeight': '580px',
+            'overflow-y': 'auto'
+          };
+        } else {
+          return {
+            'maxHeight': '',
+            'overflow-y': 'hidden'
+          };
+        }
+      } else {
+        return {
+          'maxHeight': '',
+          'overflow-y': 'hidden'
+        };
+      }
+    } else {
+      return {
+        'maxHeight': '',
+        'overflow-y': 'hidden'
+      };
+    }
+  });
 
   readonly warning = computed(() => {
     if (this.propStore.isUnsavedPassedCard()) {
@@ -58,7 +92,6 @@ export class ProposalsComponent {
       this.propStore.setDestination(user.destination);
     }
     this.propStore.uploadSchedulesShifts();
-    this.setBodyStyles();
   }
 
   remove(user: ProposalUser, index: number) {
@@ -101,33 +134,5 @@ export class ProposalsComponent {
       return false;
     }
     return true;
-  }
-
-  private setBodyStyles() {
-    if (this.propStore.currentCard()?.users) {
-      if (window.innerHeight < 700) {
-        this.bodyStyles.set({
-          'maxHeight': '500px',
-          'overflow-y': 'auto'
-        });
-      } else if (window.innerHeight > 700 && window.innerHeight < 920) {
-        if (this.propStore.currentCard() && this.propStore.currentCard()!.users.length > 16) {
-          this.bodyStyles.set({
-            'maxHeight': '680px',
-            'overflow-y': 'auto'
-          });
-        } else {
-          this.bodyStyles.set({
-            'maxHeight': '',
-            'overflow-y': 'hidden'
-          });
-        }
-      } else {
-        this.bodyStyles.set({
-          'maxHeight': '',
-          'overflow-y': 'hidden'
-        });
-      }
-    }
   }
 }

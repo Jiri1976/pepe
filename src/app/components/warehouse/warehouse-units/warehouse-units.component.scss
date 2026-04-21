@@ -56,12 +56,10 @@
                     }
 
                     .foot {
-                        border: 2px solid var(--main-dark);
                         padding: 5px;
                         font-weight: 600;
-                        background: var(--table-head);
-                        color: var(--main-dark);
                         border-radius: 7px;
+                        height: 38px;
 
                         .delBtn {
                             width: 100px;
@@ -70,6 +68,7 @@
                             border: 1px solid var(--main-red);
                             background: var(--main-red);
                             border-radius: 7px;
+                            margin-bottom: 5px;
 
                             .bi {
                                 font-size: 0.9rem;
@@ -145,14 +144,8 @@
             }
 
             .foot {
-                border: 2px solid #e0e0e0;
-                background: linear-gradient(90deg,
-                        #eee 25%,
-                        #fff 50%,
-                        #eee 75%);
                 background-size: 400% 100%;
-                animation: shimmer 2s infinite linear;
-                height: 36px;
+                height: 38px;
                 border-radius: 7px;
 
                 .delBtn {

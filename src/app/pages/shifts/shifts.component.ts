@@ -16,6 +16,7 @@ import { ShiftFormComponent } from '../../components/shifts/shift-form/shift-for
 import { SelectUserComponent } from '../../components/shifts/select-user/select-user.component';
 import { PagingComponent } from '../../components/paging/paging.component';
 import { PrevNextButtonComponent } from '../../components/paging/prev-next-button.component';
+import { DestinationButtonComponent } from "../../components/paging/destination-button.component";
 
 @Component({
   selector: 'app-plans',
@@ -30,7 +31,8 @@ import { PrevNextButtonComponent } from '../../components/paging/prev-next-butto
     NavigationComponent,
     NavButtonComponent,
     PagingComponent,
-    PrevNextButtonComponent
+    PrevNextButtonComponent,
+    DestinationButtonComponent
   ],
   templateUrl: './shifts.component.html',
   styleUrl: './shifts.component.scss',

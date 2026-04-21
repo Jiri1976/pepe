@@ -2,10 +2,11 @@ import { Component, computed, HostListener, inject, OnInit, signal } from '@angu
 import { AuthStore } from '../../../stores/auth-store/auth.store';
 import { WarehouseStore } from '../../../stores/warehouse-store/warehouse.store';
 import { SkeletonOverviewComponent } from "./skeleton-overview/skeleton-overview.component";
+import { DestinationButtonComponent } from "../../paging/destination-button.component";
 
 @Component({
   selector: 'app-warehouse-overview',
-  imports: [SkeletonOverviewComponent],
+  imports: [SkeletonOverviewComponent, DestinationButtonComponent],
   templateUrl: './warehouse-overview.component.html',
   styleUrl: './warehouse-overview.component.scss'
 })

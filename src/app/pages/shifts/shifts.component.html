@@ -43,6 +43,7 @@
     <app-paging>
         <app-prev-next-button icon="bi-caret-left" [disabled]="shiftsStore.sliceIndex() === 0"
             (click)="movePrevious()" />
+        <app-destination-button [destination]="shiftsStore.destination()" />
         <app-prev-next-button icon="bi-caret-right"
             [disabled]="shiftsStore.sliceIndex() === shiftsStore.uniqueUsers().length - 1" (click)="moveNext()" />
     </app-paging>

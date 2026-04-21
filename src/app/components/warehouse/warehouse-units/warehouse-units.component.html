@@ -70,10 +70,9 @@
                         }
                     </div>
                     <div class="row mt-3 foot justify-content-center align-items-center">
-                        {{card.destination === 'F-M' ? 'FRÝDEK-MÍSTEK' : 'OSTRAVA'}}
                         @if (card.id > 0) {
                         <button hide
-                            class="delBtn position-absolute fw-bold d-flex flex-row justify-content-center align-items-center text-white"
+                            class="delBtn fw-bold d-flex flex-row justify-content-center align-items-center text-white"
                             type="button" (click)="warehouseStore.requestDeleteCard()">
                             @if (!warehouseStore.isDeletingCard()) {
                             Smazat&nbsp;<i class="bi bi-trash fw-bold"></i>
@@ -93,6 +92,7 @@
         <app-paging>
             <app-prev-next-button icon="bi-caret-left" (click)="movePrevious()"
                 [disabled]="this.warehouseStore.sliceIndex() === 0" />
+            <app-destination-button [destination]="warehouseStore.destination()" />
             <app-prev-next-button icon="bi-caret-right" (click)="moveNext()"
                 [disabled]="this.warehouseStore.sliceIndex() === this.warehouseStore.cards().length - 1" />
         </app-paging>
@@ -127,8 +127,8 @@
                 </div>
                 }
             </div>
-            <div class="row mt-3 foot justify-content-end align-items-center">
-                <button hide class="delBtn position-relative" type="button"></button>
+            <div class="row mt-3 foot justify-content-center align-items-center">
+                <button hide class="delBtn" type="button"></button>
             </div>
         </div>
     </div>

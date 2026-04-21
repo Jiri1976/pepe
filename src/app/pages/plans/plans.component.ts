@@ -12,6 +12,7 @@ import { NavigationComponent } from "../../components/navigation/navigation.comp
 import { NavButtonComponent } from "../../components/navigation/nav-button.component";
 import { Dialog } from '@angular/cdk/dialog';
 import { InactiveUsersComponent } from '../../components/proposals/inactive-users/inactive-users.component';
+import { DestinationButtonComponent } from "../../components/paging/destination-button.component";
 
 @Component({
   selector: 'app-plans',
@@ -26,7 +27,8 @@ import { InactiveUsersComponent } from '../../components/proposals/inactive-user
     OverlayModule,
     DragDropModule,
     NavigationComponent,
-    NavButtonComponent
+    NavButtonComponent,
+    DestinationButtonComponent
   ],
   templateUrl: './plans.component.html',
   styleUrl: './plans.component.scss'

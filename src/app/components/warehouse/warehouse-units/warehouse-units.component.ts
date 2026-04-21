@@ -7,10 +7,11 @@ import { WarehouseStore } from '../../../stores/warehouse-store/warehouse.store'
 import { AuthStore } from '../../../stores/auth-store/auth.store';
 import { PagingComponent } from '../../paging/paging.component';
 import { PrevNextButtonComponent } from '../../paging/prev-next-button.component';
+import { DestinationButtonComponent } from '../../paging/destination-button.component';
 
 @Component({
   selector: 'app-warehouse-units',
-  imports: [CommonModule, HideElementDirective, WarehouseInputComponent, PagingComponent, PrevNextButtonComponent],
+  imports: [CommonModule, HideElementDirective, WarehouseInputComponent, PagingComponent, PrevNextButtonComponent, DestinationButtonComponent],
   templateUrl: './warehouse-units.component.html',
   styleUrl: './warehouse-units.component.scss',
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
