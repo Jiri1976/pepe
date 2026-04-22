@@ -15,8 +15,8 @@
             }
 
             @let user = authStore.user();
-            <button id="toggle-btn" class="btn btn-secondary dropdown-toggle" type="button" (click)="toggle()">
-                {{user?.name }} - {{ user?.role }}
+            <button id="toggle-btn" class="btn btn-secondary dropdown-toggle px-5" type="button" (click)="toggle()">
+                {{user?.name }}
             </button>
             @if (isShown()) {
             <ul class="dropdown-menu text-center" animate.enter="enter-animation">

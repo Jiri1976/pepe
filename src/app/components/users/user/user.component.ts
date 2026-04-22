@@ -78,6 +78,10 @@ export class UserComponent {
       return false;
     }
 
+    if (this.originalUser()!.id > 0 && this.form().value().password.length > 0) {
+      return false;
+    }
+
     return (
       original.name === current.name &&
       original.surname === current.surname &&
@@ -122,7 +126,6 @@ export class UserComponent {
     required(s.email, { message: 'Email je povinný údaj' });
     email(s.email, { message: 'Email má špatný formát' });
     required(s.role, { message: 'Role je povinný údaj' });
-    disabled(s.role, ({ valueOf }) => valueOf(s.id) !== 0);
     required(s.password, {
       message: 'Heslo je povinný údaj',
       when: ({ valueOf }) => valueOf(s.id) === 0
@@ -317,6 +320,7 @@ export class UserComponent {
     if (!u) return null;
 
     return {
+      id: u.id,
       name: u.name,
       surname: u.surname,
       email: u.email,
