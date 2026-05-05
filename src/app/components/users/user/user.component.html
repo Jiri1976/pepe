@@ -128,29 +128,33 @@
         </div>
     </div>
     <div class="row mt-4">
-        <div class="col-8 offset-2 buttons d-flex flex-row align-items-center justify-content-between">
+        <div class="col-4 d-flex justify-content-end align-items-center">
             <button class="cancel d-flex justify-content-center align-items-center p-0 text-white" (click)="onGoBack()"
-                type="button"><i class="bi bi-caret-left"></i>&nbsp;Zpět</button>
+                type="button"><i class="bi bi-caret-left"></i>
+            </button>
+        </div>
+        <div class="col-4 d-flex justify-content-center align-items-center">
+            <button type="button" class="submit d-flex justify-content-center align-items-center p-0 text-white fw-bold"
+                (click)="onSubmit()" [disabled]="form().invalid() || isUnchanged() || usersStore.isSaving()">
+                @if (!usersStore.isSaving()) {
+                {{ user()?.id === 0 ? 'Přidat' : 'Upravit' }}
+                } @else {
+                <span class="spinner-border spinner-border-sm text-white me-1" aria-hidden="true"></span>
+                {{ user()?.id === 0 ? 'Přidávám' : 'Upravuji' }}
+                }
+            </button>
+        </div>
+        <div class="col-4 d-flex justify-content-start align-items-center">
             @if (user()!.id > 1) {
             <button class="delete d-flex justify-content-center align-items-center p-0 text-white" (click)="onDelete()"
                 type="button" [disabled]="usersStore.isDeleting()">
                 @if (!usersStore.isDeleting()) {
-                <i class="bi bi-trash"></i>&nbsp;Smazat
+                <i class="bi bi-trash"></i>
                 } @else {
                 <span class="spinner-border spinner-border-sm text-white me-1" aria-hidden="true"></span>
-                Odtraňuji
                 }
             </button>
             }
-            <button type="button" class="submit d-flex justify-content-center align-items-center p-0 text-white fw-bold"
-                (click)="onSubmit()" [disabled]="form().invalid() || isUnchanged() || usersStore.isSaving()">
-                @if (!usersStore.isSaving()) {
-                <i class="bi bi-plus"></i> {{ user()?.id === 0 ? 'Přidat' : 'Upravit' }}
-                } @else {
-                <span class="spinner-border spinner-border-sm text-white me-1" aria-hidden="true"></span>
-                {{ user()?.id === 0 ? 'Přidávám ...' : 'Upravuji ...' }}
-                }
-            </button>
         </div>
     </div>
 </form>

@@ -1,4 +1,4 @@
-import { patchState, signalStore, withComputed, withMethods, withProps, withState } from "@ngrx/signals";
+import { patchState, signalStore, withComputed, withMethods, withProps, withState, withHooks } from "@ngrx/signals";
 import { computed, effect, inject, signal } from "@angular/core";
 import { Dialog } from '@angular/cdk/dialog';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
@@ -13,11 +13,13 @@ import { withConfirmation } from "../custome-features/withConfirmation/with-conf
 import { ConfirmationStore } from "../custome-features/withConfirmation/confirmation.store";
 import { CONFIRM_ACTIONS } from "../custome-features/withConfirmation/confirmation.actions";
 import { UpdateProposalComponent } from "../../components/proposals/update-proposal/update-proposal.component";
-import { createToaster, downloadPdf, setTime } from "../../helpers/common-functions.helper";
+import { createToaster, downloadPdf, getMessageTime, isCurrentMonthYear, setTime } from "../../helpers/common-functions.helper";
 import { handleApiResponse } from "../handle-api-response.operator";
 import { AuthStore } from "../auth-store/auth.store";
 import { Proposal, ProposalCard, ProposalShift, ProposalUser, Inputs } from "../../models/proposals.interface";
 import { withToaster } from "../custome-features/withToaster/with-toaster.feature";
+import { SignalRStore } from "../signalr-store/signalr.store";
+import { Router } from "@angular/router";
 
 export const ProposalStore = signalStore({
     providedIn: 'root'
@@ -30,6 +32,8 @@ export const ProposalStore = signalStore({
         const _dialog = inject(Dialog);
         const _proposalService = inject(ProposalsService);
         const _auth = inject(AuthStore);
+        const _signalR = inject(SignalRStore);
+        const _router = inject(Router);
         const proposalModel = signal<Proposal>({
             timeFrom: null,
             timeTo: null
@@ -39,7 +43,10 @@ export const ProposalStore = signalStore({
             _dialog,
             _proposalService,
             proposalModel,
-            _auth
+            _auth,
+            _signalR,
+            _router
+
         };
     }),
     withComputed(store => {
@@ -143,6 +150,22 @@ export const ProposalStore = signalStore({
             return card.users.length > 0;
         });
 
+        const signalDestination = computed(() => {
+            if (store._auth?.user()?.role === 'Master') {
+                return store._auth?.user()?.destination ?? '';
+            }
+
+            const fmChanged = JSON.stringify(store.schedules().find(c => c.destination === 'F-M')) !== JSON.stringify(store._original().find(c => c.destination === 'F-M'));
+            const ovaChanged = JSON.stringify(store.schedules().find(c => c.destination === 'OVA')) !== JSON.stringify(store._original().find(c => c.destination === 'OVA'));
+            if (fmChanged && !ovaChanged) {
+                return 'F-M';
+            } else if (!fmChanged && ovaChanged) {
+                return 'OVA';
+            } else {
+                return 'all';
+            }
+        });
+
         return {
             currentCard,
             isUnsavedPassedCard,
@@ -154,26 +177,13 @@ export const ProposalStore = signalStore({
             pizza,
             cooks,
             oppositeCard,
-            hasUsers
+            hasUsers,
+            signalDestination
         }
     }),
     withMethods(store => {
         const toaster = createToaster(store);
         const confirmationStore = inject(ConfirmationStore);
-
-        // const uploadSchedulesShifts = rxMethod<void>(input$ => input$.pipe(
-        //     tap(_ => patchState(store, setIsLoading())),
-        //     switchMap(_ => store._proposalService.getScheduledShifts(store.monthYear()).pipe(
-        //         handleApiResponse(store._toaster, {
-        //             onSuccess: (schedules) => {
-        //                 patchState(store, setNotLoading());
-        //                 patchState(store, setSchedules(schedules));
-        //                 patchState(store, closeCalendar());
-        //             },
-        //             onError: () => patchState(store, setNotLoading())
-        //         })
-        //     ))
-        // ));
 
         const uploadSchedulesShifts = rxMethod<void>(input$ => input$.pipe(
             tap(_ => patchState(store, setIsLoading())),
@@ -189,13 +199,22 @@ export const ProposalStore = signalStore({
                         patchState(store, setSchedules(schedules));
                         patchState(store, closeCalendar());
 
-
-                        // If destination not set yet, pick first card
-                        if (!store.destination() && schedules.length > 0) {
-                            patchState(store, { destination: schedules[0].destination });
-                        }
+                        // if (!store.destination() && schedules.length > 0) {
+                        //     patchState(store, { destination: schedules[0].destination });
+                        // }
                     },
                     onError: () => patchState(store, setNotLoading())
+                })
+            ))
+        ));
+
+        const silentlyUploadSchedulesShifts = rxMethod<void>(input$ => input$.pipe(
+            switchMap(_ => store._proposalService.getScheduledShifts(store.monthYear()).pipe(
+                handleApiResponse(toaster, {
+                    onSuccess: (schedules: ProposalCard[]) => {
+                        patchState(store, setSchedules(schedules));
+                    },
+                    onError: () => console.log("Nepodařilo se načíst směny po aktualizaci přes signalR")
                 })
             ))
         ));
@@ -214,11 +233,18 @@ export const ProposalStore = signalStore({
         ));
 
         const saveProposals = rxMethod<void>(input$ => input$.pipe(
-            tap(_ => patchState(store, setIsSaving())),
+            tap(_ => patchState(store, setIsSaving())
+            ),
             switchMap(_ => store._proposalService.saveProposals(store.schedules()).pipe(
                 handleApiResponse(toaster, {
                     successMessage: 'Úspěšně uloženo!',
                     onSuccess: (schedules) => {
+                        const loggedInUser = store._auth.user();
+                        if (!loggedInUser) {
+                            return;
+                        }
+                        const messageToSend = `${getMessageTime()} ${loggedInUser.name}: Uložen plán směn`;
+                        store._signalR.updateSignalProposals(loggedInUser.name, store.signalDestination(), schedules, messageToSend);
                         patchState(store, setNotSaving());
                         patchState(store, setSchedules(schedules));
                     },
@@ -233,6 +259,12 @@ export const ProposalStore = signalStore({
                 handleApiResponse(toaster, {
                     successMessage: 'Směny byly odstraněny!',
                     onSuccess: (schedules) => {
+                        const loggedInUser = store._auth.user();
+                        if (!loggedInUser) {
+                            return;
+                        }
+                        const messageToSend = `${getMessageTime()} ${loggedInUser.name}: Směny byly odstraněny`;
+                        store._signalR.updateSignalProposals(loggedInUser.name, store.signalDestination(), schedules, messageToSend);
                         patchState(store, setNotDeleting());
                         patchState(store, setSchedules(schedules));
                         patchState(store, setOriginal());
@@ -309,7 +341,28 @@ export const ProposalStore = signalStore({
             closeCalendar: () => patchState(store, closeCalendar()),
             selectProposal: (selectedProposal: ProposalShift) => selectProposal(selectedProposal),
             deleteProposal: () => patchState(store, deleteProposal(store.oppositeCard()!)),
-            updateProposal: (inputs: Inputs) => patchState(store, updateProposal(inputs))
+            updateProposal: (inputs: Inputs) => patchState(store, updateProposal(inputs)),
+            silentlyUploadSchedulesShifts: () => silentlyUploadSchedulesShifts()
         }
     }),
+    withHooks({
+        onInit(store) {
+            effect(() => {
+                const update = store._signalR.updateSignalRProposals();
+                if (update) {
+                    if (store._router.url === '/plans' && isCurrentMonthYear(store.monthYear())) {
+                        store.silentlyUploadSchedulesShifts();
+                    }
+                    store._signalR.setUpdateSignalRProposalsToFalse();
+                }
+            });
+            effect(() => {
+                const received = store._signalR.sProposals();
+                if (received && received.length > 0 && store._router.url === '/plans' && received[0].monthYear === store.monthYear()) {
+                    patchState(store, { schedules: received });
+                    store._signalR.clearSchedules();
+                }
+            });
+        }
+    })
 )

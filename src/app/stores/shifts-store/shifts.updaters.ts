@@ -16,7 +16,7 @@ export function setSlideIndexAndPosition(sliceIndex: number, uniqueUsers: Unique
     });
 }
 
-export function updateAfterDeleteCard(cardId: number, newCard: ShiftCard): PartialStateUpdater<ShiftsSlice> {
+export function updateParticularCard(cardId: number, newCard: ShiftCard): PartialStateUpdater<ShiftsSlice> {
     return state => {
         let _cards = [...state.cards]
         _cards.map(card => {

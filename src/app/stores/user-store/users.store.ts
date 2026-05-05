@@ -1,10 +1,9 @@
-import { patchState, signalStore, withComputed, withMethods, withProps, withState } from "@ngrx/signals";
+import { patchState, signalStore, withComputed, withMethods, withProps, withState, withHooks } from "@ngrx/signals";
 import { initialUsersSlice } from "./users.slice";
 import { User } from "../../models/users.interface";
 import { selectUser, setRole, setFilter, setUsers, setCurrentPage } from "./users.updaters";
 import { Dialog } from '@angular/cdk/dialog';
-import { computed, inject } from "@angular/core";
-import { UserComponent } from "../../components/users/user/user.component";
+import { computed, effect, inject } from "@angular/core";
 import { UsersService } from "../../services/users.service";
 import { getFakeArray, onRemoveUser, selectUsers, onUpdateUser } from "./users.helpers";
 import { withLoading } from "../custome-features/withLoading/with-loading.feature";
@@ -16,7 +15,11 @@ import { rxMethod } from "@ngrx/signals/rxjs-interop";
 import { switchMap, tap } from "rxjs";
 import { handleApiResponse } from "../handle-api-response.operator";
 import { withToaster } from "../custome-features/withToaster/with-toaster.feature";
-import { createToaster } from "../../helpers/common-functions.helper";
+import { createToaster, destinationForUserSignal, getMessageTime } from "../../helpers/common-functions.helper";
+import { AuthStore } from "../auth-store/auth.store";
+import { Router } from "@angular/router";
+import { SignalRStore } from "../signalr-store/signalr.store";
+import { UserComponent } from "../../components/users/user/user.component";
 
 export const UsersStore = signalStore({
     providedIn: 'root'
@@ -29,11 +32,17 @@ export const UsersStore = signalStore({
         const _PER_PAGE = 10;
         const _dialog = inject(Dialog);
         const _usersService = inject(UsersService);
+        const auth = inject(AuthStore);
+        const _router = inject(Router);
+        const signalR = inject(SignalRStore);
 
         return {
             _PER_PAGE,
             _dialog,
-            _usersService
+            _usersService,
+            auth,
+            _router,
+            signalR
         };
     }),
     withComputed(store => {
@@ -84,13 +93,18 @@ export const UsersStore = signalStore({
             tap(_ => patchState(store, toggleIsSaving())),
             switchMap(user => store._usersService.createUser(user).pipe(
                 handleApiResponse(toaster, {
-                    successMessage: 'Uživatel byl přidán',
+                    successMessage: `Přidán uživatel ${user.name} ${user.surname}`,
                     onSuccess: (savedUser) => {
-                        let user = savedUser;
-                        user.password = '';
-                        const users = [...store.users(), user];
+                        savedUser.password = '';
+                        const users = [...store.users(), savedUser];
                         patchState(store, setUsers(users));
-                        patchState(store, toggleIsSaving())
+                        patchState(store, toggleIsSaving());
+                        const loggedInUser = store.auth.user();
+                        if (!loggedInUser) {
+                            return;
+                        }
+                        const messageToSend = `${getMessageTime()} ${loggedInUser.name}: Přidán uživatel ${user.name} ${user.surname}`;
+                        store.signalR.sendUsers(loggedInUser.name, destinationForUserSignal(savedUser), store.users(), messageToSend);
                         store._dialog.closeAll();
                     },
                     onError: () => patchState(store, toggleIsSaving())
@@ -102,30 +116,22 @@ export const UsersStore = signalStore({
             tap(_ => patchState(store, toggleIsSaving())),
             switchMap(user => store._usersService.updateUser(user).pipe(
                 handleApiResponse(toaster, {
-                    successMessage: 'Uživatel byl aktualizován',
+                    successMessage: `Aktualizován uživatel ${user.name} ${user.surname}`,
                     onSuccess: (updatedUser) => {
                         patchState(store, toggleIsSaving());
                         patchState(store, setUsers(onUpdateUser(updatedUser, [...(store.users() ?? [])])));
+                        const loggedInUser = store.auth.user();
+                        if (!loggedInUser) {
+                            return;
+                        }
+                        const messageToSend = `${getMessageTime()} ${loggedInUser.name}: Aktualizován uživatel ${user.name} ${user.surname}`;
+                        store.signalR.sendUsers(loggedInUser.name, destinationForUserSignal(updatedUser), store.users(), messageToSend);
                         store._dialog.closeAll();
                     },
                     onError: () => patchState(store, toggleIsSaving())
                 })
             ))
         ));
-
-        // const updateUser = store.apiMethod<User, User>(
-        //     user => store._usersService.updateUser(user),
-        //     {
-        //         start: () => patchState(store, toggleIsSaving()),
-        //         finish: () => patchState(store, toggleIsSaving()),
-        //         successMessage: `Uživatel byl aktualizován`,
-        //         // success: updatedUser => () => {
-        //         //     patchState(store, setUsers(onUpdateUser(updatedUser, [...(store.users() ?? [])])));
-        //         //     store._dialog.closeAll();
-        //         // }
-        //         success: updatedUser => patchState(store, setUsers(onUpdateUser(updatedUser, [...(store.users() ?? [])])))
-        //     }
-        // );
 
         const deleteUser = rxMethod<void>(input$ => input$.pipe(
             tap(_ => patchState(store, toggleIsDeleting())),
@@ -135,6 +141,12 @@ export const UsersStore = signalStore({
                     onSuccess: _ => {
                         patchState(store, toggleIsDeleting())
                         patchState(store, setUsers(onRemoveUser(store.selectedUser()?.id!, store.users())));
+                        const loggedInUser = store.auth.user();
+                        if (!loggedInUser) {
+                            return;
+                        }
+                        const messageToSend = `${getMessageTime()} ${loggedInUser.name}: Smazán uživatel ${store.selectedUser()?.name} ${store.selectedUser()?.surname}`;
+                        store.signalR.sendUsers(loggedInUser.name, destinationForUserSignal(store.selectedUser()!), store.users(), messageToSend);
                         store._dialog.closeAll();
                     },
                     onError: () => patchState(store, toggleIsDeleting())
@@ -165,7 +177,21 @@ export const UsersStore = signalStore({
                     CONFIRM_ACTIONS.DELETE_USER,
                     'Opravdu chceš smazat uživatele?'
                 );
-            }
+            },
+            setUserBlock: (userBlock: 'user' | 'proposal' | 'shift') => patchState(store, { userBlock })
+        }
+    }),
+    withHooks({
+        onInit(store) {
+            effect(() => {
+                const received = store.signalR.sUsers();
+                if (received && received.length > 0) {
+                    if (store.auth.user()?.role === 'Admin' && store._router.url === '/users') {
+                        patchState(store, { users: received });
+                    }
+                    store.signalR.clearUsers();
+                }
+            });
         }
     })
 )

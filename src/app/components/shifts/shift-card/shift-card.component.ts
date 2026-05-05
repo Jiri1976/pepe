@@ -17,13 +17,14 @@ export class ShiftCardComponent {
   userCards = this.shiftsStore.userCards;
   card = this.shiftsStore.currentCard;
   sectionStyles = computed(() => {
-    if (this.card()?.shifts && this.card()!.shifts?.length > 29) {
+    if (this.card()?.shifts && this.card()!.shifts?.length > 13) {
       return {
-        'overflow-y': 'scroll'
+        maxHeight: '520px',
+        overflowY: 'auto'
       }
     } else {
       return {
-        'overflow-y': 'hidden'
+        overflowY: 'hidden'
       }
     }
   });
@@ -39,5 +40,20 @@ export class ShiftCardComponent {
       return true;
     }
     return false;
+  }
+
+  getCardPosition() {
+    switch (this.shiftsStore.selectedCardPosition()) {
+      case 'Driver':
+        return 'řidiče';
+      case 'Helper':
+        return 'pomocky';
+      case 'Cook':
+        return 'kuchaře';
+      case 'Pizza':
+        return 'pizzaře';
+      default:
+        return '';
+    }
   }
 }

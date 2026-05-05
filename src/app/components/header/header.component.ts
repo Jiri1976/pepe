@@ -5,6 +5,7 @@ import { Dialog } from '@angular/cdk/dialog';
 import { NotificationMessagesComponent } from '../notification-messages/notification-messages.component';
 import { ClickOutsideDirective } from '../../directives/click-outside.directive';
 import { AuthStore } from '../../stores/auth-store/auth.store';
+import { SignalRStore } from '../../stores/signalr-store/signalr.store';
 
 @Component({
   selector: 'app-header',
@@ -14,9 +15,10 @@ import { AuthStore } from '../../stores/auth-store/auth.store';
 })
 export class HeaderComponent implements OnInit {
   readonly authStore = inject(AuthStore);
+  readonly signalRStore = inject(SignalRStore);
   private dialog = inject(Dialog)
   private router = inject(Router);
-  notifications = computed(() => this.authStore.notifications());
+  notifications = computed(() => this.signalRStore.notifications());
   isShown = signal(false);
   initialized = signal(false);
 

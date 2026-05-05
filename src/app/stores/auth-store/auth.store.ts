@@ -12,7 +12,7 @@ import { tapResponse } from '@ngrx/operators';
 import { withLoading } from "../custome-features/withLoading/with-loading.feature";
 import { setIsLoading, setNotLoading } from "../custome-features/withLoading/with-loading.updaters";
 import { withToaster } from "../custome-features/withToaster/with-toaster.feature";
-import { withSignalR } from "../custome-features/wirh-signalR/with-signalR.feature";
+import { SignalRStore } from "../signalr-store/signalr.store";
 
 export const AuthStore = signalStore({
     providedIn: 'root'
@@ -20,16 +20,17 @@ export const AuthStore = signalStore({
     withState(initialAuthSlice),
     withLoading(),
     withToaster(),
-    withSignalR(),
     withProps(_ => {
         const _dialog = inject(Dialog);
         const _router = inject(Router);
         const _authService = inject(AuthService);
+        const signalR = inject(SignalRStore);
 
         return {
             _dialog,
             _router,
-            _authService
+            _authService,
+            signalR
         };
     }),
     withComputed((store => {
@@ -42,11 +43,11 @@ export const AuthStore = signalStore({
     withMethods(store => {
         const initializeSignalRUser = (token: string) => {
             patchState(store, onLogin(token));
-            store.setToken(token);
+            store.signalR.setToken(token);
 
             const user = store.user();
             if (user) {
-                store.setSignalRUser({ name: user.name, destination: user.destination, role: user.role });
+                store.signalR.setSignalRUser({ name: user.name, destination: user.destination, role: user.role });
             }
         };
 
@@ -63,7 +64,7 @@ export const AuthStore = signalStore({
                             store.error(response.errorMessage);
                         } else {
                             initializeSignalRUser(response.result);
-                            await store.start();
+                            await store.signalR.start();
                             store._router.navigate(['main']);
                         }
                     },
@@ -76,25 +77,25 @@ export const AuthStore = signalStore({
             submit: (loginRequest: { email: string, password: string }) => { onSubmit(loginRequest) },
             login: async (token: string) => {
                 initializeSignalRUser(token);
-                await store.start();
+                await store.signalR.start();
                 store._router.navigate(['main']);
             },
             logOut: () => {
-                store.clearSignalRUser();
-                store.leaveRoom();
+                store.signalR.clearSignalRUser();
+                store.signalR.leaveRoom();
                 patchState(store, onLogout(store._dialog, store._router));
             },
             autoLogout: (expirationDuration: number) => {
                 patchState(store, {
                     _tokenExpirationTimer: setTimeout(() => {
-                        store.leaveRoom();
+                        store.signalR.leaveRoom();
                         patchState(store, onLogout(store._dialog, store._router));
                     }, expirationDuration)
                 });
             },
             restoreLogin: async (token: string) => {
                 initializeSignalRUser(token);
-                await store.start();
+                await store.signalR.start();
             }
         }
     }),
@@ -106,7 +107,7 @@ export const AuthStore = signalStore({
                     store.logOut();
                 } else {
                     store.restoreLogin(token);
-                    store.setToken(token);
+                    store.signalR.setToken(token);
                     //store.start(store.user()?.name ?? '');
                 }
 

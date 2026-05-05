@@ -7,5 +7,5 @@ import { Component } from '@angular/core';
   styleUrl: './shift-skeleton.component.scss',
 })
 export class ShiftSkeletonComponent {
-  empty = new Array(40);
+  empty = new Array(35);
 }

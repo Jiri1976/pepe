@@ -1,5 +1,6 @@
 import { inject } from "@angular/core";
 import { AuthStore } from "../stores/auth-store/auth.store";
+import { User } from "../models/users.interface";
 
 export function isFridayOrSaturday(date: string) {
     var day = new Date(parseInt(date.split('.')[2]), parseInt(date.split('.')[1]) - 1, parseInt(date.split('.')[0]));
@@ -155,4 +156,16 @@ export function isCurrentMonthYear(monthYear: string) {
         return true;
     }
     return false;
+}
+
+export function destinationForUserSignal(user: User) {
+    const isFM = user.destinations.some(dest => dest.destination === 'F-M' && dest.positions && dest.positions?.length > 0);
+    const isOVA = user.destinations.some(dest => dest.destination === 'OVA' && dest.positions && dest.positions?.length > 0);
+    if (isFM && !isOVA) {
+        return 'F-M';
+    } else if (!isFM && isOVA) {
+        return 'OVA';
+    } else {
+        return 'all';
+    }
 }

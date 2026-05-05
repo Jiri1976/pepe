@@ -30,7 +30,7 @@
     @if(!shiftsStore.isLoading()) {
 
     @if (shiftsStore.uniqueUsers().length > 0) {
-    <div class="shift-card d-flex flex-column justify-content-center align-items-center" animate.enter="fade-in">
+    <div class="shift-card d-flex flex-column justify-content-center align-items-center">
         <swiper-container #swiperRef effect="cards" grab-cursor="false" (swiperinit)="onSwiperInit()"
             (swiperslidechange)="onSlideChange($event)">
             @for(user of shiftsStore.uniqueUsers(); track $index) {
@@ -47,6 +47,7 @@
         <app-prev-next-button icon="bi-caret-right"
             [disabled]="shiftsStore.sliceIndex() === shiftsStore.uniqueUsers().length - 1" (click)="moveNext()" />
     </app-paging>
+    <app-shift-header />
     } @else {
     <h4 class="fw-bold text-center">{{ shiftsStore.missingCardsMessage() }}</h4>
     }

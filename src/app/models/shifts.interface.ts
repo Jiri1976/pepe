@@ -31,7 +31,8 @@ export interface ShiftCard {
     userSurname: string,
     userPosition: string,
     totalHours: string,
-    shifts: Shift[]
+    shifts: Shift[],
+    imageUrl?: string
 }
 
 export interface UniqueUser {

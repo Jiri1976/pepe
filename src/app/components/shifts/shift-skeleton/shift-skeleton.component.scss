@@ -1,5 +1,5 @@
 :host {
-    height: 700px;
+    height: 600px;
 }
 
 .skeleton {
@@ -16,7 +16,7 @@
             #eee 75%);
     background-size: 400% 100%;
     animation: shimmer 2s infinite linear;
-    max-height: 740px;
+    min-height: 600px;
 
     .head {
         border: 2px solid #e0e0e0;
@@ -30,6 +30,7 @@
     }
 
     .table {
+        min-width: 700px;
         margin-bottom: 50px;
         --bs-table-bg: transparent !important;
 

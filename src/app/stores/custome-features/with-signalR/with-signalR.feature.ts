@@ -5,6 +5,9 @@ import * as signalR from '@microsoft/signalr';
 import { WarehouseCard, WarehouseItem } from "../../../models/warehouses.interface";
 import { removeNotifications } from "./with-signalR.updaters";
 import { isCurrentMonthYear } from "../../../helpers/common-functions.helper";
+import { User } from "../../../models/users.interface";
+import { ShiftCard } from "../../../models/shifts.interface";
+import { ProposalCard } from "../../../models/proposals.interface";
 
 export function withSignalR(): SignalStoreFeature<
     { state: {}; props: {}; methods: {} },
@@ -21,8 +24,17 @@ export function withSignalR(): SignalStoreFeature<
             clearWarehouseCards: () => void;
             sendWarehouseItems: (user: string, items: WarehouseItem[], message: string) => void;
             clearWarehouseItems: () => void;
+            clearUsers: () => void;
+            sendUsers: (user: string, destination: string, users: User[], message: string) => void;
             removeNotifications: (index: number) => void;
             connectAndJoin: () => void;
+            setUpdateSignalRProposalsToFalse: () => void;
+            clearSchedules: () => void;
+            setUpdateShiftsToFalse: () => void;
+            clearShifts: () => void;
+            sendShifts: (user: string, destination: string, card: ShiftCard, message: string) => void;
+            updateSignalProposals: (user: string, destination: string, cards: ProposalCard[], message: string) => void;
+            clearProposals: () => void;
         };
     }
 > {
@@ -92,6 +104,9 @@ export function withSignalR(): SignalStoreFeature<
                     await store.connection.start();
                     registerWarehouseCardsListener();
                     registerWarehouseItemsListener();
+                    registerUsersListener();
+                    registerShiftsListener();
+                    registerProposalsListener();
                     await joinRoom(store.connection, name, 'pepepizza');
                     return true;
                 }
@@ -117,9 +132,39 @@ export function withSignalR(): SignalStoreFeature<
                 return waitForConnected();
             };
 
+            const forceReconnect = async (): Promise<boolean> => {
+                try {
+                    if (store.connection.state !== signalR.HubConnectionState.Disconnected) {
+                        await store.connection.stop();
+                    }
+                } catch {
+                    // Ignore stop errors and continue with a clean reconnect attempt.
+                }
+
+                try {
+                    return await connectAndJoin();
+                } catch {
+                    return false;
+                }
+            };
+
             const isConnectionClosedError = (error: unknown): boolean => {
                 const msg = String(error ?? '').toLowerCase();
                 return msg.includes('connection closed') || msg.includes('closed with an error');
+            };
+
+            const normalizeProposalPayload = (cards: ProposalCard[]): ProposalCard[] => {
+                try {
+                    const json = JSON.stringify(cards);
+                    const payloadBytes = new TextEncoder().encode(json).length;
+
+                    if (payloadBytes > 700000) {
+                        return [];
+                    }
+                    return cards;
+                } catch {
+                    return [];
+                }
             };
 
             const registerReconnectHandlers = () => {
@@ -132,6 +177,9 @@ export function withSignalR(): SignalStoreFeature<
                     try {
                         registerWarehouseCardsListener();
                         registerWarehouseItemsListener();
+                        registerUsersListener();
+                        registerShiftsListener();
+                        registerProposalsListener();
                         if (currentUser.name) {
                             await joinRoom(store.connection, currentUser.name, 'pepepizza');
                         }
@@ -171,6 +219,48 @@ export function withSignalR(): SignalStoreFeature<
                     if (user !== currentUser.name) {
                         const nextNotifications = [message, ...store.notifications()];
                         patchState(store, { wItems: items, notifications: nextNotifications });
+                    }
+                });
+            };
+
+            const registerUsersListener = () => {
+                store.connection.off("SendUsers");
+                store.connection.on("SendUsers", (user: string, destination: string, users: User[], message: string) => {
+                    if (user !== currentUser.name) {
+                        const nextNotifications = [message, ...store.notifications()];
+                        if ((currentUser.role === 'Master' && currentUser.destination === destination) || (currentUser.role === 'Master' && destination === 'all')) {
+                            patchState(store, { sUsers: users, notifications: nextNotifications, updateSignalRProposals: true, updateShifts: true });
+                        } else if (currentUser.role === 'Admin') {
+                            patchState(store, { sUsers: users, notifications: nextNotifications, updateSignalRProposals: true, updateShifts: true });
+                        }
+                    }
+                });
+            };
+
+            const registerShiftsListener = () => {
+                store.connection.off("SendShifts");
+                store.connection.on("SendShifts", (user: string, destination: string, card: ShiftCard, message: string) => {
+                    if (user !== currentUser.name) {
+                        const nextNotifications = [message, ...store.notifications()];
+                        if (currentUser.role === 'Master' && currentUser.destination === destination) {
+                            patchState(store, { sCard: card, notifications: nextNotifications });
+                        } else if (currentUser.role === 'Admin') {
+                            patchState(store, { sCard: card, notifications: nextNotifications });
+                        }
+                    }
+                });
+            };
+
+            const registerProposalsListener = () => {
+                store.connection.off("UpdateProposals");
+                store.connection.on("UpdateProposals", (user: string, destination: string, cards: ProposalCard[], message: string) => {
+                    if (user !== currentUser.name) {
+                        const nextNotifications = [message, ...store.notifications()];
+                        if ((currentUser.role === 'Master' && currentUser.destination === destination) || (currentUser.role === 'Master' && destination === 'all')) {
+                            patchState(store, { sProposals: cards, notifications: nextNotifications, updateSignalRProposals: true });
+                        } else if (currentUser.role === 'Admin') {
+                            patchState(store, { sProposals: cards, notifications: nextNotifications, updateSignalRProposals: true });
+                        }
                     }
                 });
             };
@@ -247,10 +337,90 @@ export function withSignalR(): SignalStoreFeature<
                         console.log('WAREHOUSE SEND ITEMS ERROR: ', error);
                     }
                 },
+                sendUsers: async (user: string, destination: string, users: User[], message: string) => {
+                    try {
+                        const isConnected = await ensureConnected();
+
+                        if (!isConnected) {
+                            console.log('SEND USERS ERROR: Connection is not ready.');
+                            return;
+                        }
+                        return await store.connection.invoke("SendUsers", user, destination, users, message);
+                    } catch (error) {
+                        if (isConnectionClosedError(error)) {
+                            const reconnected = await ensureConnected();
+                            if (reconnected) {
+                                try {
+                                    return await store.connection.invoke("SendUsers", user, destination, users, message);
+                                } catch (retryError) {
+                                    console.log('SEND USERS RETRY ERROR: ', retryError);
+                                    return;
+                                }
+                            }
+                        }
+                        console.log('SEND USERS ERROR: ', error);
+                    }
+                },
+                sendShifts: async (user: string, destination: string, card: ShiftCard, message: string) => {
+                    try {
+                        const isConnected = await ensureConnected();
+
+                        if (!isConnected) {
+                            console.log('SEND SHIFTS ERROR: Connection is not ready.');
+                            return;
+                        }
+                        return await store.connection.invoke("SendShifts", user, destination, card, message);
+                    } catch (error) {
+                        if (isConnectionClosedError(error)) {
+                            const reconnected = await ensureConnected();
+                            if (reconnected) {
+                                try {
+                                    return await store.connection.invoke("SendShifts", user, destination, card, message);
+                                } catch (retryError) {
+                                    console.log('SEND SHIFTS RETRY ERROR: ', retryError);
+                                    return;
+                                }
+                            }
+                        }
+                        console.log('SEND SHIFTS ERROR: ', error);
+                    }
+                },
+                updateSignalProposals: async (user: string, destination: string, cards: ProposalCard[], message: string) => {
+                    const signalPayload = normalizeProposalPayload(cards);
+
+                    try {
+                        const isConnected = await ensureConnected();
+
+                        if (!isConnected) {
+                            console.log('SEND PROPOSALS ERROR: Connection is not ready.');
+                            return;
+                        }
+                        return await store.connection.invoke("UpdateProposals", user, destination, signalPayload, message);
+                    } catch (error) {
+                        if (isConnectionClosedError(error)) {
+                            const reconnected = await forceReconnect();
+                            if (reconnected) {
+                                try {
+                                    return await store.connection.invoke("UpdateProposals", user, destination, signalPayload, message);
+                                } catch (retryError) {
+                                    console.log('SEND PROPOSALS RETRY ERROR: ', retryError);
+                                    return;
+                                }
+                            }
+                        }
+                        console.log('SEND PROPOSALS ERROR: ', error);
+                    }
+                },
                 clearWarehouseCards: () => patchState(store, { wCards: [] }),
                 clearWarehouseItems: () => patchState(store, { wItems: [] }),
                 removeNotifications: (index: number) => { patchState(store, removeNotifications(index)) },
-                connectAndJoin: async () => { connectAndJoin() }
+                connectAndJoin: async () => await connectAndJoin(),
+                clearUsers: () => patchState(store, { sUsers: [] }),
+                setUpdateSignalRProposalsToFalse: () => patchState(store, { updateSignalRProposals: false }),
+                clearSchedules: () => patchState(store, { sProposals: [] }),
+                setUpdateShiftsToFalse: () => patchState(store, { updateShifts: false }),
+                clearShifts: () => patchState(store, { sCard: null }),
+                clearProposals: () => patchState(store, { sProposals: null }),
             };
         })
     );
