@@ -185,7 +185,7 @@ p-datepicker {
         font-weight: 700;
 
         .p-datepicker-panel.p-component {
-            border: 1px solid var(--main-dark);
+            border: 1px solid var(--main-border-color);
             border-radius: 0;
 
             .p-datepicker-month-view {
@@ -203,9 +203,8 @@ p-datepicker {
         input:disabled {
             position: relative !important;
             top: 0px !important;
-            border: 2px solid var(--white);
             height: 24px !important;
-            border: 1px solid var(--main-disabled) !important;
+            border: 1px solid var(--main-border-color) !important;
             outline: none !important;
             width: 256px;
             text-align: center;
@@ -222,7 +221,7 @@ p-datepicker {
             left: -25px !important;
             width: 306px !important;
             border-radius: 7px;
-            border: 1px solid var(--main-disabled) !important;
+            border: 1px solid var(--main-border-color) !important;
 
             .p-datepicker-calendar-container {
                 .p-datepicker-calendar {
@@ -290,7 +289,7 @@ p-datepicker {
         input:disabled {
             position: relative !important;
             top: 0px !important;
-            border: 1px solid var(--main-disabled);
+            border: 1px solid var(--main-border-color) !important;
             outline: none !important;
             height: 24px !important;
             width: 256px;
@@ -306,7 +305,7 @@ p-datepicker {
         input:disabled {
             position: relative !important;
             top: 0px !important;
-            border: 1px solid var(--main-disabled) !important;
+            border: 1px solid var(--main-border-color) !important;
             outline: none !important;
             height: 24px !important;
             width: 256px;
@@ -336,7 +335,7 @@ p-datepicker.proposal {
     .p-inputtext {
         text-align: center;
         width: 70px !important;
-        border: 1px solid var(--main-disabled);
+        border: 1px solid var(--main-border-color);
         color: var(--main-dark);
         border-radius: 7px;
         font-weight: 500;
@@ -344,7 +343,7 @@ p-datepicker.proposal {
 
     .p-inputtext:enabled:hover,
     .p-inputtext:enabled:focus {
-        border-color: var(--main-disabled);
+        border-color: var(--main-border-color);
         box-shadow: none;
         outline: var(--p-inputtext-focus-ring-width) var(--p-inputtext-focus-ring-style) var(--p-inputtext-focus-ring-color);
         outline-offset: var(--p-inputtext-focus-ring-offset);

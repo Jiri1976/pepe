@@ -80,66 +80,16 @@ form {
             }
         }
 
-        // .col-8.buttons {
-
-        //     .cancel,
-        //     .delete {
-        //         height: 35px;
-        //         font-weight: bold;
-        //         font-size: 13px;
-        //         width: 120px;
-        //         letter-spacing: 1px;
-        //         border-radius: 7px;
-
-        //         .bi {
-        //             font-size: 1.2rem;
-        //         }
-        //     }
-
-        //     .cancel {
-        //         border: 1px solid var(--main-back);
-        //         background: var(--main-dark);
-        //     }
-
-        //     .delete {
-        //         border: 1px solid var(--main-red);
-        //         background: var(--main-red);
-        //     }
-
-        //     .submit {
-        //         background: var(--main-green);
-        //         border: 1px solid var(--main-green);
-        //         opacity: 1;
-        //         // height: 35px;
-        //         height: 90px;
-        //         font-size: 13px;
-        //         width: 90px;
-        //         letter-spacing: 1px;
-        //         border-radius: 50%;
-        //         // border-radius: 52% 48% 33% 67%/38% 45% 55% 62%;
-
-        //         .bi {
-        //             font-size: 1.2rem;
-        //         }
-        //     }
-
-        //     .submit:disabled {
-        //         pointer-events: none;
-        //         opacity: 0.4;
-        //     }
-        // }
-
         .col-4 {
 
             .cancel,
             .delete {
-                height: 50px;
+                height: 35px;
                 font-weight: bold;
                 font-size: 13px;
-                width: 50px;
+                width: 120px;
                 letter-spacing: 1px;
-                //border-radius: 7px;
-                border-radius: 52% 48% 33% 67%/38% 45% 55% 62%;
+                border-radius: 7px;
 
                 .bi {
                     font-size: 1.2rem;
@@ -160,13 +110,11 @@ form {
                 background: var(--main-green);
                 border: 1px solid var(--main-green);
                 opacity: 1;
-                // height: 35px;
-                height: 80px;
+                height: 35px;
                 font-size: 13px;
-                width: 80px;
+                width: 120px;
                 letter-spacing: 1px;
-                //border-radius: 50%;
-                border-radius: 52% 48% 33% 67%/38% 45% 55% 62%;
+                border-radius: 7px;
 
                 .bi {
                     font-size: 1.2rem;

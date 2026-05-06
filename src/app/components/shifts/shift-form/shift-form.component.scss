@@ -15,7 +15,7 @@
 }
 
 .form-div {
-    border: 1px solid var(--main-dark);
+    border: 1px solid var(--main-border-color);
     font-weight: 500;
     font-style: normal;
     font-size: 0.8rem;
@@ -82,7 +82,7 @@
             }
 
             div .card input:disabled {
-                border: 1px solid var(--main-disabled);
+                border: 1px solid var(--main-border-color);
                 background: var(--table-row-hover);
                 text-align: center;
                 border-radius: 7px;
@@ -99,7 +99,7 @@
             textarea,
             textarea.p-textarea,
             textarea:disabled {
-                border: 1px solid var(--main-disabled);
+                border: 1px solid var(--main-border-color);
                 font-size: 0.9rem;
                 color: var(--main-dark);
                 resize: none;
@@ -110,7 +110,7 @@
 
             textarea:active,
             textarea:focus {
-                border: 1px solid var(--main-disabled) !important;
+                border: 1px solid var(--main-border-color) !important;
                 outline: none;
             }
 

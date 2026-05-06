@@ -192,6 +192,30 @@ export class UserComponent {
     this.imagePicker()!.nativeElement.value = '';
   }
 
+  onReset() {
+    const user = this.user();
+    if (!user) {
+      return;
+    }
+
+    this.model.set({
+      id: user.id,
+      name: user.name,
+      surname: user.surname,
+      email: user.email,
+      password: '',
+      role: user.role,
+      destinations: this.createPositions(),
+      isActive: user.isActive,
+      image: user.image ?? ''
+    });
+
+    this.form().reset();
+    this.selectedImage.set(null);
+    this.selectedImageName.set(user.imageName ?? null);
+    this.selectedFile.set(undefined);
+  }
+
   onSubmit() {
     if (this.form().invalid() || this.isUnchanged()) {
       return;
