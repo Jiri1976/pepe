@@ -53,7 +53,18 @@ export const routes: Routes = [
         path: 'shifts',
         loadComponent: () => import('./pages/shifts/shifts.component').then(m => m.ShiftsComponent),
         canActivate: [requireRole('Admin', 'Master')],
-        title: 'Směny'
+        children: [
+            {
+                path: '',
+                loadComponent: () => import('./components/shifts/cards-view/cards-view.component').then(m => m.CardsViewComponent),
+                title: 'Směny',
+            },
+            {
+                path: 'daily',
+                loadComponent: () => import('./components/shifts/daily/daily.component').then(m => m.DailyComponent),
+                title: 'Denní směny',
+            }
+        ]
     },
     {
         path: 'plans',

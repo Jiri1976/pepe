@@ -3,7 +3,7 @@
 
     @if(!hideForMaster) {
     <div class="proposal-calendar">
-        <p-datepicker #calendar name="deadline" (ngModel)="propStore.defaultDate()" view="month" dateFormat="mm-yy"
+        <p-datepicker #calendar name="deadline" [(ngModel)]="propStore.defaultDate" view="month" dateFormat="mm-yy"
             [readonlyInput]="true" (onSelect)="onSelectMonth($event)"
             (onClickOutside)="onCalendarClickOutside($event, nav.toggleBtn.nativeElement)" />
     </div>

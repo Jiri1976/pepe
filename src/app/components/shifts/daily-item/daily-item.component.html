@@ -1,0 +1,105 @@
+<form>
+    <div class="shift-card d-flex flex-row justify-content-between ms-2 me-2">
+
+        <div class="user-info d-flex flex-column me-3">
+            <select name="users" id="users-select" (change)="onSelectUser($event)"
+                [disabled]="shift().confirmed !== undefined"
+                [class.concurrent]="shiftsStore.concurrentErrors()[index()]" [class.saved]="shift().id > 0">
+                <option value="0">Uzivatel</option>
+                @for (user of shiftsStore.todaysShifts.users(); track $index) {
+                <option [value]="user.id" [selected]="user.id === shift().userId">
+                    {{ user.name }}&nbsp;{{ user.surname }}
+                </option>
+                }
+            </select>
+            <div class="error">
+                @if (shiftsStore.concurrentErrors()[index()]) {
+                <p>{{ shiftsStore.concurrentErrors()[index()] }}</p>
+                }
+            </div>
+        </div>
+        <div class="user-info d-flex flex-column align-items-center">
+            <select name="positions" id="positions-select"
+                [disabled]="positions().length === 0 || shift().confirmed !== undefined"
+                (change)="onSelectPosition($event)" [class.error]="sameUserAndShiftError()"
+                [class.concurrent]="shiftsStore.concurrentErrors()[index()]" [class.saved]="shift().id > 0">
+                <option value="0">Pozice</option>
+                @for (position of positions(); track $index) {
+                <option [value]="position" [selected]="position === shift().position">{{ getPosition(position) |
+                    titlecase}}
+                </option>
+                }
+            </select>
+            <div class="error">
+                @if (sameUserAndShiftError()) {
+                <p>{{ sameUserAndShiftError() }}</p>
+                }
+            </div>
+        </div>
+        <div class="shift-time d-flex flex-column align-items-center">
+            <app-d-picker [formField]="form.from" [proposalDate]="form.date().value()"
+                [disabled]="shift().userId === 0 || shift().position === ''"
+                [concurrent]="shiftsStore.concurrentErrors()[index()] !== ''" (change)="updateShift()"
+                [class.saved]="shift().id > 0" />
+            <div class="error">
+                @if (showTimeFromError()) {
+                @for (error of form.from().errors(); track error.kind) {
+                <p>{{ error.message }}</p>
+                }
+                }
+            </div>
+        </div>
+        <div class="shift-time d-flex flex-column align-items-center">
+            <app-d-picker [formField]="form.to" [proposalDate]="form.date().value()"
+                [disabled]="shift().userId === 0 || shift().position === ''"
+                [concurrent]="shiftsStore.concurrentErrors()[index()] !== ''" (change)="updateShift()"
+                [class.saved]="shift().id > 0" />
+            <div class="error">
+                @if (showTimeToError()) {
+                @for (error of form.to().errors(); track error.kind) {
+                <p>{{ error.message }}</p>
+                }
+                }
+            </div>
+        </div>
+        <div class="d-flex flex-column align-items-end me-3">
+            <input id="float-input" [class.invalid]="form.perso().invalid()" [value]="form.perso().value()"
+                (input)="onPersoInput($event)" (blur)="form.perso().markAsTouched()"
+                [class.concurrent]="shiftsStore.concurrentErrors()[index()]" [disabled]="shift().position === ''"
+                [class.saved]="shift().id > 0" />
+            <div class="error">
+                @if (showPersoError()) {
+                @for (error of form.perso().errors(); track error.kind) {
+                <p class="perso">{{ error.message }}</p>
+                }
+                }
+            </div>
+        </div>
+        <div class="d-flex flex-column align-items-end me-3">
+            <button class="submit d-flex flex-column justify-content-center align-items-center" type="button"
+                (click)="submitShift()"
+                [disabled]="form().invalid() || (isUnchanged() && (shift().userId === 0 || shift().position === '')) || shiftsStore.concurrentErrors()[index()] !== ''">
+                @if (shiftsStore.isSaving() && shiftsStore.selectedDailyIndex() === index()) {
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                } @else {
+                <i class="bi bi-check-circle"></i>
+                }
+            </button>
+        </div>
+        <div class="d-flex flex-column align-items-end">
+            <button class="delete d-flex flex-column justify-content-center align-items-center" type="button"
+                (click)="removeShift(index())" [disabled]="shiftsStore.isDeleting()">
+                @if (shiftsStore.isDeleting() && shiftsStore.selectedDailyIndex() === index()) {
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                } @else {
+                <i class="bi bi-trash"></i>
+                }
+            </button>
+        </div>
+
+    </div>
+</form>

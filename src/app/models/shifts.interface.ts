@@ -1,3 +1,5 @@
+import { User } from "./users.interface";
+
 export interface Shift {
     id: number,
     shiftCardId: number,
@@ -12,7 +14,8 @@ export interface Shift {
     createdAt: string | null,
     createdBy: string | null,
     updatedAt: string | null,
-    updatedBy: string | null
+    updatedBy: string | null,
+    confirmed?: boolean
 }
 
 export interface ShiftModel {
@@ -40,4 +43,9 @@ export interface UniqueUser {
     userName: string;
     userSurname: string;
     cards: ShiftCard[];
+}
+
+export interface TodaysShifts {
+    users: User[],
+    shifts: Shift[]
 }

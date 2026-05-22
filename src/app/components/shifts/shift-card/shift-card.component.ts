@@ -24,6 +24,7 @@ export class ShiftCardComponent {
       }
     } else {
       return {
+        maxHeight: null,
         overflowY: 'hidden'
       }
     }

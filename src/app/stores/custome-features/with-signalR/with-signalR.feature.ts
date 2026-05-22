@@ -29,6 +29,7 @@ export function withSignalR(): SignalStoreFeature<
             removeNotifications: (index: number) => void;
             connectAndJoin: () => void;
             setUpdateSignalRProposalsToFalse: () => void;
+            setUpdateSignalRProposalsToTrue: () => void;
             clearSchedules: () => void;
             setUpdateShiftsToFalse: () => void;
             clearShifts: () => void;
@@ -417,10 +418,11 @@ export function withSignalR(): SignalStoreFeature<
                 connectAndJoin: async () => await connectAndJoin(),
                 clearUsers: () => patchState(store, { sUsers: [] }),
                 setUpdateSignalRProposalsToFalse: () => patchState(store, { updateSignalRProposals: false }),
+                setUpdateSignalRProposalsToTrue: () => patchState(store, { updateSignalRProposals: true }),
                 clearSchedules: () => patchState(store, { sProposals: [] }),
                 setUpdateShiftsToFalse: () => patchState(store, { updateShifts: false }),
                 clearShifts: () => patchState(store, { sCard: null }),
-                clearProposals: () => patchState(store, { sProposals: null }),
+                clearProposals: () => patchState(store, { sProposals: null })
             };
         })
     );

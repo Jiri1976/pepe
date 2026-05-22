@@ -9,7 +9,8 @@ export const CONFIRM_ACTIONS = {
     DELETE_SHIFT: 'delete-shift',
     DELETE_WAREHOUSE_CARDS: 'delete-warehouse-cards',
     DELETE_WAREHOUSE_CARD: 'delete-warehouse-card',
-    DELETE_WAREHOUSE_ITEM: 'delete-warehouse-item'
+    DELETE_WAREHOUSE_ITEM: 'delete-warehouse-item',
+    DELETE_DAILY_SHIFT: 'delete-daily-shift',
 } as const;
 
 export type ConfirmAction =

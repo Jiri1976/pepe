@@ -1,12 +1,12 @@
 import { PartialStateUpdater } from "@ngrx/signals";
 import { ProposalSlice } from "./proposal.slice";
 import { getSelectedMonthYear } from "./proposal.helpers";
-import { isFridayOrSaturday } from "../../helpers/common-functions.helper";
+import { initializeMonthYear, isFridayOrSaturday } from "../../helpers/common-functions.helper";
 import { ProposalCard, ProposalShift, ProposalUser, Inputs } from "../../models/proposals.interface";
 
 export function resetCalendar(): PartialStateUpdater<ProposalSlice> {
     return _ => ({
-        monthYear: (new Date().getMonth() + 1).toString() + (new Date().getFullYear()).toString()
+        monthYear: initializeMonthYear()
     });
 }
 

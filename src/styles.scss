@@ -20,7 +20,9 @@
     --proposal-lime: #9ae600;
     --proposal-orange: #f54a00;
     --table-head: #f8f8f4;
-    --table-row-hover: #f7d3af;
+    --main-purple: #6b45bf;
+    --expander-primary: #616161;
+    --expander-primary-light: color-mix(in srgb, var(--expander-primary) 15%, white);
 }
 
 * {
@@ -354,7 +356,8 @@ p-datepicker.proposal {
     }
 }
 
-p-datepicker.proposal.invalid {
+p-datepicker.proposal.invalid,
+p-datepicker.proposal.concurrent {
     input {
         border: 1px solid var(--main-red) !important;
         color: var(--main-red) !important;
@@ -581,4 +584,15 @@ p-checkbox {
 
 .confirmation-backdrop {
     backdrop-filter: blur(2px);
+}
+
+.p-inputtext:disabled {
+    background: none !important;
+}
+
+app-d-picker.saved .p-inputtext {
+    background: var(--expander-primary-light);
+    color: var(--expander-primary);
+    font-weight: 600;
+    border: none;
 }

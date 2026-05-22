@@ -1,7 +1,7 @@
 <div class="wrapper d-flex flex-column align-items-center shift-header justify-content-center">
     <div class="shift-avatar justify-content-center d-flex align-items-center rounded-circle">
-        @if (card()!.imageUrl) {
-        <img [src]="`${this.apiUrl}/images/${card()!.imageUrl}`" alt="Selected" class="rounded-circle" />
+        @if (card()?.imageUrl) {
+        <img [src]="`${this.apiUrl}/images/${card()?.imageUrl}`" alt="Selected" class="rounded-circle" />
         } @else {
         <img class="blank rounded-circle" src="person.png" alt="No image" />
         }
@@ -63,9 +63,8 @@
     </div>
     }
 
-    <hr />
-
     @if (authStore.user()?.role === 'Admin') {
+    <hr />
     <button
         class="deleteCardBtn common-btn deleteCardBtn text-white fw-bold d-flex flex-row align-items-center justify-content-center mt-3"
         (click)="shiftsStore.requestDeleteCard()"

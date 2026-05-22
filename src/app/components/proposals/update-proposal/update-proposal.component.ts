@@ -53,7 +53,22 @@ export class UpdateProposalComponent {
 
   onUpdate(shiftType?: string) {
     const inputs = this.checkInputTimes(shiftType);
-    let shifts = this.store.schedules().flatMap(c => c.users).flatMap(u => u.shifts.filter(s => s.proposalDate === this.selectedProposal()!.proposalDate && s.userId === this.selectedProposal()!.userId && s.from !== null && s.to !== null));
+    const selected = this.selectedProposal();
+    if (!selected) {
+      return;
+    }
+
+    const shifts = this.store
+      .schedules()
+      .flatMap(c => c.users)
+      .flatMap(u => u.shifts)
+      .filter(s =>
+        s.proposalDate === selected.proposalDate &&
+        s.userId === selected.userId &&
+        s.from !== null &&
+        s.to !== null &&
+        !(s.destination === selected.destination && s.position === selected.position)
+      );
 
     if (!shifts || shifts.length === 0) {
       this.store.updateProposal(inputs);
@@ -65,12 +80,10 @@ export class UpdateProposalComponent {
 
       let isColliding = false;
       shifts?.forEach(shift => {
-        if (shift.from !== 'OVA' && shift.from !== 'F-M' && selectedShift.position !== shift.position) {
-          if (this.collideShifts(selectedShift.from!, selectedShift.to!, shift.from!, shift.to!)) {
-            isColliding = true;
-            this.errorMessage.set(`POZOR: Směna ${shift.destination} - ${shift.from} - ${shift.to}`);
-            return;
-          }
+        if (this.collideShifts(selectedShift.from!, selectedShift.to!, shift.from!, shift.to!)) {
+          isColliding = true;
+          this.errorMessage.set(`POZOR: Směna ${shift.destination} - ${shift.from} - ${shift.to}`);
+          return;
         }
       });
 

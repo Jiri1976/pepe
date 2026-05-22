@@ -15,6 +15,7 @@ import { buildShift } from '../../../stores/shifts-store/shifts.helpers';
 import { DPickerComponent } from '../../d-picker/d-picker.component';
 import { HideElementDirective } from "../../../directives/hide-element.directive";
 import { DatePickerComponent } from "../../date-picker/date-picker.component";
+import { getPosition, timeToString } from '../../../helpers/common-functions.helper';
 
 @Component({
   selector: 'app-shift-form',
@@ -42,6 +43,8 @@ export class ShiftFormComponent {
   readonly authStore = inject(AuthStore);
   readonly MAX_PERSO = 100;
   private dialogRef = inject(DialogRef, { optional: true });
+  private timeToString = timeToString;
+  getPosition = getPosition;
   selectedShift = this.shiftsStore.selectedShift;
   card = this.shiftsStore.currentCard;
   monthYear = this.shiftsStore.monthYear;
@@ -64,21 +67,6 @@ export class ShiftFormComponent {
       original.perso === current.perso
     );
   });
-
-  getPosition(position: string) {
-    switch (position) {
-      case ('Helper'):
-        return 'pomocka'.toUpperCase();
-      case ('Driver'):
-        return 'řiďič'.toUpperCase();
-      case ('Cook'):
-        return 'kuchař'.toUpperCase();
-      case ('Pizza'):
-        return 'pizzař'.toUpperCase();
-      default:
-        return '';
-    }
-  }
 
   onDelete() {
     this.shiftsStore.requestDeleteShift();
@@ -109,19 +97,6 @@ export class ShiftFormComponent {
     _shift.to = this.timeToString(this.form.to().value());
     _shift.perso = this.form.perso().value();
     this.shiftsStore.createUpdateShift(_shift);
-  }
-
-  private timeToString(date: Date | null) {
-    if (date === null) {
-      return '';
-    }
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
-
-    const convertedHours = hours < 10 ? `0${hours}` : hours?.toString();
-    const convertedMinutes = minutes < 10 ? `0${minutes}` : minutes?.toString()
-
-    return `${convertedHours}:${convertedMinutes}`;
   }
 
   private formSnapshot = computed(() => {

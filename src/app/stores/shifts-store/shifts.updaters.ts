@@ -1,7 +1,7 @@
 import { PartialStateUpdater } from "@ngrx/signals";
 import { ShiftsSlice } from "./shifts.slice";
 import { Shift, ShiftCard, UniqueUser } from "../../models/shifts.interface";
-import { isFridayOrSaturday } from "../../helpers/common-functions.helper";
+import { isFridayOrSaturday, todayDate } from "../../helpers/common-functions.helper";
 
 export function setSelectedCardPosition(position: string): PartialStateUpdater<ShiftsSlice> {
     return _ => ({
@@ -17,18 +17,29 @@ export function setSlideIndexAndPosition(sliceIndex: number, uniqueUsers: Unique
 }
 
 export function updateParticularCard(cardId: number, newCard: ShiftCard): PartialStateUpdater<ShiftsSlice> {
-    return state => {
-        let _cards = [...state.cards]
-        _cards.map(card => {
-            if (card.id === cardId) {
-                card = newCard
-            }
-        });
-
-        return {
-            cards: _cards
-        }
-    }
+    return state => ({
+        cards: state.cards.map(card =>
+            card.id === cardId ||
+                (
+                    card.userId === newCard.userId &&
+                    card.userPosition === newCard.userPosition &&
+                    card.monthYear === newCard.monthYear &&
+                    card.destination === newCard.destination
+                )
+                ? {
+                    ...newCard,
+                    monthYear: newCard.monthYear || card.monthYear,
+                    destination: newCard.destination || card.destination,
+                    userId: newCard.userId || card.userId,
+                    userName: newCard.userName || card.userName,
+                    userSurname: newCard.userSurname || card.userSurname,
+                    userPosition: newCard.userPosition || card.userPosition,
+                    imageUrl: newCard.imageUrl || card.imageUrl,
+                    shifts: newCard.shifts ?? []
+                }
+                : card
+        )
+    });
 }
 
 export function setSelectedShift(selectedShift: Shift, isPassedCard: boolean, monthYear: string): PartialStateUpdater<ShiftsSlice> {
@@ -81,4 +92,152 @@ export function deleteShift(shiftId: number, currentCard: ShiftCard): PartialSta
             return c;
         })
     });
+}
+
+export function addNewDailyShift(): PartialStateUpdater<ShiftsSlice> {
+    return state => {
+        if (state.todaysShifts?.users.length === 0) {
+            return state;
+        }
+        const newShift: Shift =
+        {
+            id: 0,
+            shiftCardId: 0,
+            userId: 0,
+            position: '',
+            destination: state.destination,
+            date: todayDate(),
+            from: '11:00',
+            to: '22:00',
+            hours: '',
+            perso: '',
+            createdAt: null,
+            createdBy: null,
+            updatedAt: null,
+            updatedBy: null,
+            confirmed: undefined
+        };
+
+        let todaysShifts = { ...state.todaysShifts };
+        if (todaysShifts?.shifts) {
+            todaysShifts.shifts.push(newShift);
+        }
+        let concurrentErrors = [...state.concurrentErrors];
+        concurrentErrors.push('');
+
+        return {
+            todaysShifts,
+            concurrentErrors
+        }
+    };
+}
+
+export function removeUnsavedTodaysShifts(index: number): PartialStateUpdater<ShiftsSlice> {
+    return state => {
+        if (!state.todaysShifts || state.todaysShifts.shifts.length === 0) {
+            return state;
+        }
+
+        if (index < 0 || index >= state.todaysShifts.shifts.length) {
+            return state;
+        }
+
+        const shiftToRemove = state.todaysShifts.shifts[index];
+        if (!shiftToRemove || shiftToRemove.id !== 0) {
+            return state;
+        }
+
+        const todaysShifts = {
+            ...state.todaysShifts,
+            shifts: state.todaysShifts.shifts.filter((_, i) => i !== index)
+        };
+        const concurrentErrors = state.concurrentErrors.filter((_, i) => i !== index);
+
+        return {
+            todaysShifts,
+            concurrentErrors
+        }
+    };
+}
+
+export function updateDailyShiftUserId(index: number, userId: number): PartialStateUpdater<ShiftsSlice> {
+    return state => {
+        if (state.todaysShifts?.shifts.length === 0) {
+            return state;
+        }
+
+        let todaysShifts = { ...state.todaysShifts };
+        const shiftToUpdate = todaysShifts?.shifts[index];
+        shiftToUpdate.userId = userId;
+
+        return {
+            todaysShifts
+        }
+    };
+}
+
+export function updateDailyShiftPosition(index: number, position: string): PartialStateUpdater<ShiftsSlice> {
+    return state => {
+        if (state.todaysShifts?.shifts.length === 0) {
+            return state;
+        }
+
+        let todaysShifts = { ...state.todaysShifts };
+        const shiftToUpdate = todaysShifts?.shifts[index];
+        shiftToUpdate.position = position;
+
+        return {
+            todaysShifts
+        }
+    };
+}
+
+export function updateDailyShift(index: number, from: string, to: string): PartialStateUpdater<ShiftsSlice> {
+    return state => {
+        if (state.todaysShifts?.shifts.length === 0) {
+            return state;
+        }
+
+        let todaysShifts = { ...state.todaysShifts };
+        const shiftToUpdate = todaysShifts?.shifts[index];
+        shiftToUpdate.from = from;
+        shiftToUpdate.to = to;
+
+        return {
+            todaysShifts
+        }
+    };
+}
+
+export function updateConcurrentErrors(index: number): PartialStateUpdater<ShiftsSlice> {
+    return state => {
+        if (state.todaysShifts?.shifts.length === 0) {
+            return state;
+        }
+
+        let concurrentErrors = [...state.concurrentErrors];
+        concurrentErrors[index] = "Směny se překrývají"
+
+        return {
+            concurrentErrors
+        }
+    };
+}
+
+export function clearConcurrentErrors(): PartialStateUpdater<ShiftsSlice> {
+    return state => {
+        if (state.todaysShifts?.shifts.length === 0) {
+            return state;
+        }
+
+        let concurrentErrors = [...state.concurrentErrors];
+        let cleanErrors: string[] = [];
+        concurrentErrors.forEach(err => {
+            cleanErrors.push('');
+        });
+
+        return {
+            concurrentErrors: cleanErrors
+        }
+    };
 }

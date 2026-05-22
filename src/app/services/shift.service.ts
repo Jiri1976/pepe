@@ -37,6 +37,11 @@ export class ShiftService {
         return this.http.post<Response>(url, shift);
     }
 
+    createUpdateDailyShift(shift: Shift) {
+        const url = this.BASE_ROUTE + `CreateUpdateDailyShift`;
+        return this.http.post<Response>(url, shift);
+    }
+
     deleteShift(shiftId: number) {
         const url = this.BASE_ROUTE + `DeleteShift?id=${shiftId}`;
         return this.http.delete<Response>(url);
@@ -60,5 +65,15 @@ export class ShiftService {
     generateAllToPDF(cards: ShiftCard[]) {
         const url = this.BASE_ROUTE + 'generateAllToPDF';
         return this.http.post<Response>(url, cards);
+    }
+
+    getShiftsForToday(destination: string) {
+        const url = `${this.BASE_ROUTE}GetShiftsForToday?destination=${destination}`;
+        return this.http.get<Response>(url);
+    }
+
+    deleteDailyShift(shift: Shift) {
+        const url = `${this.BASE_ROUTE}DeleteDailyShift`;
+        return this.http.post<Response>(url, shift);
     }
 }

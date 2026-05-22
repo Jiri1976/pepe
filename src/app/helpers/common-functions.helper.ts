@@ -169,3 +169,38 @@ export function destinationForUserSignal(user: User) {
         return 'all';
     }
 }
+
+export function todayDate() {
+    const day = new Date().getDate() < 10 ? `0${new Date().getDate()}` : new Date().getDate();
+    const month = new Date().getMonth() + 1 < 10 ? `0${new Date().getMonth() + 1}` : new Date().getMonth() + 1;
+    const year = new Date().getFullYear();
+    return `${day}.${month}.${year}`;
+}
+
+export function getPosition(position: string) {
+    switch (position) {
+        case ('Helper'):
+            return 'pomocka'.toUpperCase();
+        case ('Driver'):
+            return 'řidič'.toUpperCase();
+        case ('Cook'):
+            return 'kuchař'.toUpperCase();
+        case ('Pizza'):
+            return 'pizzař'.toUpperCase();
+        default:
+            return '';
+    }
+}
+
+export function timeToString(date: Date | null) {
+    if (date === null) {
+        return '';
+    }
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+
+    const convertedHours = hours < 10 ? `0${hours}` : hours?.toString();
+    const convertedMinutes = minutes < 10 ? `0${minutes}` : minutes?.toString()
+
+    return `${convertedHours}:${convertedMinutes}`;
+}

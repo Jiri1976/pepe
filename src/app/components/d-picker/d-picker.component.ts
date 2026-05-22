@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, effect, Input } from '@angular/core';
+import { Component, effect, input, Input, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePickerModule } from 'primeng/datepicker';
 
@@ -12,6 +12,9 @@ import { DatePickerModule } from 'primeng/datepicker';
 export class DPickerComponent {
   @Input({ required: true }) formField!: () => any;
   @Input({ required: true }) proposalDate!: string;
+  disabled = input<boolean>(false);
+  concurrent = input<boolean>(false);
+  change = output<void>();
   value: Date | null = null;
 
   constructor() {
@@ -55,6 +58,7 @@ export class DPickerComponent {
     }
 
     this.formField().value.set(merged);
+    this.change.emit();
   }
 
   private parseDate(dateStr: string): Date {

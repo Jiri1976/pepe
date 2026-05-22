@@ -41,7 +41,6 @@ export class ProposalsComponent {
     this.height.set(window.innerHeight);
   }
 
-
   bodyStyles = computed(() => {
     if (this.propStore.currentCard()?.users) {
       if (this.height() < 700) {

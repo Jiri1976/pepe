@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, CUSTOM_ELEMENTS_SCHEMA, ElementRef, effect, viewChild } from '@angular/core';
+import { Component, inject, OnInit, CUSTOM_ELEMENTS_SCHEMA, ElementRef, effect, viewChild, computed, signal } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { ShiftCardComponent } from '../../components/shifts/shift-card/shift-card.component';
@@ -14,38 +14,31 @@ import { NavButtonComponent } from '../../components/navigation/nav-button.compo
 import { Dialog } from '@angular/cdk/dialog';
 import { ShiftFormComponent } from '../../components/shifts/shift-form/shift-form.component';
 import { SelectUserComponent } from '../../components/shifts/select-user/select-user.component';
-import { PagingComponent } from '../../components/paging/paging.component';
-import { PrevNextButtonComponent } from '../../components/paging/prev-next-button.component';
-import { DestinationButtonComponent } from "../../components/paging/destination-button.component";
-import { ShiftHeaderComponent } from '../../components/shifts/shift-header/shift-header.component';
+import { Router, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-plans',
   imports: [
     DialogModule,
     ButtonModule,
-    ShiftCardComponent,
     DatePicker,
     DatePickerModule,
     FormsModule,
-    ShiftSkeletonComponent,
     NavigationComponent,
     NavButtonComponent,
-    PagingComponent,
-    PrevNextButtonComponent,
-    DestinationButtonComponent,
-    ShiftHeaderComponent,
+    RouterOutlet
   ],
   templateUrl: './shifts.component.html',
   styleUrl: './shifts.component.scss',
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class ShiftsComponent implements OnInit {
+export class ShiftsComponent {
   readonly authStore = inject(AuthStore);
   readonly shiftsStore = inject(ShiftsStore);
   private dialog = inject(Dialog);
+  private router = inject(Router);
   calendar = viewChild<DatePicker>('calendar');
-  swiperRef = viewChild<ElementRef>('swiperRef');
+  pathname = signal(window.location.pathname);
 
   openAddSiftDialogEffect = effect(() => {
     if (!this.shiftsStore.isAddShiftDialogRequested()) return;
@@ -71,44 +64,12 @@ export class ShiftsComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-    const user = this.authStore.user();
-    this.shiftsStore.setDefaultMonthYear();
-    if (user?.role === 'master' && user.destination !== this.shiftsStore.destination()) {
-      this.shiftsStore.setDestination(user.destination);
-    }
-    this.shiftsStore.getCards();
-  }
-
   onCalendarClickOutside(event: MouseEvent, toggleBtn?: HTMLElement) {
     const target = event.target as HTMLElement;
     if (toggleBtn?.contains(target)) {
       return;
     }
     this.shiftsStore.closeCalendar();
-  }
-
-  slideToEffect = effect(() => {
-    const index = this.shiftsStore.consumeSlideToIndex();
-    if (index === null) return;
-    const swiper = this.swiperRef()?.nativeElement?.swiper;
-    if (swiper) {
-      swiper.slideTo(index);
-    }
-  });
-
-  onSwiperInit() {
-    setTimeout(() => {
-      const swiper = (this.swiperRef()?.nativeElement as any).swiper;
-      if (swiper) {
-        swiper.on('slideChange', () => { });
-      }
-    });
-  }
-
-  onSlideChange(event: Event) {
-    const swiperInstance = (event.target as any).swiper as Swiper;
-    this.shiftsStore.setSlideIndex(swiperInstance.activeIndex);
   }
 
   onSelectDestination(destination: string) {
@@ -136,23 +97,36 @@ export class ShiftsComponent implements OnInit {
     return;
   }
 
-  movePrevious() {
-    if (this.shiftsStore.sliceIndex() === 0) {
-      return;
-    }
-    const swiper = this.swiperRef()?.nativeElement?.swiper;
-    if (swiper && !swiper.animating) {
-      swiper.slidePrev();
+  toDaily() {
+    this.pathname.update(() => '/shifts/daily');
+    this.router.navigate(['shifts/daily']);
+  }
+
+  toShifts() {
+    this.pathname.update(() => '/shifts');
+    this.router.navigate(['shifts']);
+  }
+
+  reload() {
+    if (this.pathname() === '/shifts') {
+      this.shiftsStore.getCards();
+    } else if (this.pathname() === '/shifts/daily') {
+      this.shiftsStore.getShiftsForToday();
     }
   }
 
-  moveNext() {
-    if (this.shiftsStore.sliceIndex() === this.shiftsStore.uniqueUsers().length - 1) {
-      return;
-    }
-    const swiper = this.swiperRef()?.nativeElement?.swiper;
-    if (swiper && !swiper.animating) {
-      swiper.slideNext();
+  addShift() {
+    if (this.pathname() === '/shifts') {
+      this.shiftsStore.addShift();
+    } else if (this.pathname() === '/shifts/daily') {
+      if (this.shiftsStore.oneConcurrentErrors()) {
+        return;
+      }
+      if (this.shiftsStore.todaysShifts().users.length === 0) {
+        this.shiftsStore.error('Není možné přidat směnu, protože pro dnešní den nejsou načteni žádní uživatelé.');
+        return;
+      }
+      this.shiftsStore.addNewDailyShift();
     }
   }
 }

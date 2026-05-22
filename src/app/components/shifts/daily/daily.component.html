@@ -1,0 +1,23 @@
+<div class="box d-flex flex-column justify-content-center align-items-center position-relative" animate.enter="fade-in"
+    animate.leave="fade-out">
+    <h3 class="mb-5">Datum:&nbsp;{{ todayDate }}</h3>
+    @if (!shiftsStore.isLoading()) {
+    <br />
+    @let shiftsForToday = shiftsStore.todaysShifts();
+    @if (shiftsForToday.shifts!.length > 0) {
+    <div [style]="bodyStyles()">
+        @for(shift of shiftsForToday.shifts; track $index) {
+        <app-daily-item [index]="$index" [shift]="shift" />
+        }
+    </div>
+    } @else {
+    <h4 class="fw-bold">Žádné směny nebo rozpis pro dnešní den</h4>
+    }
+    } @else {
+    <div [style]="bodyStyles()">
+        @for(i of [1,2,3,4]; track i) {
+        <app-daily-skeleton />
+        }
+    </div>
+    }
+</div>

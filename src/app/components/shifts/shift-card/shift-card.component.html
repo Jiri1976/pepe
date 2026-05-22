@@ -1,6 +1,7 @@
 <div class="card-wrapper">
     <div class="user-card-table d-flex flex-column justify-content-center">
-        @if(card()!.shifts.length > 0) {
+        @let currentCard = card();
+        @if(currentCard && currentCard.shifts.length > 0) {
         <table class="table">
             <thead class="table-dark d-table w-100 fw-bold">
                 <tr class="fw-bold align-items-middle">
@@ -16,7 +17,7 @@
             </thead>
             <tbody [style.max-height]="sectionStyles().maxHeight ?? null"
                 [style.overflow-y]="sectionStyles().overflowY">
-                @for(shift of card()!.shifts; track $index) {
+                @for(shift of currentCard.shifts; track $index) {
                 <tr class="d-table w-100"
                     (click)="((isPastCard() === false && authStore.user()?.role === 'Master') || (authStore.user()?.role === 'Admin')) && onUpdate(shift)">
                     <td scope="row" style="width: 5% !important; text-align: right !important; font-weight: bold;">
@@ -33,9 +34,10 @@
             </tbody>
         </table>
         }
-        @if(card()!.shifts.length === 0) {
-        <div class="empty-shifts mx-auto">
-            <h4 class="fw-bold">Žádné uložené směny na pozici {{getCardPosition()}}</h4>
+        @if(currentCard && currentCard.shifts.length === 0) {
+        <div class="empty-shifts mx-auto d-flex flex-column justify-content-center align-items-center">
+            <h4 class="fw-bold">{{ currentCard.userName }} {{ currentCard.userSurname }}</h4>
+            <h4 class="fw-bold">nemá uložené směny na pozici {{getCardPosition()}}</h4>
         </div>
         }
     </div>

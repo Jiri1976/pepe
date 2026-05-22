@@ -1,1 +1,0 @@
-import{n as i}from"./chunk-HFMLCETT.js";import{A as p,c as r,g as o}from"./chunk-3PNEMHGE.js";import{G as e,I as t}from"./chunk-MFBSKNHP.js";function l(){return r(o(a=>({apiMethod:(h,s)=>p(m=>m.pipe(t(()=>s.start?.()),e(n=>h(n).pipe(i(a._toaster,{successMessage:s.successMessage,onSuccess:u=>{s.success?.(u),s.finish?.()},onError:()=>s.finish?.()})))))})))}export{l as a};

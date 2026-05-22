@@ -16,6 +16,7 @@ export interface SignalRSlice {
     readonly token: string | null;
     readonly notifications: string[];
     readonly pepeHUb: string;
+    // readonly updateSignalRDailyProposals: boolean;
 }
 
 export const initialSignalRSlice: SignalRSlice = {
@@ -25,6 +26,7 @@ export const initialSignalRSlice: SignalRSlice = {
     sUsers: null,
     sProposals: null,
     updateSignalRProposals: false,
+    // updateSignalRDailyProposals: false,
     updateShifts: false,
     token: null,
     notifications: [],

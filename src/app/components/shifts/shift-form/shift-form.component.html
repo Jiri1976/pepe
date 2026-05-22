@@ -1,6 +1,9 @@
 <div class="form-div">
     @let shift = selectedShift();
     <form>
+        <div aria-hidden="true" class="background-wrapper">
+            <div class="background-shape"></div>
+        </div>
         <div class="row">
             <div class="title d-flex justify-content-center align-items-center flex-row w-100">
                 <h1>{{ shift.id === 0 ? 'Nová směna' : 'Upravit směnu' }} - {{ card()!.userName }} {{

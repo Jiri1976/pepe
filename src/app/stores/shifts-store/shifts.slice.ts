@@ -1,5 +1,5 @@
 import { initializeMonthYear } from "../../helpers/common-functions.helper";
-import { Shift, ShiftCard } from "../../models/shifts.interface";
+import { Shift, ShiftCard, TodaysShifts } from "../../models/shifts.interface";
 
 export interface ShiftsSlice {
     readonly destination: string;
@@ -10,6 +10,9 @@ export interface ShiftsSlice {
     readonly selectedCardPosition: string;
     readonly selectedShift: Shift;
     readonly isAddShiftDialogRequested: boolean;
+    readonly todaysShifts: TodaysShifts;
+    readonly concurrentErrors: string[];
+    readonly selectedDailyIndex: number;
 }
 
 export const initialShiftsSlice: ShiftsSlice = {
@@ -35,5 +38,11 @@ export const initialShiftsSlice: ShiftsSlice = {
         updatedAt: null,
         updatedBy: null
     },
-    isAddShiftDialogRequested: false
+    isAddShiftDialogRequested: false,
+    todaysShifts: {
+        users: [],
+        shifts: []
+    },
+    concurrentErrors: [],
+    selectedDailyIndex: -1
 }

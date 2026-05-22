@@ -1,0 +1,21 @@
+.box {
+    margin-top: 130px;
+
+    .shift-card {
+        grid-column: 1;
+        grid-row: 1;
+        min-width: 750px;
+        height: 600px;
+
+
+    }
+
+    h3 {
+        color: var(--main-dark);
+        border-radius: 7px;
+        padding: 5px 10px;
+        margin: 0;
+        background-color: var(--main-dark);
+        color: var(--white);
+    }
+}

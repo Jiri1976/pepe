@@ -68,7 +68,7 @@
                 }
 
                 tr.d-table:hover td {
-                    background: var(--table-row-hover) !important;
+                    background: var(--expander-primary-light) !important;
                     cursor: pointer;
                 }
 
@@ -93,5 +93,10 @@
 
     .empty-shifts {
         margin-top: 15%;
+        gap: 20px;
+
+        h4 {
+            margin: 0;
+        }
     }
 }

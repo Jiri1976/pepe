@@ -20,6 +20,7 @@ import { Proposal, ProposalCard, ProposalShift, ProposalUser, Inputs } from "../
 import { withToaster } from "../custome-features/withToaster/with-toaster.feature";
 import { SignalRStore } from "../signalr-store/signalr.store";
 import { Router } from "@angular/router";
+import { ShiftsStore } from "../shifts-store/shifts.store";
 
 export const ProposalStore = signalStore({
     providedIn: 'root'
@@ -33,6 +34,7 @@ export const ProposalStore = signalStore({
         const _proposalService = inject(ProposalsService);
         const _auth = inject(AuthStore);
         const _signalR = inject(SignalRStore);
+        const _shiftsStore = inject(ShiftsStore);
         const _router = inject(Router);
         const proposalModel = signal<Proposal>({
             timeFrom: null,
@@ -45,6 +47,7 @@ export const ProposalStore = signalStore({
             proposalModel,
             _auth,
             _signalR,
+            _shiftsStore,
             _router
 
         };
@@ -199,9 +202,9 @@ export const ProposalStore = signalStore({
                         patchState(store, setSchedules(schedules));
                         patchState(store, closeCalendar());
 
-                        // if (!store.destination() && schedules.length > 0) {
-                        //     patchState(store, { destination: schedules[0].destination });
-                        // }
+                        if (!store.destination() && schedules.length > 0) {
+                            patchState(store, { destination: schedules[0].destination });
+                        }
                     },
                     onError: () => patchState(store, setNotLoading())
                 })
@@ -349,12 +352,17 @@ export const ProposalStore = signalStore({
         onInit(store) {
             effect(() => {
                 const update = store._signalR.updateSignalRProposals();
-                if (update) {
-                    if (store._router.url === '/plans' && isCurrentMonthYear(store.monthYear())) {
-                        store.silentlyUploadSchedulesShifts();
-                    }
-                    store._signalR.setUpdateSignalRProposalsToFalse();
+
+                if (update && store._router.url === '/plans' && isCurrentMonthYear(store.monthYear())) {
+                    store.silentlyUploadSchedulesShifts();
+                    // store._signalR.setUpdateSignalRProposalsToFalse();
                 }
+
+                if (update && store._router.url === '/shifts/daily') {
+                    store._shiftsStore.getSilentlyShiftsForToday();
+                    // store._signalR.setUpdateSignalRProposalsToFalse();
+                }
+                store._signalR.setUpdateSignalRProposalsToFalse();
             });
             effect(() => {
                 const received = store._signalR.sProposals();
