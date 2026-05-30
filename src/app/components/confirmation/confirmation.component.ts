@@ -13,8 +13,8 @@ export class ConfirmationComponent {
 
   constructor(
     @Inject(DIALOG_DATA) public data: { action: string; text: string },
-    private dialogRef: DialogRef<boolean>
-  ) { }
+    private dialogRef: DialogRef<boolean>,
+  ) {}
 
   confirm() {
     this.confirmationStore.confirm();

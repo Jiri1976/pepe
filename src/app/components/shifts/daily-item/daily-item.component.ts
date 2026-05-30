@@ -1,11 +1,23 @@
-import { Component, computed, effect, inject, input, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 import { User } from '../../../models/users.interface';
 import { buildShift } from '../../../stores/shifts-store/shifts.helpers';
 import { ShiftsStore } from '../../../stores/shifts-store/shifts.store';
 import { FieldState, form } from '@angular/forms/signals';
-import { getPosition, setTime, timeToString, todayDate } from '../../../helpers/common-functions.helper';
-import { DPickerComponent } from "../../d-picker/d-picker.component";
-import { Shift, ShiftModel } from "../../../models/shifts.interface";
+import {
+  getPosition,
+  setTime,
+  timeToString,
+  todayDate,
+} from '../../../helpers/common-functions.helper';
+import { DPickerComponent } from '../../d-picker/d-picker.component';
+import { Shift, ShiftModel } from '../../../models/shifts.interface';
 import { TitleCasePipe } from '@angular/common';
 
 @Component({
@@ -25,8 +37,12 @@ export class DailyItemComponent {
   positions = computed(() => {
     const positionSet = new Set<string>();
     if (this.user()) {
-      this.user()!.destinations.filter(dest => dest.destination === this.shift()?.destination)[0].positions!.forEach(pos => positionSet.add(pos.position!));
-    };
+      this.user()!
+        .destinations.filter(
+          (dest) => dest.destination === this.shift()?.destination,
+        )[0]
+        .positions!.forEach((pos) => positionSet.add(pos.position!));
+    }
     return Array.from(positionSet);
   });
   sameUserAndShiftError = signal('');
@@ -34,18 +50,27 @@ export class DailyItemComponent {
     date: '',
     from: null,
     to: null,
-    perso: ''
+    perso: '',
   });
 
-  readonly form = form(this.shiftModel, s => {
+  readonly form = form(this.shiftModel, (s) => {
     buildShift(s);
   });
 
   constructor() {
     effect(() => {
       const currentShift = this.shift();
-      const user = this.shiftsStore.todaysShifts.users().find(u => u.id === currentShift?.userId);
+      const user = this.shiftsStore.todaysShifts
+        .users()
+        .find((u) => u.id === currentShift?.userId);
       this.user.set(user ?? null);
+
+      this.shiftModel.set({
+        date: this.todayDate,
+        from: setTime(this.shift().from!, this.todayDate),
+        to: setTime(this.shift().to!, this.todayDate),
+        perso: '',
+      });
     });
   }
 
@@ -54,7 +79,7 @@ export class DailyItemComponent {
       date: this.todayDate,
       from: setTime(this.shift().from!, this.todayDate),
       to: setTime(this.shift().to!, this.todayDate),
-      perso: ''
+      perso: '',
     });
   }
 
@@ -74,7 +99,9 @@ export class DailyItemComponent {
       return;
     }
 
-    const user = this.shiftsStore.todaysShifts.users().find(u => u.id === +userId);
+    const user = this.shiftsStore.todaysShifts
+      .users()
+      .find((u) => u.id === +userId);
     if (user) {
       this.user.set(user);
       this.shiftsStore.updateDailyShiftUserId(this.index(), +userId);
@@ -90,7 +117,9 @@ export class DailyItemComponent {
       this.shiftsStore.updateDailyShiftPosition(this.index(), '');
       return;
     }
-    let sameUserAndShift = this.shiftsStore.todaysShifts.shifts().find(s => s.userId === this.user()?.id && s.position === position);
+    let sameUserAndShift = this.shiftsStore.todaysShifts
+      .shifts()
+      .find((s) => s.userId === this.user()?.id && s.position === position);
     if (sameUserAndShift) {
       this.sameUserAndShiftError.set('Už existuje');
       return;
@@ -101,12 +130,23 @@ export class DailyItemComponent {
   }
 
   removeShift(index: number) {
-    if (this.shiftsStore.todaysShifts().shifts[index].id === 0 && this.shiftsStore.todaysShifts().shifts[index].confirmed === undefined) {
+    if (
+      this.shiftsStore.todaysShifts().shifts[index].id === 0 &&
+      this.shiftsStore.todaysShifts().shifts[index].confirmed === undefined
+    ) {
       this.shiftsStore.removeUnsavedTodaysShifts(index);
       this.checkForConcurrent();
-    }
-    else if ((this.shiftsStore.todaysShifts().shifts[index].id === 0 && this.shiftsStore.todaysShifts().shifts[index].confirmed !== undefined) || (this.shiftsStore.todaysShifts().shifts[index].id > 0)) {
-      const user = this.shiftsStore.todaysShifts.users().find(u => u.id === this.shiftsStore.todaysShifts().shifts[index].userId);
+    } else if (
+      (this.shiftsStore.todaysShifts().shifts[index].id === 0 &&
+        this.shiftsStore.todaysShifts().shifts[index].confirmed !==
+          undefined) ||
+      this.shiftsStore.todaysShifts().shifts[index].id > 0
+    ) {
+      const user = this.shiftsStore.todaysShifts
+        .users()
+        .find(
+          (u) => u.id === this.shiftsStore.todaysShifts().shifts[index].userId,
+        );
       const message = `Smazat rozpis pro ${user?.name} ${user?.surname} - ${getPosition(this.shiftsStore.todaysShifts().shifts[index].position).toLowerCase()}?`;
       this.shiftsStore.setSelectedDailyIndex(this.index());
       this.shiftsStore.requestDeleteDailyShift(this.shift(), message);
@@ -124,7 +164,11 @@ export class DailyItemComponent {
 
   updateShift() {
     const values = this.form().value();
-    this.shiftsStore.updateDailyShift(this.index(), this.timeToString(values.from), this.timeToString(values.to));
+    this.shiftsStore.updateDailyShift(
+      this.index(),
+      this.timeToString(values.from),
+      this.timeToString(values.to),
+    );
     this.checkForConcurrent();
   }
 
@@ -152,7 +196,11 @@ export class DailyItemComponent {
             const listedFrom = parseFloat(other.from!.replace(':', ''));
             const listedTo = parseFloat(other.to!.replace(':', ''));
 
-            if ((listedFrom > inputFrom && listedFrom < inputTo) || (listedTo > inputFrom && listedTo < inputTo) || (inputFrom >= listedFrom && inputTo <= listedTo)) {
+            if (
+              (listedFrom > inputFrom && listedFrom < inputTo) ||
+              (listedTo > inputFrom && listedTo < inputTo) ||
+              (inputFrom >= listedFrom && inputTo <= listedTo)
+            ) {
               failedIndex = i;
               this.shiftsStore.updateConcurrentErrors(i);
               this.shiftsStore.updateConcurrentErrors(j);
@@ -186,20 +234,20 @@ export class DailyItemComponent {
     const formattedFrom = new Intl.DateTimeFormat('en-US', {
       hour: 'numeric',
       minute: 'numeric',
-      hour12: false
+      hour12: false,
     }).format(v.from!);
 
     const formattedTo = new Intl.DateTimeFormat('en-US', {
       hour: 'numeric',
       minute: 'numeric',
-      hour12: false
+      hour12: false,
     }).format(v.to!);
 
     return {
       date: v.date,
       from: formattedFrom,
       to: formattedTo,
-      perso: v.perso
+      perso: v.perso,
     };
   });
 
@@ -211,18 +259,17 @@ export class DailyItemComponent {
       date: s.date,
       from: s.from,
       to: s.to,
-      perso: s.perso
+      perso: s.perso,
     };
   });
 
-  protected showPersoError = computed(() =>
-    this.form.perso().invalid());
+  protected showPersoError = computed(() => this.form.perso().invalid());
 
   protected showTimeFromError = computed(() =>
-    this.setShowError(this.form.from()));
+    this.setShowError(this.form.from()),
+  );
 
-  protected showTimeToError = computed(() =>
-    this.setShowError(this.form.to()));
+  protected showTimeToError = computed(() => this.setShowError(this.form.to()));
 
   private setShowError(field: FieldState<Date | string | null>) {
     return field.invalid() || field.dirty();

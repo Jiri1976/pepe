@@ -1,8 +1,16 @@
-import { Component, computed, HostListener, inject, OnInit, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  HostListener,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { ShiftsStore } from '../../../stores/shifts-store/shifts.store';
 import { todayDate } from '../../../helpers/common-functions.helper';
-import { DailyItemComponent } from "../daily-item/daily-item.component";
-import { DailySkeletonComponent } from "./daily-skeleton/daily-skeleton.component";
+import { DailyItemComponent } from '../daily-item/daily-item.component';
+import { DailySkeletonComponent } from './daily-skeleton/daily-skeleton.component';
 
 @Component({
   selector: 'app-daily',
@@ -30,31 +38,31 @@ export class DailyComponent implements OnInit {
     if (this.dailyShiftsCount() > 1) {
       if (this.height() < 700) {
         return {
-          'maxHeight': '450px',
-          'overflow-y': 'auto'
+          maxHeight: '450px',
+          'overflow-y': 'auto',
         };
       } else if (this.height() > 700 && this.height() < 920) {
         if (this.dailyShiftsCount() > 7) {
           return {
-            'maxHeight': '480px',
-            'overflow-y': 'auto'
+            maxHeight: '480px',
+            'overflow-y': 'auto',
           };
         } else {
           return {
-            'maxHeight': '',
-            'overflow-y': 'hidden'
+            maxHeight: '',
+            'overflow-y': 'hidden',
           };
         }
       } else {
         return {
-          'maxHeight': '',
-          'overflow-y': 'hidden'
+          maxHeight: '',
+          'overflow-y': 'hidden',
         };
       }
     } else {
       return {
-        'maxHeight': '',
-        'overflow-y': 'hidden'
+        maxHeight: '',
+        'overflow-y': 'hidden',
       };
     }
   });
