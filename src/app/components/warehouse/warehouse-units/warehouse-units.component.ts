@@ -25,7 +25,7 @@ export class WarehouseUnitsComponent implements OnInit {
 
   ngOnInit(): void {
     const user = this.authStore.user();
-    if (user?.role === 'master' && user.destination !== this.warehouseStore.destination()) {
+    if (user?.role === 'Master' && user.destination !== this.warehouseStore.destination()) {
       this.warehouseStore.setDestination(user.destination);
     }
     this.warehouseStore.resetMonthYaer();

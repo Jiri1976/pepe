@@ -24,7 +24,7 @@ export class CardsViewComponent {
   ngOnInit(): void {
     const user = this.authStore.user();
     this.shiftsStore.setDefaultMonthYear();
-    if (user?.role === 'master' && user.destination !== this.shiftsStore.destination()) {
+    if (user?.role === 'Master' && user.destination !== this.shiftsStore.destination()) {
       this.shiftsStore.setDestination(user.destination);
     }
     this.shiftsStore.getCards();

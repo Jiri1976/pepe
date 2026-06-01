@@ -12,7 +12,12 @@ export function onLogout(
     dialog.closeAll();
     localStorage.removeItem('token');
     router.navigate(['login']);
-    return { user: null, isLoading: false, _tokenExpirationTimer: null };
+    return {
+      user: null,
+      isLoading: false,
+      _tokenExpirationTimer: null,
+      destinationSelected: false,
+    };
   };
 }
 
@@ -20,6 +25,6 @@ export function onLogin(token: string): PartialStateUpdater<AuthSlice> {
   return (_) => {
     localStorage.setItem('token', token);
     const loggedUser = setUserDetail(token);
-    return { user: loggedUser };
+    return { user: loggedUser, destinationSelected: false };
   };
 }

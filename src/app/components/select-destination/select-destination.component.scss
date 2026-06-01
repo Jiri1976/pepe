@@ -1,0 +1,28 @@
+.wrapper {
+  background-color: var(--white);
+  height: 100vh !important;
+  width: 100vw !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  .buttons {
+    display: flex;
+    flex-direction: row;
+    width: 200px;
+    justify-content: space-between;
+    align-items: center;
+
+    button {
+      border-radius: 7px;
+      height: 90px;
+      width: 90px;
+      font-size: 20px;
+      font-weight: 600;
+      background-color: var(--main-dark);
+      color: var(--white);
+      border: none;
+    }
+  }
+}

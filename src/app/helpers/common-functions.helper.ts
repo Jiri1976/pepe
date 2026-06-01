@@ -119,7 +119,7 @@ export function getInitialDestination(defaultDest: string): string {
     const authStore = inject(AuthStore);
     const user = authStore.user();
 
-    if (user?.role === 'master' && user.destination) {
+    if (user?.role === 'Master' && user.destination) {
         return user.destination;
     }
     return defaultDest;
