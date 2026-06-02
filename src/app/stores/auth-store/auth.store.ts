@@ -12,7 +12,11 @@ import { computed, effect, inject } from '@angular/core';
 import { Dialog } from '@angular/cdk/dialog';
 import { onLogin, onLogout } from './auth.updaters';
 import { Router } from '@angular/router';
-import { getToken, isTokenExpired, setUserDetail } from './auth.helpers';
+import {
+  getToken,
+  isTokenExpired,
+  saveSelectedDestination,
+} from './auth.helpers';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { switchMap, tap } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
@@ -82,8 +86,14 @@ export const AuthStore = signalStore(
                   store.error(response.errorMessage);
                 } else {
                   initializeSignalRUser(response.result);
-                  await store.signalR.start();
-                  store._router.navigate(['main']);
+                  try {
+                    await store.signalR.start();
+                  } catch {
+                    store.error('Nepodařilo se připojit k živým aktualizacím.');
+                  }
+
+                  patchState(store, setNotLoading());
+                  await store._router.navigateByUrl('/main');
                 }
               },
               error: () => patchState(store, setNotLoading()),
@@ -99,10 +109,14 @@ export const AuthStore = signalStore(
       },
       login: async (token: string) => {
         initializeSignalRUser(token);
-        await store.signalR.start();
-        store._router.navigate(['main']);
+        try {
+          await store.signalR.start();
+        } catch {
+          store.error('Nepodařilo se připojit k živým aktualizacím.');
+        }
+        await store._router.navigateByUrl('/main');
       },
-      selectDestination: (destination: string) => {
+      selectDestination: async (destination: string) => {
         const user = store.user();
         if (!user) {
           return;
@@ -117,14 +131,15 @@ export const AuthStore = signalStore(
           user: updatedUser,
           destinationSelected: true,
         });
+        saveSelectedDestination(destination);
 
         store.signalR.setSignalRUser({
           name: updatedUser.name,
           destination: updatedUser.destination,
           role: updatedUser.role,
         });
-        store._dialog.closeAll();
-        store._router.navigate(['main']);
+
+        await store._router.navigateByUrl('/main');
       },
       logOut: () => {
         store.signalR.clearSignalRUser();
@@ -141,7 +156,11 @@ export const AuthStore = signalStore(
       },
       restoreLogin: async (token: string) => {
         initializeSignalRUser(token);
-        await store.signalR.start();
+        try {
+          await store.signalR.start();
+        } catch {
+          store.error('Nepodařilo se připojit k živým aktualizacím.');
+        }
       },
     };
   }),
@@ -153,8 +172,6 @@ export const AuthStore = signalStore(
           store.logOut();
         } else {
           store.restoreLogin(token);
-          store.signalR.setToken(token);
-          //store.start(store.user()?.name ?? '');
         }
 
         if (store._tokenExpirationTimer === null) {

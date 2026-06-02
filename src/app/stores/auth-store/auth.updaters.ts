@@ -2,7 +2,11 @@ import { PartialStateUpdater } from '@ngrx/signals';
 import { AuthSlice } from './auth.slice';
 import { Dialog } from '@angular/cdk/dialog';
 import { Router } from '@angular/router';
-import { setUserDetail } from './auth.helpers';
+import {
+  clearSelectedDestination,
+  getSelectedDestination,
+  setUserDetail,
+} from './auth.helpers';
 
 export function onLogout(
   dialog: Dialog,
@@ -11,6 +15,7 @@ export function onLogout(
   return (_) => {
     dialog.closeAll();
     localStorage.removeItem('token');
+    clearSelectedDestination();
     router.navigate(['login']);
     return {
       user: null,
@@ -25,6 +30,9 @@ export function onLogin(token: string): PartialStateUpdater<AuthSlice> {
   return (_) => {
     localStorage.setItem('token', token);
     const loggedUser = setUserDetail(token);
-    return { user: loggedUser, destinationSelected: false };
+    return {
+      user: loggedUser,
+      destinationSelected: !!getSelectedDestination(token),
+    };
   };
 }

@@ -14,6 +14,15 @@ export const routes: Routes = [
     title: 'Přihlášení',
   },
   {
+    path: 'select-destination',
+    loadComponent: () =>
+      import('./components/select-destination/select-destination.component').then(
+        (m) => m.SelectDestinationComponent,
+      ),
+    canActivate: [AuthGuard],
+    title: 'Výběr pobočky',
+  },
+  {
     path: 'main',
     loadComponent: () => import('./pages/main/main.component'),
     canActivate: [AuthGuard],
