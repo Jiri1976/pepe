@@ -10,27 +10,35 @@ import { Navigation } from './main-navigation';
   selector: 'app-main',
   imports: [RouterLink, RouterOutlet],
   template: `
-    <div class="container text-center d-flex flex-column justify-content-center align-items-center">
-        <div class="row d-flex flex-row justify-content-center align-items-center">
-            @for(nav of navigation; track $index) {
-            <div class="col" [class.hidden]="hideFrom(nav.hideFrom)">
-                <div class="category position-relative d-flex justify-content-center align-items-center"
-                    [routerLink]="nav.link">
-                    <img class="position-absolute" [src]="nav.image" />
-                    <div class="overlay position-absolute"></div>
-                    <div class="category_text text-white position-relative">
-                        <div class="category_text_icon"><i [class]="getIconClass(nav.icon)"></i>
-                        </div>
-                        <p class="fw-bold">{{ nav.title }}</p>
-                    </div>
+    <div
+      class="container text-center d-flex flex-column justify-content-center align-items-center"
+    >
+      <div
+        class="row d-flex flex-row justify-content-center align-items-center"
+      >
+        @for (nav of navigation; track $index) {
+          <div class="col" [class.hidden]="hideFrom(nav.hideFrom)">
+            <div
+              class="category position-relative d-flex justify-content-center align-items-center"
+              [routerLink]="nav.link"
+            >
+              <img class="position-absolute" [src]="nav.image" />
+              <div class="overlay position-absolute"></div>
+              <div class="category_text text-white position-relative">
+                <div class="category_text_icon">
+                  <i [class]="getIconClass(nav.icon)"></i>
                 </div>
+                <p class="fw-bold">{{ nav.title }}</p>
+              </div>
             </div>
-            }
-        </div>
+          </div>
+        }
+      </div>
     </div>
     <router-outlet />
   `,
-  styles: [`
+  styles: [
+    `
       .container {
         height: 100vh;
 
@@ -44,55 +52,64 @@ import { Navigation } from './main-navigation';
             height: 180px;
             cursor: pointer;
             margin: 10px 0;
+            transform: translateY(0);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            transition:
+              transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 260ms ease;
+            will-change: transform, box-shadow;
 
             img {
-                width: 230px;
-                height: 180px;
-                border-radius: 5px;
+              width: 230px;
+              height: 180px;
+              border-radius: 5px;
             }
 
             .overlay {
-                width: 100%;
-                height: 100%;
-                background-color: rgba(0, 0, 0, 0.45);
-                transition: 0.3s ease-in-out;
-                border-radius: 7px;
+              width: 100%;
+              height: 100%;
+              background-color: rgba(0, 0, 0, 0.45);
+              transition: 0.3s all ease-in-out;
+              border-radius: 7px;
             }
 
             .category_text {
-
-                .category_text_icon {
-                    i {
-                        font-size: 3rem;
-                    }
+              .category_text_icon {
+                i {
+                  font-size: 3rem;
                 }
+              }
 
-                p {
-                    font-size: 1.5rem;
-                }
+              p {
+                font-size: 1.5rem;
+              }
             }
 
             &:hover {
-                .overlay {
-                    width: 80%;
-                    height: 80%;
-                }
+              transform: translateY(-8px);
+              box-shadow: 0 8px 18px rgba(0, 0, 0, 0.14);
+
+              .overlay {
+                width: 80%;
+                height: 80%;
+              }
             }
           }
         }
       }
 
       @media screen and (max-width: 599px) {
-          .container {
-              margin-top: 100px;
-          }
+        .container {
+          margin-top: 100px;
+        }
 
-          .container .row {
-              flex-direction: column !important;
-              margin-top: 100px;
-          }    
+        .container .row {
+          flex-direction: column !important;
+          margin-top: 100px;
+        }
       }
-  `]
+    `,
+  ],
 })
 export default class MainComponent implements OnInit {
   readonly authStore = inject(AuthStore);
@@ -119,6 +136,6 @@ export default class MainComponent implements OnInit {
   }
 
   getIconClass(icon: string) {
-    return `bi ${icon}`
+    return `bi ${icon}`;
   }
 }

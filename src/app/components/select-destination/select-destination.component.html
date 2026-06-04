@@ -1,6 +1,29 @@
-<div class="wrapper">
-  <div class="buttons">
-    <button (click)="selectDestination('F-M')">F-M</button>
-    <button (click)="selectDestination('OVA')">OVA</button>
+<div
+  class="container text-center d-flex flex-column justify-content-center align-items-center"
+>
+  <div class="row d-flex flex-row justify-content-center align-items-center">
+    <div class="col">
+      <div
+        class="category position-relative d-flex justify-content-center align-items-center"
+        (click)="selectDestination('F-M')"
+      >
+        <div class="overlay position-absolute"></div>
+        <div class="category_text text-white position-relative">
+          <p class="fw-bold">F-M</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div
+        class="category position-relative d-flex justify-content-center align-items-center"
+        (click)="selectDestination('OVA')"
+      >
+        <div class="overlay position-absolute"></div>
+        <div class="category_text text-white position-relative">
+          <p class="fw-bold">OVA</p>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
