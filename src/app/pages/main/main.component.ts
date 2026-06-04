@@ -52,6 +52,7 @@ import { Navigation } from './main-navigation';
             height: 180px;
             cursor: pointer;
             margin: 10px 0;
+            border-radius: 5px;
             transform: translateY(0);
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
             transition:
@@ -69,7 +70,10 @@ import { Navigation } from './main-navigation';
               width: 100%;
               height: 100%;
               background-color: rgba(0, 0, 0, 0.45);
-              transition: 0.3s all ease-in-out;
+              transform: scale(1);
+              transform-origin: center;
+              transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+              will-change: transform;
               border-radius: 7px;
             }
 
@@ -77,21 +81,40 @@ import { Navigation } from './main-navigation';
               .category_text_icon {
                 i {
                   font-size: 3rem;
+                  transform: scale(1);
+                  transform-origin: center;
+                  transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+                  will-change: transform;
                 }
               }
 
               p {
                 font-size: 1.5rem;
+                transform: scale(1);
+                transform-origin: center;
+                transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+                will-change: transform;
               }
             }
 
             &:hover {
-              transform: translateY(-8px);
+              transform: translateY(-2px);
               box-shadow: 0 8px 18px rgba(0, 0, 0, 0.14);
 
               .overlay {
-                width: 80%;
-                height: 80%;
+                transform: scale(0.8);
+              }
+
+              .category_text {
+                .category_text_icon {
+                  i {
+                    transform: scale(1.08);
+                  }
+                }
+
+                p {
+                  transform: scale(1.08);
+                }
               }
             }
           }
@@ -106,6 +129,14 @@ import { Navigation } from './main-navigation';
         .container .row {
           flex-direction: column !important;
           margin-top: 100px;
+        }
+
+        .container .row .category {
+          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+        }
+
+        .container .row .category:hover {
+          box-shadow: 0 5px 12px rgba(0, 0, 0, 0.1);
         }
       }
     `,
