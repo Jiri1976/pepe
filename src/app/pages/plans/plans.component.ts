@@ -1,18 +1,17 @@
-import { Component, effect, inject, viewChild } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { DatePicker, DatePickerModule } from 'primeng/datepicker';
 import { DialogModule } from 'primeng/dialog';
 import { ProposalsComponent } from '../../components/proposals/proposals.component';
-import { OverlayModule } from 'primeng/overlay';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { AuthStore } from '../../stores/auth-store/auth.store';
 import { ProposalStore } from '../../stores/proposal-store/proposal.store';
-import { NavigationComponent } from "../../components/navigation/navigation.component";
-import { NavButtonComponent } from "../../components/navigation/nav-button.component";
+import { NavigationComponent } from '../../components/navigation/navigation.component';
+import { NavButtonComponent } from '../../components/navigation/nav-button.component';
 import { Dialog } from '@angular/cdk/dialog';
 import { InactiveUsersComponent } from '../../components/proposals/inactive-users/inactive-users.component';
-import { DestinationButtonComponent } from "../../components/paging/destination-button.component";
+import { DestinationButtonComponent } from '../../components/paging/destination-button.component';
+import { CalendarComponent } from '../../components/calendar/calendar.component';
 
 @Component({
   selector: 'app-plans',
@@ -22,47 +21,19 @@ import { DestinationButtonComponent } from "../../components/paging/destination-
     ButtonModule,
     FormsModule,
     ReactiveFormsModule,
-    DatePickerModule,
-    DatePicker,
-    OverlayModule,
     DragDropModule,
     NavigationComponent,
     NavButtonComponent,
-    DestinationButtonComponent
+    DestinationButtonComponent,
+    CalendarComponent,
   ],
   templateUrl: './plans.component.html',
-  styleUrl: './plans.component.scss'
+  styleUrl: './plans.component.scss',
 })
 export class PlansComponent {
   readonly authStore = inject(AuthStore);
   readonly propStore = inject(ProposalStore);
-  calendar = viewChild<DatePicker>('calendar');
-  showCalendar = this.propStore.showCalendar;
   private dialog = inject(Dialog);
-
-  constructor() {
-    effect(() => {
-      if (this.calendar) {
-        if (!this.showCalendar()) {
-          this.calendar()?.hideOverlay();
-          this.calendar()?.cd.detectChanges();
-        } else {
-          this.calendar()?.showOverlay();
-          this.calendar()?.cd.detectChanges();
-        }
-      }
-    });
-  }
-
-  onCalendarClickOutside(event: MouseEvent, toggleBtn?: HTMLElement) {
-    const target = event.target as HTMLElement;
-
-    if (toggleBtn?.contains(target)) {
-      return;
-    }
-
-    this.propStore.closeCalendar();
-  }
 
   onSelectMonth(date: Date) {
     if (!this.propStore.isUnchanged()) {
@@ -70,11 +41,16 @@ export class PlansComponent {
     } else {
       this.propStore.setMonthYear(date);
     }
+    this.propStore.closeCalendar();
   }
 
   onToggleCalendar(event: MouseEvent) {
     event.stopPropagation();
-    this.propStore.toggleCalendar();
+    if (this.propStore.isCalendarOpen()) {
+      this.propStore.closeCalendar();
+    } else {
+      this.propStore.openCalendar();
+    }
   }
 
   openModal(selectedInactive: 'Cook' | 'Driver' | 'Pizza' | 'Helper') {

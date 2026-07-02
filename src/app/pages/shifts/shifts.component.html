@@ -1,35 +1,75 @@
 <div class="sidenav position-fixed h-100">
-    @let hideForMaster = authStore.user()?.role !== 'Admin';
+  @let hideForMaster = authStore.user()?.role !== "Admin";
 
-    <app-navigation animate.enter="fade-in" animate.leave="fade-out" #nav>
-        <app-nav-button [hidden]="hideForMaster" (click)="addShift()" icon="bi-plus" class="save"
-            [disabled]="shiftsStore.oneConcurrentErrors()" />
-        <app-nav-button [hidden]="!hideForMaster" (click)="!shiftsStore.isPastCard() && addShift()"
-            [disabled]="shiftsStore.isPastCard() === true || shiftsStore.oneConcurrentErrors()" icon="bi-plus"
-            class="save" />
-        @if (pathname() === '/shifts') {
-        <app-nav-button (click)="onToggleCalendar($event)" icon="bi-calendar" #toggleBtn />
-        <app-nav-button (click)="shiftsStore.uniqueUsers().length > 0 && openModal()" icon="bi-people"
-            [disabled]="shiftsStore.uniqueUsers().length === 0" />
-        }
-        <app-nav-button (click)="reload()" icon="bi-arrow-clockwise" />
-        <app-nav-button (click)="changeDestination('F-M')" label="F-M" [hidden]="hideForMaster"
-            [inactive]="shiftsStore.destination() !== 'F-M'" />
-        <app-nav-button (click)="changeDestination('OVA')" label="OVA" [hidden]="hideForMaster"
-            [inactive]="shiftsStore.destination() !== 'OVA'" />
-        @if (pathname() === '/shifts') {
-        <app-nav-button [hidden]="hideForMaster" (click)="shiftsStore.pdfCards().length !== 0 &&shiftsStore.allToPdf()"
-            icon="bi-filetype-pdf" [disabled]="shiftsStore.pdfCards().length === 0"
-            [loading]="shiftsStore.isPdfLoading()" />
-        }
-        <app-nav-button (click)="toDaily()" icon="bi-hourglass" [inactive]="pathname() === '/shifts'" />
-        <app-nav-button (click)="toShifts()" icon="bi-house" [inactive]="pathname() === '/shifts/daily'" />
-    </app-navigation>
+  <app-navigation animate.enter="fade-in" animate.leave="fade-out" #nav>
+    <app-nav-button
+      [hidden]="hideForMaster"
+      (click)="addShift()"
+      icon="bi-plus"
+      class="save"
+      [disabled]="shiftsStore.oneConcurrentErrors()"
+    />
+    <app-nav-button
+      [hidden]="!hideForMaster"
+      (click)="!shiftsStore.isPastCard() && addShift()"
+      [disabled]="
+        shiftsStore.isPastCard() === true || shiftsStore.oneConcurrentErrors()
+      "
+      icon="bi-plus"
+      class="save"
+    />
+    @if (pathname() === "/shifts") {
+      <app-nav-button
+        (click)="onToggleCalendar($event)"
+        icon="bi-calendar"
+        #toggleBtn
+      />
+      <app-nav-button
+        (click)="shiftsStore.uniqueUsers().length > 0 && openModal()"
+        icon="bi-people"
+        [disabled]="shiftsStore.uniqueUsers().length === 0"
+      />
+    }
+    <app-nav-button (click)="reload()" icon="bi-arrow-clockwise" />
+    <app-nav-button
+      (click)="changeDestination('F-M')"
+      label="F-M"
+      [hidden]="hideForMaster"
+      [inactive]="shiftsStore.destination() !== 'F-M'"
+    />
+    <app-nav-button
+      (click)="changeDestination('OVA')"
+      label="OVA"
+      [hidden]="hideForMaster"
+      [inactive]="shiftsStore.destination() !== 'OVA'"
+    />
+    @if (pathname() === "/shifts") {
+      <app-nav-button
+        [hidden]="hideForMaster"
+        (click)="shiftsStore.pdfCards().length !== 0 && shiftsStore.allToPdf()"
+        icon="bi-filetype-pdf"
+        [disabled]="shiftsStore.pdfCards().length === 0"
+        [loading]="shiftsStore.isPdfLoading()"
+      />
+    }
+    <app-nav-button
+      (click)="toDaily()"
+      icon="bi-hourglass"
+      [inactive]="pathname() === '/shifts'"
+    />
+    <app-nav-button
+      (click)="toShifts()"
+      icon="bi-house"
+      [inactive]="pathname() === '/shifts/daily'"
+    />
+  </app-navigation>
 </div>
 
-<div class="shifts-calendar position-absolute">
-    <p-datepicker #calendar name="deadline" [(ngModel)]="shiftsStore.defaultDate" view="month" dateFormat="mm-yy"
-        [readonlyInput]="true" [maxDate]="shiftsStore.maxDate()" (onSelect)="onSelectMonth()"
-        (onClickOutside)="onCalendarClickOutside($event, nav.toggleBtn ? nav.toggleBtn.nativeElement : undefined)" />
-</div>
+<app-calendar
+  [date]="shiftsStore.defaultDate()"
+  (dateChange)="onSelectMonth($event)"
+  [isOpen]="() => shiftsStore.isCalendarOpen()"
+  [onClose]="() => shiftsStore.closeCalendar()"
+/>
+
 <router-outlet />

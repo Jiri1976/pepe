@@ -13,14 +13,12 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { switchMap, tap } from 'rxjs';
 import { withLoading } from '../custome-features/withLoading/with-loading.feature';
 import {
-  closeCalendar,
   setIsLoading,
   setIsSaving,
   setNotSaving,
   setNotLoading,
   setIsDeleting,
   setNotDeleting,
-  toggleCalendar,
   toggleIsPdfLoading,
 } from '../custome-features/withLoading/with-loading.updaters';
 import { initialProposalSlice } from './proposal.slice';
@@ -62,6 +60,7 @@ import { withToaster } from '../custome-features/withToaster/with-toaster.featur
 import { SignalRStore } from '../signalr-store/signalr.store';
 import { Router } from '@angular/router';
 import { ShiftsStore } from '../shifts-store/shifts.store';
+import { withCalendar } from '../custome-features/withCalendar/with-calendar.feature';
 
 export const ProposalStore = signalStore(
   {
@@ -71,6 +70,7 @@ export const ProposalStore = signalStore(
   withState(initialProposalSlice),
   withLoading(),
   withToaster(),
+  withCalendar(),
   withProps((_) => {
     const _dialog = inject(Dialog);
     const _proposalService = inject(ProposalsService);
@@ -284,7 +284,7 @@ export const ProposalStore = signalStore(
                 }
 
                 patchState(store, setSchedules(schedules));
-                patchState(store, closeCalendar());
+                patchState(store, { isCalendarOpen: false });
 
                 if (!store.destination() && schedules.length > 0) {
                   patchState(store, { destination: schedules[0].destination });
@@ -491,12 +491,10 @@ export const ProposalStore = signalStore(
           'Nejsou uloženy změny, chceš pokračovat?',
         );
       },
-      toggleCalendar: () => patchState(store, toggleCalendar()),
-      closeCalendar: () => patchState(store, closeCalendar()),
       selectProposal: (selectedProposal: ProposalShift) =>
         selectProposal(selectedProposal),
       deleteProposal: () =>
-        patchState(store, deleteProposal(store.oppositeCard()!)),
+        patchState(store, deleteProposal(store.oppositeCard())),
       updateProposal: (inputs: Inputs) =>
         patchState(store, updateProposal(inputs)),
       silentlyUploadSchedulesShifts: () => silentlyUploadSchedulesShifts(),

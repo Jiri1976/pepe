@@ -1,0 +1,13 @@
+<p-datepicker
+  class="standalone"
+  #calendar
+  [(ngModel)]="selectedDate"
+  name="deadline"
+  view="month"
+  dateFormat="mm-yy"
+  [readonlyInput]="true"
+  [inline]="true"
+  [maxDate]="maxDate() || undefined"
+  yearRange="2000:2035"
+  (onSelect)="onMonthSelect($event)"
+/>

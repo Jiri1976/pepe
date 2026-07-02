@@ -1,8 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { AuthStore } from '../../stores/auth-store/auth.store';
-import { form, email, required, FormField, } from '@angular/forms/signals';
-import { FieldWrapperComponent } from "../../components/filed-wrapper/field-wrapper.component";
-import { FieldStyleDirective } from '../../directives/field-styling.directive';
+import { form, email, required, FormField } from '@angular/forms/signals';
+import { FieldWrapperComponent } from '../../components/filed-wrapper/field-wrapper.component';
 
 interface LoginForm {
   email: string;
@@ -11,18 +10,18 @@ interface LoginForm {
 
 @Component({
   selector: 'app-login',
-  imports: [FormField, FieldWrapperComponent, FieldStyleDirective],
+  imports: [FormField, FieldWrapperComponent],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.scss'
+  styleUrl: './login.component.scss',
 })
 export default class LoginComponent {
   readonly store = inject(AuthStore);
   protected model = signal<LoginForm>({
     email: '',
-    password: ''
+    password: '',
   });
 
-  protected form = form(this.model, s => {
+  protected form = form(this.model, (s) => {
     required(s.email, { message: 'Email je povinný' });
     email(s.email, { message: 'Neplatná emailová adresa' });
     required(s.password, { message: 'Heslo je povinné' });

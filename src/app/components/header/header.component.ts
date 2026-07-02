@@ -16,7 +16,7 @@ import { SignalRStore } from '../../stores/signalr-store/signalr.store';
 export class HeaderComponent implements OnInit {
   readonly authStore = inject(AuthStore);
   readonly signalRStore = inject(SignalRStore);
-  private dialog = inject(Dialog)
+  private dialog = inject(Dialog);
   private router = inject(Router);
   notifications = computed(() => this.signalRStore.notifications());
   isShown = signal(false);
