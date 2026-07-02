@@ -52,6 +52,12 @@
   "overrides": {
     "primeng": {
       "@angular/core": "^22.0.0"
+    },
+    "@ngrx/signals": {
+      "@angular/core": "^22.0.0"
+    },
+    "@ngrx/operators": {
+      "@angular/core": "^22.0.0"
     }
   }
 }
