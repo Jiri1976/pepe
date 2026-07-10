@@ -16,10 +16,10 @@ import { DPickerComponent } from '../../d-picker/d-picker.component';
     ButtonModule,
     DatePickerModule,
     FormField,
-    DPickerComponent
+    DPickerComponent,
   ],
   templateUrl: './update-proposal.component.html',
-  styleUrl: './update-proposal.component.scss'
+  styleUrl: './update-proposal.component.scss',
 })
 export class UpdateProposalComponent {
   readonly store = inject(ProposalStore);
@@ -28,7 +28,7 @@ export class UpdateProposalComponent {
   selectedProposal = this.store.selectedProposal;
   errorMessage = signal<string | null>(null);
 
-  readonly form = form(this.store.proposalModel, s => {
+  readonly form = form(this.store.proposalModel, (s) => {
     buildProposal(s);
   });
 
@@ -60,14 +60,18 @@ export class UpdateProposalComponent {
 
     const shifts = this.store
       .schedules()
-      .flatMap(c => c.users)
-      .flatMap(u => u.shifts)
-      .filter(s =>
-        s.proposalDate === selected.proposalDate &&
-        s.userId === selected.userId &&
-        s.from !== null &&
-        s.to !== null &&
-        !(s.destination === selected.destination && s.position === selected.position)
+      .flatMap((c) => c.users)
+      .flatMap((u) => u.shifts)
+      .filter(
+        (s) =>
+          s.proposalDate === selected.proposalDate &&
+          s.userId === selected.userId &&
+          s.from !== null &&
+          s.to !== null &&
+          !(
+            s.destination === selected.destination &&
+            s.position === selected.position
+          ),
       );
 
     if (!shifts || shifts.length === 0) {
@@ -79,14 +83,22 @@ export class UpdateProposalComponent {
       selectedShift.to = `${inputs.hoursTo}:${inputs.minutesTo}`;
 
       let isColliding = false;
-      shifts?.forEach(shift => {
-        if (this.collideShifts(selectedShift.from!, selectedShift.to!, shift.from!, shift.to!)) {
+      shifts?.forEach((shift) => {
+        if (
+          this.collideShifts(
+            selectedShift.from!,
+            selectedShift.to!,
+            shift.from!,
+            shift.to!,
+          )
+        ) {
           isColliding = true;
-          this.errorMessage.set(`POZOR: Směna ${shift.destination} - ${shift.from} - ${shift.to}`);
+          this.errorMessage.set(
+            `POZOR: Směna ${shift.destination} - ${shift.from} - ${shift.to}`,
+          );
           return;
         }
       });
-
       if (!isColliding) {
         this.store.updateProposal(inputs);
         this.onClose();
@@ -94,9 +106,17 @@ export class UpdateProposalComponent {
     }
   }
 
-  collideShifts(inputShiftFrom: string, inputShiftTo: string, timeFrom: string, timeTo: string) {
+  collideShifts(
+    inputShiftFrom: string,
+    inputShiftTo: string,
+    timeFrom: string,
+    timeTo: string,
+  ) {
     timeFrom = timeFrom === 'OVA' || timeFrom === 'F-M' ? '11:00' : timeFrom;
-    if (inputShiftFrom === '11:00' && (inputShiftTo === '22:00' || inputShiftTo === '23:00')) {
+    if (
+      inputShiftFrom === '11:00' &&
+      (inputShiftTo === '22:00' || inputShiftTo === '23:00')
+    ) {
       return true;
     }
 
@@ -109,15 +129,26 @@ export class UpdateProposalComponent {
     const listedFrom = parseFloat(timeFrom.replace(':', ''));
     const listedTo = parseFloat(timeTo.replace(':', ''));
 
-    if ((listedFrom > inputFrom && listedFrom < inputTo) || (listedTo > inputFrom && listedTo < inputTo) || (inputFrom >= listedFrom && inputTo <= listedTo)) {
+    if (
+      (listedFrom > inputFrom && listedFrom < inputTo) ||
+      (listedTo > inputFrom && listedTo < inputTo) ||
+      (inputFrom >= listedFrom && inputTo <= listedTo)
+    ) {
       return true;
     }
     return false;
   }
 
   onDelete() {
-    if (this.selectedProposal()!.from === 'F-M' || this.selectedProposal()!.from === 'OVA') {
-      this.errorMessage.set(`Směnu odstraníš na kartě - ${this.store.destination() === 'F-M' ? 'OVA' : 'F-M'}.`);
+    const selected = this.selectedProposal();
+    if (!selected) {
+      return;
+    }
+
+    if (selected.from === 'F-M' || selected.from === 'OVA') {
+      this.errorMessage.set(
+        `Směnu odstraníš na kartě - ${this.store.destination() === 'F-M' ? 'OVA' : 'F-M'}.`,
+      );
       return;
     }
     this.store.deleteProposal();
@@ -129,11 +160,25 @@ export class UpdateProposalComponent {
   }
 
   private checkInputTimes(shiftType?: string) {
-    let isFridaySaturday = this.form().value().timeFrom?.getDay() == 5 || this.form().value().timeFrom?.getDay() == 6;
-    let hoursFrom = new Date(this.form().value().timeFrom!).getHours() < 10 ? '0' + new Date(this.form().value().timeFrom!).getHours() : new Date(this.form().value().timeFrom!).getHours();
-    let minutesFrom = new Date(this.form().value().timeFrom!).getMinutes() < 10 ? '0' + new Date(this.form().value().timeFrom!).getMinutes() : new Date(this.form().value().timeFrom!).getMinutes();
-    let hoursTo = new Date(this.form().value().timeTo!).getHours() < 10 ? '0' + new Date(this.form().value().timeTo!).getHours() : new Date(this.form().value().timeTo!).getHours();
-    let minutesTo = new Date(this.form().value().timeTo!).getMinutes() < 10 ? '0' + new Date(this.form().value().timeTo!).getMinutes() : new Date(this.form().value().timeTo!).getMinutes();
+    let isFridaySaturday =
+      this.form().value().timeFrom?.getDay() == 5 ||
+      this.form().value().timeFrom?.getDay() == 6;
+    let hoursFrom =
+      new Date(this.form().value().timeFrom!).getHours() < 10
+        ? '0' + new Date(this.form().value().timeFrom!).getHours()
+        : new Date(this.form().value().timeFrom!).getHours();
+    let minutesFrom =
+      new Date(this.form().value().timeFrom!).getMinutes() < 10
+        ? '0' + new Date(this.form().value().timeFrom!).getMinutes()
+        : new Date(this.form().value().timeFrom!).getMinutes();
+    let hoursTo =
+      new Date(this.form().value().timeTo!).getHours() < 10
+        ? '0' + new Date(this.form().value().timeTo!).getHours()
+        : new Date(this.form().value().timeTo!).getHours();
+    let minutesTo =
+      new Date(this.form().value().timeTo!).getMinutes() < 10
+        ? '0' + new Date(this.form().value().timeTo!).getMinutes()
+        : new Date(this.form().value().timeTo!).getMinutes();
 
     if (shiftType === 'W') {
       hoursFrom = '11';
@@ -155,10 +200,12 @@ export class UpdateProposalComponent {
   }
 
   protected showTimeFromError = computed(() =>
-    this.setShowError(this.form.timeFrom()));
+    this.setShowError(this.form.timeFrom()),
+  );
 
   protected showTimeToError = computed(() =>
-    this.setShowError(this.form.timeTo()));
+    this.setShowError(this.form.timeTo()),
+  );
 
   private setShowError(field: FieldState<Date | null>) {
     return field.invalid();

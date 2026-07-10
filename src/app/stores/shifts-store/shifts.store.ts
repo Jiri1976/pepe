@@ -13,12 +13,10 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { switchMap, tap } from 'rxjs';
 import { withLoading } from '../custome-features/withLoading/with-loading.feature';
 import {
-  closeCalendar,
   setIsLoading,
   toggleIsSaving,
   togglePdfButtonLoading,
   setNotLoading,
-  toggleCalendar,
   toggleIsPdfLoading,
   toggleIsDeleting,
 } from '../custome-features/withLoading/with-loading.updaters';
@@ -63,6 +61,7 @@ import { withToaster } from '../custome-features/withToaster/with-toaster.featur
 import { SignalRStore } from '../signalr-store/signalr.store';
 import { Router } from '@angular/router';
 import { sortShifts } from './shifts.helpers';
+import { withCalendar } from '../custome-features/withCalendar/with-calendar.feature';
 
 export const ShiftsStore = signalStore(
   {
@@ -72,6 +71,7 @@ export const ShiftsStore = signalStore(
   withState(initialShiftsSlice),
   withLoading(),
   withToaster(),
+  withCalendar(),
   withProps((_) => {
     const _dialog = inject(Dialog);
     const _shiftService = inject(ShiftService);
@@ -296,7 +296,6 @@ export const ShiftsStore = signalStore(
                     selectedCardPosition: '',
                   });
                 }
-                patchState(store, closeCalendar());
               },
               onError: () => patchState(store, setNotLoading()),
             }),
@@ -670,8 +669,7 @@ export const ShiftsStore = signalStore(
           store,
           setSlideIndexAndPosition(sliceIndex, store.uniqueUsers()),
         ),
-      toggleCalendar: () => patchState(store, toggleCalendar()),
-      closeCalendar: () => patchState(store, closeCalendar()),
+
       allToPdf: () => onAllToPdf(),
       slideTo,
       consumeSlideToIndex,
@@ -806,7 +804,6 @@ export const ShiftsStore = signalStore(
         ) {
           store.getSilentlyShiftsForToday();
         }
-        // store._signalR.clearShifts();
       });
     },
   }),

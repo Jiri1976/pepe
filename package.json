@@ -9,19 +9,24 @@
     "test": "ng test"
   },
   "private": true,
+  "engines": {
+    "node": ">=22.22.3 <23 || >=24.15.0 <25 || >=26.0.0",
+    "npm": ">=10"
+  },
   "dependencies": {
-    "@angular/animations": "^21.1.5",
-    "@angular/cdk": "^21.1.5",
-    "@angular/common": "^21.1.5",
-    "@angular/compiler": "^21.1.5",
-    "@angular/core": "^21.1.5",
-    "@angular/forms": "^21.1.5",
-    "@angular/router": "^21.1.5",
+    "@angular/animations": "22.0.0",
+    "@angular/cdk": "^22.0.3",
+    "@angular/common": "22.0.0",
+    "@angular/compiler": "22.0.0",
+    "@angular/core": "22.0.0",
+    "@angular/forms": "22.0.0",
+    "@angular/platform-browser": "22.0.0",
+    "@angular/router": "22.0.0",
     "@microsoft/signalr": "^10.0.0",
     "@ngneat/overview": "^7.0.0",
     "@ngrx/operators": "^20.1.0",
     "@ngrx/signals": "^21.0.1",
-    "@ngxpert/hot-toast": "^6.1.0",
+    "@ngxpert/hot-toast": "6.1.0",
     "@primeuix/themes": "^2.0.3",
     "animate-css-grid": "^1.5.1",
     "bootstrap": "^5.3.8",
@@ -35,17 +40,30 @@
     "zone.js": "^0.15.1"
   },
   "devDependencies": {
-    "@angular/build": "^21.1.4",
-    "@angular/cli": "^21.1.4",
-    "@angular/compiler-cli": "^21.1.5",
+    "@angular/build": "22.0.0",
+    "@angular/cli": "22.0.0",
+    "@angular/compiler-cli": "22.0.0",
     "@types/jasmine": "^6.0.0",
     "baseline-browser-mapping": "^2.10.24",
+    "istanbul-lib-instrument": "^6.0.3",
     "jasmine-core": "^6.0.1",
     "karma": "^6.4.4",
     "karma-chrome-launcher": "^3.2.0",
     "karma-coverage": "^2.2.1",
     "karma-jasmine": "^5.1.0",
     "karma-jasmine-html-reporter": "^2.2.0",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.3"
+  },
+  "overrides": {
+    "@angular/platform-browser": "22.0.0",
+    "primeng": {
+      "@angular/core": "22.0.0"
+    },
+    "@ngrx/signals": {
+      "@angular/core": "22.0.0"
+    },
+    "@ngrx/operators": {
+      "@angular/core": "22.0.0"
+    }
   }
 }

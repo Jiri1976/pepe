@@ -1,9 +1,13 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, effect, inject, OnDestroy, viewChild } from '@angular/core';
+import {
+  Component,
+  CUSTOM_ELEMENTS_SCHEMA,
+  inject,
+  OnDestroy,
+} from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { DatePicker, DatePickerModule } from 'primeng/datepicker';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterOutlet } from '@angular/router';
 import { WarehouseStore } from '../../stores/warehouse-store/warehouse.store';
@@ -13,23 +17,23 @@ import { NavButtonComponent } from '../../components/navigation/nav-button.compo
 import { AuthStore } from '../../stores/auth-store/auth.store';
 import { Dialog } from '@angular/cdk/dialog';
 import { ItemsListComponent } from '../../components/warehouse/items-list/items-list.component';
+import { CalendarComponent } from '../../components/calendar/calendar.component';
 
 @Component({
   selector: 'app-warehouse',
   imports: [
     DialogModule,
     ButtonModule,
-    DatePicker,
-    DatePickerModule,
     InputTextModule,
     FormsModule,
     RouterOutlet,
     NavigationComponent,
-    NavButtonComponent
+    NavButtonComponent,
+    CalendarComponent,
   ],
   templateUrl: './warehouse.component.html',
-  styleUrl: './warehouse.component.scss',
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  styleUrls: ['./warehouse.component.scss'],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class WarehouseComponent implements OnDestroy {
   readonly store = inject(WarehouseStore);
@@ -39,44 +43,31 @@ export class WarehouseComponent implements OnDestroy {
   private dialog = inject(Dialog);
   private previousBodyOverflowY = '';
   destination = this.store.destination();
-  calendar = viewChild<DatePicker>('calendar');
   items = this.store.warehouseItems;
   navRoute = this.store.warehouseNav;
 
   constructor() {
     this.previousBodyOverflowY = this.document.body.style.overflowY;
     this.document.body.style.overflowY = 'hidden';
-
-    effect(() => {
-      if (this.calendar) {
-        if (!this.store.showCalendar()) {
-          this.calendar()?.hideOverlay();
-          this.calendar()?.cd.detectChanges();
-        } else {
-          this.calendar()?.showOverlay();
-          this.calendar()?.cd.detectChanges();
-        }
-      }
-    });
   }
 
   ngOnDestroy(): void {
     this.document.body.style.overflowY = this.previousBodyOverflowY;
   }
 
-  onSelectMonth() {
-    let _monthYear = MONTHS_NUM[this.calendar()?.value.getMonth()] + this.calendar()?.value.getFullYear();
+  onSelectMonth(date: Date) {
+    let _monthYear = MONTHS_NUM[date.getMonth()] + date.getFullYear();
     this.store.setMonthYear(_monthYear);
-    this.store.closeCalendar();
-  }
-
-  onCalendarClickOutside(event: MouseEvent) {
     this.store.closeCalendar();
   }
 
   onToggleCalendar(event: MouseEvent) {
     event.stopPropagation();
-    this.store.toggleCalendar();
+    if (this.store.isCalendarOpen()) {
+      this.store.closeCalendar();
+    } else {
+      this.store.openCalendar();
+    }
   }
 
   onShowList() {

@@ -1,7 +1,11 @@
-import { ApplicationConfig, provideAppInitializer, provideZoneChangeDetection } from '@angular/core';
+import {
+  ApplicationConfig,
+  provideAppInitializer,
+  provideZoneChangeDetection,
+} from '@angular/core';
 import { provideRouter, withViewTransitions } from '@angular/router';
 import { routes } from './app.routes';
-import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { AuthService } from './services/auth.service';
 import { TokenInterceptor } from './interceptor/token.interceptor';
 import { providePrimeNG } from 'primeng/config';
@@ -17,18 +21,15 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes, withViewTransitions()),
     provideHttpClient(
       withInterceptors([TokenInterceptor, globalHttpErrorInterceptor]),
-      withFetch()
     ),
-    providePrimeNG(
-      {
-        theme: {
-          preset: Aura
-        }
-      }
-    ),
+    providePrimeNG({
+      theme: {
+        preset: Aura,
+      },
+    }),
     AuthService,
     provideHotToastConfig({
-      position: 'bottom-right'
-    })
-  ]
+      position: 'bottom-right',
+    }),
+  ],
 };

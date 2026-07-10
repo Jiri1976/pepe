@@ -1,172 +1,306 @@
 <form autocomplete="no" class="p-4 rounded-3 w-100">
-    <div aria-hidden="true" class="background-wrapper">
-        <div class="background-shape"></div>
-    </div>
+  <div aria-hidden="true" class="background-wrapper">
+    <div class="background-shape"></div>
+  </div>
 
-    <div class="row">
-        <div class="col-4 d-flex flex-column align-items-center">
-            <div class="avatar justify-content-center d-flex align-items-center position-relative rounded-circle mt-2"
-                (click)="selectImage()">
-                @if (displayedImageSrc()) {
-                <img [src]="displayedImageSrc()" alt="Selected" class="rounded-circle" />
-                <button class="remove-btn position-absolute text-white rounded-circle text-bold" type="button"
-                    (click)="removeImage($event)">
-                    &times;
-                </button>
-                } @else {
-                <img class="blank rounded-circle" src="person.png" alt="No image" />
-                <button class="nofocus-btn bg-white position-absolute" type="button"></button>
-                }
+  <div class="row">
+    <div class="col-4 d-flex flex-column align-items-center">
+      <div
+        class="avatar justify-content-center d-flex align-items-center position-relative rounded-circle mt-2"
+        (click)="selectImage()"
+      >
+        @if (displayedImageSrc()) {
+          <img
+            [src]="displayedImageSrc()"
+            alt="Selected"
+            class="rounded-circle"
+          />
+          <button
+            class="remove-btn position-absolute text-white rounded-circle text-bold"
+            type="button"
+            (click)="removeImage($event)"
+          >
+            &times;
+          </button>
+        } @else {
+          <img class="blank rounded-circle" src="person.png" alt="No image" />
+          <button
+            class="nofocus-btn bg-white position-absolute"
+            type="button"
+          ></button>
+        }
+      </div>
+      <input
+        #imagePicker
+        type="file"
+        style="display: none"
+        (change)="onFileSelected($event)"
+        accept="image/*"
+      />
+    </div>
+    <div class="col-8">
+      <div class="card flex justify-end">
+        <div class="row mt-3">
+          <div class="col-6">
+            <app-field>
+              <input
+                type="text"
+                id="userName"
+                [formField]="form.name"
+                [formFieldStyle]="form.name"
+                placeholder="Jméno"
+                autocomplete="no"
+                (keydown.enter)="onSubmit()"
+              />
+
+              <div
+                class="counter"
+                [class.counterError]="
+                  form.name().touched() && form.name().invalid()
+                "
+              >
+                {{ form.name().value().length }}/ {{ USER_MAX_NAME }}
+              </div>
+            </app-field>
+          </div>
+          <div class="col-6">
+            <app-field>
+              <input
+                type="text"
+                id="userSurname"
+                [formField]="form.surname"
+                [formFieldStyle]="form.surname"
+                placeholder="Příjmení"
+                autocomplete="no"
+                (keydown.enter)="onSubmit()"
+              />
+              <div class="counter">
+                {{ form.surname().value().length }}/ {{ USER_MAX_SURNAME }}
+              </div>
+            </app-field>
+          </div>
+        </div>
+        <div class="row mt-4">
+          <div class="col-6">
+            <app-field>
+              <input
+                type="text"
+                placeholder="Email"
+                autocomplete="no"
+                id="email"
+                [formField]="form.email"
+                [formFieldStyle]="form.email"
+                (keydown.enter)="onSubmit()"
+              />
+            </app-field>
+          </div>
+          <div class="col-6">
+            <app-field>
+              <input
+                type="password"
+                placeholder="Heslo"
+                autocomplete="no"
+                [formField]="form.password"
+                [formFieldStyle]="form.password"
+                (keydown.enter)="onSubmit()"
+              />
+            </app-field>
+          </div>
+        </div>
+        <div class="row p-4">
+          <div class="col-10 offset-1">
+            <div class="btn-group selectors" role="group">
+              <input
+                type="radio"
+                class="btn-check"
+                id="btnrole1"
+                [formField]="form.role"
+                [formFieldStyle]="form.role"
+                value="Admin"
+              />
+              <label
+                class="btn btn-outline-primary left-radius d-flex align-items-center justify-content-center"
+                for="btnrole1"
+                >Admin</label
+              >
+
+              <input
+                type="radio"
+                class="btn-check"
+                id="btnrole2"
+                [formField]="form.role"
+                [formFieldStyle]="form.role"
+                value="Master"
+              />
+              <label
+                class="btn btn-outline-primary center-one d-flex align-items-center justify-content-center"
+                for="btnrole2"
+                >Master</label
+              >
+              <input
+                type="radio"
+                class="btn-check"
+                id="btnrole3"
+                [formField]="form.role"
+                [formFieldStyle]="form.role"
+                value="User"
+              />
+              <label
+                class="btn btn-outline-primary right-radius d-flex align-items-center justify-content-center"
+                for="btnrole3"
+                >User</label
+              >
             </div>
-            <input #imagePicker type="file" style="display: none;" (change)="onFileSelected($event)" accept="image/*" />
+          </div>
         </div>
-        <div class="col-8">
-            <div class="card flex justify-end">
-                <div class="row mt-3">
-                    <div class="col-6">
-                        <app-field>
-                            <input type="text" id="userName" [formField]="form.name" placeholder="Jméno"
-                                autocomplete="no" (keydown.enter)="onSubmit()">
-
-                            <div class="counter" [class.counterError]="form.name().touched() && form.name().invalid()">
-                                {{ form.name().value().length }}/ {{ USER_MAX_NAME }}
-                            </div>
-                        </app-field>
-                    </div>
-                    <div class="col-6">
-                        <app-field>
-                            <input type="text" id="userSurname" [formField]="form.surname" placeholder="Příjmení"
-                                autocomplete="no" (keydown.enter)="onSubmit()">
-                            <div class="counter">
-                                {{ form.surname().value().length }}/ {{ USER_MAX_SURNAME }}
-                            </div>
-                        </app-field>
-                    </div>
-                </div>
-                <div class="row mt-4">
-                    <div class="col-6">
-                        <app-field>
-                            <input type="text" placeholder="Email" autocomplete="no" id="email" [formField]="form.email"
-                                (keydown.enter)="onSubmit()">
-                        </app-field>
-                    </div>
-                    <div class="col-6">
-                        <app-field>
-                            <input type="password" placeholder="Heslo" autocomplete="no" [formField]="form.password"
-                                (keydown.enter)="onSubmit()">
-                        </app-field>
-                    </div>
-                </div>
-                <div class="row p-4">
-                    <div class="col-10 offset-1">
-                        <div class="btn-group selectors" role="group">
-                            <input type="radio" class="btn-check" id="btnrole1" [formField]="form.role" value="Admin">
-                            <label
-                                class="btn btn-outline-primary left-radius d-flex align-items-center justify-content-center"
-                                for="btnrole1">Admin</label>
-
-                            <input type="radio" class="btn-check" id="btnrole2" [formField]="form.role" value="Master">
-                            <label
-                                class="btn btn-outline-primary center-one  d-flex align-items-center justify-content-center"
-                                for="btnrole2">Master</label>
-                            <input type="radio" class="btn-check" id="btnrole3" [formField]="form.role" value="User">
-                            <label
-                                class="btn btn-outline-primary right-radius  d-flex align-items-center justify-content-center"
-                                for="btnrole3">User</label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
-    <div class="row mt-3">
-        <div class="col-6">
-            <p-fieldset legend="F-M">
-                <div class="options">
-                    <div class="flex items-center">
-                        <p-checkbox binary="true" [formField]="form.destinations.fmPizza" />
-                        <label class="ml-2">Pizzař</label>
-                    </div>
-                    <div class="flex items-center">
-                        <p-checkbox binary="true" [formField]="form.destinations.fmCook" />
-                        <label class="ml-2">Kuchař</label>
-                    </div>
-                    <div class="flex items-center">
-                        <p-checkbox binary="true" [formField]="form.destinations.fmDriver" />
-                        <label class="ml-2">Řidič</label>
-                    </div>
-                    <div class="flex items-center">
-                        <p-checkbox binary="true" [formField]="form.destinations.fmHelper" />
-                        <label class="ml-2">Pomocka</label>
-                    </div>
-                </div>
-            </p-fieldset>
+  </div>
+  <div class="row mt-3">
+    <div class="col-6">
+      <p-fieldset legend="F-M">
+        <div class="options">
+          <div class="flex items-center">
+            <p-checkbox
+              binary="true"
+              [formField]="form.destinations.fmPizza"
+              [formFieldStyle]="form.destinations.fmPizza"
+            />
+            <label class="ml-2">Pizzař</label>
+          </div>
+          <div class="flex items-center">
+            <p-checkbox
+              binary="true"
+              [formField]="form.destinations.fmCook"
+              [formFieldStyle]="form.destinations.fmCook"
+            />
+            <label class="ml-2">Kuchař</label>
+          </div>
+          <div class="flex items-center">
+            <p-checkbox
+              binary="true"
+              [formField]="form.destinations.fmDriver"
+              [formFieldStyle]="form.destinations.fmDriver"
+            />
+            <label class="ml-2">Řidič</label>
+          </div>
+          <div class="flex items-center">
+            <p-checkbox
+              binary="true"
+              [formField]="form.destinations.fmHelper"
+              [formFieldStyle]="form.destinations.fmHelper"
+            />
+            <label class="ml-2">Pomocka</label>
+          </div>
         </div>
-        <div class="col-6">
-            <p-fieldset legend="OVA">
-                <div class="options">
-                    <div class="flex items-center">
-                        <p-checkbox binary="true" [formField]="form.destinations.ovaPizza" />
-                        <label class="ml-2">Pizzař</label>
-                    </div>
-                    <div class="flex items-center">
-                        <p-checkbox binary="true" [formField]="form.destinations.ovaCook" />
-                        <label class="ml-2">Kuchař</label>
-                    </div>
-                    <div class="flex items-center">
-                        <p-checkbox binary="true" [formField]="form.destinations.ovaDriver" />
-                        <label class="ml-2">Řidič</label>
-                    </div>
-                    <div class="flex items-center">
-                        <p-checkbox binary="true" [formField]="form.destinations.ovaHelper" />
-                        <label class="ml-2">Pomocka</label>
-                    </div>
-                </div>
-            </p-fieldset>
-        </div>
+      </p-fieldset>
     </div>
-    <div class="row mt-4">
-        <div class="col-4 offset-4 d-flex flex-row justify-content-center">
-            <p-checkbox binary="true" [formField]="form.isActive" />
-            <label class="ml-2 fw-bolder"> Aktivní </label>
+    <div class="col-6">
+      <p-fieldset legend="OVA">
+        <div class="options">
+          <div class="flex items-center">
+            <p-checkbox
+              binary="true"
+              [formField]="form.destinations.ovaPizza"
+              [formFieldStyle]="form.destinations.ovaPizza"
+            />
+            <label class="ml-2">Pizzař</label>
+          </div>
+          <div class="flex items-center">
+            <p-checkbox
+              binary="true"
+              [formField]="form.destinations.ovaCook"
+              [formFieldStyle]="form.destinations.ovaCook"
+            />
+            <label class="ml-2">Kuchař</label>
+          </div>
+          <div class="flex items-center">
+            <p-checkbox
+              binary="true"
+              [formField]="form.destinations.ovaDriver"
+              [formFieldStyle]="form.destinations.ovaDriver"
+            />
+            <label class="ml-2">Řidič</label>
+          </div>
+          <div class="flex items-center">
+            <p-checkbox
+              binary="true"
+              [formField]="form.destinations.ovaHelper"
+              [formFieldStyle]="form.destinations.ovaHelper"
+            />
+            <label class="ml-2">Pomocka</label>
+          </div>
         </div>
+      </p-fieldset>
     </div>
-    <div class="row mt-4">
-        <div class="col-4 d-flex justify-content-end align-items-center">
-            <button class="cancel d-flex justify-content-center align-items-center p-0 text-white" (click)="onGoBack()"
-                type="button"><i class="bi bi-caret-left"></i>&nbsp;Zpět
-            </button>
-        </div>
-        <div class="col-4 d-flex justify-content-center align-items-center">
-            <button type="button" class="submit d-flex justify-content-center align-items-center p-0 text-white fw-bold"
-                (click)="onSubmit()" [disabled]="form().invalid() || isUnchanged() || usersStore.isSaving()">
-                @if (!usersStore.isSaving()) {
-                <i class="bi bi-pencil-square"></i>&nbsp;
-                {{ user()?.id === 0 ? 'Přidat' : 'Upravit' }}
-                } @else {
-                <span class="spinner-border spinner-border-sm text-white me-1" aria-hidden="true"></span>
-                {{ user()?.id === 0 ? 'Přidávám...' : 'Upravuji...' }}
-                }
-            </button>
-        </div>
-        <div class="col-4 d-flex justify-content-start align-items-center">
-            @if (user()!.id > 1) {
-            <button class="delete d-flex justify-content-center align-items-center p-0 text-white" (click)="onDelete()"
-                type="button" [disabled]="usersStore.isDeleting()">
-                @if (!usersStore.isDeleting()) {
-                <i class="bi bi-trash"></i>&nbsp;Smazat
-                } @else {
-                <span class="spinner-border spinner-border-sm text-white me-1" aria-hidden="true">
-                    Odstraňuji...
-                </span>
-                }
-            </button>
-            } @else {
-            <button class="delete d-flex justify-content-center align-items-center p-0 text-white" (click)="onReset()"
-                type="button">
-                <i class="bi bi-arrow-clockwise"></i>&nbsp;Resetovat
-            </button>
-            }
-        </div>
+  </div>
+  <div class="row mt-4">
+    <div class="col-4 offset-4 d-flex flex-row justify-content-center">
+      <p-checkbox
+        binary="true"
+        [formField]="form.isActive"
+        [formFieldStyle]="form.isActive"
+      />
+      <label class="ml-2 fw-bolder"> Aktivní </label>
     </div>
+  </div>
+  <div class="row mt-4">
+    <div class="col-4 d-flex justify-content-end align-items-center">
+      <button
+        class="cancel d-flex justify-content-center align-items-center p-0 text-white"
+        (click)="onGoBack()"
+        type="button"
+      >
+        <i class="bi bi-caret-left"></i>&nbsp;Zpět
+      </button>
+    </div>
+    <div class="col-4 d-flex justify-content-center align-items-center">
+      <button
+        type="button"
+        class="submit d-flex justify-content-center align-items-center p-0 text-white fw-bold"
+        (click)="onSubmit()"
+        [disabled]="form().invalid() || isUnchanged() || usersStore.isSaving()"
+      >
+        @if (!usersStore.isSaving()) {
+          <i class="bi bi-pencil-square"></i>&nbsp;
+          {{ user()?.id === 0 ? "Přidat" : "Upravit" }}
+        } @else {
+          <span
+            class="spinner-border spinner-border-sm text-white me-1"
+            aria-hidden="true"
+          ></span>
+          {{ user()?.id === 0 ? "Přidávám..." : "Upravuji..." }}
+        }
+      </button>
+    </div>
+    <div class="col-4 d-flex justify-content-start align-items-center">
+      @if (user()!.id > 1) {
+        <button
+          class="delete d-flex justify-content-center align-items-center p-0 text-white"
+          (click)="onDelete()"
+          type="button"
+          [disabled]="usersStore.isDeleting()"
+        >
+          @if (!usersStore.isDeleting()) {
+            <i class="bi bi-trash"></i>&nbsp;Smazat
+          } @else {
+            <span
+              class="spinner-border spinner-border-sm text-white me-1"
+              aria-hidden="true"
+            >
+              Odstraňuji...
+            </span>
+          }
+        </button>
+      } @else {
+        <button
+          class="delete d-flex justify-content-center align-items-center p-0 text-white"
+          (click)="onReset()"
+          type="button"
+        >
+          <i class="bi bi-arrow-clockwise"></i>&nbsp;Resetovat
+        </button>
+      }
+    </div>
+  </div>
 </form>
