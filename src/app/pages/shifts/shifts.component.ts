@@ -59,6 +59,7 @@ export class ShiftsComponent {
   onSelectMonth(date: Date) {
     let _monthYear = MONTHS_NUM[date.getMonth()] + date.getFullYear();
     this.shiftsStore.setMonthYear(_monthYear);
+    this.shiftsStore.closeCalendar();
   }
 
   onToggleCalendar(event: MouseEvent) {
