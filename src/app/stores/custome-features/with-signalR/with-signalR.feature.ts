@@ -18,6 +18,8 @@ import { isCurrentMonthYear } from '../../../helpers/common-functions.helper';
 import { User } from '../../../models/users.interface';
 import { ShiftCard } from '../../../models/shifts.interface';
 import { ProposalCard } from '../../../models/proposals.interface';
+import { inject } from '@angular/core';
+import { Router } from '@angular/router';
 
 export function withSignalR(): SignalStoreFeature<
   { state: {}; props: {}; methods: {} },
@@ -48,16 +50,16 @@ export function withSignalR(): SignalStoreFeature<
       ) => void;
       clearWarehouseItems: () => void;
       clearUsers: () => void;
-      sendUsers: (
-        user: string,
-        destination: string,
-        users: User[],
-        message: string,
-      ) => void;
+      // sendUsers: (
+      //   user: string,
+      //   destination: string,
+      //   users: User[],
+      //   message: string,
+      // ) => void;
       removeNotifications: (index: number) => void;
       connectAndJoin: () => void;
-      setUpdateSignalRProposalsToFalse: () => void;
-      setUpdateSignalRProposalsToTrue: () => void;
+      // setUpdateSignalRProposalsToFalse: () => void;
+      // setUpdateSignalRProposalsToTrue: () => void;
       clearSchedules: () => void;
       setUpdateShiftsToFalse: () => void;
       clearShifts: () => void;
@@ -92,6 +94,7 @@ export function withSignalR(): SignalStoreFeature<
         .build(),
     })),
     withMethods((store) => {
+      const _router = inject(Router);
       let currentUser = {
         name: '',
         destination: null as string | null,
@@ -131,8 +134,10 @@ export function withSignalR(): SignalStoreFeature<
 
       const connectAndJoin = async (): Promise<boolean> => {
         const name = currentUser.name;
+        const destination = currentUser.destination;
+        const role = currentUser.role;
 
-        if (!name) {
+        if (!name || !destination || !role) {
           return false;
         }
 
@@ -142,13 +147,15 @@ export function withSignalR(): SignalStoreFeature<
         if (
           store.connection.state === signalR.HubConnectionState.Disconnected
         ) {
+          const room =
+            role === 'Admin' ? 'pepepizza-admin' : `pepepizza-${destination}`;
           await store.connection.start();
           registerWarehouseCardsListener();
           registerWarehouseItemsListener();
           registerUsersListener();
           registerShiftsListener();
           registerProposalsListener();
-          await joinRoom(store.connection, name, 'pepepizza');
+          await joinRoom(store.connection, name, room);
           return true;
         }
         return waitForConnected();
@@ -229,8 +236,16 @@ export function withSignalR(): SignalStoreFeature<
             registerUsersListener();
             registerShiftsListener();
             registerProposalsListener();
-            if (currentUser.name) {
-              await joinRoom(store.connection, currentUser.name, 'pepepizza');
+            if (
+              currentUser.name &&
+              currentUser.destination &&
+              currentUser.role
+            ) {
+              const room =
+                currentUser.role === 'Admin'
+                  ? 'pepepizza-admin'
+                  : `pepepizza-${currentUser.destination}`;
+              await joinRoom(store.connection, currentUser.name, room);
             }
           } catch (error) {
             console.log('WAREHOUSE SIGNALR REJOIN ERROR: ', error);
@@ -306,35 +321,55 @@ export function withSignalR(): SignalStoreFeature<
 
       const registerUsersListener = () => {
         store.connection.off('SendUsers');
+        // store.connection.on(
+        //   'SendUsers',
+        //   (
+        //     user: string,
+        //     destination: string,
+        //     users: User[],
+        //     message: string,
+        //   ) => {
+        //     if (user !== currentUser.name) {
+        //       const nextNotifications = [message, ...store.notifications()];
+        //       if (
+        //         (currentUser.role === 'Master' &&
+        //           currentUser.destination === destination) ||
+        //         (currentUser.role === 'Master' && destination === 'all')
+        //       ) {
+        //         patchState(store, {
+        //           sUsers: users,
+        //           notifications: nextNotifications,
+        //           updateSignalRProposals: true,
+        //           updateShifts: true,
+        //         });
+        //       } else if (currentUser.role === 'Admin') {
+        //         patchState(store, {
+        //           sUsers: users,
+        //           notifications: nextNotifications,
+        //           updateSignalRProposals: true,
+        //           updateShifts: true,
+        //         });
+        //       }
+        //     }
+        //   },
+        // );
+
         store.connection.on(
-          'SendUsers',
-          (
-            user: string,
-            destination: string,
-            users: User[],
-            message: string,
-          ) => {
+          'SendUser',
+          (action: string, user: string, userObj: User, message: string) => {
             if (user !== currentUser.name) {
-              const nextNotifications = [message, ...store.notifications()];
-              if (
-                (currentUser.role === 'Master' &&
-                  currentUser.destination === destination) ||
-                (currentUser.role === 'Master' && destination === 'all')
-              ) {
+              if (_router.url === '/users') {
+                const nextNotifications = [message, ...store.notifications()];
                 patchState(store, {
-                  sUsers: users,
                   notifications: nextNotifications,
-                  updateSignalRProposals: true,
-                  updateShifts: true,
-                });
-              } else if (currentUser.role === 'Admin') {
-                patchState(store, {
-                  sUsers: users,
-                  notifications: nextNotifications,
-                  updateSignalRProposals: true,
-                  updateShifts: true,
                 });
               }
+              //const nextNotifications = [message, ...store.notifications()];
+              patchState(store, {
+                sUser: userObj,
+                sAction: action,
+                // notifications: nextNotifications,
+              });
             }
           },
         );
@@ -373,33 +408,76 @@ export function withSignalR(): SignalStoreFeature<
 
       const registerProposalsListener = () => {
         store.connection.off('UpdateProposals');
+        // store.connection.on(
+        //   'UpdateProposals',
+        //   (
+        //     user: string,
+        //     destination: string,
+        //     cards: ProposalCard[],
+        //     message: string,
+        //   ) => {
+        //     if (user !== currentUser.name) {
+        //       const nextNotifications = [message, ...store.notifications()];
+        //       if (
+        //         (currentUser.role === 'Master' &&
+        //           currentUser.destination === destination) ||
+        //         (currentUser.role === 'Master' && destination === 'all')
+        //       ) {
+        //         patchState(store, {
+        //           sProposals: cards,
+        //           notifications: nextNotifications,
+        //           updateSignalRProposals: true,
+        //         });
+        //       } else if (currentUser.role === 'Admin') {
+        //         patchState(store, {
+        //           sProposals: cards,
+        //           notifications: nextNotifications,
+        //           updateSignalRProposals: true,
+        //         });
+        //       }
+        //     }
+        //   },
+        // );
+
         store.connection.on(
           'UpdateProposals',
           (
             user: string,
-            destination: string,
+            // destination: string,
             cards: ProposalCard[],
             message: string,
           ) => {
+            // if (user !== currentUser.name) {
+            //   const nextNotifications = [message, ...store.notifications()];
+            //   if (
+            //     (currentUser.role === 'Master' &&
+            //       currentUser.destination === destination) ||
+            //     (currentUser.role === 'Master' && destination === 'all')
+            //   ) {
+            //     patchState(store, {
+            //       sProposals: cards,
+            //       notifications: nextNotifications,
+            //       updateSignalRProposals: true,
+            //     });
+            //   } else if (currentUser.role === 'Admin') {
+            //     patchState(store, {
+            //       sProposals: cards,
+            //       notifications: nextNotifications,
+            //       updateSignalRProposals: true,
+            //     });
+            //   }
+            // }
+
             if (user !== currentUser.name) {
-              const nextNotifications = [message, ...store.notifications()];
-              if (
-                (currentUser.role === 'Master' &&
-                  currentUser.destination === destination) ||
-                (currentUser.role === 'Master' && destination === 'all')
-              ) {
+              if (_router.url === '/plans') {
+                const nextNotifications = [message, ...store.notifications()];
                 patchState(store, {
-                  sProposals: cards,
                   notifications: nextNotifications,
-                  updateSignalRProposals: true,
-                });
-              } else if (currentUser.role === 'Admin') {
-                patchState(store, {
-                  sProposals: cards,
-                  notifications: nextNotifications,
-                  updateSignalRProposals: true,
                 });
               }
+              patchState(store, {
+                sProposals: cards,
+              });
             }
           },
         );
@@ -518,47 +596,47 @@ export function withSignalR(): SignalStoreFeature<
             console.log('WAREHOUSE SEND ITEMS ERROR: ', error);
           }
         },
-        sendUsers: async (
-          user: string,
-          destination: string,
-          users: User[],
-          message: string,
-        ) => {
-          try {
-            const isConnected = await ensureConnected();
+        // sendUsers: async (
+        //   user: string,
+        //   destination: string,
+        //   users: User[],
+        //   message: string,
+        // ) => {
+        //   try {
+        //     const isConnected = await ensureConnected();
 
-            if (!isConnected) {
-              console.log('SEND USERS ERROR: Connection is not ready.');
-              return;
-            }
-            return await store.connection.invoke(
-              'SendUsers',
-              user,
-              destination,
-              users,
-              message,
-            );
-          } catch (error) {
-            if (isConnectionClosedError(error)) {
-              const reconnected = await ensureConnected();
-              if (reconnected) {
-                try {
-                  return await store.connection.invoke(
-                    'SendUsers',
-                    user,
-                    destination,
-                    users,
-                    message,
-                  );
-                } catch (retryError) {
-                  console.log('SEND USERS RETRY ERROR: ', retryError);
-                  return;
-                }
-              }
-            }
-            console.log('SEND USERS ERROR: ', error);
-          }
-        },
+        //     if (!isConnected) {
+        //       console.log('SEND USERS ERROR: Connection is not ready.');
+        //       return;
+        //     }
+        //     return await store.connection.invoke(
+        //       'SendUsers',
+        //       user,
+        //       destination,
+        //       users,
+        //       message,
+        //     );
+        //   } catch (error) {
+        //     if (isConnectionClosedError(error)) {
+        //       const reconnected = await ensureConnected();
+        //       if (reconnected) {
+        //         try {
+        //           return await store.connection.invoke(
+        //             'SendUsers',
+        //             user,
+        //             destination,
+        //             users,
+        //             message,
+        //           );
+        //         } catch (retryError) {
+        //           console.log('SEND USERS RETRY ERROR: ', retryError);
+        //           return;
+        //         }
+        //       }
+        //     }
+        //     console.log('SEND USERS ERROR: ', error);
+        //   }
+        // },
         sendShifts: async (
           user: string,
           destination: string,
@@ -649,11 +727,11 @@ export function withSignalR(): SignalStoreFeature<
           patchState(store, removeNotifications(index));
         },
         connectAndJoin: async () => await connectAndJoin(),
-        clearUsers: () => patchState(store, { sUsers: [] }),
-        setUpdateSignalRProposalsToFalse: () =>
-          patchState(store, { updateSignalRProposals: false }),
-        setUpdateSignalRProposalsToTrue: () =>
-          patchState(store, { updateSignalRProposals: true }),
+        clearUsers: () => patchState(store, { sUser: null, sAction: null }),
+        // setUpdateSignalRProposalsToFalse: () =>
+        //   patchState(store, { updateSignalRProposals: false }),
+        // setUpdateSignalRProposalsToTrue: () =>
+        //   patchState(store, { updateSignalRProposals: true }),
         clearSchedules: () => patchState(store, { sProposals: [] }),
         setUpdateShiftsToFalse: () =>
           patchState(store, { updateShifts: false }),

@@ -11,9 +11,10 @@ export interface SignalRSlice {
   readonly wCards: WarehouseCard[] | null;
   readonly wItems: WarehouseItem[] | null;
   readonly sCard: ShiftCard | null;
-  readonly sUsers: User[] | null;
+  readonly sUser: User | null;
+  readonly sAction: string | null;
   readonly sProposals: ProposalCard[] | null;
-  readonly updateSignalRProposals: boolean;
+  //readonly updateSignalRProposals: boolean;
   readonly updateShifts: boolean;
   readonly token: string | null;
   readonly notifications: string[];
@@ -24,9 +25,10 @@ export const initialSignalRSlice: SignalRSlice = {
   wCards: null,
   wItems: null,
   sCard: null,
-  sUsers: null,
+  sUser: null,
+  sAction: null,
   sProposals: null,
-  updateSignalRProposals: false,
+  // updateSignalRProposals: false,
   updateShifts: false,
   token: null,
   notifications: [],

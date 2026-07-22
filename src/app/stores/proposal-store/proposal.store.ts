@@ -43,8 +43,8 @@ import { UpdateProposalComponent } from '../../components/proposals/update-propo
 import {
   createToaster,
   downloadPdf,
-  getMessageTime,
-  isCurrentMonthYear,
+  // getMessageTime,
+  // isCurrentMonthYear,
   setTime,
 } from '../../helpers/common-functions.helper';
 import { handleApiResponse } from '../handle-api-response.operator';
@@ -297,23 +297,23 @@ export const ProposalStore = signalStore(
       ),
     );
 
-    const silentlyUploadSchedulesShifts = rxMethod<void>((input$) =>
-      input$.pipe(
-        switchMap((_) =>
-          store._proposalService.getScheduledShifts(store.monthYear()).pipe(
-            handleApiResponse(toaster, {
-              onSuccess: (schedules: ProposalCard[]) => {
-                patchState(store, setSchedules(schedules));
-              },
-              onError: () =>
-                console.log(
-                  'Nepodařilo se načíst směny po aktualizaci přes signalR',
-                ),
-            }),
-          ),
-        ),
-      ),
-    );
+    // const silentlyUploadSchedulesShifts = rxMethod<void>((input$) =>
+    //   input$.pipe(
+    //     switchMap((_) =>
+    //       store._proposalService.getScheduledShifts(store.monthYear()).pipe(
+    //         handleApiResponse(toaster, {
+    //           onSuccess: (schedules: ProposalCard[]) => {
+    //             patchState(store, setSchedules(schedules));
+    //           },
+    //           onError: () =>
+    //             console.log(
+    //               'Nepodařilo se načíst směny po aktualizaci přes signalR',
+    //             ),
+    //         }),
+    //       ),
+    //     ),
+    //   ),
+    // );
 
     const getPdf = rxMethod<void>((input$) =>
       input$.pipe(
@@ -343,17 +343,17 @@ export const ProposalStore = signalStore(
             handleApiResponse(toaster, {
               successMessage: 'Úspěšně uloženo!',
               onSuccess: (schedules) => {
-                const loggedInUser = store._auth.user();
-                if (!loggedInUser) {
-                  return;
-                }
-                const messageToSend = `${getMessageTime()} ${loggedInUser.name}: Uložen plán směn`;
-                store._signalR.updateSignalProposals(
-                  loggedInUser.name,
-                  store.signalDestination(),
-                  schedules,
-                  messageToSend,
-                );
+                // const loggedInUser = store._auth.user();
+                // if (!loggedInUser) {
+                //   return;
+                // }
+                // const messageToSend = `${getMessageTime()} ${loggedInUser.name}: Uložen plán směn`;
+                // store._signalR.updateSignalProposals(
+                //   loggedInUser.name,
+                //   store.signalDestination(),
+                //   schedules,
+                //   messageToSend,
+                // );
                 patchState(store, setNotSaving());
                 patchState(store, setSchedules(schedules));
               },
@@ -374,17 +374,17 @@ export const ProposalStore = signalStore(
               handleApiResponse(toaster, {
                 successMessage: 'Směny byly odstraněny!',
                 onSuccess: (schedules) => {
-                  const loggedInUser = store._auth.user();
-                  if (!loggedInUser) {
-                    return;
-                  }
-                  const messageToSend = `${getMessageTime()} ${loggedInUser.name}: Směny byly odstraněny`;
-                  store._signalR.updateSignalProposals(
-                    loggedInUser.name,
-                    store.signalDestination(),
-                    schedules,
-                    messageToSend,
-                  );
+                  // const loggedInUser = store._auth.user();
+                  // if (!loggedInUser) {
+                  //   return;
+                  // }
+                  // const messageToSend = `${getMessageTime()} ${loggedInUser.name}: Směny byly odstraněny`;
+                  // store._signalR.updateSignalProposals(
+                  //   loggedInUser.name,
+                  //   store.signalDestination(),
+                  //   schedules,
+                  //   messageToSend,
+                  // );
                   patchState(store, setNotDeleting());
                   patchState(store, setSchedules(schedules));
                   patchState(store, setOriginal());
@@ -497,27 +497,27 @@ export const ProposalStore = signalStore(
         patchState(store, deleteProposal(store.oppositeCard())),
       updateProposal: (inputs: Inputs) =>
         patchState(store, updateProposal(inputs)),
-      silentlyUploadSchedulesShifts: () => silentlyUploadSchedulesShifts(),
+      // silentlyUploadSchedulesShifts: () => silentlyUploadSchedulesShifts(),
     };
   }),
   withHooks({
     onInit(store) {
-      effect(() => {
-        const update = store._signalR.updateSignalRProposals();
+      // effect(() => {
+      //   const update = store._signalR.updateSignalRProposals();
 
-        if (
-          update &&
-          store._router.url === '/plans' &&
-          isCurrentMonthYear(store.monthYear())
-        ) {
-          store.silentlyUploadSchedulesShifts();
-        }
+      //   if (
+      //     update &&
+      //     store._router.url === '/plans' &&
+      //     isCurrentMonthYear(store.monthYear())
+      //   ) {
+      //     store.silentlyUploadSchedulesShifts();
+      //   }
 
-        if (update && store._router.url === '/shifts/daily') {
-          store._shiftsStore.getSilentlyShiftsForToday();
-        }
-        store._signalR.setUpdateSignalRProposalsToFalse();
-      });
+      //   if (update && store._router.url === '/shifts/daily') {
+      //     store._shiftsStore.getSilentlyShiftsForToday();
+      //   }
+      //   store._signalR.setUpdateSignalRProposalsToFalse();
+      // });
       effect(() => {
         const received = store._signalR.sProposals();
 
@@ -527,7 +527,19 @@ export const ProposalStore = signalStore(
           store._router.url === '/plans' &&
           received[0].monthYear === store.monthYear()
         ) {
-          patchState(store, { schedules: received });
+          if (store._auth.user()?.role === 'Master') {
+            if (
+              !deepEqual(
+                store.currentCard(),
+                received.find((c) => c.destination === store.destination()),
+              )
+            ) {
+              patchState(store, { schedules: received });
+            }
+          } else {
+            patchState(store, { schedules: received });
+          }
+          //patchState(store, { schedules: received });
           store._signalR.clearSchedules();
         }
       });
