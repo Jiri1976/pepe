@@ -6,6 +6,7 @@ import {
   WarehouseCard,
   WarehouseItem,
 } from '../../../models/warehouses.interface';
+import { TodaysShifts } from '../../../models/shifts.interface';
 
 export interface SignalRSlice {
   readonly wCards: WarehouseCard[] | null;
@@ -14,8 +15,11 @@ export interface SignalRSlice {
   readonly sUser: User | null;
   readonly sAction: string | null;
   readonly sProposals: ProposalCard[] | null;
-  //readonly updateSignalRProposals: boolean;
-  readonly updateShifts: boolean;
+  readonly sProposalMessage: string | null;
+  readonly sShiftMessage: string | null;
+  readonly sTodaysMessage: string | null;
+  readonly sTodaysShifts: TodaysShifts | null;
+  readonly sTodaysDestination: string | null;
   readonly token: string | null;
   readonly notifications: string[];
   readonly pepeHUb: string;
@@ -28,8 +32,11 @@ export const initialSignalRSlice: SignalRSlice = {
   sUser: null,
   sAction: null,
   sProposals: null,
-  // updateSignalRProposals: false,
-  updateShifts: false,
+  sProposalMessage: null,
+  sShiftMessage: null,
+  sTodaysMessage: null,
+  sTodaysShifts: null,
+  sTodaysDestination: null,
   token: null,
   notifications: [],
   pepeHUb: environment.PEPE_HUB,

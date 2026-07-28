@@ -524,7 +524,7 @@ export const ProposalStore = signalStore(
         if (
           received &&
           received.length > 0 &&
-          store._router.url === '/plans' &&
+          // store._router.url === '/plans' &&
           received[0].monthYear === store.monthYear()
         ) {
           if (store._auth.user()?.role === 'Master') {
@@ -534,9 +534,15 @@ export const ProposalStore = signalStore(
                 received.find((c) => c.destination === store.destination()),
               )
             ) {
+              store._signalR.addNotifications(
+                store._signalR.sProposalMessage() ?? '',
+              );
               patchState(store, { schedules: received });
             }
           } else {
+            store._signalR.addNotifications(
+              store._signalR.sProposalMessage() ?? '',
+            );
             patchState(store, { schedules: received });
           }
           //patchState(store, { schedules: received });

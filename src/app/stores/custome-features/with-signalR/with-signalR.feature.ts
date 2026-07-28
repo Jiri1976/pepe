@@ -16,7 +16,7 @@ import {
 import { removeNotifications } from './with-signalR.updaters';
 import { isCurrentMonthYear } from '../../../helpers/common-functions.helper';
 import { User } from '../../../models/users.interface';
-import { ShiftCard } from '../../../models/shifts.interface';
+import { ShiftCard, TodaysShifts } from '../../../models/shifts.interface';
 import { ProposalCard } from '../../../models/proposals.interface';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
@@ -61,21 +61,23 @@ export function withSignalR(): SignalStoreFeature<
       // setUpdateSignalRProposalsToFalse: () => void;
       // setUpdateSignalRProposalsToTrue: () => void;
       clearSchedules: () => void;
-      setUpdateShiftsToFalse: () => void;
+      // setUpdateShiftsToFalse: () => void;
       clearShifts: () => void;
-      sendShifts: (
-        user: string,
-        destination: string,
-        card: ShiftCard,
-        message: string,
-      ) => void;
-      updateSignalProposals: (
-        user: string,
-        destination: string,
-        cards: ProposalCard[],
-        message: string,
-      ) => void;
+      // sendShifts: (
+      //   user: string,
+      //   destination: string,
+      //   card: ShiftCard,
+      //   message: string,
+      // ) => void;
+      // updateSignalProposals: (
+      //   user: string,
+      //   destination: string,
+      //   cards: ProposalCard[],
+      //   message: string,
+      // ) => void;
+      clearTodayShifts: () => void;
       clearProposals: () => void;
+      addNotifications: (message: string) => void;
     };
   }
 > {
@@ -97,8 +99,8 @@ export function withSignalR(): SignalStoreFeature<
       const _router = inject(Router);
       let currentUser = {
         name: '',
-        destination: null as string | null,
-        role: null as string | null,
+        // destination: null as string | null,
+        // role: null as string | null,
       };
       let connectPromise: Promise<boolean> | null = null;
       let reconnectHandlersRegistered = false;
@@ -106,7 +108,8 @@ export function withSignalR(): SignalStoreFeature<
       const leaveRoom = async () => {
         try {
           connectPromise = null;
-          currentUser = { name: '', destination: null, role: null };
+          // currentUser = { name: '', destination: null, role: null };
+          currentUser = { name: '' };
           return store.connection.stop();
         } catch (error) {
           console.log('WAREHOUSE LEAVE CHAT ERROR: ', error);
@@ -134,10 +137,14 @@ export function withSignalR(): SignalStoreFeature<
 
       const connectAndJoin = async (): Promise<boolean> => {
         const name = currentUser.name;
-        const destination = currentUser.destination;
-        const role = currentUser.role;
+        // const destination = currentUser.destination;
+        // const role = currentUser.role;
 
-        if (!name || !destination || !role) {
+        // if (!name || !destination || !role) {
+        //   return false;
+        // }
+
+        if (!name) {
           return false;
         }
 
@@ -147,14 +154,15 @@ export function withSignalR(): SignalStoreFeature<
         if (
           store.connection.state === signalR.HubConnectionState.Disconnected
         ) {
-          const room =
-            role === 'Admin' ? 'pepepizza-admin' : `pepepizza-${destination}`;
+          const room = 'pepepizza';
+          // role === 'Admin' ? 'pepepizza-admin' : `pepepizza-${destination}`;
           await store.connection.start();
           registerWarehouseCardsListener();
           registerWarehouseItemsListener();
           registerUsersListener();
           registerShiftsListener();
           registerProposalsListener();
+          registerTodaysShiftsListener();
           await joinRoom(store.connection, name, room);
           return true;
         }
@@ -181,23 +189,23 @@ export function withSignalR(): SignalStoreFeature<
         return waitForConnected();
       };
 
-      const forceReconnect = async (): Promise<boolean> => {
-        try {
-          if (
-            store.connection.state !== signalR.HubConnectionState.Disconnected
-          ) {
-            await store.connection.stop();
-          }
-        } catch {
-          // Ignore stop errors and continue with a clean reconnect attempt.
-        }
+      // const forceReconnect = async (): Promise<boolean> => {
+      //   try {
+      //     if (
+      //       store.connection.state !== signalR.HubConnectionState.Disconnected
+      //     ) {
+      //       await store.connection.stop();
+      //     }
+      //   } catch {
+      //     // Ignore stop errors and continue with a clean reconnect attempt.
+      //   }
 
-        try {
-          return await connectAndJoin();
-        } catch {
-          return false;
-        }
-      };
+      //   try {
+      //     return await connectAndJoin();
+      //   } catch {
+      //     return false;
+      //   }
+      // };
 
       const isConnectionClosedError = (error: unknown): boolean => {
         const msg = String(error ?? '').toLowerCase();
@@ -207,21 +215,21 @@ export function withSignalR(): SignalStoreFeature<
         );
       };
 
-      const normalizeProposalPayload = (
-        cards: ProposalCard[],
-      ): ProposalCard[] => {
-        try {
-          const json = JSON.stringify(cards);
-          const payloadBytes = new TextEncoder().encode(json).length;
+      // const normalizeProposalPayload = (
+      //   cards: ProposalCard[],
+      // ): ProposalCard[] => {
+      //   try {
+      //     const json = JSON.stringify(cards);
+      //     const payloadBytes = new TextEncoder().encode(json).length;
 
-          if (payloadBytes > 700000) {
-            return [];
-          }
-          return cards;
-        } catch {
-          return [];
-        }
-      };
+      //     if (payloadBytes > 700000) {
+      //       return [];
+      //     }
+      //     return cards;
+      //   } catch {
+      //     return [];
+      //   }
+      // };
 
       const registerReconnectHandlers = () => {
         if (reconnectHandlersRegistered) {
@@ -236,15 +244,17 @@ export function withSignalR(): SignalStoreFeature<
             registerUsersListener();
             registerShiftsListener();
             registerProposalsListener();
+            registerTodaysShiftsListener();
             if (
-              currentUser.name &&
-              currentUser.destination &&
-              currentUser.role
+              currentUser.name
+              // &&
+              // currentUser.destination &&
+              // currentUser.role
             ) {
-              const room =
-                currentUser.role === 'Admin'
-                  ? 'pepepizza-admin'
-                  : `pepepizza-${currentUser.destination}`;
+              const room = 'pepepizza';
+              // currentUser.role === 'Admin'
+              //   ? 'pepepizza-admin'
+              //   : `pepepizza-${currentUser.destination}`;
               await joinRoom(store.connection, currentUser.name, room);
             }
           } catch (error) {
@@ -264,40 +274,39 @@ export function withSignalR(): SignalStoreFeature<
             message: string,
           ) => {
             if (user !== currentUser.name) {
-              if (currentUser.role === 'Admin') {
-                const nextNotifications = [message, ...store.notifications()];
-                patchState(store, {
-                  wCards: cards,
-                  notifications: nextNotifications,
-                });
-              } else if (
-                currentUser.role === 'Master' &&
-                destination === currentUser.destination
-              ) {
-                if (
-                  cards.length > 0 &&
-                  isCurrentMonthYear(cards[0]?.monthYear)
-                ) {
-                  const nextNotifications = [message, ...store.notifications()];
-                  patchState(store, {
-                    wCards: cards,
-                    notifications: nextNotifications,
-                  });
-                }
-              }
-
-              if (currentUser.role === 'Master' && destination === 'all') {
-                if (
-                  cards.length > 0 &&
-                  isCurrentMonthYear(cards[0]?.monthYear)
-                ) {
-                  const nextNotifications = [message, ...store.notifications()];
-                  patchState(store, {
-                    wCards: cards,
-                    notifications: nextNotifications,
-                  });
-                }
-              }
+              // if (currentUser.role === 'Admin') {
+              //   const nextNotifications = [message, ...store.notifications()];
+              //   patchState(store, {
+              //     wCards: cards,
+              //     notifications: nextNotifications,
+              //   });
+              // } else if (
+              //   currentUser.role === 'Master' &&
+              //   destination === currentUser.destination
+              // ) {
+              //   if (
+              //     cards.length > 0 &&
+              //     isCurrentMonthYear(cards[0]?.monthYear)
+              //   ) {
+              //     const nextNotifications = [message, ...store.notifications()];
+              //     patchState(store, {
+              //       wCards: cards,
+              //       notifications: nextNotifications,
+              //     });
+              //   }
+              // }
+              // if (currentUser.role === 'Master' && destination === 'all') {
+              //   if (
+              //     cards.length > 0 &&
+              //     isCurrentMonthYear(cards[0]?.monthYear)
+              //   ) {
+              //     const nextNotifications = [message, ...store.notifications()];
+              //     patchState(store, {
+              //       wCards: cards,
+              //       notifications: nextNotifications,
+              //     });
+              //   }
+              // }
             }
           },
         );
@@ -362,14 +371,10 @@ export function withSignalR(): SignalStoreFeature<
                 const nextNotifications = [message, ...store.notifications()];
                 patchState(store, {
                   notifications: nextNotifications,
+                  sUser: userObj,
+                  sAction: action,
                 });
               }
-              //const nextNotifications = [message, ...store.notifications()];
-              patchState(store, {
-                sUser: userObj,
-                sAction: action,
-                // notifications: nextNotifications,
-              });
             }
           },
         );
@@ -377,28 +382,86 @@ export function withSignalR(): SignalStoreFeature<
 
       const registerShiftsListener = () => {
         store.connection.off('SendShifts');
+        // store.connection.on(
+        //   'SendShifts',
+        //   (
+        //     user: string,
+        //     destination: string,
+        //     card: ShiftCard,
+        //     message: string,
+        //   ) => {
+        //     if (user !== currentUser.name) {
+        //       const nextNotifications = [message, ...store.notifications()];
+        //       if (
+        //         currentUser.role === 'Master' &&
+        //         currentUser.destination === destination
+        //       ) {
+        //         patchState(store, {
+        //           sCard: card,
+        //           notifications: nextNotifications,
+        //         });
+        //       } else if (currentUser.role === 'Admin') {
+        //         patchState(store, {
+        //           sCard: card,
+        //           notifications: nextNotifications,
+        //         });
+        //       }
+        //     }
+        //   },
+        // );
+
         store.connection.on(
           'SendShifts',
           (
             user: string,
-            destination: string,
+            // destination: string,
             card: ShiftCard,
             message: string,
           ) => {
             if (user !== currentUser.name) {
-              const nextNotifications = [message, ...store.notifications()];
-              if (
-                currentUser.role === 'Master' &&
-                currentUser.destination === destination
-              ) {
+              if (_router.url === '/shifts') {
                 patchState(store, {
                   sCard: card,
-                  notifications: nextNotifications,
+                  sShiftMessage: message,
                 });
-              } else if (currentUser.role === 'Admin') {
+              }
+
+              // const nextNotifications = [message, ...store.notifications()];
+              // if (
+              //   currentUser.role === 'Master'
+              //   // currentUser.destination === destination
+              // ) {
+              //   patchState(store, {
+              //     sCard: card,
+              //     notifications: nextNotifications,
+              //   });
+              // } else if (currentUser.role === 'Admin') {
+              //   patchState(store, {
+              //     sCard: card,
+              //     notifications: nextNotifications,
+              //   });
+              // }
+            }
+          },
+        );
+      };
+
+      const registerTodaysShiftsListener = () => {
+        store.connection.off('SendTodaysShifts');
+        store.connection.on(
+          'SendTodaysShifts',
+          (
+            user: string,
+            sTodaysShifts: TodaysShifts,
+            sTodaysMessage: string,
+            sTodaysDestination: string,
+          ) => {
+            if (user !== currentUser.name) {
+              if (_router.url === '/shifts/daily') {
                 patchState(store, {
-                  sCard: card,
-                  notifications: nextNotifications,
+                  sTodaysShifts: sTodaysShifts,
+                  sTodaysMessage: sTodaysMessage,
+                  sTodaysDestination: sTodaysDestination,
                 });
               }
             }
@@ -470,34 +533,47 @@ export function withSignalR(): SignalStoreFeature<
 
             if (user !== currentUser.name) {
               if (_router.url === '/plans') {
-                const nextNotifications = [message, ...store.notifications()];
+                // const nextNotifications = [message, ...store.notifications()];
+                // patchState(store, {
+                //   notifications: nextNotifications,
+                // });
                 patchState(store, {
-                  notifications: nextNotifications,
+                  sProposals: cards,
+                  sProposalMessage: message,
                 });
               }
-              patchState(store, {
-                sProposals: cards,
-              });
+              // patchState(store, {
+              //   sProposals: cards,
+              //   sProposalMessage: message,
+              // });
             }
           },
         );
+      };
+
+      const addNotifications = (message: string) => {
+        const nextNotifications = [message, ...store.notifications()];
+        patchState(store, {
+          notifications: nextNotifications,
+        });
       };
 
       return {
         setToken: (token: string) => patchState(store, { token }),
         setSignalRUser: (user: {
           name: string;
-          destination?: string | null;
-          role?: string | null;
+          // destination?: string | null;
+          // role?: string | null;
         }) => {
           currentUser = {
             name: user.name,
-            destination: user.destination ?? null,
-            role: user.role ?? null,
+            // destination: user.destination ?? null,
+            // role: user.role ?? null,
           };
         },
         clearSignalRUser: () => {
-          currentUser = { name: '', destination: null, role: null };
+          // currentUser = { name: '', destination: null, role: null };
+          currentUser = { name: '' };
         },
         leaveRoom: async () => await leaveRoom(),
         start: async () => {
@@ -637,90 +713,90 @@ export function withSignalR(): SignalStoreFeature<
         //     console.log('SEND USERS ERROR: ', error);
         //   }
         // },
-        sendShifts: async (
-          user: string,
-          destination: string,
-          card: ShiftCard,
-          message: string,
-        ) => {
-          try {
-            const isConnected = await ensureConnected();
+        // sendShifts: async (
+        //   user: string,
+        //   destination: string,
+        //   card: ShiftCard,
+        //   message: string,
+        // ) => {
+        //   try {
+        //     const isConnected = await ensureConnected();
 
-            if (!isConnected) {
-              console.log('SEND SHIFTS ERROR: Connection is not ready.');
-              return;
-            }
-            return await store.connection.invoke(
-              'SendShifts',
-              user,
-              destination,
-              card,
-              message,
-            );
-          } catch (error) {
-            if (isConnectionClosedError(error)) {
-              const reconnected = await ensureConnected();
-              if (reconnected) {
-                try {
-                  return await store.connection.invoke(
-                    'SendShifts',
-                    user,
-                    destination,
-                    card,
-                    message,
-                  );
-                } catch (retryError) {
-                  console.log('SEND SHIFTS RETRY ERROR: ', retryError);
-                  return;
-                }
-              }
-            }
-            console.log('SEND SHIFTS ERROR: ', error);
-          }
-        },
-        updateSignalProposals: async (
-          user: string,
-          destination: string,
-          cards: ProposalCard[],
-          message: string,
-        ) => {
-          const signalPayload = normalizeProposalPayload(cards);
+        //     if (!isConnected) {
+        //       console.log('SEND SHIFTS ERROR: Connection is not ready.');
+        //       return;
+        //     }
+        //     return await store.connection.invoke(
+        //       'SendShifts',
+        //       user,
+        //       destination,
+        //       card,
+        //       message,
+        //     );
+        //   } catch (error) {
+        //     if (isConnectionClosedError(error)) {
+        //       const reconnected = await ensureConnected();
+        //       if (reconnected) {
+        //         try {
+        //           return await store.connection.invoke(
+        //             'SendShifts',
+        //             user,
+        //             destination,
+        //             card,
+        //             message,
+        //           );
+        //         } catch (retryError) {
+        //           console.log('SEND SHIFTS RETRY ERROR: ', retryError);
+        //           return;
+        //         }
+        //       }
+        //     }
+        //     console.log('SEND SHIFTS ERROR: ', error);
+        //   }
+        // },
+        // updateSignalProposals: async (
+        //   user: string,
+        //   destination: string,
+        //   cards: ProposalCard[],
+        //   message: string,
+        // ) => {
+        //   const signalPayload = normalizeProposalPayload(cards);
 
-          try {
-            const isConnected = await ensureConnected();
+        //   try {
+        //     const isConnected = await ensureConnected();
 
-            if (!isConnected) {
-              console.log('SEND PROPOSALS ERROR: Connection is not ready.');
-              return;
-            }
-            return await store.connection.invoke(
-              'UpdateProposals',
-              user,
-              destination,
-              signalPayload,
-              message,
-            );
-          } catch (error) {
-            if (isConnectionClosedError(error)) {
-              const reconnected = await forceReconnect();
-              if (reconnected) {
-                try {
-                  return await store.connection.invoke(
-                    'UpdateProposals',
-                    user,
-                    destination,
-                    signalPayload,
-                    message,
-                  );
-                } catch (retryError) {
-                  console.log('SEND PROPOSALS RETRY ERROR: ', retryError);
-                  return;
-                }
-              }
-            }
-            console.log('SEND PROPOSALS ERROR: ', error);
-          }
-        },
+        //     if (!isConnected) {
+        //       console.log('SEND PROPOSALS ERROR: Connection is not ready.');
+        //       return;
+        //     }
+        //     return await store.connection.invoke(
+        //       'UpdateProposals',
+        //       user,
+        //       destination,
+        //       signalPayload,
+        //       message,
+        //     );
+        //   } catch (error) {
+        //     if (isConnectionClosedError(error)) {
+        //       const reconnected = await forceReconnect();
+        //       if (reconnected) {
+        //         try {
+        //           return await store.connection.invoke(
+        //             'UpdateProposals',
+        //             user,
+        //             destination,
+        //             signalPayload,
+        //             message,
+        //           );
+        //         } catch (retryError) {
+        //           console.log('SEND PROPOSALS RETRY ERROR: ', retryError);
+        //           return;
+        //         }
+        //       }
+        //     }
+        //     console.log('SEND PROPOSALS ERROR: ', error);
+        //   }
+        // },
         clearWarehouseCards: () => patchState(store, { wCards: [] }),
         clearWarehouseItems: () => patchState(store, { wItems: [] }),
         removeNotifications: (index: number) => {
@@ -732,11 +808,20 @@ export function withSignalR(): SignalStoreFeature<
         //   patchState(store, { updateSignalRProposals: false }),
         // setUpdateSignalRProposalsToTrue: () =>
         //   patchState(store, { updateSignalRProposals: true }),
-        clearSchedules: () => patchState(store, { sProposals: [] }),
-        setUpdateShiftsToFalse: () =>
-          patchState(store, { updateShifts: false }),
-        clearShifts: () => patchState(store, { sCard: null }),
+        clearSchedules: () =>
+          patchState(store, { sProposals: [], sProposalMessage: null }),
+        // setUpdateShiftsToFalse: () =>
+        //   patchState(store, { updateShifts: false }),
+        clearShifts: () =>
+          patchState(store, { sCard: null, sShiftMessage: null }),
         clearProposals: () => patchState(store, { sProposals: null }),
+        addNotifications: (message: string) => addNotifications(message),
+        clearTodayShifts: () =>
+          patchState(store, {
+            sTodaysShifts: null,
+            sTodaysMessage: null,
+            sTodaysDestination: null,
+          }),
       };
     }),
   );

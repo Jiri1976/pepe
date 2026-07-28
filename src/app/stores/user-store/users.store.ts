@@ -274,26 +274,24 @@ export const UsersStore = signalStore(
       effect(() => {
         const received = store.signalR.sUser();
         if (received) {
-          if (store._router.url === '/users') {
-            if (store.signalR.sAction() === 'update') {
-              patchState(
-                store,
-                setUsers(onUpdateUser(received, [...store.users()])),
-              );
-            }
-            if (store.signalR.sAction() === 'delete') {
-              patchState(
-                store,
-                setUsers(onRemoveUser(received.id, store.users())),
-              );
-            }
-            if (store.signalR.sAction() === 'create') {
-              const users = [...store.users(), received];
-              patchState(store, setUsers(users));
-            }
+          if (store.signalR.sAction() === 'update') {
+            patchState(
+              store,
+              setUsers(onUpdateUser(received, [...store.users()])),
+            );
           }
-          store.signalR.clearUsers();
+          if (store.signalR.sAction() === 'delete') {
+            patchState(
+              store,
+              setUsers(onRemoveUser(received.id, store.users())),
+            );
+          }
+          if (store.signalR.sAction() === 'create') {
+            const users = [...store.users(), received];
+            patchState(store, setUsers(users));
+          }
         }
+        store.signalR.clearUsers();
       });
     },
   }),
