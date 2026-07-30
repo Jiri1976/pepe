@@ -42,9 +42,7 @@ import {
   convertMonthYear,
   createToaster,
   downloadPdf,
-  getMessageTime,
   initializeMonthYear,
-  isCurrentMonthYear,
   setTime,
 } from '../../helpers/common-functions.helper';
 import { CONFIRM_ACTIONS } from '../custome-features/withConfirmation/confirmation.actions';
@@ -128,7 +126,11 @@ export const ShiftsStore = signalStore(
 
       const pos = store.selectedCardPosition();
       if (pos) {
-        return group.cards.find((c) => c.userPosition === pos) ?? null;
+        return (
+          group.cards.find((c) => c.userPosition === pos) ??
+          group.cards[0] ??
+          null
+        );
       }
       return group.cards[0] ?? null;
     });
@@ -155,9 +157,10 @@ export const ShiftsStore = signalStore(
       };
     });
 
-    const currentPositions = computed(
-      () => currentGroup()?.cards.map((c) => c.userPosition) ?? [],
-    );
+    const currentPositions = computed(() => {
+      const positions = currentGroup()?.cards.map((c) => c.userPosition) ?? [];
+      return [...new Set(positions)];
+    });
     const currentTotalHours = computed(() => {
       let total = null;
       let hours = 0;
@@ -304,36 +307,6 @@ export const ShiftsStore = signalStore(
       ),
     );
 
-    // const silentlyUploadShifts = rxMethod<void>((input$) =>
-    //   input$.pipe(
-    //     switchMap((_) => {
-    //       return store._shiftService
-    //         .getUsersShiftCards(store.monthYear(), store.destination())
-    //         .pipe(
-    //           handleApiResponse(toaster, {
-    //             onSuccess: (cards) => {
-    //               if (cards.length > 0) {
-    //                 patchState(store, {
-    //                   cards,
-    //                   sliceIndex: 0,
-    //                   selectedCardPosition: cards[0].userPosition,
-    //                 });
-    //               } else {
-    //                 patchState(store, {
-    //                   cards: [],
-    //                   sliceIndex: 0,
-    //                   selectedCardPosition: '',
-    //                 });
-    //               }
-    //             },
-    //             onError: () =>
-    //               console.log('Nešlo načíst směny pro signalR aktualizaci'),
-    //           }),
-    //         );
-    //     }),
-    //   ),
-    // );
-
     const onAllToPdf = rxMethod<void>((input$) =>
       input$.pipe(
         tap((_) => patchState(store, toggleIsPdfLoading())),
@@ -389,17 +362,6 @@ export const ShiftsStore = signalStore(
               successMessage: 'Karta byla smazána!',
               onSuccess: (card) => {
                 patchState(store, toggleIsDeleting());
-                // const loggedInUser = store._auth.user();
-                // if (!loggedInUser) {
-                //   return;
-                // }
-                // const messageToSend = `${getMessageTime()} ${loggedInUser.name}: Karta směn smazána - ${card.userName} ${card.userSurname} - ${convertMonthYear(card.monthYear)} - ${card.destination}`;
-                // store._signalR.sendShifts(
-                //   loggedInUser.name,
-                //   card.destination,
-                //   card,
-                //   messageToSend,
-                // );
                 patchState(
                   store,
                   updateParticularCard(store.currentCard()!.id, card),
@@ -422,17 +384,6 @@ export const ShiftsStore = signalStore(
               onSuccess: (card) => {
                 patchState(store, toggleIsSaving());
                 patchState(store, updateCard(card));
-                // const loggedInUser = store._auth.user();
-                // if (!loggedInUser) {
-                //   return;
-                // }
-                // const messageToSend = `${getMessageTime()} ${loggedInUser.name}: Karta směn aktualizována - ${card.userName} ${card.userSurname} - ${convertMonthYear(card.monthYear)} - ${card.destination}`;
-                // store._signalR.sendShifts(
-                //   loggedInUser.name,
-                //   card.destination,
-                //   card,
-                //   messageToSend,
-                // );
                 store._dialog.closeAll();
               },
               onError: () => patchState(store, toggleIsSaving()),
@@ -462,17 +413,6 @@ export const ShiftsStore = signalStore(
                   });
                   patchState(store, { concurrentErrors: errors });
                 }
-                // const loggedInUser = store._auth.user();
-                // if (!loggedInUser) {
-                //   return;
-                // }
-                // const messageToSend = `${getMessageTime()} ${loggedInUser.name}: Karta směn aktualizována - ${result.shiftCard.userName} ${result.shiftCard.userSurname} - ${convertMonthYear(result.shiftCard.monthYear)} - ${result.shiftCard.destination}`;
-                // store._signalR.sendShifts(
-                //   loggedInUser.name,
-                //   result.shiftCard.destination,
-                //   result.shiftCard,
-                //   messageToSend,
-                // );
               },
               onError: () => patchState(store, toggleIsSaving()),
             }),
@@ -491,17 +431,6 @@ export const ShiftsStore = signalStore(
               onSuccess: (card) => {
                 patchState(store, toggleIsDeleting());
                 patchState(store, updateCard(card));
-                // const loggedInUser = store._auth.user();
-                // if (!loggedInUser) {
-                //   return;
-                // }
-                // const messageToSend = `${getMessageTime()} ${loggedInUser.name}: Karta směn aktualizována - ${card.userName} ${card.userSurname} - ${convertMonthYear(card.monthYear)} - ${card.destination}`;
-                // store._signalR.sendShifts(
-                //   loggedInUser.name,
-                //   card.destination,
-                //   card,
-                //   messageToSend,
-                // );
                 store._dialog.closeAll();
               },
               onError: () => patchState(store, toggleIsDeleting()),
@@ -536,31 +465,6 @@ export const ShiftsStore = signalStore(
       ),
     );
 
-    // const getSilentlyShiftsForToday = rxMethod<void>((input$) =>
-    //   input$.pipe(
-    //     switchMap((_) =>
-    //       store._shiftService.getShiftsForToday(store.destination()).pipe(
-    //         handleApiResponse(toaster, {
-    //           onSuccess: (todaysShifts) => {
-    //             todaysShifts.shifts = sortShifts(todaysShifts.shifts);
-    //             patchState(store, { todaysShifts });
-    //             if (todaysShifts.shifts.length > 0) {
-    //               let errors: string[] = [];
-    //               todaysShifts.shifts.forEach((shift: any) => {
-    //                 errors.push('');
-    //               });
-    //               patchState(store, { concurrentErrors: errors });
-    //             }
-    //           },
-    //           onError: () => {
-    //             console.log('Nešlo načíst dnešní směny');
-    //           },
-    //         }),
-    //       ),
-    //     ),
-    //   ),
-    // );
-
     const deleteDailyShift = rxMethod<Shift>((input$) =>
       input$.pipe(
         tap((_) => patchState(store, toggleIsDeleting())),
@@ -581,29 +485,6 @@ export const ShiftsStore = signalStore(
                   });
                   patchState(store, { concurrentErrors: errors });
                 }
-
-                // const loggedInUser = store._auth.user();
-                // if (!loggedInUser) {
-                //   return;
-                // }
-
-                // if (shift.id === 0) {
-                //   // const messageToSend = `${getMessageTime()} ${loggedInUser.name}: Plán směn upraven`;
-                //   // store._signalR.updateSignalProposals(
-                //   //   loggedInUser.name,
-                //   //   shift.destination,
-                //   //   result.proposalCardsDTO,
-                //   //   messageToSend,
-                //   // );
-                // } else {
-                //   const messageToSend = `${getMessageTime()} ${loggedInUser.name}: Karta směn aktualizována - ${result.shiftCard.userName} ${result.shiftCard.userSurname} - ${convertMonthYear(result.shiftCard.monthYear)} - ${result.shiftCard.destination}`;
-                //   store._signalR.sendShifts(
-                //     loggedInUser.name,
-                //     result.shiftCard.destination,
-                //     result.shiftCard,
-                //     messageToSend,
-                //   );
-                // }
               },
               onError: () => patchState(store, toggleIsDeleting()),
             }),
@@ -733,9 +614,7 @@ export const ShiftsStore = signalStore(
       },
       setDefaultMonthYear: () =>
         patchState(store, { monthYear: initializeMonthYear() }),
-      // silentlyUploadShifts: () => silentlyUploadShifts(),
       getShiftsForToday: () => getShiftsForToday(),
-      // getSilentlyShiftsForToday: () => getSilentlyShiftsForToday(),
       addNewDailyShift: () => patchState(store, addNewDailyShift()),
       removeUnsavedTodaysShifts: (index: number) =>
         patchState(store, removeUnsavedTodaysShifts(index)),
@@ -761,53 +640,34 @@ export const ShiftsStore = signalStore(
         const todaysDestination = store._signalR.sTodaysDestination();
 
         if (todaysShifts && todaysDestination === store.destination()) {
-          store._signalR.addNotifications(
-            store._signalR.sTodaysMessage() ?? '',
-          );
+          const msg = store._signalR.sTodaysMessage();
+          if (msg) {
+            store._signalR.addNotifications(msg);
+          }
           patchState(store, { todaysShifts });
+          store._signalR.clearTodayShifts();
         }
-
-        store._signalR.clearTodayShifts();
       });
       effect(() => {
-        const received = store._signalR.sCard();
+        const received = store._signalR.sCards();
 
-        if (received && cardIsInStore(store.cards(), received!)) {
-          store._signalR.addNotifications(store._signalR.sShiftMessage() ?? '');
-          patchState(store, updateParticularCard(received.id, received));
+        if (received && received.length > 0) {
+          let isInStore = false;
+          received.forEach((card) => {
+            if (cardIsInStore(store.cards(), card)) {
+              isInStore = true;
+              patchState(store, updateParticularCard(card.id, card));
+            }
+          });
+
+          if (isInStore) {
+            const msg = store._signalR.sTodaysMessage();
+            if (msg) {
+              store._signalR.addNotifications(msg);
+            }
+          }
+          store._signalR.clearShifts();
         }
-
-        store._signalR.clearShifts();
-
-        // if (
-        //   received &&
-        //   store._auth.user()?.role === 'Admin' &&
-        //   //store._router.url === '/shifts' &&
-        //   received.monthYear === store.monthYear()
-        // ) {
-        //   patchState(store, updateParticularCard(received.id, received));
-        //   store._signalR.clearShifts();
-        // }
-
-        // if (
-        //   received &&
-        //   store._auth.user()?.role === 'Master' &&
-        //   store._auth.user()?.destination === received.destination &&
-        //   store._router.url === '/shifts' &&
-        //   received.monthYear === store.monthYear()
-        // ) {
-        //   patchState(store, updateParticularCard(received.id, received));
-        //   store._signalR.clearShifts();
-        // }
-
-        // if (
-        //   received &&
-        //   store._router.url === '/shifts/daily' &&
-        //   isCurrentMonthYear(received.monthYear) &&
-        //   received.destination === store.destination()
-        // ) {
-        //   store.getSilentlyShiftsForToday();
-        // }
       });
     },
   }),

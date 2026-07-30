@@ -43,8 +43,6 @@ import { UpdateProposalComponent } from '../../components/proposals/update-propo
 import {
   createToaster,
   downloadPdf,
-  // getMessageTime,
-  // isCurrentMonthYear,
   setTime,
 } from '../../helpers/common-functions.helper';
 import { handleApiResponse } from '../handle-api-response.operator';
@@ -297,24 +295,6 @@ export const ProposalStore = signalStore(
       ),
     );
 
-    // const silentlyUploadSchedulesShifts = rxMethod<void>((input$) =>
-    //   input$.pipe(
-    //     switchMap((_) =>
-    //       store._proposalService.getScheduledShifts(store.monthYear()).pipe(
-    //         handleApiResponse(toaster, {
-    //           onSuccess: (schedules: ProposalCard[]) => {
-    //             patchState(store, setSchedules(schedules));
-    //           },
-    //           onError: () =>
-    //             console.log(
-    //               'Nepodařilo se načíst směny po aktualizaci přes signalR',
-    //             ),
-    //         }),
-    //       ),
-    //     ),
-    //   ),
-    // );
-
     const getPdf = rxMethod<void>((input$) =>
       input$.pipe(
         tap((_) => patchState(store, toggleIsPdfLoading())),
@@ -343,17 +323,6 @@ export const ProposalStore = signalStore(
             handleApiResponse(toaster, {
               successMessage: 'Úspěšně uloženo!',
               onSuccess: (schedules) => {
-                // const loggedInUser = store._auth.user();
-                // if (!loggedInUser) {
-                //   return;
-                // }
-                // const messageToSend = `${getMessageTime()} ${loggedInUser.name}: Uložen plán směn`;
-                // store._signalR.updateSignalProposals(
-                //   loggedInUser.name,
-                //   store.signalDestination(),
-                //   schedules,
-                //   messageToSend,
-                // );
                 patchState(store, setNotSaving());
                 patchState(store, setSchedules(schedules));
               },
@@ -374,17 +343,6 @@ export const ProposalStore = signalStore(
               handleApiResponse(toaster, {
                 successMessage: 'Směny byly odstraněny!',
                 onSuccess: (schedules) => {
-                  // const loggedInUser = store._auth.user();
-                  // if (!loggedInUser) {
-                  //   return;
-                  // }
-                  // const messageToSend = `${getMessageTime()} ${loggedInUser.name}: Směny byly odstraněny`;
-                  // store._signalR.updateSignalProposals(
-                  //   loggedInUser.name,
-                  //   store.signalDestination(),
-                  //   schedules,
-                  //   messageToSend,
-                  // );
                   patchState(store, setNotDeleting());
                   patchState(store, setSchedules(schedules));
                   patchState(store, setOriginal());
@@ -497,34 +455,16 @@ export const ProposalStore = signalStore(
         patchState(store, deleteProposal(store.oppositeCard())),
       updateProposal: (inputs: Inputs) =>
         patchState(store, updateProposal(inputs)),
-      // silentlyUploadSchedulesShifts: () => silentlyUploadSchedulesShifts(),
     };
   }),
   withHooks({
     onInit(store) {
-      // effect(() => {
-      //   const update = store._signalR.updateSignalRProposals();
-
-      //   if (
-      //     update &&
-      //     store._router.url === '/plans' &&
-      //     isCurrentMonthYear(store.monthYear())
-      //   ) {
-      //     store.silentlyUploadSchedulesShifts();
-      //   }
-
-      //   if (update && store._router.url === '/shifts/daily') {
-      //     store._shiftsStore.getSilentlyShiftsForToday();
-      //   }
-      //   store._signalR.setUpdateSignalRProposalsToFalse();
-      // });
       effect(() => {
         const received = store._signalR.sProposals();
 
         if (
           received &&
           received.length > 0 &&
-          // store._router.url === '/plans' &&
           received[0].monthYear === store.monthYear()
         ) {
           if (store._auth.user()?.role === 'Master') {
@@ -537,15 +477,14 @@ export const ProposalStore = signalStore(
               store._signalR.addNotifications(
                 store._signalR.sProposalMessage() ?? '',
               );
-              patchState(store, { schedules: received });
+              patchState(store, setSchedules(received));
             }
           } else {
             store._signalR.addNotifications(
               store._signalR.sProposalMessage() ?? '',
             );
-            patchState(store, { schedules: received });
+            patchState(store, setSchedules(received));
           }
-          //patchState(store, { schedules: received });
           store._signalR.clearSchedules();
         }
       });

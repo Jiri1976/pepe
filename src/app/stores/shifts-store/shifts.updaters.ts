@@ -28,13 +28,16 @@ export function updateParticularCard(
   cardId: number,
   newCard: ShiftCard,
 ): PartialStateUpdater<ShiftsSlice> {
+  const hasMonthYear = !!newCard.monthYear;
+  const hasDestination = !!newCard.destination;
+
   return (state) => ({
     cards: state.cards.map((card) =>
-      card.id === cardId ||
+      (cardId > 0 && card.id === cardId) ||
       (card.userId === newCard.userId &&
         card.userPosition === newCard.userPosition &&
-        card.monthYear === newCard.monthYear &&
-        card.destination === newCard.destination)
+        (!hasMonthYear || card.monthYear === newCard.monthYear) &&
+        (!hasDestination || card.destination === newCard.destination))
         ? {
             ...newCard,
             monthYear: newCard.monthYear || card.monthYear,

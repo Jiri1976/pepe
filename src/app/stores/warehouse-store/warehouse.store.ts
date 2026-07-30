@@ -13,7 +13,6 @@ import { withLoading } from '../custome-features/withLoading/with-loading.featur
 import {
   toggleIsSaving,
   setIsLoading,
-  toggleCalendar,
   toggleIsPdfLoading,
   toggleIsDeleting,
   toggleIsLoading,
@@ -32,9 +31,7 @@ import { WarehouseItemForm } from './warehouse.helpers';
 import {
   createToaster,
   downloadPdf,
-  getMessageTime,
 } from '../../helpers/common-functions.helper';
-// import { withApiMethods } from "../custome-features/withApiMethods/with-api-methods.feature";
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { tap, switchMap, finalize } from 'rxjs';
 import { handleApiResponse } from '../handle-api-response.operator';
@@ -59,7 +56,6 @@ export const WarehouseStore = signalStore(
   withState(initialWarehouseSlice),
   withLoading(),
   withToaster(),
-  // withApiMethods(),
   withCalendar(),
   withProps((_) => {
     const _router = inject(Router);
@@ -189,37 +185,10 @@ export const WarehouseStore = signalStore(
                 patchState(store, {
                   cards,
                   sliceIndex: 0,
-                  // ...closeCalendar()
                 });
                 patchState(store, setNotLoading());
               },
               onError: () => patchState(store, setNotLoading()),
-            }),
-          );
-        }),
-      ),
-    );
-
-    const getWarehouseCardsSilently = rxMethod<void>((input$) =>
-      input$.pipe(
-        switchMap((_) => {
-          const dest = store.destination();
-          const month = store.monthYear();
-
-          if (!dest || !month) {
-            return [];
-          }
-
-          return store._warehouseService.getWarehouseCards(month, dest).pipe(
-            handleApiResponse(toaster, {
-              onSuccess: (cards: WarehouseCard[]) => {
-                patchState(store, {
-                  cards,
-                  sliceIndex: 0,
-                  // ...closeCalendar()
-                });
-              },
-              onError: () => console.log('Chyba při načítaní skladových karet'),
             }),
           );
         }),
@@ -240,19 +209,6 @@ export const WarehouseStore = signalStore(
                 patchState(store, updateCards(card));
                 patchState(store, { selectedUnit: null });
                 patchState(store, toggleIsSaving());
-                const user = store.auth.user();
-                if (!user) {
-                  return;
-                }
-                const messageToSend = message
-                  ? `${getMessageTime()} ${user.name}: ${message}`
-                  : `${getMessageTime()} ${user.name}: aktualizován sklad!`;
-                store.signalR.sendWarehouseCards(
-                  user.name,
-                  store.destination(),
-                  [card],
-                  messageToSend,
-                );
               },
 
               onError: () => patchState(store, toggleIsSaving()),
@@ -273,17 +229,6 @@ export const WarehouseStore = signalStore(
                 successMessage: 'Karty byly smazány!',
                 onSuccess: (cards) => {
                   patchState(store, { cards: cards });
-                  const user = store.auth.user();
-                  if (!user) {
-                    return;
-                  }
-                  const messageToSend = `${getMessageTime()} ${user.name}: smazány skladové karty za ${store.cards()[0].monthYearName.toLowerCase()}`;
-                  store.signalR.sendWarehouseCards(
-                    user.name,
-                    'all',
-                    cards,
-                    messageToSend,
-                  );
                 },
               }),
               finalize(() => {
@@ -306,17 +251,6 @@ export const WarehouseStore = signalStore(
                 successMessage: 'Karta byla smazána!',
                 onSuccess: (cards) => {
                   patchState(store, { cards: cards });
-                  const user = store.auth.user();
-                  if (!user) {
-                    return;
-                  }
-                  const messageToSend = `${getMessageTime()} ${user.name}: smazána skladová karta ${store.selectedCard()?.warehouseItemName} ${store.selectedCard()?.monthYearName}`;
-                  store.signalR.sendWarehouseCards(
-                    user.name,
-                    store.selectedCard()!.destination,
-                    cards,
-                    messageToSend,
-                  );
                 },
               }),
               finalize(() => {
@@ -355,16 +289,6 @@ export const WarehouseStore = signalStore(
               onSuccess: (items) => {
                 patchState(store, { warehouseItems: items });
                 patchState(store, toggleIsLoading());
-                const user = store.auth.user();
-                if (!user) {
-                  return;
-                }
-                const messageToSend = `${getMessageTime()} ${user.name}: Skladová položka ${warehouseItem.name} byla smazána`;
-                store.signalR.sendWarehouseItems(
-                  user.name,
-                  items,
-                  messageToSend,
-                );
               },
               onError: () => patchState(store, toggleIsLoading()),
             }),
@@ -403,16 +327,6 @@ export const WarehouseStore = signalStore(
               onSuccess: (items) => {
                 patchState(store, { warehouseItems: items });
                 patchState(store, toggleIsSaving());
-                const user = store.auth.user();
-                if (!user) {
-                  return;
-                }
-                const messageToSend = `${getMessageTime()} ${user.name}: Skladová položka ${item.name} byla vytvořena`;
-                store.signalR.sendWarehouseItems(
-                  user.name,
-                  items,
-                  messageToSend,
-                );
               },
               onError: () => patchState(store, toggleIsSaving()),
             }),
@@ -434,16 +348,6 @@ export const WarehouseStore = signalStore(
               onSuccess: (items) => {
                 patchState(store, { warehouseItems: items });
                 patchState(store, toggleIsSaving());
-                const user = store.auth.user();
-                if (!user) {
-                  return;
-                }
-                const messageToSend = `${getMessageTime()} ${user.name}: Skladová položka ${oldName} byla upravena na ${newItem.name}`;
-                store.signalR.sendWarehouseItems(
-                  user.name,
-                  items,
-                  messageToSend,
-                );
               },
               onError: () => patchState(store, toggleIsSaving()),
             }),
@@ -461,16 +365,6 @@ export const WarehouseStore = signalStore(
               successMessage: 'Pořadí položek bylo změněno.',
               onSuccess: (items) => {
                 patchState(store, { warehouseItems: items });
-                const user = store.auth.user();
-                if (!user) {
-                  return;
-                }
-                const messageToSend = `${getMessageTime()} ${user.name}: Změněno pořadí skladových položek`;
-                store.signalR.sendWarehouseItems(
-                  user.name,
-                  items,
-                  messageToSend,
-                );
                 patchState(store, toggleIsLoading());
               },
               onError: () => patchState(store, toggleIsLoading()),
@@ -556,11 +450,7 @@ export const WarehouseStore = signalStore(
           MONTHS_NUM[new Date().getMonth()] + new Date().getFullYear(),
         ),
       getWarehouseCards: () => getWarehouseCards(),
-      getWarehouseCardsSilently: () => getWarehouseCardsSilently(),
       setSlideIndex: (sliceIndex: number) => patchState(store, { sliceIndex }),
-
-      //   toggleCalendar: () => patchState(store, toggleCalendar()),
-      // closeCalendar: () => patchState(store, closeCalendar()),
       setWarehouseNave: (warehouseNav: 'units' | 'board' | 'items') =>
         patchState(store, { warehouseNav }),
       slideTo,
@@ -604,32 +494,27 @@ export const WarehouseStore = signalStore(
   withHooks({
     onInit(store) {
       effect(() => {
-        const received = store.signalR.wCards();
+        const received = store.signalR.sWarehouseCards();
         if (received && received.length > 0) {
           if (
             (store._router.url === '/warehouse' ||
               store._router.url === '/warehouse-units') &&
             store.monthYear() === received[0].monthYear
           ) {
+            const msg = store.signalR.sWarehouseMessage();
+            if (msg) {
+              store.signalR.addNotifications(msg);
+            }
             received.forEach((card) => patchState(store, signalUpdate(card)));
           }
           store.signalR.clearWarehouseCards();
         }
       });
       effect(() => {
-        const received = store.signalR.wItems();
+        const received = store.signalR.sWarehouseItems();
         if (received && received.length > 0) {
-          if (
-            store.auth.user()?.role === 'Admin' &&
-            store._router.url === '/items'
-          ) {
+          if (store._router.url === '/items') {
             patchState(store, { warehouseItems: received });
-          }
-          if (
-            store.auth.user()?.role === 'Master' &&
-            store._router.url === '/warehouse'
-          ) {
-            store.getWarehouseCardsSilently();
           }
           store.signalR.clearWarehouseItems();
         }

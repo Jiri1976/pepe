@@ -26,6 +26,8 @@ export const appConfig: ApplicationConfig = {
       theme: {
         preset: Aura,
       },
+      license:
+        'eyJpZCI6IjQyZTYzM2MxLWVlMzItNGU0ZS1iMTk3LTE0NWMzMmYwYjgzYiIsInByb2R1Y3QiOiJwcmltZXVpIiwidGllciI6ImNvbW11bml0eSIsInR5cGUiOiJkZXYiLCJpYXQiOjE3ODUzMzA0NzIsImV4cCI6MTgxNjg2NjQ3Mn0._lXlqpYTr7HSxB20bmKg4K98gLaAimXuXisupOepUSuRqULCH0gRm1gcSjv2jXP3xWcTrAvYI3ddgiMDU3XpCQ',
     }),
     AuthService,
     provideHotToastConfig({

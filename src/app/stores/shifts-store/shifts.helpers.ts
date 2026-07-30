@@ -72,12 +72,15 @@ export function sortShifts(shifts: Shift[]): Shift[] {
 }
 
 export function cardIsInStore(cards: ShiftCard[], card: ShiftCard): boolean {
+  const hasMonthYear = !!card.monthYear;
+  const hasDestination = !!card.destination;
+
   return cards.some(
     (c) =>
-      c.id === card.id ||
+      (card.id > 0 && c.id === card.id) ||
       (card.userId === c.userId &&
         card.userPosition === c.userPosition &&
-        card.monthYear === c.monthYear &&
-        card.destination === c.destination),
+        (!hasMonthYear || card.monthYear === c.monthYear) &&
+        (!hasDestination || card.destination === c.destination)),
   );
 }

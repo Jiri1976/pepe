@@ -9,9 +9,10 @@ import {
 import { TodaysShifts } from '../../../models/shifts.interface';
 
 export interface SignalRSlice {
-  readonly wCards: WarehouseCard[] | null;
-  readonly wItems: WarehouseItem[] | null;
-  readonly sCard: ShiftCard | null;
+  readonly sWarehouseCards: WarehouseCard[] | null;
+  readonly sWarehouseMessage: string | null;
+  readonly sWarehouseItems: WarehouseItem[] | null;
+  readonly sCards: ShiftCard[] | null;
   readonly sUser: User | null;
   readonly sAction: string | null;
   readonly sProposals: ProposalCard[] | null;
@@ -26,9 +27,10 @@ export interface SignalRSlice {
 }
 
 export const initialSignalRSlice: SignalRSlice = {
-  wCards: null,
-  wItems: null,
-  sCard: null,
+  sWarehouseCards: null,
+  sWarehouseMessage: null,
+  sWarehouseItems: null,
+  sCards: null,
   sUser: null,
   sAction: null,
   sProposals: null,

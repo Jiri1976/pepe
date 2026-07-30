@@ -42,8 +42,14 @@
 }
 
 p-datepicker.standalone {
+  height: 100% !important;
+
   .p-datepicker-panel.p-component {
     min-width: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
 
   input {
@@ -54,12 +60,14 @@ p-datepicker.standalone {
     .p-datepicker-month-view {
       .p-ripple.p-datepicker-month {
         font-weight: 400 !important;
+        font-size: 1rem;
       }
 
       .p-datepicker-month.p-datepicker-month-selected {
         background: var(--main-dark) !important;
         color: var((--white)) !important;
         font-weight: 700 !important;
+        font-size: 1rem;
       }
     }
 
@@ -68,9 +76,11 @@ p-datepicker.standalone {
         .p-datepicker-header {
           .p-datepicker-title {
             color: var(--main-dark);
+            font-size: 1rem;
 
             .p-datepicker-select-year {
               color: var(--main-dark);
+              font-size: 1rem;
             }
           }
         }
@@ -120,151 +130,6 @@ p-datepicker.standalone {
     }
   }
 }
-
-// .proposal-calendar {
-//   p-datepicker {
-//     .p-datepicker-panel.p-component {
-//       min-width: 200px;
-//     }
-
-//     input {
-//       display: none;
-//     }
-
-//     .p-datepicker-panel.p-component {
-//       .p-datepicker-month-view {
-//         .p-ripple.p-datepicker-month {
-//           font-weight: 400 !important;
-//         }
-
-//         .p-datepicker-month.p-datepicker-month-selected {
-//           background: var(--main-dark) !important;
-//           color: var((--white)) !important;
-//           font-weight: 700 !important;
-//         }
-//       }
-
-//       .p-datepicker-calendar-container {
-//         .p-datepicker-calendar {
-//           .p-datepicker-header {
-//             .p-datepicker-title {
-//               color: var(--main-dark);
-
-//               .p-datepicker-select-year {
-//                 color: var(--main-dark);
-//               }
-//             }
-//           }
-//         }
-//       }
-
-//       .p-datepicker-month-view {
-//         .p-datepicker-month.p-datepicker-month-selected {
-//           background: var(--main-dark) !important;
-//           color: var(--white);
-//         }
-
-//         span {
-//           color: var(--main-dark);
-//         }
-//       }
-
-//       .p-datepicker-calendar-container {
-//         .p-datepicker-calendar {
-//           .p-datepicker-header {
-//             p-button {
-//               .p-button-text {
-//                 color: var(--main-dark) !important;
-//               }
-//             }
-
-//             p-button:hover {
-//               .p-button-text {
-//                 background: var(--main-dark);
-//                 color: var(--white) !important;
-//                 border: none;
-//               }
-//             }
-//           }
-//         }
-//       }
-
-//       .p-datepicker-year-view {
-//         .p-datepicker-year {
-//           color: var(--main-dark) !important;
-//         }
-
-//         span.p-datepicker-year.p-datepicker-year-selected {
-//           background: var(--main-dark) !important;
-//           color: var(--white) !important;
-//         }
-//       }
-//     }
-//   }
-// }
-
-// .warehouse-calendar,
-// .shifts-calendar {
-//   p-datepicker {
-//     min-width: 200px;
-
-//     input {
-//       display: none !important;
-//     }
-
-//     .p-datepicker-panel.p-component {
-//       .p-datepicker-month-view {
-//         .p-ripple.p-datepicker-month {
-//           font-weight: 400 !important;
-//         }
-
-//         .p-datepicker-month.p-datepicker-month-selected {
-//           background: var(--main-dark) !important;
-//           color: var(--white) !important;
-//           font-weight: 700;
-//         }
-//       }
-
-//       .p-datepicker-calendar-container {
-//         .p-datepicker-calendar {
-//           .p-datepicker-header {
-//             p-button {
-//               .p-button-text {
-//                 color: var(--main-dark) !important;
-//               }
-//             }
-
-//             p-button:hover {
-//               .p-button-text {
-//                 background: var(--main-dark);
-//                 color: var(--white) !important;
-//                 border: none;
-//               }
-//             }
-//           }
-//         }
-//       }
-
-//       .p-datepicker-year-view {
-//         span.p-datepicker-year.p-datepicker-year-selected {
-//           background: var(--main-dark) !important;
-//           color: var(--white) !important;
-//         }
-//       }
-//     }
-//   }
-// }
-
-// p-datepicker {
-//   span {
-//     input {
-//       right: 0px;
-//       position: relative !important;
-//       top: -300px !important;
-//       border: 2px solid var(--white);
-//     }
-//   }
-// }
 
 .calendarDivShift {
   p-datepicker {
@@ -390,24 +255,6 @@ p-datepicker.standalone {
       height: 24px !important;
       width: 256px;
     }
-  }
-}
-
-.row.proposal-delete {
-  margin-left: auto !important;
-  margin-right: auto !important;
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 20px;
-  color: var(--main-dark);
-  font-weight: bold;
-
-  h4 {
-    display: flex;
-    justify-content: center;
   }
 }
 
