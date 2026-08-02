@@ -242,19 +242,21 @@ export const UsersStore = signalStore(
               store,
               setUsers(onUpdateUser(received, [...store.users()])),
             );
+            store.signalR.clearUsers();
           }
           if (store.signalR.sAction() === 'delete') {
             patchState(
               store,
               setUsers(onRemoveUser(received.id, store.users())),
             );
+            store.signalR.clearUsers();
           }
           if (store.signalR.sAction() === 'create') {
             const users = [...store.users(), received];
             patchState(store, setUsers(users));
+            store.signalR.clearUsers();
           }
         }
-        store.signalR.clearUsers();
       });
     },
   }),

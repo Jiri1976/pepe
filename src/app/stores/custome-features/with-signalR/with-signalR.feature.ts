@@ -10,15 +10,20 @@ import { initialSignalRSlice, SignalRSlice } from './with-signalR.slice';
 import { joinRoom } from './with-signalR.helpers';
 import * as signalR from '@microsoft/signalr';
 import {
-  WarehouseCard,
-  WarehouseItem,
+  SignalWarehouseCardResponse,
+  SignalWarehouseItemResponse,
 } from '../../../models/warehouses.interface';
 import { removeNotifications } from './with-signalR.updaters';
-import { User } from '../../../models/users.interface';
-import { ShiftCard, TodaysShifts } from '../../../models/shifts.interface';
-import { ProposalCard } from '../../../models/proposals.interface';
+import { SignalRUserResponse } from '../../../models/users.interface';
+import {
+  SignalRTodaysShiftsResponse,
+  SignalShiftCardResponse,
+} from '../../../models/shifts.interface';
+import { SignalProposalCardResponse } from '../../../models/proposals.interface';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { SignalRUser } from '../../../models/auth-user.interface';
+import { environment } from '../../../../environments/environment';
 
 export function withSignalR(): SignalStoreFeature<
   { state: {}; props: {}; methods: {} },
@@ -27,11 +32,7 @@ export function withSignalR(): SignalStoreFeature<
     props: {};
     methods: {
       setToken: (token: string) => void;
-      setSignalRUser: (user: {
-        name: string;
-        destination?: string | null;
-        role?: string | null;
-      }) => void;
+      setSignalRUser: (user: SignalRUser) => void;
       clearSignalRUser: () => void;
       start: () => void;
       leaveRoom: () => void;
@@ -112,7 +113,6 @@ export function withSignalR(): SignalStoreFeature<
         if (
           store.connection.state === signalR.HubConnectionState.Disconnected
         ) {
-          const room = 'pepepizza';
           await store.connection.start();
           registerWarehouseCardsListener();
           registerWarehouseItemsListener();
@@ -120,7 +120,7 @@ export function withSignalR(): SignalStoreFeature<
           registerShiftsListener();
           registerProposalsListener();
           registerTodaysShiftsListener();
-          await joinRoom(store.connection, name, room);
+          await joinRoom(store.connection, name, environment.HUB_ROOM);
           return true;
         }
         return waitForConnected();
@@ -161,8 +161,11 @@ export function withSignalR(): SignalStoreFeature<
             registerProposalsListener();
             registerTodaysShiftsListener();
             if (currentUser.name) {
-              const room = 'pepepizza';
-              await joinRoom(store.connection, currentUser.name, room);
+              await joinRoom(
+                store.connection,
+                currentUser.name,
+                environment.HUB_ROOM,
+              );
             }
           } catch (error) {
             console.log('WAREHOUSE SIGNALR REJOIN ERROR: ', error);
@@ -174,7 +177,8 @@ export function withSignalR(): SignalStoreFeature<
         store.connection.off('SendWarehouseCards');
         store.connection.on(
           'SendWarehouseCards',
-          (user: string, cards: WarehouseCard[], message: string) => {
+          (data: SignalWarehouseCardResponse) => {
+            const [user, cards, message] = data;
             if (user !== currentUser.name) {
               if (
                 _router.url === '/warehouse' ||
@@ -194,7 +198,8 @@ export function withSignalR(): SignalStoreFeature<
         store.connection.off('SendWarehouseItems');
         store.connection.on(
           'SendWarehouseItems',
-          (user: string, items: WarehouseItem[], message: string) => {
+          (data: SignalWarehouseItemResponse) => {
+            const [user, items, message] = data;
             if (
               user !== currentUser.name &&
               _router.url === '/warehouse/warehouse-items'
@@ -210,51 +215,50 @@ export function withSignalR(): SignalStoreFeature<
       };
 
       const registerUsersListener = () => {
-        store.connection.off('SendUsers');
-        store.connection.on(
-          'SendUser',
-          (action: string, user: string, userObj: User, message: string) => {
-            if (user !== currentUser.name) {
-              if (_router.url === '/users') {
-                const nextNotifications = [message, ...store.notifications()];
-                patchState(store, {
-                  notifications: nextNotifications,
-                  sUser: userObj,
-                  sAction: action,
-                });
-              }
-            }
-          },
-        );
+        store.connection.off('SendUser');
+        store.connection.on('SendUser', (data: SignalRUserResponse) => {
+          const [action, user, userObj, message] = data;
+          if (_router.url !== '/users' || user === currentUser.name) {
+            return;
+          }
+
+          if (message !== null && message !== '' && message !== undefined) {
+            const nextNotifications = [message, ...store.notifications()];
+            patchState(store, {
+              notifications: nextNotifications,
+            });
+          }
+
+          patchState(store, {
+            sUser: userObj,
+            sAction: action,
+          });
+        });
       };
 
       const registerShiftsListener = () => {
         store.connection.off('SendShifts');
-        store.connection.on(
-          'SendShifts',
-          (user: string, cards: ShiftCard[], message: string) => {
-            if (user !== currentUser.name) {
-              if (_router.url === '/shifts') {
-                patchState(store, {
-                  sCards: cards,
-                  sShiftMessage: message,
-                });
-              }
+        store.connection.on('SendShifts', (data: SignalShiftCardResponse) => {
+          const [user, cards, message] = data;
+          if (user !== currentUser.name) {
+            if (_router.url === '/shifts') {
+              patchState(store, {
+                sCards: cards,
+                sShiftMessage: message,
+              });
             }
-          },
-        );
+          }
+        });
       };
 
       const registerTodaysShiftsListener = () => {
         store.connection.off('SendTodaysShifts');
         store.connection.on(
           'SendTodaysShifts',
-          (
-            user: string,
-            sTodaysShifts: TodaysShifts,
-            sTodaysMessage: string,
-            sTodaysDestination: string,
-          ) => {
+          (data: SignalRTodaysShiftsResponse) => {
+            const [user, sTodaysShifts, sTodaysMessage, sTodaysDestination] =
+              data;
+
             if (user !== currentUser.name) {
               if (_router.url === '/shifts/daily') {
                 patchState(store, {
@@ -272,7 +276,9 @@ export function withSignalR(): SignalStoreFeature<
         store.connection.off('UpdateProposals');
         store.connection.on(
           'UpdateProposals',
-          (user: string, cards: ProposalCard[], message: string) => {
+          (data: SignalProposalCardResponse) => {
+            const [user, cards, message] = data;
+
             if (user !== currentUser.name) {
               if (_router.url === '/plans') {
                 patchState(store, {
