@@ -1,0 +1,136 @@
+:host {
+  width: 100%;
+  margin: 0 auto;
+  padding: 5px;
+  border-bottom: 1px solid var(--main-border-color);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+:host ::ng-deep p-datepicker.constraints-days-only {
+  .p-datepicker-header {
+    display: none !important;
+  }
+  .p-datepicker-day-selected {
+    background: var(--main-dark) !important;
+    color: var(--white) !important;
+  }
+}
+
+:host
+  ::ng-deep
+  p-datepicker.opposite-datepicker
+  .p-datepicker-panel.p-disabled {
+  opacity: 1 !important;
+
+  .p-disabled,
+  .p-disabled * {
+    cursor: default;
+    pointer-events: none;
+    user-select: none;
+    opacity: 1 !important;
+  }
+}
+
+:host ::ng-deep p-datepicker.opposite-datepicker {
+  .p-datepicker-day-selected {
+    background: transparent !important;
+    color: inherit !important;
+  }
+}
+
+:host ::ng-deep .opposite-date-cell {
+  width: 2rem;
+  height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  font-size: 0.875rem;
+}
+
+:host ::ng-deep .opposite-date-cell-selected {
+  color: var(--white) !important;
+  font-weight: normal !important;
+  font-size: 0.875rem;
+}
+
+:host ::ng-deep .opposite-date-cell-whole,
+:host ::ng-deep .opposite-date-cell-other {
+  background: var(--main-green);
+}
+
+:host ::ng-deep .opposite-date-cell-morning {
+  background: var(--main-purple);
+}
+
+:host ::ng-deep .opposite-date-cell-afternoon {
+  background: var(--proposal-red);
+}
+
+:host ::ng-deep p-selectbutton {
+  .p-togglebutton:hover,
+  .p-togglebutton.p-togglebutton-checked:hover {
+    background: var(--white) !important;
+    border-color: var(--main-dark) !important;
+    color: var(--main-dark) !important;
+    opacity: 1 !important;
+  }
+}
+
+input[type="text"] {
+  font-weight: 600;
+  text-align: center;
+  width: 50px;
+  border-radius: 7px;
+  border: 1px solid var(--main-dark);
+}
+
+input[type="text"]:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--main-dark);
+  -webkit-box-shadow: 0 0 0px 1000px transparent inset;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+input[type="text"].invalid,
+input[type="text"]:focus.invalid,
+input[type="text"]:active.invalid {
+  border: 2px solid #e74c3c !important;
+  outline: none;
+  color: #e74c3c !important;
+}
+
+label {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--main-dark);
+  margin-bottom: 5px;
+}
+
+label.disabled {
+  color: var(--main-disabled) !important;
+}
+
+.horizontal-scroll-wrapper {
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--main-dark) #fff;
+}
+
+.horizontal-scroll {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 16px;
+}

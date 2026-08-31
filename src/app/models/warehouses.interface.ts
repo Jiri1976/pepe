@@ -7,6 +7,7 @@ export interface WarehouseCard {
   destination: string;
   position: number;
   units: WarehouseUnit[];
+  lastMonthAmount: number | null;
 }
 
 export interface OverViewDay {

@@ -14,6 +14,28 @@ export function isFridayOrSaturday(date: string) {
   return false;
 }
 
+export function getDateFromMonthYear(date: string): Date {
+  if (date.includes('.')) {
+    return new Date(
+      parseInt(date.split('.')[2]),
+      parseInt(date.split('.')[1]) - 1,
+      parseInt(date.split('.')[0]),
+    );
+  }
+
+  const normalized = date.length === 5 ? '0' + date : date;
+  const month = parseInt(normalized.substring(0, 2), 10) - 1;
+  const year = parseInt(normalized.substring(2, 6), 10);
+
+  return new Date(year, month, 1);
+}
+
+export function daysInMonth(monthYear: string): number {
+  const year = parseInt(monthYear.substring(2, 6), 10);
+  const month = parseInt(monthYear.substring(0, 2), 10);
+  return new Date(year, month, 0).getDate();
+}
+
 export function initializeMonthYear(): string {
   const month =
     new Date().getMonth() + 1 < 10
@@ -57,6 +79,14 @@ export function isNotTomorrow(date: string) {
     return false;
   }
   return true;
+}
+
+export function getDateFromProposal(date: string) {
+  return new Date(
+    parseInt(date.split('.')[2]),
+    parseInt(date.split('.')[1]) - 1,
+    parseInt(date.split('.')[0]),
+  );
 }
 
 export function convertMonthYear(monthYear: string) {
@@ -222,6 +252,22 @@ export function todayDate() {
       ? `0${new Date().getMonth() + 1}`
       : new Date().getMonth() + 1;
   const year = new Date().getFullYear();
+  return `${day}.${month}.${year}`;
+}
+
+export function dateToString(date: Date) {
+  const day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
+  const month =
+    date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1;
+  const year = date.getFullYear();
+  return `${day}.${month}.${year}`;
+}
+
+export function proposalDateToString(date: Date) {
+  const day = date.getDate();
+  const month =
+    date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1;
+  const year = date.getFullYear();
   return `${day}.${month}.${year}`;
 }
 

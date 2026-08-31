@@ -77,4 +77,8 @@ export class PlansComponent {
       this.propStore.getPdf();
     }
   }
+
+  onOpenAI() {
+    this.propStore.openConstraints();
+  }
 }

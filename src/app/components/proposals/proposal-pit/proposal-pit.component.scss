@@ -1,0 +1,17 @@
+:host {
+  margin-right: 5px;
+  font-size: 1rem;
+  padding: 0 !important;
+}
+
+.circle-pit {
+  height: 25px;
+  width: 25px;
+  border-radius: 50%;
+  background-color: var(--background-color);
+  display: flex;
+  flex-direction: column;
+  justify-content: center !important;
+  align-items: center !important;
+  font-weight: 700;
+}

@@ -1,0 +1,125 @@
+<div class="info" [class.is-active]="shiftsStore.activeInfo()">
+  <h2>{{ card().userName }}&nbsp;{{ card().userSurname }}</h2>
+  <h4>
+    {{ convertMonthYear(card().monthYear) }}
+  </h4>
+  <br />
+  <h5>
+    Celkem: &nbsp;
+    @if (shiftsStore.currentTotalHours()) {
+      {{ shiftsStore.currentTotalHours() }}
+    } @else {
+      00:00
+    }
+    hodin
+  </h5>
+  <div
+    class="shift-avatar justify-content-center d-flex align-items-center rounded-circle"
+  >
+    @if (card().imageUrl) {
+      <img
+        [src]="`${this.apiUrl}/images/${card().imageUrl}`"
+        alt="Selected"
+        class="rounded-circle"
+      />
+    } @else {
+      <img class="blank rounded-circle" src="person.png" alt="No image" />
+    }
+  </div>
+
+  <div class="buttons" [class.master]="authStore.user()?.role === 'Master'">
+    @for (position of shiftsStore.currentPositions(); track $index) {
+      @switch (position) {
+        @case ("Helper") {
+          <div
+            class="shift-row"
+            [class.active]="position === shiftsStore.selectedCardPosition()"
+            [class.inactive]="shiftsStore.currentPositions().length === 1"
+            (click)="
+              shiftsStore.currentPositions().length > 1 &&
+                shiftsStore.setSelectedCardPosition(position)
+            "
+          >
+            <h6 class="fw-bold">Pomocka</h6>
+            <h6>{{ shiftsStore.currentUsersTotalHours()[position] }}</h6>
+          </div>
+        }
+        @case ("Driver") {
+          <div
+            class="shift-row"
+            [class.active]="position === shiftsStore.selectedCardPosition()"
+            [class.inactive]="shiftsStore.currentPositions().length === 1"
+            (click)="
+              shiftsStore.currentPositions().length > 1 &&
+                shiftsStore.setSelectedCardPosition(position)
+            "
+          >
+            <h6 class="fw-bold">Řidič</h6>
+            <h6>{{ shiftsStore.currentUsersTotalHours()[position] }}</h6>
+          </div>
+        }
+        @case ("Cook") {
+          <div
+            class="shift-row"
+            [class.active]="position === shiftsStore.selectedCardPosition()"
+            [class.inactive]="shiftsStore.currentPositions().length === 1"
+            (click)="
+              shiftsStore.currentPositions().length > 1 &&
+                shiftsStore.setSelectedCardPosition(position)
+            "
+          >
+            <h6 class="fw-bold">Kuchař</h6>
+            <h6>{{ shiftsStore.currentUsersTotalHours()[position] }}</h6>
+          </div>
+        }
+        @case ("Pizza") {
+          <div
+            class="shift-row"
+            [class.active]="position === shiftsStore.selectedCardPosition()"
+            [class.inactive]="shiftsStore.currentPositions().length === 1"
+            (click)="
+              shiftsStore.currentPositions().length > 1 &&
+                shiftsStore.setSelectedCardPosition(position)
+            "
+          >
+            <h6 class="fw-bold">Pizzař</h6>
+            <h6>{{ shiftsStore.currentUsersTotalHours()[position] }}</h6>
+          </div>
+        }
+      }
+    }
+  </div>
+  <div class="actions" [class.master]="authStore.user()?.role === 'Master'">
+    @if (authStore.user()?.role === "Admin") {
+      <button
+        class="deleteCardBtn common-btn deleteCardBtn text-white fw-bold d-flex flex-row align-items-center justify-content-center"
+        (click)="shiftsStore.requestDeleteCard()"
+        [disabled]="
+          !(shiftsStore.currentCard() && shiftsStore.currentCard()!.id > 0)
+        "
+      >
+        <i class="bi bi-trash fw-bold"></i>&nbsp;Smazat kartu
+      </button>
+      <button
+        class="pdfBtn common-btn text-white fw-bold d-flex flex-row align-items-center justify-content-center"
+        (click)="shiftsStore.toPdfCard()"
+        [disabled]="
+          !(
+            shiftsStore.currentCard() &&
+            shiftsStore.currentCard()!.id > 0 &&
+            shiftsStore.currentCard()!.shifts.length > 0
+          )
+        "
+      >
+        @if (!shiftsStore.pdfButtonLoading()) {
+          <i class="bi bi-filetype-pdf"></i>&nbsp;PDF
+        } @else {
+          <div class="spinner-border" role="status">
+            <span class="visually-hidden"></span>
+          </div>
+          &nbsp;Pracuji ...
+        }
+      </button>
+    }
+  </div>
+</div>

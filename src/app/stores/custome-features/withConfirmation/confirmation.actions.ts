@@ -1,17 +1,19 @@
 export const CONFIRM_ACTIONS = {
-    NO_ACTION: '',
-    DELETE_USER: 'delete-user',
-    DELETE_PROPOSAL_CARD: 'delete-proposal-card',
-    RESET_PROPOSALS: 'reset-proposals',
-    SELECT_MONTH: 'select-month',
-    GET_PDF: 'get-pdf',
-    DELETE_SHIFT_CARD: 'delete-shift-card',
-    DELETE_SHIFT: 'delete-shift',
-    DELETE_WAREHOUSE_CARDS: 'delete-warehouse-cards',
-    DELETE_WAREHOUSE_CARD: 'delete-warehouse-card',
-    DELETE_WAREHOUSE_ITEM: 'delete-warehouse-item',
-    DELETE_DAILY_SHIFT: 'delete-daily-shift',
+  NO_ACTION: '',
+  DELETE_USER: 'delete-user',
+  DELETE_PROPOSAL_CARD: 'delete-proposal-card',
+  RESET_PROPOSALS: 'reset-proposals',
+  SELECT_MONTH: 'select-month',
+  GET_PDF: 'get-pdf',
+  DELETE_SHIFT_CARD: 'delete-shift-card',
+  DELETE_SHIFT: 'delete-shift',
+  DELETE_WAREHOUSE_CARDS: 'delete-warehouse-cards',
+  DELETE_WAREHOUSE_CARD: 'delete-warehouse-card',
+  DELETE_WAREHOUSE_ITEM: 'delete-warehouse-item',
+  DELETE_DAILY_SHIFT: 'delete-daily-shift',
+  GENERATE_SCHEDULE: 'generate-schedule',
+  SAVE_GENERATOR: 'save-generator',
 } as const;
 
 export type ConfirmAction =
-    (typeof CONFIRM_ACTIONS)[keyof typeof CONFIRM_ACTIONS];
+  (typeof CONFIRM_ACTIONS)[keyof typeof CONFIRM_ACTIONS];

@@ -16,6 +16,15 @@
       #toggleBtn
     />
     <app-nav-button
+      [hidden]="
+        !((propStore.currentCard()?.users?.length ?? 0) > 0) || hideForMaster
+      "
+      (click)="(propStore.currentCard()?.users?.length ?? 0) > 0 && onOpenAI()"
+      icon="bi-openai"
+      [disabled]="propStore.currentCard()?.users?.length === 0"
+    />
+
+    <app-nav-button
       (click)="openModal('Pizza')"
       label="PZ"
       [hidden]="propStore.pizza().length === 0"

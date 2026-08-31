@@ -147,9 +147,10 @@ export function addFromInactive(
         return card;
       }
 
-      const sameUsers = opositeCard.users.filter(
-        (u) => u.id === inactiveUser.id,
-      );
+      const sameUsers = [
+        ...opositeCard.users,
+        ...opositeCard.inactiveUsers,
+      ].filter((u) => u.id === inactiveUser.id);
 
       const shifts: ProposalShift[] = Array.from(
         { length: currentCard.countOfDays },
@@ -351,4 +352,137 @@ export function updateProposal(
       };
     }),
   });
+}
+
+export function updateWhenGenerated(
+  generatedCard: ProposalCard,
+): PartialStateUpdater<ProposalSlice> {
+  return (state) => {
+    let _schedules = state.schedules.map((card) => {
+      const isMatchedCard =
+        card.destination === generatedCard.destination &&
+        card.monthYear === generatedCard.monthYear;
+
+      if (!isMatchedCard) {
+        const oppositeUsers = card.users;
+
+        if (!oppositeUsers || oppositeUsers.length === 0) {
+          return card;
+        }
+
+        const users = card.users.map((user) => {
+          const matchingUser = generatedCard.users.find(
+            (u) => u.id === user.id && u.position === user.position,
+          );
+
+          if (!matchingUser) {
+            return user;
+          }
+
+          const shifts = user.shifts.map((shift) => {
+            const matchingShift = matchingUser.shifts.find(
+              (s) =>
+                s.proposalDate === shift.proposalDate &&
+                s.from !== 'F-M' &&
+                s.from !== 'OVA' &&
+                s.from !== null &&
+                s.to !== null,
+            );
+            if (matchingShift) {
+              return {
+                ...shift,
+                from: state.destination,
+                to: `${matchingShift.to}`,
+              };
+            }
+            const oppositeShift = matchingUser.shifts.find(
+              (s) => s.proposalDate === shift.proposalDate,
+            );
+
+            if (
+              (shift.from === 'F-M' || shift.from === 'OVA') &&
+              oppositeShift?.from === null &&
+              oppositeShift?.to === null
+            ) {
+              shift.from = null;
+              shift.to = null;
+            }
+
+            return shift;
+          });
+          return {
+            ...user,
+            shifts,
+          };
+        });
+        return {
+          ...card,
+          users,
+        };
+      }
+
+      const oppositeCard = state.schedules.find(
+        (s) => s.destination !== card.destination,
+      );
+      const oppositeUsers = oppositeCard?.users;
+
+      const users = generatedCard.users.map((user) => {
+        const matchingUser = oppositeUsers?.find(
+          (u) => u.id === user.id && u.position === user.position,
+        );
+
+        if (!matchingUser) {
+          return user;
+        }
+
+        const shifts = user.shifts.map((shift) => {
+          const matchingShift = matchingUser.shifts.find(
+            (s) =>
+              s.proposalDate === shift.proposalDate &&
+              s.from !== 'F-M' &&
+              s.from !== 'OVA' &&
+              s.from !== null &&
+              s.to !== null,
+          );
+          if (matchingShift) {
+            return {
+              ...shift,
+              from: oppositeCard!.destination,
+              to: `${matchingShift.to}`,
+            };
+          }
+          const oppositeShift = matchingUser.shifts.find(
+            (s) => s.proposalDate === shift.proposalDate,
+          );
+
+          if (
+            (shift.from === 'F-M' || shift.from === 'OVA') &&
+            oppositeShift?.from === null &&
+            oppositeShift?.to === null
+          ) {
+            shift.from = null;
+            shift.to = null;
+          }
+
+          return shift;
+        });
+        return {
+          ...user,
+          shifts,
+        };
+      });
+
+      return {
+        ...card,
+        monthYearName: generatedCard.monthYearName,
+        countOfDays: generatedCard.countOfDays,
+        users: users,
+        inactiveUsers: structuredClone(generatedCard.inactiveUsers),
+      };
+    });
+
+    return {
+      schedules: _schedules,
+    };
+  };
 }

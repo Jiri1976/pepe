@@ -1,0 +1,63 @@
+:host {
+  --button-color: #f00;
+  display: inline-block;
+}
+
+.btn {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+}
+
+span {
+  position: absolute;
+  text-transform: uppercase;
+  color: var(--button-color);
+  font-size: 1.5em;
+  letter-spacing: 0.2em;
+  transition: 0.5s;
+  background: #111;
+  padding: 15px 25px;
+  border-radius: 20px;
+}
+
+.btn:hover span {
+  color: #fff;
+  background: transparent;
+  letter-spacing: 0.3em;
+}
+
+.box {
+  position: relative;
+  width: 200px;
+  height: 60px;
+  background: var(--button-color);
+  border-radius: 10px;
+  transition: 0.5s;
+}
+
+.particle {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: var(--button-color);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: animate 1s linear forwards;
+}
+
+@keyframes animate {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  100% {
+    transform: translate(var(--dx), var(--dy)) scale(0.5);
+  }
+}
+
+.gooey-svg {
+  display: none;
+}

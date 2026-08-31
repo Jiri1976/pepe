@@ -1,30 +1,58 @@
-<div class="box w-100 d-flex flex-row justify-content-center align-items-center position-relative"
-    animate.enter="fade-in" animate.leave="fade-out">
-    @if(!shiftsStore.isLoading()) {
-
+<div
+  class="box w-100 d-flex flex-row justify-content-center align-items-center position-relative"
+  animate.enter="fade-in"
+  animate.leave="fade-out"
+>
+  @if (!shiftsStore.isLoading()) {
     @if (shiftsStore.uniqueUsers().length > 0) {
-    <div class="shift-card d-flex flex-column justify-content-center align-items-center">
-        <swiper-container #swiperRef effect="cards" grab-cursor="false" (swiperinit)="onSwiperInit()"
-            (swiperslidechange)="onSlideChange($event)">
-            @for(user of shiftsStore.uniqueUsers(); track $index) {
-            <swiper-slide>
-                <app-shift-card />
-            </swiper-slide>
-            }
-        </swiper-container>
-    </div>
-    <app-paging>
-        <app-prev-next-button icon="bi-caret-left" [disabled]="shiftsStore.sliceIndex() === 0"
-            (click)="movePrevious()" />
-        <app-destination-button [destination]="shiftsStore.destination()" />
-        <app-prev-next-button icon="bi-caret-right"
-            [disabled]="shiftsStore.sliceIndex() === shiftsStore.uniqueUsers().length - 1" (click)="moveNext()" />
-    </app-paging>
-    <app-shift-header />
+      <div
+        class="shift-card d-flex flex-column justify-content-center align-items-center"
+      >
+        <div class="user">
+          {{ shiftsStore.currentCard()?.userName }}
+          {{ shiftsStore.currentCard()?.userSurname }}
+        </div>
+        <div class="clip-slider" aria-roledescription="carousel">
+          @for (user of shiftsStore.uniqueUsers(); track $index) {
+            <section
+              class="clip-slide d-flex flex-row justify-content-center"
+              [class.is-active]="activeSlide() === $index"
+              [class.is-revealed]="revealedSlide() === $index"
+              [class.from-left-bottom]="
+                activeSlide() === $index && !revealFromTopRight()
+              "
+              [class.from-top-right]="
+                activeSlide() === $index && revealFromTopRight()
+              "
+              [attr.aria-hidden]="activeSlide() !== $index"
+            >
+              <app-shift-card />
+            </section>
+          }
+        </div>
+      </div>
+
+      <app-paging>
+        <app-prev-next-button
+          icon="bi-caret-left"
+          [disabled]="shiftsStore.sliceIndex() === 0"
+          (click)="movePrevious()"
+        />
+        <app-info-button (click)="shiftsStore.toggleInfo()" />
+        <app-prev-next-button
+          icon="bi-caret-right"
+          [disabled]="
+            shiftsStore.sliceIndex() === shiftsStore.uniqueUsers().length - 1
+          "
+          (click)="moveNext()"
+        />
+      </app-paging>
     } @else {
-    <h4 class="fw-bold text-center">{{ shiftsStore.missingCardsMessage() }}</h4>
+      <h4 class="fw-bold text-center">
+        {{ shiftsStore.missingCardsMessage() }}
+      </h4>
     }
-    } @else {
+  } @else {
     <app-shift-skeleton />
-    }
+  }
 </div>

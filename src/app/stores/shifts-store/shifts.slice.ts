@@ -13,6 +13,7 @@ export interface ShiftsSlice {
   readonly todaysShifts: TodaysShifts;
   readonly concurrentErrors: string[];
   readonly selectedDailyIndex: number;
+  readonly activeInfo: boolean;
 }
 
 export const initialShiftsSlice: ShiftsSlice = {
@@ -45,4 +46,5 @@ export const initialShiftsSlice: ShiftsSlice = {
   },
   concurrentErrors: [],
   selectedDailyIndex: -1,
+  activeInfo: false,
 };

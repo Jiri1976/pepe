@@ -1,27 +1,97 @@
 .box {
-    margin-top: 130px;
+  margin-top: 130px;
 
-    .shift-card {
-        grid-column: 1;
-        grid-row: 1;
-        min-width: 750px;
-        height: 600px;
+  .shift-card {
+    grid-column: 1;
+    grid-row: 1;
+    min-width: 750px;
+    height: 650px;
+    align-self: center;
+    justify-self: center;
 
-        swiper-container {
-            width: 740px;
-            height: 600px;
-
-            swiper-slide {
-                background: var(--white) !important;
-                box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-                //box-shadow: inset 0 0 8px 1px var(--main-border-color);
-                border-radius: 7px;
-            }
-        }
+    .user {
+      width: 750px;
+      height: 50px;
+      background: var(--main-dark);
+      border-radius: 7px;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--white);
     }
 
-    h4 {
-        color: var(--main-dark);
-        margin-top: 60px;
+    .clip-slider {
+      position: relative;
+      width: 750px;
+      isolation: isolate;
+      overflow: hidden;
+      border-radius: 7px;
+      height: 650px;
     }
+
+    .clip-slide {
+      min-width: 100% !important;
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      padding: 20px;
+      overflow: hidden;
+      border-radius: 7px;
+      background: var(--white);
+      clip-path: circle(0% at 0% 100%);
+      transition: none;
+      will-change: clip-path;
+      justify-content: center;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .clip-slide.is-active {
+      z-index: 2;
+    }
+
+    .clip-slide.from-left-bottom {
+      clip-path: circle(0% at 0% 100%);
+    }
+
+    .clip-slide.from-top-right {
+      clip-path: circle(0% at 100% 0%);
+    }
+
+    .clip-slide.is-revealed.from-left-bottom {
+      animation: reveal-from-left-bottom 700ms ease forwards;
+    }
+
+    .clip-slide.is-revealed.from-top-right {
+      animation: reveal-from-top-right 700ms ease forwards;
+    }
+  }
+
+  h4 {
+    color: var(--main-dark);
+    margin-top: 60px;
+  }
+}
+
+@keyframes reveal-from-left-bottom {
+  from {
+    clip-path: circle(0% at 0% 100%);
+  }
+
+  to {
+    clip-path: circle(160% at 0% 100%);
+  }
+}
+
+@keyframes reveal-from-top-right {
+  from {
+    clip-path: circle(0% at 100% 0%);
+  }
+
+  to {
+    clip-path: circle(160% at 100% 0%);
+  }
 }

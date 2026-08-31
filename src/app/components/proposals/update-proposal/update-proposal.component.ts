@@ -112,7 +112,12 @@ export class UpdateProposalComponent {
     timeFrom: string,
     timeTo: string,
   ) {
-    timeFrom = timeFrom === 'OVA' || timeFrom === 'F-M' ? '11:00' : timeFrom;
+    // timeFrom = timeFrom === 'OVA' || timeFrom === 'F-M' ? '11:00' : timeFrom;
+
+    if (timeFrom === 'OVA' || timeFrom === 'F-M') {
+      return false;
+    }
+
     if (
       inputShiftFrom === '11:00' &&
       (inputShiftTo === '22:00' || inputShiftTo === '23:00')

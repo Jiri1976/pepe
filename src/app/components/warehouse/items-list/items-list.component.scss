@@ -1,69 +1,75 @@
 :host-context(cdk-dialog-container) {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background-color: var(--white);
-    filter: drop-shadow(0 0 2em rgba(#000, 0.5));
-    padding: 2em 2em 2em;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--white);
+  filter: drop-shadow(0 0 2em rgba(#000, 0.5));
+  padding: 2em 2em 2em;
+  border-radius: 7px;
 }
 
 .select-item {
-    width: 25rem;
+  width: 25rem;
 
-    .close,
-    .item {
-        display: flex;
-        width: 100%;
-        justify-content: center;
+  .close,
+  .item {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .item {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 30px;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid var(--main-dark);
+    border-radius: 7px;
+    margin: 10px 0;
+    transition: 0.3s;
+
+    p {
+      color: var(--main-dark);
+      font-weight: 500;
+      margin-bottom: 0 !important;
+      transition: 0.3s;
+      font-size: 0.9rem;
+      font-family: "Poppins", sans-serif;
+    }
+  }
+
+  .item:hover {
+    cursor: pointer;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    background: var(--main-dark);
+
+    p {
+      color: var(--white);
+    }
+  }
+
+  .close {
+    margin-top: 30px;
+
+    .closeBtn {
+      background: var(--main-dark);
+      color: var(--white);
+      border: none;
+      font-weight: 600;
+      height: 35px;
+      width: 130px;
+      border-radius: 7px;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      transform: 0.3s;
     }
 
-    .item {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        height: 30px;
-        justify-content: center;
-        align-items: center;
-        border: 1px solid var(--main-dark);
-        margin: 10px 0;
-        transition: 0.3s;
-
-        p {
-            color: var(--main-dark);
-            font-weight: 500;
-            margin-bottom: 0 !important;
-            transition: 0.3s;
-            font-size: 0.9rem;
-            font-family: "Poppins", sans-serif;
-        }
+    .closeBtn:active {
+      opacity: 0.7;
     }
-
-    .item:hover {
-        cursor: pointer;
-        box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-        background: var(--main-dark);
-
-        p {
-            color: var(--white);
-        }
-    }
-
-    .close {
-        margin-top: 30px;
-
-        .closeBtn {
-            background: var(--main-dark);
-            color: var(--white);
-            border: 1px solid var(--main-dark);
-            font-weight: bold;
-            height: 40px;
-            width: 120px;
-            transform: 0.3s;
-        }
-
-        .closeBtn:active {
-            opacity: 0.7;
-        }
-    }
+  }
 }

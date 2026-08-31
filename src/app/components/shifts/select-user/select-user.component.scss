@@ -1,72 +1,74 @@
 :host-context(cdk-dialog-container) {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background-color: var(--white);
-    filter: drop-shadow(0 0 2em rgba(#000, 0.5));
-    padding: 2em 2em;
-    border-radius: 7px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--white);
+  filter: drop-shadow(0 0 2em rgba(#000, 0.5));
+  padding: 2em 2em;
+  border-radius: 7px;
 }
 
 .select-user {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 
-    .user {
-        height: 30px;
-        border: 1px solid var(--main-dark);
-        margin: 10px 0;
-        border-radius: 7px;
+  .users-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    padding-right: 2px;
+  }
 
-        p {
-            color: var(--main-dark);
-            font-weight: 500;
-            margin-bottom: 0 !important;
-            font-size: 14px;
-        }
+  .user {
+    height: 30px;
+    border: 1px solid var(--main-dark);
+    margin: 10px 0;
+    border-radius: 7px;
+
+    p {
+      color: var(--main-dark);
+      font-weight: 500;
+      margin-bottom: 0 !important;
+      font-size: 14px;
+    }
+  }
+
+  .user:hover {
+    cursor: pointer;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    background: var(--main-dark);
+
+    p {
+      color: var(--white);
+    }
+  }
+
+  .close {
+    margin-top: 15px;
+    flex: 0 0 auto;
+
+    .closeBtn {
+      background: var(--main-dark);
+      color: var(--white);
+      border: none;
+      font-weight: 600;
+      height: 35px;
+      width: 130px;
+      transform: 0.3s;
+      font-size: 14px;
+      letter-spacing: 1px;
+      border-radius: 7px;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
     }
 
-    .user:hover {
-        cursor: pointer;
-        box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-        background: var(--main-dark);
-
-        p {
-            color: var(--white);
-        }
+    .closeBtn:active {
+      opacity: 0.7;
     }
-
-    .close {
-        margin-top: 15px;
-
-        .closeBtn {
-            background: var(--main-dark);
-            color: var(--white);
-            border: 1px solid var(--main-dark);
-            height: 30px;
-            width: 120px;
-            transform: 0.3s;
-            font-size: 14px;
-            border-radius: 7px;
-        }
-
-        .closeBtn:active {
-            opacity: 0.7;
-        }
-    }
-
-    .close_btn {
-        height: 20px;
-        width: 20px;
-        right: 10px;
-        top: 10px;
-        background-color: var(--main-red);
-        color: var(--white);
-        transition: 0.2s;
-        cursor: pointer;
-        border-radius: 7px;
-    }
-
-    .close_btn:hover {
-        opacity: 0.7;
-    }
+  }
 }

@@ -1,8 +1,23 @@
-import { Component, computed, ElementRef, HostListener, inject, signal, viewChild } from '@angular/core';
+import {
+  Component,
+  computed,
+  ElementRef,
+  HostListener,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { ProposalsService } from '../../services/proposals.service';
-import { ProposalSkeletonComponent } from "./proposal-skeleton/proposal-skeleton.component";
-import { CdkDrag, CdkDragHandle, CdkDragPlaceholder, CdkDragDrop, CdkDropList, CdkDropListGroup } from '@angular/cdk/drag-drop';
-import { ProposalShiftComponent } from "./proposal-shift/proposal-shift.component";
+import { ProposalSkeletonComponent } from './proposal-skeleton/proposal-skeleton.component';
+import {
+  CdkDrag,
+  CdkDragHandle,
+  CdkDragPlaceholder,
+  CdkDragDrop,
+  CdkDropList,
+  CdkDropListGroup,
+} from '@angular/cdk/drag-drop';
+import { ProposalShiftComponent } from './proposal-shift/proposal-shift.component';
 import { DisabledClassDirective } from '../../directives/disabled-class.directive';
 import { SetBackgroundDirective } from '../../directives/set-background.directive';
 import { ProposalTableStyleDirective } from '../../directives/proposal-table-style.directive';
@@ -10,6 +25,7 @@ import { AuthStore } from '../../stores/auth-store/auth.store';
 import { ProposalStore } from '../../stores/proposal-store/proposal.store';
 import { ProposalUserBackgroundDirective } from '../../directives/proposal-user-background.directive';
 import { ProposalUser, ProposalShift } from '../../models/proposals.interface';
+import { ProposalPitComponent } from './proposal-pit/proposal-pit.component';
 
 @Component({
   selector: 'app-proposals',
@@ -24,10 +40,11 @@ import { ProposalUser, ProposalShift } from '../../models/proposals.interface';
     CdkDropListGroup,
     CdkDrag,
     CdkDragPlaceholder,
-    CdkDragHandle
+    CdkDragHandle,
+    ProposalPitComponent,
   ],
   templateUrl: './proposals.component.html',
-  styleUrl: './proposals.component.scss'
+  styleUrl: './proposals.component.scss',
 })
 export class ProposalsComponent {
   readonly authStore = inject(AuthStore);
@@ -45,56 +62,74 @@ export class ProposalsComponent {
     if (this.propStore.currentCard()?.users) {
       if (this.height() < 700) {
         return {
-          'maxHeight': '500px',
-          'overflow-y': 'auto'
+          maxHeight: '500px',
+          'overflow-y': 'auto',
         };
       } else if (this.height() > 700 && this.height() < 920) {
-        if (this.propStore.currentCard() && this.propStore.currentCard()!.users.length > 13) {
+        if (
+          this.propStore.currentCard() &&
+          this.propStore.currentCard()!.users.length > 13
+        ) {
           return {
-            'maxHeight': '580px',
-            'overflow-y': 'auto'
+            maxHeight: '580px',
+            'overflow-y': 'auto',
           };
         } else {
           return {
-            'maxHeight': '',
-            'overflow-y': 'hidden'
+            maxHeight: '',
+            'overflow-y': 'hidden',
           };
         }
       } else {
         return {
-          'maxHeight': '',
-          'overflow-y': 'hidden'
+          maxHeight: '',
+          'overflow-y': 'hidden',
         };
       }
     } else {
       return {
-        'maxHeight': '',
-        'overflow-y': 'hidden'
+        maxHeight: '',
+        'overflow-y': 'hidden',
       };
     }
   });
 
   readonly warning = computed(() => {
     if (this.propStore.isUnsavedPassedCard()) {
-      return `Rozpis směn pro ${this.propStore.currentCard()!.monthYearName.toLowerCase()} není uložen.`
-    } else if (this.propStore.currentCard()?.users?.length === 0 && this.propStore.currentCard()?.inactiveUsers?.length === 0) {
-      return `Chybí evidovaní pracovníci na pobočce - ${this.propStore.currentCard()?.destination}`
-    } else if (this.propStore.currentCard()?.users?.length === 0 && this.propStore.currentCard()!.inactiveUsers!.length > 0) {
-      return `Přidej pracovníky z ${this.propStore.currentCard()?.destination} pro ${this.propStore.currentCard()!.monthYearName.toLowerCase()}`
+      return `Rozpis směn pro ${this.propStore.currentCard()!.monthYearName.toLowerCase()} není uložen.`;
+    } else if (
+      this.propStore.currentCard()?.users?.length === 0 &&
+      this.propStore.currentCard()?.inactiveUsers?.length === 0
+    ) {
+      return `Chybí evidovaní pracovníci na pobočce - ${this.propStore.currentCard()?.destination}`;
+    } else if (
+      this.propStore.currentCard()?.users?.length === 0 &&
+      this.propStore.currentCard()!.inactiveUsers!.length > 0
+    ) {
+      return `Přidej pracovníky z ${this.propStore.currentCard()?.destination} pro ${this.propStore.currentCard()!.monthYearName.toLowerCase()}`;
     }
     return null;
   });
 
   ngOnInit(): void {
     const user = this.authStore.user();
-    if (user?.role === 'Master' && user.destination !== this.propStore.destination()) {
+    if (
+      user?.role === 'Master' &&
+      user.destination !== this.propStore.destination()
+    ) {
       this.propStore.setDestination(user.destination);
     }
     this.propStore.uploadSchedulesShifts();
   }
 
   remove(user: ProposalUser, index: number) {
-    const userShifts = user.shifts.filter(s => s.from !== null && s.to !== null && s.from !== 'F-M' && s.from !== 'OVA');
+    const userShifts = user.shifts.filter(
+      (s) =>
+        s.from !== null &&
+        s.to !== null &&
+        s.from !== 'F-M' &&
+        s.from !== 'OVA',
+    );
     this.propStore.removeFromActive(user, index, userShifts);
   }
 
@@ -103,7 +138,11 @@ export class ProposalsComponent {
   }
 
   isWeekend(date: string) {
-    var day = new Date(parseInt(date.split('.')[2]), parseInt(date.split('.')[1]) - 1, parseInt(date.split('.')[0]));
+    var day = new Date(
+      parseInt(date.split('.')[2]),
+      parseInt(date.split('.')[1]) - 1,
+      parseInt(date.split('.')[0]),
+    );
     if (day.getDay() == 0 || day.getDay() == 5 || day.getDay() == 6) {
       return true;
     }
@@ -111,13 +150,20 @@ export class ProposalsComponent {
   }
 
   dayOfWeek(date: string) {
-    var day = new Date(parseInt(date.split('.')[2]), parseInt(date.split('.')[1]) - 1, parseInt(date.split('.')[0]));
+    var day = new Date(
+      parseInt(date.split('.')[2]),
+      parseInt(date.split('.')[1]) - 1,
+      parseInt(date.split('.')[0]),
+    );
     let days = ['Ne', 'Po', 'Út', 'St', 'Čt', 'Pá', 'So'];
     return days[day.getDay()];
   }
 
   onCreateUpdateProposal(selectedProposal: ProposalShift) {
-    if (this.authStore.user()?.role === 'Master' && this.isPassedTime(selectedProposal.proposalDate)) {
+    if (
+      this.authStore.user()?.role === 'Master' &&
+      this.isPassedTime(selectedProposal.proposalDate)
+    ) {
       return;
     }
     this.propStore.selectProposal(selectedProposal);

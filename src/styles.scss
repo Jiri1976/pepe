@@ -5,6 +5,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Jost:ital,wght@0,100..900;1,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
 
 :root {
+  --orange-primary: #ff6b35;
   --main-dark: #292524;
   --main-border-color: #dee2e6;
   --main-disabled: #99a1af;
@@ -21,6 +22,7 @@
   --proposal-orange: #f54a00;
   --table-head: #f8f8f4;
   --main-purple: #6b45bf;
+  --hot-toast-container-overlay-z-index: 10000;
   --expander-primary: #616161;
   --expander-primary-light: color-mix(
     in srgb,
@@ -39,6 +41,28 @@
 
 .body {
   overflow-x: hidden;
+}
+
+.p-togglebutton {
+  --p-togglebutton-background: var(--main-dark);
+  --p-togglebutton-border-color: var(--main-dark);
+  --p-togglebutton-color: var(--white);
+}
+
+.p-togglebutton:hover {
+  --p-togglebutton-background: var(--white) !important;
+  --p-togglebutton-border-color: var(--main-dark) !important;
+  --p-togglebutton-color: var(--main-dark) !important;
+}
+
+.p-togglebutton.p-togglebutton-checked {
+  --p-togglebutton-checked-background: var(--main-dark);
+  --p-togglebutton-checked-border-color: var(--main-dark);
+  --p-togglebutton-checked-color: var(--main-dark);
+}
+
+.p-togglebutton-label {
+  font-weight: 700;
 }
 
 p-datepicker.standalone {
@@ -518,4 +542,167 @@ app-d-picker.saved .p-inputtext {
   color: var(--expander-primary);
   font-weight: 600;
   border: none;
+}
+
+/* BUBBLE BUTTON */
+.bubble {
+  position: relative;
+  transition: transform ease-in 0.1s;
+}
+
+.bubble::before,
+.bubble::after {
+  position: absolute;
+  content: "";
+  display: block;
+  width: 140%;
+  height: 100%;
+  left: -20%;
+  z-index: -1000;
+  transition: all ease-in-out 0.5s;
+  background-repeat: no-repeat;
+}
+
+.bubble::before,
+.bubble::after {
+  display: none;
+  background-image:
+    radial-gradient(circle, var(--main-green) 20%, transparent 20%),
+    radial-gradient(
+      circle,
+      var(--main-green) 20%,
+      transparent 20%,
+      transparent 30%
+    ),
+    radial-gradient(circle, var(--main-green) 20%, transparent 20%),
+    radial-gradient(circle, var(--main-green) 20%, transparent 20%),
+    radial-gradient(
+      circle,
+      var(--main-green) 10%,
+      transparent 15%,
+      transparent 20%
+    ),
+    radial-gradient(circle, var(--main-green) 20%, transparent 20%),
+    radial-gradient(circle, var(--main-green) 20%, transparent 20%),
+    radial-gradient(circle, var(--main-green) 20%, transparent 20%),
+    radial-gradient(circle, var(--main-green) 20%, transparent 20%);
+  background-size:
+    10% 10%,
+    20% 20%,
+    15% 15%,
+    20% 20%,
+    18% 18%,
+    10% 10%,
+    15% 15%,
+    10% 10%,
+    18% 18%;
+}
+
+.bubble::before {
+  top: -75%;
+}
+
+.bubble::after {
+  bottom: -75%;
+}
+
+.bubble:active {
+  transform: scale(0.9);
+}
+
+.bubble.animate::before {
+  display: block;
+  animation: topBubbles ease-in-out 0.75s forwards;
+}
+.bubble.animate::after {
+  display: block;
+  animation: bottomBubbles ease-in-out 0.75s forwards;
+}
+
+@keyframes topBubbles {
+  0% {
+    background-position:
+      5% 90%,
+      10% 90%,
+      10% 90%,
+      15% 90%,
+      25% 90%,
+      25% 90%,
+      40% 90%,
+      55% 90%,
+      70% 90%;
+  }
+  50% {
+    background-position:
+      0% 80%,
+      0% 20%,
+      10% 40%,
+      20% 0%,
+      30% 30%,
+      22% 50%,
+      50% 50%,
+      65% 20%,
+      90% 30%;
+  }
+
+  100% {
+    background-position:
+      0% 70%,
+      0% 10%,
+      10% 30%,
+      20% -10%,
+      30% 20%,
+      22% 40%,
+      50% 40%,
+      65% 10%,
+      90% 20%;
+    background-size:
+      0% 0%,
+      0% 0%,
+      0% 0%,
+      0% 0%,
+      0% 0%,
+      0% 0%;
+  }
+}
+
+@keyframes bottomBubbles {
+  0% {
+    background-position:
+      10% 10%,
+      30% 10%,
+      55% 10%,
+      70% 10%,
+      85% 10%,
+      70% 10%,
+      70% 0%;
+  }
+  50% {
+    background-position:
+      0% 80%,
+      20% 80%,
+      45% 60%,
+      60% 100%,
+      75% 70%,
+      95% 60%,
+      105% 0%;
+  }
+
+  100% {
+    background-position:
+      0% 90%,
+      20% 90%,
+      45% 70%,
+      60% 110%,
+      75% 80%,
+      95% 70%,
+      110% 10%;
+    background-size:
+      0% 0%,
+      0% 0%,
+      0% 0%,
+      0% 0%,
+      0% 0%,
+      0% 0%;
+  }
 }

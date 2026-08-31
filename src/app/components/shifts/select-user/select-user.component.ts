@@ -1,4 +1,11 @@
-import { Component, effect, ElementRef, inject, signal, viewChild } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  inject,
+  viewChild,
+} from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { DialogRef } from '@angular/cdk/dialog';
@@ -8,7 +15,7 @@ import { ShiftsStore } from '../../../stores/shifts-store/shifts.store';
   selector: 'app-select-user',
   imports: [DialogModule, ButtonModule],
   templateUrl: './select-user.component.html',
-  styleUrl: './select-user.component.scss'
+  styleUrl: './select-user.component.scss',
 })
 export class SelectUserComponent {
   readonly store = inject(ShiftsStore);
@@ -28,14 +35,16 @@ export class SelectUserComponent {
     });
   }
 
-  sectionStyles = signal<any>({
-    'width': '25rem',
-    'maxHeight': '500px',
-    'overflow-y': this.store.uniqueUsers()!.length > 11 ? 'auto' : 'hidden'
+  sectionStyles = computed(() => {
+    return {
+      width: '25rem',
+      maxHeight: 'min(550px, calc(100vh - 6rem))',
+    };
   });
 
   onSelectUser(userId: number) {
-    let index = this.store.uniqueUsers().findIndex(u => u.userId === userId);
+    this.store.closeInfo();
+    let index = this.store.uniqueUsers().findIndex((u) => u.userId === userId);
     this.store.slideTo(index);
     this.dialogRef?.close();
   }

@@ -1,73 +1,107 @@
 <div class="wrapper">
-    <form autocomplete="off" id="form">
-        @let proposal = store.selectedProposal();
-        <div class="title rounded d-flex flex-row justify-content-center align-items-center">
-            <h1 class="text-white fw-bold m-0 fs-6">{{ `${proposal?.userName} ${proposal?.userSurname?.substring(0,1)}.
+  <form autocomplete="off" id="form">
+    @let proposal = store.selectedProposal();
+    <div
+      class="title rounded d-flex flex-row justify-content-center align-items-center"
+    >
+      <h1 class="text-white fw-bold m-0 fs-6">
+        {{
+          `${proposal?.userName} ${proposal?.userSurname?.substring(0, 1)}.
                 -
                 ${position()}
                 -
-                ${proposal?.proposalDate}` }}</h1>
+                ${proposal?.proposalDate}`
+        }}
+      </h1>
+    </div>
+
+    <div class="row mt-1 mb-4 d-flex justify-content-center">
+      <button
+        type="button"
+        class="btn whole fw-bold d-flex flex-column justify-content-center align-items-center text-white rounded"
+        (click)="onUpdate('W')"
+      >
+        X
+      </button>
+      <div
+        class="morning d-flex flex-column justify-content-center align-items-center rounded text-white"
+        (click)="onUpdate('M')"
+      >
+        <div class="upper fw-bold position-relative fs-6">11</div>
+        <div class="lower fw-bold position-relative fs-6">17</div>
+      </div>
+      <div
+        class="afternoon d-flex flex-column justify-content-center align-items-center rounded text-white"
+        (click)="onUpdate('A')"
+      >
+        <div class="upper fw-bold position-relative fs-6">17</div>
+        <div class="lower fw-bold position-relative fs-6">
+          {{ isFridayOrSaturday(proposal?.proposalDate!) ? "23" : "22" }}
         </div>
+      </div>
 
-        <div class="row mt-1 mb-4 d-flex justify-content-center">
-            <button type="button"
-                class="btn whole fw-bold d-flex flex-column justify-content-center align-items-center text-white rounded"
-                (click)="onUpdate('W')">X</button>
-            <div class="morning d-flex flex-column justify-content-center align-items-center rounded text-white"
-                (click)="onUpdate('M')">
-                <div class="upper fw-bold position-relative fs-6">11</div>
-                <div class="lower fw-bold position-relative fs-6">17</div>
-            </div>
-            <div class="afternoon d-flex flex-column justify-content-center align-items-center rounded text-white"
-                (click)="onUpdate('A')">
-                <div class="upper fw-bold position-relative fs-6">17</div>
-                <div class="lower fw-bold position-relative fs-6">{{ isFridayOrSaturday(proposal?.proposalDate!) ? '23'
-                    :
-                    '22' }}</div>
-            </div>
+      <button
+        type="button"
+        class="btn delete d-flex flex-column justify-content-center align-items-center text-white rounded"
+        (click)="onDelete()"
+      >
+        <i class="bi bi-trash fw-bold"></i>
+      </button>
+    </div>
 
-            <button type="button"
-                class="btn delete d-flex flex-column justify-content-center align-items-center text-white rounded"
-                (click)="onDelete()"><i class="bi bi-trash fw-bold"></i></button>
-        </div>
+    <div class="row proposal-times">
+      <div class="from position-absolute">
+        <app-d-picker
+          [formField]="form.timeFrom"
+          [proposalDate]="proposal!.proposalDate"
+          id="timeFrom"
+        />
+      </div>
+      <div class="to position-absolute">
+        <app-d-picker
+          [formField]="form.timeTo"
+          [proposalDate]="proposal!.proposalDate"
+        />
+      </div>
+    </div>
 
-        <div class="row proposal-times">
-            <div class="from position-absolute">
-                <app-d-picker [formField]="form.timeFrom" [proposalDate]="proposal!.proposalDate" id="timeFrom" />
-            </div>
-            <div class="to position-absolute">
-                <app-d-picker [formField]="form.timeTo" [proposalDate]="proposal!.proposalDate" />
-            </div>
-        </div>
+    <div class="error">
+      @if (showTimeFromError()) {
+        @for (error of form.timeFrom().errors(); track error.kind) {
+          <p>{{ error.message }}</p>
+        }
+      }
+      @if (showTimeToError()) {
+        @for (error of form.timeTo().errors(); track error.kind) {
+          <p>{{ error.message }}</p>
+        }
+      }
 
-        <div class="error">
-            @if (showTimeFromError()) {
-            @for (error of form.timeFrom().errors(); track error.kind) {
-            <p>{{ error.message }}</p>
-            }
-            }
-            @if (showTimeToError()) {
-            @for (error of form.timeTo().errors(); track error.kind) {
-            <p>{{ error.message }}</p>
-            }
-            }
+      @if (errorMessage()) {
+        <p>{{ errorMessage() }}</p>
+      }
+    </div>
 
-            @if (errorMessage()) {
-            <p>{{ errorMessage() }}</p>
-            }
-        </div>
-
-        <div class="row mt-5 pt-4">
-            <div class="col-6 d-flex justify-content-end">
-                <button type="button" class="btn cancel rounded text-white fw-bold" (click)="onClose()">
-                    <i class="bi bi-caret-left"></i>&nbsp;Zpět</button>
-            </div>
-            <div class="col-6">
-                <button type="submit" class="btn submit rounded text-white fw-bold" (click)="onUpdate()"
-                    [disabled]="form().invalid()">
-                    <i class="bi bi-pencil-square"></i>&nbsp;Upravit
-                </button>
-            </div>
-        </div>
-    </form>
+    <div class="row mt-5 pt-4">
+      <div class="col-6 d-flex justify-content-end">
+        <button
+          type="button"
+          class="btn cancel rounded text-white"
+          (click)="onClose()"
+        >
+          <i class="bi bi-caret-left"></i>&nbsp;Zpět
+        </button>
+      </div>
+      <div class="col-6">
+        <button
+          type="submit"
+          class="btn submit rounded text-white"
+          (click)="onUpdate()"
+          [disabled]="form().invalid()"
+        >
+          <i class="bi bi-pencil-square"></i>&nbsp;Upravit
+        </button>
+      </div>
+    </div>
+  </form>
 </div>

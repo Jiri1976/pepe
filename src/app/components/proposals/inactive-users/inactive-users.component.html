@@ -1,34 +1,32 @@
-<div #scrollContainer class="select-user" [style]="sectionStyles()">
-    @if (users().length > 10) {
-    <div class="close_btn" (click)="onClose()">
-        <i class="bi bi-x"></i>
-    </div>
-    }
-
-    <h4>
-        @switch (this.store.selectedInactive()) {
-        @case ('Helper') {
+<div class="select-user" [style]="sectionStyles()">
+  <h4>
+    @switch (this.store.selectedInactive()) {
+      @case ("Helper") {
         POMOCKY
-        }
-        @case ('Driver') {
+      }
+      @case ("Driver") {
         ŘIDIČI
-        }
-        @case ('Cook') {
+      }
+      @case ("Cook") {
         KUCHYŇ
-        }
-        @case ('Pizza') {
+      }
+      @case ("Pizza") {
         PIZZAŘI
-        }
-        }
-    </h4>
-
-    @for(user of users(); track $index) {
-    <div class="user" (click)="onSelectUser(user)">
-        <div class="line">{{ user.name }} {{ user.surname }}
-        </div>
-    </div>
+      }
     }
-    <div class="close">
-        <button class="closeBtn" (click)="onClose()">Zavřít</button>
-    </div>
+  </h4>
+
+  <div #scrollContainer class="users-list">
+    @for (user of users(); track $index) {
+      <div class="user" (click)="onSelectUser(user)">
+        <div class="line">{{ user.name }} {{ user.surname }}</div>
+      </div>
+    }
+  </div>
+
+  <div class="close">
+    <button class="closeBtn" (click)="onClose()">
+      <i class="bi bi-x-circle"></i>&nbsp;Zavřít
+    </button>
+  </div>
 </div>

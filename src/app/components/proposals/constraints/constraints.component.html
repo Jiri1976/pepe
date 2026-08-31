@@ -1,0 +1,132 @@
+<div class="wrapper p-4 rounded-3 w-100" #scrollContainer tabindex="-1">
+  <h2 class="text-center mb-4 fw-bold">
+    Plánovač směn pro
+    {{ this.propStore.currentCard()!.monthYearName.toLowerCase() }} /
+    {{ this.propStore.destination() }}
+  </h2>
+
+  @if (pizza()?.length ?? 0 === 0) {
+    <br />
+    @if (propStore.isLoadingConstraints()) {
+      <h3 class="text-center mb-4 fw-bold blind"></h3>
+    } @else {
+      <h3 class="text-center mb-4 fw-bold">PIZZAŘI</h3>
+    }
+    <div class="d-flex flex-column gap-3">
+      @for (user of pizza(); track user.id) {
+        @if (propStore.isLoadingConstraints()) {
+          <app-constraint-skeleton />
+        } @else {
+          <app-user-constraint [user]="user" [position]="'Pizza'" />
+        }
+      }
+    </div>
+  }
+
+  @if (cooks()?.length ?? 0 === 0) {
+    <br />
+    @if (propStore.isLoadingConstraints()) {
+      <h3 class="text-center mb-4 fw-bold blind"></h3>
+    } @else {
+      <h3 class="text-center mb-4 fw-bold">KUCHAŘI</h3>
+    }
+    <div class="d-flex flex-column gap-3">
+      @for (user of cooks(); track user.id) {
+        @if (propStore.isLoadingConstraints()) {
+          <app-constraint-skeleton />
+        } @else {
+          <app-user-constraint [user]="user" [position]="'Cook'" />
+        }
+      }
+    </div>
+  }
+
+  @if (helpers()?.length ?? 0 === 0) {
+    <br />
+    @if (propStore.isLoadingConstraints()) {
+      <h3 class="text-center mb-4 fw-bold blind"></h3>
+    } @else {
+      <h3 class="text-center mb-4 fw-bold">POMOCKY</h3>
+    }
+
+    <div class="d-flex flex-column gap-3">
+      @for (user of helpers(); track user.id) {
+        @if (propStore.isLoadingConstraints()) {
+          <app-constraint-skeleton />
+        } @else {
+          <app-user-constraint [user]="user" [position]="'Helper'" />
+        }
+      }
+    </div>
+  }
+
+  @if (drivers()?.length ?? 0 === 0) {
+    <br />
+    @if (propStore.isLoadingConstraints()) {
+      <h3 class="text-center mb-4 fw-bold blind"></h3>
+    } @else {
+      <h3 class="text-center mb-4 fw-bold">ŘIDIČI</h3>
+    }
+    <div class="d-flex flex-column gap-3">
+      @for (user of drivers(); track user.id) {
+        @if (propStore.isLoadingConstraints()) {
+          <app-constraint-skeleton />
+        } @else {
+          <app-user-constraint [user]="user" [position]="'Driver'" />
+        }
+      }
+    </div>
+  }
+
+  <div class="d-flex flex-row justify-content-center buttons mt-4">
+    @if (propStore.isLoadingConstraints()) {
+      <button class="blind" type="button"></button>
+    } @else {
+      <button
+        class="cancel"
+        type="button"
+        (click)="propStore.closeConstraints()"
+      >
+        <i class="bi bi-caret-left"></i>&nbsp;Zpět
+      </button>
+    }
+
+    @if (propStore.isLoadingConstraints()) {
+      <button class="blind mx-3" type="button"></button>
+    } @else {
+      <button type="button" class="save mx-3" (click)="save()">
+        @if (!propStore.isSavingConstraints()) {
+          <i class="bi bi-floppy"></i>&nbsp;Uložit
+        } @else {
+          <span
+            class="spinner-border spinner-border-sm text-white me-1"
+            aria-hidden="true"
+          ></span>
+          Ukládám...
+        }
+      </button>
+    }
+
+    @if (propStore.isLoadingConstraints()) {
+      <button class="blind" type="button"></button>
+    } @else {
+      <button
+        class="submit bubble"
+        [class.animate]="isBubbling()"
+        type="button"
+        (click)="generate()"
+        [disabled]="propStore.invalidScheduleGeneratorRequest()"
+      >
+        @if (!propStore.isGeneratingSchedule()) {
+          <i class="bi bi-openai"></i>&nbsp;Generovat
+        } @else {
+          <span
+            class="spinner-border spinner-border-sm text-white me-1"
+            aria-hidden="true"
+          ></span>
+          Pracuji...
+        }
+      </button>
+    }
+  </div>
+</div>

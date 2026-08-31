@@ -1,0 +1,198 @@
+:host {
+  width: 100%;
+  margin: 0 auto;
+  padding: 5px;
+  border-bottom: 1px solid var(--main-border-color);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+:host ::ng-deep p-datepicker.constraints-days-only {
+  .p-datepicker-header {
+    display: none !important;
+  }
+  .p-datepicker-day-selected {
+    background: var(--main-dark) !important;
+    color: var(--white) !important;
+  }
+}
+
+:host
+  ::ng-deep
+  p-datepicker.opposite-datepicker
+  .p-datepicker-panel.p-disabled {
+  opacity: 1 !important;
+
+  .p-disabled,
+  .p-disabled * {
+    cursor: default;
+    pointer-events: none;
+    user-select: none;
+    opacity: 1 !important;
+  }
+}
+
+:host ::ng-deep p-datepicker.opposite-datepicker {
+  .p-datepicker-day-selected {
+    background: transparent !important;
+    color: inherit !important;
+  }
+}
+
+:host ::ng-deep .opposite-date-cell {
+  width: 2rem;
+  height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  font-size: 0.875rem;
+}
+
+:host ::ng-deep .opposite-date-cell-selected {
+  color: var(--white) !important;
+  font-weight: normal !important;
+  font-size: 0.875rem;
+}
+
+:host ::ng-deep .opposite-date-cell-whole,
+:host ::ng-deep .opposite-date-cell-other {
+  background: var(--main-green);
+}
+
+:host ::ng-deep .opposite-date-cell-morning {
+  background: var(--main-purple);
+}
+
+:host ::ng-deep .opposite-date-cell-afternoon {
+  background: var(--proposal-red);
+}
+
+:host ::ng-deep p-selectbutton {
+  .p-togglebutton:hover,
+  .p-togglebutton.p-togglebutton-checked:hover {
+    background: var(--white) !important;
+    border-color: var(--main-dark) !important;
+    color: var(--main-dark) !important;
+    opacity: 1 !important;
+  }
+}
+
+input[type="text"] {
+  font-weight: 600;
+  text-align: center;
+  width: 50px;
+  border-radius: 7px;
+  border: 1px solid var(--main-dark);
+}
+
+label {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--main-dark);
+  margin-bottom: 5px;
+}
+
+.picker {
+  width: 70px;
+  height: 36px;
+  border: 1px solid var(--main-border-color);
+  border-radius: 7px;
+  background: linear-gradient(90deg, #eee 25%, #fff 50%, #eee 75%);
+  background-size: 400% 100%;
+  animation: shimmer 2s infinite linear;
+}
+
+/* */
+h4 {
+  width: 400px;
+  height: 30px;
+  border: 1px solid var(--main-border-color);
+  border-radius: 7px;
+  background: linear-gradient(90deg, #eee 25%, #fff 50%, #eee 75%);
+  background-size: 400% 100%;
+  animation: shimmer 2s infinite linear;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 0;
+  padding: 0 15px;
+}
+
+.column {
+  width: 200px;
+  height: 26px;
+  border: 1px solid var(--main-border-color);
+  border-radius: 7px;
+  background: linear-gradient(90deg, #eee 25%, #fff 50%, #eee 75%);
+  background-size: 400% 100%;
+  animation: shimmer 2s infinite linear;
+}
+
+.input {
+  width: 50px;
+  height: 26px;
+  border: 1px solid var(--main-border-color);
+  border-radius: 7px;
+  background: linear-gradient(90deg, #eee 25%, #fff 50%, #eee 75%);
+  background-size: 400% 100%;
+  animation: shimmer 2s infinite linear;
+}
+
+.checkbox {
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--main-border-color);
+  border-radius: 7px;
+  background: linear-gradient(90deg, #eee 25%, #fff 50%, #eee 75%);
+  background-size: 400% 100%;
+  animation: shimmer 2s infinite linear;
+}
+
+.select-button {
+  width: 500px;
+  height: 34px;
+  margin-right: 10px;
+  border: 1px solid var(--main-border-color);
+  border-radius: 7px;
+  background: linear-gradient(90deg, #eee 25%, #fff 50%, #eee 75%);
+  background-size: 400% 100%;
+  animation: shimmer 2s infinite linear;
+}
+
+.short {
+  width: 100px;
+  height: 26px;
+  border: 1px solid var(--main-border-color);
+  border-radius: 7px;
+  background: linear-gradient(90deg, #eee 25%, #fff 50%, #eee 75%);
+  background-size: 400% 100%;
+  animation: shimmer 2s infinite linear;
+}
+
+.datepicker {
+  width: 240px;
+  height: 247px;
+  margin-top: 10px;
+  border: 1px solid var(--main-border-color);
+  border-radius: 7px;
+  background: linear-gradient(90deg, #eee 25%, #fff 50%, #eee 75%);
+  background-size: 400% 100%;
+  animation: shimmer 2s infinite linear;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}

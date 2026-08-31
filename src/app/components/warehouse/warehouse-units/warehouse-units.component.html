@@ -1,135 +1,158 @@
 <div class="container">
-    @if (!warehouseStore.isLoading()) {
-    <div class="unit-card d-flex justify-content-center" animate.enter="fade-in">
-        @if (cards().length > 0) {
-        <swiper-container #swiperRef effect="cards" grab-cursor="true" (swiperinit)="onSwiperInit($event)"
-            (swiperslidechange)="onSlideChange($event)">
-            @for(card of cards(); track $index) {
-            <swiper-slide class="d-flex flex-row justify-content-center align-items-center">
-                @if (card.units.length > 0) {
+  @if (!warehouseStore.isLoading()) {
+    <div
+      class="unit-card d-flex justify-content-center"
+      animate.enter="fade-in"
+    >
+      @if (cards().length > 0) {
+        <div class="clip-slider" aria-roledescription="carousel">
+          @for (card of cards(); track $index) {
+            <section
+              class="clip-slide d-flex flex-row justify-content-center align-items-center"
+              [class.is-active]="activeSlide() === $index"
+              [class.is-revealed]="revealedSlide() === $index"
+              [class.from-left-bottom]="
+                activeSlide() === $index && !revealFromTopRight()
+              "
+              [class.from-top-right]="
+                activeSlide() === $index && revealFromTopRight()
+              "
+              [attr.aria-hidden]="activeSlide() !== $index"
+            >
+              @if (card.units.length > 0) {
                 <div class="row unitList">
-                    <div class="row mb-3 head justify-content-between">
-                        <div class="col text-left">
-                            {{card.warehouseItemName}}
-                        </div>
-                        <div class="col" style="text-align: right !important;">
-                            {{ card.monthYearName}}
-                        </div>
+                  <div class="row mb-3 head justify-content-between">
+                    <div class="col text-left">
+                      {{ card.warehouseItemName }}
                     </div>
-                    <div class="col-4 d-flex flex-column justify-content-center">
-                        @for(unit of card.units | slice:0:11; track $index) {
-                        <app-warehouse-input [unit]="unit" />
-                        }
+                    <div class="col" style="text-align: right !important">
+                      {{ card.monthYearName }}
                     </div>
-                    <div class="col-4 d-flex flex-column justify-content-center">
-                        @for(unit of card.units | slice:11:22; track $index) {
-                        <app-warehouse-input [unit]="unit" />
-                        }
-                    </div>
-                    <div class="col-4 d-flex flex-column justify-content-center">
-                        @for(unit of card.units | slice:22:card.units.length; track $index) {
-                        <app-warehouse-input [unit]="unit" />
-                        }
+                  </div>
 
-                        @switch (card.units.length) {
-                        @case (31) {
-                        @for(i of [1,2]; track i) {
-                        <div class="row empty w-100 mt-1">
+                  <div class="col-4 d-flex flex-column justify-content-center">
+                    @for (unit of card.units | slice: 0 : 11; track $index) {
+                      <app-warehouse-input [unit]="unit" />
+                    }
+                  </div>
+
+                  <div class="col-4 d-flex flex-column justify-content-center">
+                    @for (unit of card.units | slice: 11 : 22; track $index) {
+                      <app-warehouse-input [unit]="unit" />
+                    }
+                  </div>
+
+                  <div class="col-4 d-flex flex-column justify-content-center">
+                    @for (
+                      unit of card.units | slice: 22 : card.units.length;
+                      track $index
+                    ) {
+                      <app-warehouse-input [unit]="unit" />
+                    }
+
+                    @switch (card.units.length) {
+                      @case (31) {
+                        @for (i of [1, 2]; track i) {
+                          <div class="row empty w-100 mt-1">
                             <div class="col first" style="color: #fff">00</div>
                             <div class="col second" style="color: #fff">-</div>
-                        </div>
+                          </div>
                         }
-                        }
-
-                        @case (30) {
-                        @for(i of [1,2,3]; track i) {
-                        <div class="row empty w-100 mt-1">
+                      }
+                      @case (30) {
+                        @for (i of [1, 2, 3]; track i) {
+                          <div class="row empty w-100 mt-1">
                             <div class="col first" style="color: #fff">00</div>
                             <div class="col second" style="color: #fff">-</div>
-                        </div>
+                          </div>
                         }
-                        }
-
-                        @case (29) {
-                        @for(i of [1,2,3,4]; track i) {
-                        <div class="row empty w-100 mt-1">
+                      }
+                      @case (29) {
+                        @for (i of [1, 2, 3, 4]; track i) {
+                          <div class="row empty w-100 mt-1">
                             <div class="col first" style="color: #fff">00</div>
                             <div class="col second" style="color: #fff">-</div>
-                        </div>
+                          </div>
                         }
-                        }
-
-                        @case (28) {
-                        @for(i of [1,2,3,4,5]; track i) {
-                        <div class="row empty w-100 mt-1">
+                      }
+                      @case (28) {
+                        @for (i of [1, 2, 3, 4, 5]; track i) {
+                          <div class="row empty w-100 mt-1">
                             <div class="col first" style="color: #fff">00</div>
                             <div class="col second" style="color: #fff">-</div>
-                        </div>
+                          </div>
                         }
-                        }
-                        }
-                    </div>
-                    <div class="row mt-3 foot justify-content-center align-items-center">
-                        @if (card.id > 0) {
-                        <button hide class="delBtn fw-bold text-white" type="button"
-                            (click)="warehouseStore.requestDeleteCard()">
-                            @if (!warehouseStore.isDeletingCard()) {
-                            <i class="bi bi-trash fw-bold"></i>&nbsp;Smazat
-                            } @else {
+                      }
+                    }
+
+                    <!-- <div class="row empty w-100 mt-1"> -->
+                    @if (card.id > 0) {
+                      <div class="mt-auto d-flex justify-content-center w-100">
+                        <button
+                          hide
+                          class="delBtn text-white"
+                          type="button"
+                          (click)="warehouseStore.requestDeleteCard()"
+                        >
+                          @if (!warehouseStore.isDeletingCard()) {
+                            <i class="bi bi-trash"></i>&nbsp;Smazat
+                          } @else {
                             <div class="spinner-border" role="status">
-                                <span class="visually-hidden">Loading...</span>
+                              <span class="visually-hidden">Loading...</span>
                             </div>
-                            }
+                          }
                         </button>
-                        }
-                    </div>
+                      </div>
+                    }
+                  </div>
                 </div>
-                }
-            </swiper-slide>
-            }
-        </swiper-container>
+              }
+            </section>
+          }
+        </div>
+
         <app-paging>
-            <app-prev-next-button icon="bi-caret-left" (click)="movePrevious()"
-                [disabled]="this.warehouseStore.sliceIndex() === 0" />
-            <app-destination-button [destination]="warehouseStore.destination()" />
-            <app-prev-next-button icon="bi-caret-right" (click)="moveNext()"
-                [disabled]="this.warehouseStore.sliceIndex() === this.warehouseStore.cards().length - 1" />
+          <app-prev-next-button
+            icon="bi-caret-left"
+            (click)="movePrevious()"
+            [disabled]="warehouseStore.sliceIndex() === 0"
+          />
+          <app-destination-button
+            [destination]="warehouseStore.destination()"
+          />
+          <app-prev-next-button
+            icon="bi-caret-right"
+            (click)="moveNext()"
+            [disabled]="warehouseStore.sliceIndex() === cards().length - 1"
+          />
         </app-paging>
-        } @else {
-        <div class="missig-items position-absolute flex-column justify-content-center align-items-center"
-            animate.enter="fade-in">
-            <h4 class="fw-bold">Nenalezeny data v databázi.</h4>
+      } @else {
+        <div
+          class="missig-items position-absolute flex-column justify-content-center align-items-center"
+          animate.enter="fade-in"
+        >
+          <h4 class="fw-bold">Nenalezeny data v databázi.</h4>
         </div>
+      }
+    </div>
+  } @else {
+    <div
+      class="skeleton position-relative d-flex flex-column justify-content-center"
+      animate.leave="fade-out"
+    >
+      <div
+        class="row unitList d-flex flex-row justify-content-center align-items-center"
+      >
+        <div class="row mb-3 head"></div>
+
+        @for (column of [1, 2, 3]; track column) {
+          <div class="col-4 d-flex flex-column justify-content-center">
+            @for (i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]; track $index) {
+              <div class="row w-100 mt-1"></div>
+            }
+          </div>
         }
+      </div>
     </div>
-    } @else {
-    <!-- <app-units-skeleton /> -->
-    <div class="skeleton position-relative d-flex flex-column justify-content-center" animate.leave="fade-out">
-        <div class="row unitList d-flex flex-row justify-content-center align-items-center">
-            <div class="row mb-3 head">
-            </div>
-            <div class="col-4 d-flex flex-column justify-content-center">
-                @for(i of [1,2,3,4,5,6,7,8,9,10,11]; track $index) {
-                <div class="row w-100 mt-1">
-                </div>
-                }
-            </div>
-            <div class="col-4 d-flex flex-column justify-content-center">
-                @for(i of [1,2,3,4,5,6,7,8,9,10,11]; track $index) {
-                <div class="row w-100 mt-1">
-                </div>
-                }
-            </div>
-            <div class="col-4 d-flex flex-column justify-content-center">
-                @for(i of [1,2,3,4,5,6,7,8,9,10,11]; track $index) {
-                <div class="row w-100 mt-1">
-                </div>
-                }
-            </div>
-            <div class="row mt-3 foot justify-content-center align-items-center">
-                <button hide class="delBtn" type="button"></button>
-            </div>
-        </div>
-    </div>
-    }
+  }
 </div>

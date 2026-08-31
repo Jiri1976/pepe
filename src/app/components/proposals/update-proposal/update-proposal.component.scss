@@ -1,135 +1,141 @@
 :host-context(cdk-dialog-container) {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background-color: var(--white);
-    filter: drop-shadow(0 0 2em rgba(#000, 0.5));
-    border-radius: 7px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--white);
+  filter: drop-shadow(0 0 2em rgba(#000, 0.5));
+  border-radius: 7px;
 }
 
 .wrapper {
-    width: 25rem;
+  width: 25rem;
 
-    form {
-        width: 100%;
-        margin-bottom: 25px;
+  form {
+    width: 100%;
+    margin-bottom: 25px;
 
-        .error {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            position: absolute;
-            width: 100%;
-            height: 50px;
-            bottom: 50px;
+    .error {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      width: 100%;
+      height: 50px;
+      bottom: 50px;
 
-            p {
-                font-size: 0.9rem;
-                padding: 0;
-                font-weight: bold;
-                color: var(--main-red);
-                margin: 0;
-            }
-        }
-
-        .submit {
-            width: 100px;
-            background: var(--main-dark);
-            border: 1px solid var(--main-dark);
-            cursor: pointer;
-            opacity: 1;
-            height: 35px;
-            --bs-btn-border-radius: 0;
-        }
-
-        .submit:disabled {
-            background: var(--main-disabled);
-            border: 1px solid var(--main-disabled);
-        }
-
-        .cancel {
-            width: 100px;
-            border: 1px solid var(--main-back);
-            background: var(--main-back);
-            cursor: pointer;
-            opacity: 1;
-            height: 35px;
-            --bs-btn-border-radius: 0;
-        }
-
-        .delete,
-        .whole,
-        .destination {
-            width: 35px;
-            height: 35px;
-            --bs-btn-border-radius: 0;
-            margin: 0 10px;
-
-            .bi {
-                font-size: 1.2rem;
-            }
-        }
-
-        .delete {
-            background: var(--main-red);
-        }
-
-        .whole {
-            background: var(--main-green);
-        }
-
-        .morning,
-        .afternoon {
-            width: 35px;
-            height: 35px;
-            margin: 0 10px;
-
-            .upper {
-                top: 4px;
-            }
-
-            .lower {
-                bottom: 3px;
-            }
-        }
-
-        .morning:hover,
-        .afternoon:hover {
-            cursor: pointer;
-        }
-
-        .morning {
-            background: var(--main-purple);
-        }
-
-        .afternoon {
-            background: var(--main-red);
-        }
-
-        .title {
-            height: 35px;
-            margin: 20px auto;
-            width: 90%;
-            background: var(--main-dark);
-        }
-
-        .row {
-            .from {
-                top: 125px !important;
-                left: 80px !important;
-            }
-
-            .to {
-                top: 125px !important;
-                left: 180px !important;
-            }
-        }
-
-        .row.proposal-times {
-            width: 10%;
-            margin-bottom: 10px;
-        }
+      p {
+        font-size: 0.9rem;
+        padding: 0;
+        font-weight: bold;
+        color: var(--main-red);
+        margin: 0;
+      }
     }
+
+    .submit {
+      width: 130px;
+      background: var(--main-green);
+      cursor: pointer;
+      opacity: 1;
+      height: 35px;
+      border: none;
+      font-size: 14px;
+      letter-spacing: 1px;
+      font-weight: 600;
+      --bs-btn-border-radius: 0;
+    }
+
+    .submit:disabled {
+      pointer-events: none;
+      opacity: 0.4;
+    }
+
+    .cancel {
+      width: 130px;
+      border: none;
+      background: var(--main-dark);
+      font-size: 14px;
+      cursor: pointer;
+      letter-spacing: 1px;
+      opacity: 1;
+      font-weight: 600;
+      height: 35px;
+      --bs-btn-border-radius: 0;
+    }
+
+    .delete,
+    .whole,
+    .destination {
+      width: 35px;
+      height: 35px;
+      --bs-btn-border-radius: 0;
+      margin: 0 10px;
+
+      .bi {
+        font-size: 1.2rem;
+      }
+    }
+
+    .delete {
+      background: var(--main-red);
+    }
+
+    .whole {
+      background: var(--main-green);
+    }
+
+    .morning,
+    .afternoon {
+      width: 35px;
+      height: 35px;
+      margin: 0 10px;
+
+      .upper {
+        top: 4px;
+      }
+
+      .lower {
+        bottom: 3px;
+      }
+    }
+
+    .morning:hover,
+    .afternoon:hover {
+      cursor: pointer;
+    }
+
+    .morning {
+      background: var(--main-purple);
+    }
+
+    .afternoon {
+      background: var(--main-red);
+    }
+
+    .title {
+      height: 35px;
+      margin: 20px auto;
+      width: 90%;
+      background: var(--main-dark);
+    }
+
+    .row {
+      .from {
+        top: 125px !important;
+        left: 80px !important;
+      }
+
+      .to {
+        top: 125px !important;
+        left: 180px !important;
+      }
+    }
+
+    .row.proposal-times {
+      width: 10%;
+      margin-bottom: 10px;
+    }
+  }
 }

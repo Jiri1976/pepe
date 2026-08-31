@@ -1,66 +1,90 @@
-import { PartialStateUpdater } from "@ngrx/signals";
-import { LoadingSlice } from "./with-loading.slice";
+import { PartialStateUpdater } from '@ngrx/signals';
+import { LoadingSlice } from './with-loading.slice';
 
 export function setIsLoading(): PartialStateUpdater<LoadingSlice> {
-    return _ => ({ isLoading: true });
+  return (_) => ({ isLoading: true });
 }
 
 export function setNotLoading(): PartialStateUpdater<LoadingSlice> {
-    return _ => ({ isLoading: false });
+  return (_) => ({ isLoading: false });
 }
 
 export function setIsSaving(): PartialStateUpdater<LoadingSlice> {
-    return _ => ({ isSaving: true });
+  return (_) => ({ isSaving: true });
 }
 
 export function setNotSaving(): PartialStateUpdater<LoadingSlice> {
-    return _ => ({ isSaving: false });
+  return (_) => ({ isSaving: false });
 }
 
 export function setIsDeleting(): PartialStateUpdater<LoadingSlice> {
-    return _ => ({ isDeleting: true });
+  return (_) => ({ isDeleting: true });
 }
 
 export function toggleIsDeleting(): PartialStateUpdater<LoadingSlice> {
-    return state => ({ isDeleting: !state.isDeleting });
+  return (state) => ({ isDeleting: !state.isDeleting });
 }
 
 export function setNotDeleting(): PartialStateUpdater<LoadingSlice> {
-    return _ => ({ isDeleting: false });
+  return (_) => ({ isDeleting: false });
 }
 
 export function setIsDeletingCard(): PartialStateUpdater<LoadingSlice> {
-    return _ => ({ isDeletingCard: true });
+  return (_) => ({ isDeletingCard: true });
 }
 
 export function setNotDeletingCard(): PartialStateUpdater<LoadingSlice> {
-    return _ => ({ isDeletingCard: false });
+  return (_) => ({ isDeletingCard: false });
 }
 
 export function toggleIsLoading(): PartialStateUpdater<LoadingSlice> {
-    return state => ({ isLoading: !state.isLoading });
+  return (state) => ({ isLoading: !state.isLoading });
 }
 
 export function toggleIsPdfLoading(): PartialStateUpdater<LoadingSlice> {
-    return state => ({ isPdfLoading: !state.isPdfLoading });
+  return (state) => ({ isPdfLoading: !state.isPdfLoading });
 }
 
 export function toggleCalendar(): PartialStateUpdater<LoadingSlice> {
-    return state => ({ showCalendar: !state.showCalendar });
+  return (state) => ({ showCalendar: !state.showCalendar });
 }
 
 export function togglePdfButtonLoading(): PartialStateUpdater<LoadingSlice> {
-    return state => ({ pdfButtonLoading: !state.pdfButtonLoading });
+  return (state) => ({ pdfButtonLoading: !state.pdfButtonLoading });
 }
 
 export function toggleIsSaving(): PartialStateUpdater<LoadingSlice> {
-    return state => ({ isSaving: !state.isSaving });
+  return (state) => ({ isSaving: !state.isSaving });
 }
 
 export function closeCalendar(): PartialStateUpdater<LoadingSlice> {
-    return _ => ({ showCalendar: false });
+  return (_) => ({ showCalendar: false });
 }
 
 export function toggleIsDeletingCard(): PartialStateUpdater<LoadingSlice> {
-    return state => ({ isDeletingCard: !state.isDeletingCard });
+  return (state) => ({ isDeletingCard: !state.isDeletingCard });
+}
+
+export function generatingOpen(): PartialStateUpdater<LoadingSlice> {
+  return (_) => ({ isGeneratingSchedule: true });
+}
+
+export function generatingClose(): PartialStateUpdater<LoadingSlice> {
+  return (_) => ({ isGeneratingSchedule: false });
+}
+
+export function startLoadingConstraints(): PartialStateUpdater<LoadingSlice> {
+  return (state) => ({ isLoadingConstraints: true });
+}
+
+export function stopLoadingConstraints(): PartialStateUpdater<LoadingSlice> {
+  return (state) => ({ isLoadingConstraints: false });
+}
+
+export function startSavingConstraints(): PartialStateUpdater<LoadingSlice> {
+  return (state) => ({ isSavingConstraints: true });
+}
+
+export function stopSavingConstraints(): PartialStateUpdater<LoadingSlice> {
+  return (state) => ({ isSavingConstraints: false });
 }

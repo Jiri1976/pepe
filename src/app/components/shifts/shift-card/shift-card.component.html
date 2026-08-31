@@ -1,44 +1,106 @@
 <div class="card-wrapper">
-    <div class="user-card-table d-flex flex-column justify-content-center">
-        @let currentCard = card();
-        @if(currentCard && currentCard.shifts.length > 0) {
-        <table class="table">
-            <thead class="table-dark d-table w-100 fw-bold">
-                <tr class="fw-bold align-items-middle">
-                    <th class="fw-bold align-items-middle" style="width: 5% !important; text-align: right;">#</th>
-                    <th class="fw-bold align-items-middle" style="width: 15% !important; text-align: center;">Datum</th>
-                    <th class="fw-bold align-items-middle" style="width: 15% !important; text-align: center;">Začátek
-                    </th>
-                    <th class="fw-bold align-items-middle" style="width: 15% !important; text-align: center;">Konec</th>
-                    <th class="fw-bold align-items-middle" style="width: 15% !important; text-align: center;">Hodiny
-                    </th>
-                    <th class="fw-bold align-items-middle" style="width: 40% !important; text-align: center;">Perso</th>
-                </tr>
-            </thead>
-            <tbody [style.max-height]="sectionStyles().maxHeight ?? null"
-                [style.overflow-y]="sectionStyles().overflowY">
-                @for(shift of currentCard.shifts; track $index) {
-                <tr class="d-table w-100"
-                    (click)="((isPastCard() === false && authStore.user()?.role === 'Master') || (authStore.user()?.role === 'Admin')) && onUpdate(shift)">
-                    <td scope="row" style="width: 5% !important; text-align: right !important; font-weight: bold;">
-                        {{$index + 1}}.</td>
-                    <td style="width: 15% !important; text-align: center !important;">{{shift.date}}</td>
-                    <td style="width: 15% !important; text-align: center !important;">{{shift.from}}</td>
-                    <td style="width: 15% !important; text-align: center !important;">{{shift.to}}</td>
-                    <td style="width: 15% !important; text-align: center !important;">{{shift.hours}}</td>
-                    <td class="perso text-center" style="width: 40% !important; vertical-align: middle !important;">
-                        {{shift.perso}}
-                    </td>
-                </tr>
-                }
-            </tbody>
-        </table>
-        }
-        @if(currentCard && currentCard.shifts.length === 0) {
-        <div class="empty-shifts mx-auto d-flex flex-column justify-content-center align-items-center">
-            <h4 class="fw-bold">{{ currentCard.userName }} {{ currentCard.userSurname }}</h4>
-            <h4 class="fw-bold">nemá uložené směny na pozici {{getCardPosition()}}</h4>
-        </div>
-        }
-    </div>
+  <div class="user-card-table d-flex flex-column justify-content-center">
+    @let currentCard = card();
+    @if (currentCard && currentCard.shifts.length > 0) {
+      <table class="table">
+        <thead class="table-dark d-table w-100 fw-bold">
+          <tr class="fw-bold align-items-middle">
+            <th
+              class="fw-bold align-items-middle"
+              style="width: 5% !important; text-align: right"
+            >
+              #
+            </th>
+            <th
+              class="fw-bold align-items-middle"
+              style="width: 15% !important; text-align: center"
+            >
+              Datum
+            </th>
+            <th
+              class="fw-bold align-items-middle"
+              style="width: 15% !important; text-align: center"
+            >
+              Začátek
+            </th>
+            <th
+              class="fw-bold align-items-middle"
+              style="width: 15% !important; text-align: center"
+            >
+              Konec
+            </th>
+            <th
+              class="fw-bold align-items-middle"
+              style="width: 15% !important; text-align: center"
+            >
+              Hodiny
+            </th>
+            <th
+              class="fw-bold align-items-middle"
+              style="width: 35% !important; text-align: center"
+            >
+              Perso
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (shift of currentCard.shifts; track $index) {
+            <tr
+              class="d-table w-100"
+              (click)="
+                ((isPastCard() === false &&
+                  authStore.user()?.role === 'Master') ||
+                  authStore.user()?.role === 'Admin') &&
+                  onUpdate(shift)
+              "
+            >
+              <td
+                scope="row"
+                style="
+                  width: 5% !important;
+                  text-align: right !important;
+                  font-weight: bold;
+                "
+              >
+                {{ $index + 1 }}.
+              </td>
+              <td style="width: 15% !important; text-align: center !important">
+                {{ shift.date }}
+              </td>
+              <td style="width: 15% !important; text-align: center !important">
+                {{ shift.from }}
+              </td>
+              <td style="width: 15% !important; text-align: center !important">
+                {{ shift.to }}
+              </td>
+              <td style="width: 15% !important; text-align: center !important">
+                {{ shift.hours }}
+              </td>
+              <td
+                class="perso text-center"
+                style="width: 35% !important; vertical-align: middle !important"
+              >
+                {{ shift.perso }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    } @else {
+      <div
+        class="empty-shifts w-100 d-flex flex-column justify-content-center align-items-center"
+      >
+        <h4 class="fw-bold">
+          {{ currentCard?.userName }} {{ currentCard?.userSurname }}
+        </h4>
+        <h4 class="fw-bold mt-2">
+          nemá uložené směny na pozici {{ getCardPosition() }}
+        </h4>
+      </div>
+    }
+  </div>
+
+  @if (card(); as cardValue) {
+    <app-info [card]="cardValue" />
+  }
 </div>

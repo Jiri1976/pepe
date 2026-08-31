@@ -1,5 +1,14 @@
 import { DialogRef } from '@angular/cdk/dialog';
-import { Component, computed, effect, EffectRef, ElementRef, inject, OnDestroy, viewChild } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  EffectRef,
+  ElementRef,
+  inject,
+  OnDestroy,
+  viewChild,
+} from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { ProposalStore } from '../../../stores/proposal-store/proposal.store';
@@ -9,7 +18,7 @@ import { ProposalUser } from '../../../models/proposals.interface';
   selector: 'app-inactive-users',
   imports: [DialogModule, ButtonModule],
   templateUrl: './inactive-users.component.html',
-  styleUrl: './inactive-users.component.scss'
+  styleUrl: './inactive-users.component.scss',
 })
 export class InactiveUsersComponent implements OnDestroy {
   readonly store = inject(ProposalStore);
@@ -33,11 +42,9 @@ export class InactiveUsersComponent implements OnDestroy {
   });
 
   sectionStyles = computed(() => ({
-    'width': '25rem',
-    'maxHeight': '450px',
-    'overflow-y': this.users()!.length > 10 ? 'auto' : 'hidden'
+    width: '25rem',
+    maxHeight: 'min(550px, calc(100vh - 6rem))',
   }));
-
 
   constructor() {
     this.effectRef = effect(() => {

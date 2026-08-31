@@ -41,6 +41,10 @@ export class ShiftsComponent {
   private router = inject(Router);
   pathname = signal(window.location.pathname);
 
+  ngOnInit(): void {
+    this.shiftsStore.closeInfo();
+  }
+
   openAddSiftDialogEffect = effect(() => {
     if (!this.shiftsStore.isAddShiftDialogRequested()) return;
     if (this.dialog.openDialogs.length > 0) return;

@@ -2,7 +2,11 @@ import { inject, Service, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { Response } from '../models/response.interface';
-import { ProposalCard } from '../models/proposals.interface';
+import {
+  ProposalCard,
+  SavedScheduleGeneratorRequestDTO,
+  ScheduleGeneratorRequest,
+} from '../models/proposals.interface';
 
 @Service()
 export class ProposalsService {
@@ -34,5 +38,20 @@ export class ProposalsService {
   saveProposals(cards: ProposalCard[]) {
     const url = this.BASE_ROUTE + `CreateUpdate`;
     return this.http.post<Response>(url, cards);
+  }
+
+  generateSchedule(request: ScheduleGeneratorRequest) {
+    const url = this.BASE_ROUTE + `Generate`;
+    return this.http.post<Response>(url, request);
+  }
+
+  getSavedGenerator(request: SavedScheduleGeneratorRequestDTO) {
+    const url = this.BASE_ROUTE + `GetSavedGenerator`;
+    return this.http.post<Response>(url, request);
+  }
+
+  saveGenerator(request: ScheduleGeneratorRequest) {
+    const url = this.BASE_ROUTE + `SaveGenerator`;
+    return this.http.post<Response>(url, request);
   }
 }

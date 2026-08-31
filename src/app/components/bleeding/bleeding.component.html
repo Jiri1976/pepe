@@ -1,0 +1,29 @@
+<a
+  [href]="href"
+  [attr.target]="target"
+  [attr.rel]="target === '_blank' ? 'noopener noreferrer' : null"
+  class="btn"
+  [style.--button-color]="color"
+>
+  <div
+    class="box"
+    #box
+    [style.filter]="'url(#' + filterId + ')'"
+    aria-hidden="true"
+  ></div>
+  <span>{{ label }}</span>
+</a>
+
+<svg class="gooey-svg" aria-hidden="true" focusable="false">
+  <filter [attr.id]="filterId">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="10"></feGaussianBlur>
+    <feColorMatrix
+      values="
+        1 0 0 0 0
+        0 1 0 0 0
+        0 0 1 0 0
+        0 0 0 50 -10
+      "
+    ></feColorMatrix>
+  </filter>
+</svg>

@@ -1,0 +1,151 @@
+.info {
+  width: 100%;
+  text-align: center;
+  height: 260px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+  transition: 0.3s;
+  background: var(--main-dark);
+  transform: translateY(150%);
+
+  h2,
+  h4,
+  h5 {
+    color: var(--white);
+    font-weight: 600;
+    text-align: right !important;
+    margin-right: 20px;
+  }
+
+  h2 {
+    margin-top: 100px;
+  }
+
+  h5 {
+    margin-top: -20px;
+  }
+}
+
+.info.is-active {
+  transform: translateY(0);
+}
+
+.shift-avatar {
+  width: 150px;
+  height: 150px;
+  border: 1px solid var(--main-dark);
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  top: -140px;
+  left: 20px;
+
+  img {
+    width: inherit;
+    height: inherit;
+  }
+}
+
+.buttons {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  position: relative;
+  top: -120px;
+  justify-content: center;
+
+  .shift-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid var(--white);
+    background: var(--main-dark);
+    color: var(--white);
+    margin: 0 20px;
+    padding: 5px 10px;
+    border-radius: 7px;
+    height: 30px;
+    width: 150px;
+    transition: 0.3s ease-in-out;
+
+    h6 {
+      margin: 0;
+    }
+  }
+
+  .shift-row:hover {
+    cursor: pointer;
+  }
+
+  .shift-row.active {
+    background: var(--white);
+    color: var(--main-dark);
+  }
+
+  .shift-row.inactive {
+    cursor: default !important;
+  }
+}
+
+.buttons.master {
+  top: -100px;
+}
+
+.actions {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  position: relative;
+  top: -90px;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+
+  .common-btn {
+    height: 35px;
+    width: 130px;
+    font-size: 13px;
+    border: none;
+    transition: ease 0.3s all;
+    font-weight: 600;
+    border-radius: 7px;
+    margin: 0 10px;
+
+    i {
+      font-size: 1.3rem;
+    }
+
+    .spinner-border {
+      width: 15px;
+      height: 15px;
+    }
+  }
+
+  .common-btn:disabled {
+    cursor: default;
+    pointer-events: none;
+    opacity: 0.4;
+  }
+
+  .deleteCardBtn {
+    background: var(--main-red);
+  }
+
+  .pdfBtn {
+    background: var(--main-dark);
+    border: 1px solid var(--white);
+  }
+}
+
+.actions.master {
+  margin-top: 30px;
+}

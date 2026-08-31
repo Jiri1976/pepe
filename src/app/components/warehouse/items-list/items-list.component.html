@@ -1,12 +1,14 @@
 <div class="select-item">
-    @if (items().length > 0) {
-    @for(item of items(); track $index) {
-    <div class="item" (click)="onSelectItem($index)">
+  @if (items().length > 0) {
+    @for (item of items(); track $index) {
+      <div class="item" (click)="onSelectItem($index)">
         <p>{{ item.name }}</p>
-    </div>
+      </div>
     }
     <div class="close">
-        <button class="closeBtn" (click)="onSelectItem(-1)">Zavřít</button>
+      <button class="closeBtn" (click)="onSelectItem(-1)">
+        <i class="bi bi-x-circle"></i>&nbsp;Zavřít
+      </button>
     </div>
-    }
+  }
 </div>

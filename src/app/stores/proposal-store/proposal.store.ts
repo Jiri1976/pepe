@@ -20,6 +20,12 @@ import {
   setIsDeleting,
   setNotDeleting,
   toggleIsPdfLoading,
+  generatingOpen,
+  generatingClose,
+  startLoadingConstraints,
+  stopLoadingConstraints,
+  startSavingConstraints,
+  stopSavingConstraints,
 } from '../custome-features/withLoading/with-loading.updaters';
 import { initialProposalSlice } from './proposal.slice';
 import { ProposalsService } from '../../services/proposals.service';
@@ -34,6 +40,7 @@ import {
   setSelectedProposal,
   deleteProposal,
   updateProposal,
+  updateWhenGenerated,
 } from './proposals.updaters';
 import { deepEqual, sortInactiveUsers } from './proposal.helpers';
 import { withConfirmation } from '../custome-features/withConfirmation/with-confirmation.feature';
@@ -42,6 +49,7 @@ import { CONFIRM_ACTIONS } from '../custome-features/withConfirmation/confirmati
 import { UpdateProposalComponent } from '../../components/proposals/update-proposal/update-proposal.component';
 import {
   createToaster,
+  daysInMonth,
   downloadPdf,
   setTime,
 } from '../../helpers/common-functions.helper';
@@ -53,12 +61,16 @@ import {
   ProposalShift,
   ProposalUser,
   Inputs,
+  ScheduleConstraint,
+  initialScheduleGeneratorRequest,
+  ScheduleGeneratorRequest,
 } from '../../models/proposals.interface';
 import { withToaster } from '../custome-features/withToaster/with-toaster.feature';
 import { SignalRStore } from '../signalr-store/signalr.store';
 import { Router } from '@angular/router';
 import { ShiftsStore } from '../shifts-store/shifts.store';
 import { withCalendar } from '../custome-features/withCalendar/with-calendar.feature';
+import { ConstraintsComponent } from '../../components/proposals/constraints/constraints.component';
 
 export const ProposalStore = signalStore(
   {
@@ -106,6 +118,18 @@ export const ProposalStore = signalStore(
       return store
         .schedules()
         .find((c) => c.destination === store.destination());
+    });
+
+    const invalidScheduleGeneratorRequest = computed(() => {
+      const request = store.scheduleGeneratorRequest();
+      const countOfDays = daysInMonth(
+        store.schedules().find((c) => c.destination === store.destination())
+          ?.monthYear ?? '',
+      );
+
+      return request?.constraints?.some(
+        (c) => c.targetShifts != null && c.targetShifts > countOfDays,
+      );
     });
 
     const oppositeCard = computed(() => {
@@ -260,6 +284,7 @@ export const ProposalStore = signalStore(
       oppositeCard,
       hasUsers,
       signalDestination,
+      invalidScheduleGeneratorRequest,
     };
   }),
   withMethods((store) => {
@@ -291,6 +316,37 @@ export const ProposalStore = signalStore(
               onError: () => patchState(store, setNotLoading()),
             }),
           ),
+        ),
+      ),
+    );
+
+    const loadConstraints = rxMethod<void>((input$) =>
+      input$.pipe(
+        tap((_) => patchState(store, startLoadingConstraints())),
+        switchMap((_) =>
+          store._proposalService
+            .getSavedGenerator({
+              monthYear: store.monthYear(),
+              destination: store.destination(),
+              users: store.currentCard()?.users ?? [],
+            })
+            .pipe(
+              handleApiResponse(toaster, {
+                onSuccess: (
+                  scheduleGeneratorRequest: ScheduleGeneratorRequest,
+                ) => {
+                  patchState(store, stopLoadingConstraints());
+                  patchState(store, {
+                    scheduleGeneratorRequest: {
+                      constraints: scheduleGeneratorRequest.constraints,
+                      monthYear: store.monthYear(),
+                      destination: store.destination(),
+                    },
+                  });
+                },
+                onError: () => patchState(store, stopLoadingConstraints()),
+              }),
+            ),
         ),
       ),
     );
@@ -333,6 +389,46 @@ export const ProposalStore = signalStore(
       ),
     );
 
+    const saveGenerator = rxMethod<void>((input$) =>
+      input$.pipe(
+        tap((_) => patchState(store, startSavingConstraints())),
+        switchMap((_) =>
+          store._proposalService
+            .saveGenerator(store.scheduleGeneratorRequest()!)
+            .pipe(
+              handleApiResponse(toaster, {
+                successMessage: 'Úspěšně uloženo!',
+                onSuccess: (schedules) => {
+                  patchState(store, stopSavingConstraints());
+                },
+                onError: () => patchState(store, stopSavingConstraints()),
+              }),
+            ),
+        ),
+      ),
+    );
+
+    const generateSchedule = rxMethod<void>((input$) =>
+      input$.pipe(
+        tap((_) => patchState(store, generatingOpen())),
+        switchMap((_) =>
+          store._proposalService
+            .generateSchedule(store.scheduleGeneratorRequest()!)
+            .pipe(
+              handleApiResponse(toaster, {
+                successMessage: 'Úspěšně generováno!',
+                onSuccess: (generatedCard: ProposalCard[]) => {
+                  patchState(store, generatingClose());
+                  patchState(store, updateWhenGenerated(generatedCard[0]));
+                  store.dialog.closeAll();
+                },
+                onError: () => patchState(store, generatingClose()),
+              }),
+            ),
+        ),
+      ),
+    );
+
     const deleteCard = rxMethod<void>((input$) =>
       input$.pipe(
         tap((_) => patchState(store, setIsDeleting())),
@@ -359,6 +455,29 @@ export const ProposalStore = signalStore(
       store.dialog.open(UpdateProposalComponent, { disableClose: false });
     };
 
+    const updateConstraint = (constraint: ScheduleConstraint) => {
+      const currentRequest = store.scheduleGeneratorRequest() ?? {
+        ...initialScheduleGeneratorRequest,
+        monthYear: store.monthYear(),
+      };
+      const constraints = [...(currentRequest.constraints ?? [])];
+      const index = constraints.findIndex(
+        (c) =>
+          c.userId === constraint.userId && c.position === constraint.position,
+      );
+      if (index !== -1) {
+        constraints[index] = constraint;
+      } else {
+        constraints.push(constraint);
+      }
+      patchState(store, {
+        scheduleGeneratorRequest: {
+          ...currentRequest,
+          constraints,
+        },
+      });
+    };
+
     confirmationStore.registerHandler(
       CONFIRM_ACTIONS.DELETE_PROPOSAL_CARD,
       () => {
@@ -380,6 +499,14 @@ export const ProposalStore = signalStore(
 
     confirmationStore.registerHandler(CONFIRM_ACTIONS.GET_PDF, () => {
       getPdf();
+    });
+
+    confirmationStore.registerHandler(CONFIRM_ACTIONS.GENERATE_SCHEDULE, () => {
+      generateSchedule();
+    });
+
+    confirmationStore.registerHandler(CONFIRM_ACTIONS.SAVE_GENERATOR, () => {
+      saveGenerator();
     });
 
     return {
@@ -449,12 +576,43 @@ export const ProposalStore = signalStore(
           'Nejsou uloženy změny, chceš pokračovat?',
         );
       },
+      requestGenerateSchedule: () => {
+        confirmationStore.openConfirmation(
+          CONFIRM_ACTIONS.GENERATE_SCHEDULE,
+          'Opravdu chceš generovat rozvrh?',
+        );
+      },
+      requestSaveGenerator: () => {
+        confirmationStore.openConfirmation(
+          CONFIRM_ACTIONS.SAVE_GENERATOR,
+          'Opravdu uložit plánovací podmínky?',
+        );
+      },
       selectProposal: (selectedProposal: ProposalShift) =>
         selectProposal(selectedProposal),
       deleteProposal: () =>
         patchState(store, deleteProposal(store.oppositeCard())),
       updateProposal: (inputs: Inputs) =>
         patchState(store, updateProposal(inputs)),
+      openConstraints: () =>
+        store._dialog.open(ConstraintsComponent, {
+          disableClose: false,
+          autoFocus: false,
+          restoreFocus: false,
+        }),
+      closeConstraints: () => store._dialog.closeAll(),
+      updateConstraints: (constraint: ScheduleConstraint) =>
+        updateConstraint(constraint),
+      setMonthYearScheduleGeneratorRequest: () => {
+        patchState(store, {
+          scheduleGeneratorRequest: {
+            ...JSON.parse(JSON.stringify(store.scheduleGeneratorRequest())),
+            monthYear: store.monthYear(),
+            destination: store.destination(),
+          },
+        });
+      },
+      loadConstraints: () => loadConstraints(),
     };
   }),
   withHooks({

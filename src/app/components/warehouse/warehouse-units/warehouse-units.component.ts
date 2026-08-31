@@ -1,69 +1,102 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, effect, ElementRef, inject, OnInit, viewChild } from '@angular/core';
-import Swiper from 'swiper';
 import { CommonModule } from '@angular/common';
+import {
+  Component,
+  effect,
+  inject,
+  OnDestroy,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { HideElementDirective } from '../../../directives/hide-element.directive';
-import { WarehouseInputComponent } from "../warehouse-input/warehouse-input.component";
-import { WarehouseStore } from '../../../stores/warehouse-store/warehouse.store';
 import { AuthStore } from '../../../stores/auth-store/auth.store';
+import { WarehouseStore } from '../../../stores/warehouse-store/warehouse.store';
+import { DestinationButtonComponent } from '../../paging/destination-button.component';
 import { PagingComponent } from '../../paging/paging.component';
 import { PrevNextButtonComponent } from '../../paging/prev-next-button.component';
-import { DestinationButtonComponent } from '../../paging/destination-button.component';
+import { WarehouseInputComponent } from '../warehouse-input/warehouse-input.component';
 
 @Component({
   selector: 'app-warehouse-units',
-  imports: [CommonModule, HideElementDirective, WarehouseInputComponent, PagingComponent, PrevNextButtonComponent, DestinationButtonComponent],
+  imports: [
+    CommonModule,
+    HideElementDirective,
+    WarehouseInputComponent,
+    PagingComponent,
+    PrevNextButtonComponent,
+    DestinationButtonComponent,
+  ],
   templateUrl: './warehouse-units.component.html',
-  styleUrl: './warehouse-units.component.scss',
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  styleUrls: ['./warehouse-units.component.scss'],
 })
-export class WarehouseUnitsComponent implements OnInit {
+export class WarehouseUnitsComponent implements OnInit, OnDestroy {
   readonly authStore = inject(AuthStore);
   readonly warehouseStore = inject(WarehouseStore);
-  cards = this.warehouseStore.cards;
-  destination = this.warehouseStore.destination;
-  swiperRef = viewChild<ElementRef>('swiperRef');
+  readonly cards = this.warehouseStore.cards;
+  readonly destination = this.warehouseStore.destination;
+  readonly activeSlide = signal(0);
+  readonly revealedSlide = signal(0);
+  readonly revealFromTopRight = signal(false);
+  private firstFrame?: number;
+  private secondFrame?: number;
 
   ngOnInit(): void {
     const user = this.authStore.user();
-    if (user?.role === 'Master' && user.destination !== this.warehouseStore.destination()) {
+
+    if (
+      user?.role === 'Master' &&
+      user.destination !== this.warehouseStore.destination()
+    ) {
       this.warehouseStore.setDestination(user.destination);
     }
+
     this.warehouseStore.resetMonthYaer();
     this.warehouseStore.setWarehouseNave('units');
     this.warehouseStore.getWarehouseCards();
   }
 
-  slideToEffect = effect(() => {
-    const index = this.warehouseStore.consumeSlideToIndex();
-    if (index === null) return;
-    const swiper = this.swiperRef()?.nativeElement?.swiper;
-    if (swiper) {
-      swiper.slideTo(index);
-    }
+  ngOnDestroy(): void {
+    if (this.firstFrame) cancelAnimationFrame(this.firstFrame);
+    if (this.secondFrame) cancelAnimationFrame(this.secondFrame);
+  }
+
+  readonly syncClipSlide = effect(() => {
+    const requestedIndex = this.warehouseStore.consumeSlideToIndex();
+    if (requestedIndex === null) return;
+
+    const lastIndex = this.cards().length - 1;
+    const index = Math.max(0, Math.min(requestedIndex, lastIndex));
+    const currentIndex = this.activeSlide();
+    const fromTopRight = index < currentIndex;
+
+    this.showSlide(index, fromTopRight);
+    this.warehouseStore.setSlideIndex(index);
   });
 
-  onSwiperInit(event: any) {
-    setTimeout(() => {
-      const swiper = (this.swiperRef()?.nativeElement as any).swiper;
-      if (swiper) {
-        swiper.on('slideChange', () => {
-        });
-      }
+  private showSlide(index: number, fromTopRight: boolean): void {
+    if (index < 0 || index >= this.cards().length) return;
+
+    if (this.firstFrame) cancelAnimationFrame(this.firstFrame);
+    if (this.secondFrame) cancelAnimationFrame(this.secondFrame);
+
+    this.activeSlide.set(index);
+    this.revealFromTopRight.set(fromTopRight);
+
+    this.firstFrame = requestAnimationFrame(() => {
+      this.secondFrame = requestAnimationFrame(() => {
+        this.revealedSlide.set(index);
+      });
     });
   }
 
-  onSlideChange(event: Event) {
-    const swiperInstance = (event.target as any).swiper as Swiper;
-    this.warehouseStore.setSlideIndex(swiperInstance.activeIndex);
-  }
-
-  movePrevious() {
+  movePrevious(): void {
     if (this.warehouseStore.sliceIndex() === 0) return;
+
     this.warehouseStore.slideTo(this.warehouseStore.sliceIndex() - 1);
   }
 
-  moveNext() {
-    if (this.warehouseStore.sliceIndex() === this.warehouseStore.cards().length - 1) return;
+  moveNext(): void {
+    if (this.warehouseStore.sliceIndex() === this.cards().length - 1) return;
+
     this.warehouseStore.slideTo(this.warehouseStore.sliceIndex() + 1);
   }
 }

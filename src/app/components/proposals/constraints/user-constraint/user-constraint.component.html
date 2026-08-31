@@ -1,0 +1,215 @@
+<div class="d-flex flex-column">
+  <div class="d-flex justify-content-center align-items-center">
+    <h4 class="fw-bold w-100 text-center">
+      {{ user().name.toUpperCase() }} {{ user().surname.toUpperCase() }}
+    </h4>
+  </div>
+
+  <div
+    class="d-flex justify-content-between align-items-center w-50 mx-auto mt-3"
+  >
+    <label for="{{ 'number-' + user().id }}"
+      >Počet směn (max
+      {{ daysInMonth(propStore.currentCard()!.monthYear) }}):</label
+    >
+    <input
+      type="text"
+      inputmode="numeric"
+      [id]="'number-' + user().id"
+      (keydown)="onKeydown($event)"
+      (input)="onTargetShiftsInput($event)"
+      [class.invalid]="invalidCountOfDays()"
+      [ngModel]="model().targetShifts"
+    />
+  </div>
+
+  <div
+    class="d-flex justify-content-between align-items-center w-50 mx-auto mt-3"
+  >
+    <label [class.disable]="morning" for="{{ 'morning-' + user().id }}"
+      >Pouze ranní</label
+    >
+    <p-checkbox
+      [id]="'morning-' + user().id"
+      [(ngModel)]="morning"
+      [binary]="true"
+      (onChange)="onlyMorning()"
+    />
+  </div>
+
+  <div
+    class="d-flex justify-content-between align-items-center w-50 mx-auto mt-3"
+  >
+    <label [class.disable]="afternoon" for="{{ 'afternoon-' + user().id }}"
+      >Pouze odpolední</label
+    >
+    <p-checkbox
+      [id]="'afternoon-' + user().id"
+      [(ngModel)]="afternoon"
+      [binary]="true"
+      (onChange)="onlyAfternoon()"
+    />
+  </div>
+
+  <div
+    class="d-flex flex-column justify-content-center align-items-center w-50 mx-auto mt-3 mb-3"
+  >
+    <label for="{{ 'buttons-' + user().id }}"> Může v tyto dny:</label>
+    <div
+      class="d-flex flex-row justify-content-center align-items-center w-100 mx-auto gap-3 mt-3"
+    >
+      <p-selectbutton
+        [options]="weekDays"
+        [(ngModel)]="value"
+        [multiple]="true"
+        optionLabel="name"
+        optionValue="value"
+        [id]="'buttons-' + user().id"
+        (onChange)="onSelectDay($event)"
+      />
+      <p-checkbox
+        id="whole-week"
+        [(ngModel)]="wholeWeek"
+        [binary]="true"
+        (onChange)="wholeWeekAvailable()"
+      />
+    </div>
+  </div> 
+
+  <section
+    class="scroll-container"
+    style="display: flex; flex-direction: column; width: 900px; margin: 0 auto"
+  >
+    <div class="horizontal-scroll-wrapper">
+      <div
+        class="horizontal-scroll"
+        style="display: flex; flex-direction: row"
+      >
+    <div
+      class="d-flex flex-column justify-content-center align-items-center"
+    >
+      <label for="{{ 'datepicker-' + user().id }}">Volno</label>
+      <p-datepicker
+        [defaultDate]="getDateFromMonthYear(propStore.currentCard()!.monthYear)"
+        class="constraints-days-only mt-1"
+        [ngModel]="dates()"
+        [minDate]="minDate"
+        (ngModelChange)="onFreeDaysChange($event)"
+        selectionMode="multiple"
+        [readonlyInput]="true"
+        [inline]="true"
+        [id]="'datepicker-' + user().id"
+        (onSelect)="selectFreeDay($event)"
+      />
+    </div>
+
+    <div
+      class="d-flex flex-column justify-content-center align-items-center"
+    >
+      <label
+        [class.disabled]="morning"
+        for="{{ 'morning-datepicker-' + user().id }}"
+        >Ranní</label
+      >
+      <p-datepicker
+        [defaultDate]="getDateFromMonthYear(propStore.currentCard()!.monthYear)"
+        [minDate]="minDate"
+        class="constraints-days-only mt-1"
+        [ngModel]="morningDates()"
+        (ngModelChange)="onMorningDaysChange($event)"
+        selectionMode="multiple"
+        [readonlyInput]="true"
+        [inline]="true"
+        [id]="'morning-datepicker-' + user().id"
+        (onSelect)="selectMorningDay($event)"
+        [disabled]="morning"
+      />
+    </div>
+
+    <div
+      class="d-flex flex-column justify-content-center align-items-center"
+    >
+      <label
+        [class.disabled]="afternoon"
+        for="{{ 'afternoon-datepicker-' + user().id }}"
+        >Odpolední</label
+      >
+      <p-datepicker
+        [defaultDate]="getDateFromMonthYear(propStore.currentCard()!.monthYear)"
+        [minDate]="minDate"
+        class="constraints-days-only mt-1"
+        [ngModel]="afternoonDates()"
+        (ngModelChange)="onAfternoonDaysChange($event)"
+        selectionMode="multiple"
+        [readonlyInput]="true"
+        [inline]="true"
+        [id]="'afternoon-datepicker-' + user().id"
+        (onSelect)="selectAfternoonDay($event)"
+        [disabled]="afternoon"
+      />
+    </div>
+
+    <div
+      class="d-flex flex-column justify-content-center align-items-center"
+    >
+      <label for="{{ 'datepicker-' + user().id }}">Celý den</label>
+      <p-datepicker
+        [defaultDate]="getDateFromMonthYear(propStore.currentCard()!.monthYear)"
+        class="constraints-days-only mt-1"
+        [ngModel]="wholeDayDates()"
+        [minDate]="minDate"
+        (ngModelChange)="onWholeDayDaysChange($event)"
+        selectionMode="multiple"
+        [readonlyInput]="true"
+        [inline]="true"
+        [id]="'datepicker-' + user().id"
+        (onSelect)="selectWholeDay($event)"
+      />
+    </div>
+
+    <div
+      class="d-flex flex-column justify-content-center align-items-center"
+    >
+      <label for="{{ 'opposite-datepicker-' + user().id }}">{{
+        destination() === "F-M" ? "OVA" : "F-M"
+      }}</label>
+      <p-datepicker
+        [defaultDate]="getDateFromMonthYear(propStore.currentCard()!.monthYear)"
+        [minDate]="minDate"
+        class="constraints-days-only mt-1 opposite-datepicker"
+        [ngModel]="oppositeDates()"
+        (ngModelChange)="onOppositeDaysChange($event)"
+        selectionMode="multiple"
+        [readonlyInput]="true"
+        [inline]="true"
+        [id]="'opposite-datepicker-' + user().id"
+        disabled="true"
+        /* (onSelect)="onSelectOppositeDaysChange($event)" */
+      >
+        <ng-template #date let-date let-selected="selected">
+          <span
+            class="opposite-date-cell"
+            [class.opposite-date-cell-selected]="selected"
+            [class.opposite-date-cell-whole]="
+              selected && getOppositeShiftType(date) === 'whole'
+            "
+            [class.opposite-date-cell-morning]="
+              selected && getOppositeShiftType(date) === 'morning'
+            "
+            [class.opposite-date-cell-afternoon]="
+              selected && getOppositeShiftType(date) === 'afternoon'
+            "
+            [class.opposite-date-cell-other]="
+              selected && getOppositeShiftType(date) === 'other'
+            "
+          >
+            {{ date.day }}
+          </span>
+        </ng-template>
+      </p-datepicker>
+    </div>  
+    </div>
+    </div>
+  </section>
+  <br />
+</div>

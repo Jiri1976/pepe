@@ -1,132 +1,134 @@
 .proposals {
-    height: 100%;
-    display: grid;
-    flex-direction: column;
-    justify-content: center !important;
+  height: 100%;
+  display: grid;
+  flex-direction: column;
+  justify-content: center !important;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  margin-top: 2rem;
+
+  h4 {
+    color: var(--main-dark);
+    margin-top: 150px;
+  }
+
+  .wrapper {
+    grid-column: 1;
+    grid-row: 1;
+    margin-top: 90px;
     width: 100%;
-    max-width: 100%;
-    overflow-x: hidden;
-    margin-top: 2rem;
+    overflow-x: auto;
 
-    h4 {
-        color: var(--main-dark);
-        margin-top: 150px;
-    }
+    .table {
+      width: max-content;
+      min-width: 100%;
 
-    .wrapper {
-        grid-column: 1;
-        grid-row: 1;
-        margin-top: 90px;
-        width: 100%;
-        overflow-x: auto;
+      .table-head {
+        margin-bottom: 10px;
 
-        .table {
-            width: max-content;
-            min-width: 100%;
-
-            .table-head {
-                margin-bottom: 10px;
-
-                .user-name {
-                    min-width: 150px !important;
-                    margin-right: 10px;
-                    border: 1px solid var(--main-dark);
-                    background: var(--main-dark);
-                    white-space: nowrap;
-                    text-overflow: ellipsis;
-                    border-radius: 7px;
-                }
-
-                .cell {
-                    border: 1px solid var(--main-disabled);
-                    padding: 10px;
-                    background-color: var(--background-color);
-                    width: 35px !important;
-                    height: 35px !important;
-                    border-radius: 7px;
-
-                    .cell-week-day {
-                        font-size: 0.8rem;
-                    }
-                }
-
-                .cell-lastone {
-                    margin-right: 40px;
-                    border: none;
-                    width: 35px !important;
-                    height: 35px !important;
-                }
-
-                .cell-lastone-passed {
-                    margin-right: 10px;
-                    border: none;
-                    width: 5px !important;
-                    height: 5px !important;
-                }
-            }
-
-            .body {
-                .table-row {
-                    margin: 5px 0;
-
-                    .user-name-cell {
-                        height: 35px;
-                        width: 150px !important;
-                        background-color: var(--background-color);
-                        border: 1px solid var(--main-disabled);
-                        margin-right: 10px;
-                        border-radius: 7px;
-                        overflow: hidden;
-                        white-space: nowrap;
-                        text-overflow: ellipsis;
-                        padding-left: 5px;
-                    }
-
-                    .user-name-cell[cdkDragHandle] {
-                        cursor: grab;
-                        user-select: none;
-                        -webkit-user-select: none;
-                        -ms-user-select: none;
-                        transition: background-color 0.2s ease, box-shadow 0.2s ease;
-                    }
-
-                    .user-name-cell[cdkDragHandle]:active {
-                        cursor: grabbing;
-                    }
-
-                    .user-name-cell[cdkDragHandle][cdkDragDisabled="true"] {
-                        cursor: pointer !important;
-                    }
-
-                    .drop-zone {
-                        width: 35px !important;
-                        height: 35px !important;
-                        border: 1px solid var(--main-disabled);
-                        padding: 0 8px;
-                        margin-right: 2px;
-                        background-color: var(--background-color);
-                        border-radius: 7px;
-                    }
-
-                    .drop-zone.last {
-                        border-color: var(--main-red);
-                        background: var(--main-red);
-                        margin-left: 10px;
-
-                        .bi {
-                            font-size: 1.3rem;
-                        }
-                    }
-
-                    .drop-zone.last:hover {
-                        cursor: pointer;
-                    }
-                }
-            }
+        .user-name {
+          min-width: 150px !important;
+          margin-right: 10px;
+          border: 1px solid var(--main-dark);
+          background: var(--main-dark);
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          border-radius: 7px;
         }
 
-        .table> :not(caption)>*>* {
-            padding: 0px;
+        .cell {
+          border: 1px solid var(--main-disabled);
+          padding: 10px;
+          background-color: var(--background-color);
+          width: 35px !important;
+          height: 35px !important;
+          border-radius: 7px;
+
+          .cell-week-day {
+            font-size: 0.8rem;
+          }
         }
+
+        .cell-lastone {
+          margin-right: 40px;
+          border: none;
+          width: 35px !important;
+          height: 35px !important;
+        }
+
+        .cell-lastone-passed {
+          margin-right: 10px;
+          border: none;
+          width: 5px !important;
+          height: 5px !important;
+        }
+      }
+
+      .body {
+        .table-row {
+          margin: 5px 0;
+
+          .user-name-cell {
+            height: 35px;
+            width: 150px !important;
+            background-color: var(--background-color);
+            border: 1px solid var(--main-disabled);
+            margin-right: 10px;
+            border-radius: 7px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            padding-left: 5px;
+          }
+
+          .user-name-cell[cdkDragHandle] {
+            cursor: grab;
+            user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            transition:
+              background-color 0.2s ease,
+              box-shadow 0.2s ease;
+          }
+
+          .user-name-cell[cdkDragHandle]:active {
+            cursor: grabbing;
+          }
+
+          .user-name-cell[cdkDragHandle][cdkDragDisabled="true"] {
+            cursor: pointer !important;
+          }
+
+          .drop-zone {
+            width: 35px !important;
+            height: 35px !important;
+            border: 1px solid var(--main-disabled);
+            padding: 0 8px;
+            margin-right: 2px;
+            background-color: var(--background-color);
+            border-radius: 7px;
+          }
+
+          .drop-zone.last {
+            border-color: var(--main-red);
+            background: var(--main-red);
+            margin-left: 10px;
+
+            .bi {
+              font-size: 1.3rem;
+            }
+          }
+
+          .drop-zone.last:hover {
+            cursor: pointer;
+          }
+        }
+      }
     }
+
+    .table > :not(caption) > * > * {
+      padding: 0px;
+    }
+  }
 }

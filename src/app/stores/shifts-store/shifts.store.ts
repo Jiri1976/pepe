@@ -631,6 +631,9 @@ export const ShiftsStore = signalStore(
         patchState(store, { selectedDailyIndex: -1 }),
       setSelectedDailyIndex: (index: number) =>
         patchState(store, { selectedDailyIndex: index }),
+      toggleInfo: () => patchState(store, { activeInfo: !store.activeInfo() }),
+      closeInfo: () => patchState(store, { activeInfo: false }),
+      openInfo: () => patchState(store, { activeInfo: true }),
     };
   }),
   withHooks({

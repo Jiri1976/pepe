@@ -46,3 +46,35 @@ export type SignalProposalCardResponse = [
   cards: ProposalCard[],
   message: string,
 ];
+
+export interface ScheduleGeneratorRequest {
+  monthYear: string;
+  destination: string;
+  constraints: ScheduleConstraint[] | null;
+}
+
+export interface ScheduleConstraint {
+  userId: number;
+  position: string;
+  targetShifts: number | null;
+  allowedWeekdays: number[] | null;
+  unavailableDates: string[] | null;
+  onlyMorningShifts: boolean | null;
+  onlyAfternoonShifts: boolean | null;
+  morningDates: string[] | null;
+  afternoonDates: string[] | null;
+  wholeDayDates: string[] | null;
+  oppositeShifts: ProposalShift[] | null;
+}
+
+export const initialScheduleGeneratorRequest: ScheduleGeneratorRequest = {
+  monthYear: '',
+  destination: '',
+  constraints: [],
+};
+
+export interface SavedScheduleGeneratorRequestDTO {
+  monthYear: string;
+  destination: string;
+  users: ProposalUser[];
+}

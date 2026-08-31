@@ -1,42 +1,36 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Shift } from '../../../models/shifts.interface';
 import { AuthStore } from '../../../stores/auth-store/auth.store';
 import { ShiftsStore } from '../../../stores/shifts-store/shifts.store';
-import { convertMonthYear } from '../../../helpers/common-functions.helper';
+import { InfoComponent } from '../info/info.component';
 
 @Component({
   selector: 'app-shift-card',
-  imports: [],
+  imports: [InfoComponent],
   templateUrl: './shift-card.component.html',
-  styleUrl: './shift-card.component.scss'
+  styleUrls: ['./shift-card.component.scss'],
 })
 export class ShiftCardComponent {
   readonly authStore = inject(AuthStore);
   readonly shiftsStore = inject(ShiftsStore);
-  convertMonthYear = convertMonthYear;
   userCards = this.shiftsStore.userCards;
   card = this.shiftsStore.currentCard;
-  sectionStyles = computed(() => {
-    if (this.card()?.shifts && this.card()!.shifts?.length > 13) {
-      return {
-        maxHeight: '520px',
-        overflowY: 'auto'
-      }
-    } else {
-      return {
-        maxHeight: null,
-        overflowY: 'hidden'
-      }
-    }
-  });
 
   onUpdate(shift: Shift) {
     this.shiftsStore.updateShift(shift);
   }
 
   isPastCard() {
-    let currentDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-    let cardDate = new Date(parseInt(this.card()!.monthYear.substring(2, 6)), parseInt(this.card()!.monthYear.substring(0, 2)) - 1, 1);
+    let currentDate = new Date(
+      new Date().getFullYear(),
+      new Date().getMonth(),
+      1,
+    );
+    let cardDate = new Date(
+      parseInt(this.card()!.monthYear.substring(2, 6)),
+      parseInt(this.card()!.monthYear.substring(0, 2)) - 1,
+      1,
+    );
     if (cardDate < currentDate) {
       return true;
     }

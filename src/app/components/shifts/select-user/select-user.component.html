@@ -1,19 +1,20 @@
-<div #scrollContainer class="select-user" [style]="sectionStyles()">
-    @let uniqueUsers = store.uniqueUsers();
+<div class="select-user" [style]="sectionStyles()">
+  @let uniqueUsers = store.uniqueUsers();
 
-    @if (uniqueUsers.length > 11) {
-    <div class="close_btn position-absolute d-flex justify-content-center flex-column align-items-center"
-        (click)="onClose()">
-        <i class="bi bi-x fw-bold"></i>
-    </div>
-    }
-    @for(user of uniqueUsers; track user.userId) {
-    <div class="user d-flex justify-content-center w-100 flex-column align-items-center"
-        (click)="onSelectUser(user.userId)">
+  <div #scrollContainer class="users-list">
+    @for (user of uniqueUsers; track user.userId) {
+      <div
+        class="user d-flex justify-content-center w-100 flex-column align-items-center"
+        (click)="onSelectUser(user.userId)"
+      >
         <p>{{ user.userName }} {{ user.userSurname }}</p>
-    </div>
+      </div>
     }
-    <div class="close d-flex justify-content-center w-100">
-        <button class="closeBtn fw-bold" (click)="onClose()">Zavřít</button>
-    </div>
+  </div>
+
+  <div class="close d-flex justify-content-center w-100">
+    <button class="closeBtn" (click)="onClose()">
+      <i class="bi bi-x-circle"></i>&nbsp;Zavřít
+    </button>
+  </div>
 </div>
