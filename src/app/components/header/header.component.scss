@@ -2,214 +2,194 @@
   height: 65px;
   padding: 10px 60px;
   background: var(--white) !important;
-  box-shadow: 0 3px 10px 2px rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid var(--main-dark);
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: row;
+  justify-content: center;
+  gap: 3rem;
   position: fixed !important;
-  top: 0;
-  width: 100%;
+  width: 90%;
   z-index: 999;
+  top: 0;
+  left: 50%;
+  width: 90%;
+  transform: translateX(-50%);
 
-  .navbar-brand {
+  a {
     display: flex;
-    align-items: center;
-    font-weight: 900;
-    color: var(--main-dark);
-    font-size: 1rem;
-    letter-spacing: 1px;
-
-    svg path {
-      fill: transparent;
-      stroke: #292524;
-      stroke-width: 2px;
-      stroke-dasharray: 470;
-      stroke-dashoffset: 470;
-      animation: TextAnimation 1s ease-in-out 1 forwards;
-    }
-    @keyframes TextAnimation {
-      0% {
-        stroke-dashoffset: 470;
-      }
-
-      80% {
-        fill: transparent;
-      }
-
-      100% {
-        fill: #292524;
-        stroke-dashoffset: 0;
-      }
-    }
-
-    svg {
-      animation: Scale 1s linear forwards;
-    }
-
-    @keyframes Scale {
-      0% {
-        transform: scale(0.8);
-      }
-
-      80% {
-        transform: scale(1.2);
-      }
-
-      100% {
-        transform: scale(1);
-      }
-    }
-  }
-
-  .dropdown {
-    position: relative;
-    display: flex;
-    flex-direction: row;
     align-items: center;
     justify-content: center;
-    height: 100%;
+    width: fit-content;
 
-    .bellnoti {
-      .bell,
-      .noti {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-      }
-
-      .bell {
-        width: 30px;
-        height: 30px;
-        margin-right: 2rem;
-        margin-top: 5px;
-
-        .bi {
-          font-size: 1.3rem;
-          color: var(--main-dark);
-        }
-      }
-
-      .noti {
-        position: absolute;
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        border: 1px solid var(--main-red);
-        background: var(--main-red);
-        color: var(--white);
-        top: 0px;
-        left: 15px;
-        font-size: 10px;
-        padding: 3px;
-        font-weight: 500;
-      }
+    img {
+      margin: 0;
     }
+  }
 
-    .bellnoti:hover {
+  ul {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    list-style: none;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+
+    li {
       cursor: pointer;
+      border-radius: 7px;
+      transition: 0.3s;
+    }
+
+    li a {
+      font-weight: 700;
+      font-size: 1.05rem;
+      width: 110px;
+      text-align: center;
+      text-decoration: none;
+      color: var(--main-dark);
+    }
+
+    li a.active {
+      color: var(--proposal-orange);
+      text-shadow: 0 0 10px var(--proposal-orange);
+    }
+
+    li.name a.user {
+      width: auto !important;
+      cursor: default;
+      pointer-events: none;
+      color: var(--main-dark);
+    }
+
+    li.name:hover {
+      cursor: default;
+      box-shadow: none;
     }
   }
 
-  .dropdown-toggle {
-    background: var(--white);
-    border: 1px solid var(--main-border-color);
-    color: #292524;
-    font-weight: 700;
-    border-radius: 30px;
+  .bellnoti {
+    position: absolute;
+    right: 0;
+
+    .bell,
+    .noti {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .bell {
+      width: 30px;
+      height: 30px;
+      margin-right: 2rem;
+      margin-top: 5px;
+
+      .bi {
+        font-size: 1.3rem;
+        color: var(--main-dark);
+      }
+    }
+
+    .noti {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 1px solid var(--main-red);
+      background: var(--main-red);
+      color: var(--white);
+      top: 0px;
+      left: 15px;
+      font-size: 10px;
+      padding: 3px;
+      font-weight: 500;
+    }
   }
 
-  .dropdown-toggle:hover {
-    box-shadow: 0 3px 10px 2px rgba(0, 0, 0, 0.2);
+  .bellnoti:hover {
+    cursor: pointer;
+  }
+
+  .mobile {
+    display: none;
   }
 
   .dropdown-menu {
     background: var(--white);
     position: absolute;
-    top: 45px;
-    display: flex;
+    top: 75px;
+    right: 0;
     flex-direction: column;
     justify-content: center;
     min-width: 195px;
-    height: 150px;
+    height: 250px;
     border: 1px solid var(--main-border-color);
     margin: 0;
     padding: 5px;
     list-style-type: none;
+    transition: 0.3s ease-in-out;
 
     .dropdown-item {
       font-weight: 500;
       color: var(--main-dark);
-      width: 100%;
-      margin: 2px 0;
+      width: 100% !important;
       padding: 0 2px;
       font-size: 15px;
+      background: none;
+    }
+
+    li.active .dropdown-item {
+      color: var(--proposal-orange);
+      text-shadow: 0 0 10px var(--proposal-orange);
     }
 
     .dropdown-item:hover {
-      background: var(--main-dark);
-      color: var(--white);
       cursor: pointer;
-      border-radius: 5px;
     }
   }
 }
 
-img {
-  margin-right: 10px;
-}
-
-.enter-animation {
-  animation: slide-fade 0.8s;
-}
-
-.leave-animation {
-  animation: slide-out 0.8s;
-}
-
-@keyframes slide-fade {
-  from {
-    opacity: 0;
-    transform: translateX(200px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes slide-out {
-  from {
-    opacity: 1;
-    transform: translateX(0);
-  }
-
-  to {
-    opacity: 0;
-    transform: translateX(200px);
-  }
-}
-
-@media screen and (max-width: 599px) {
+@media screen and (max-width: 995px) {
   .navbar {
-    padding: 0;
-    z-index: 9;
-  }
-
-  .navbar-toggler {
-    margin-left: 10px;
-  }
-
-  img {
-    margin-right: 5px;
+    gap: 0;
+    padding: 10px 0px;
+    ul {
+      gap: 0.8rem;
+      li a {
+        font-size: 0.9rem;
+        width: 90px;
+      }
+    }
   }
 }
 
-@media screen and (max-width: 399px) {
-  .container-fluid {
-    flex-direction: row;
-    flex-wrap: nowrap;
-    padding: 5px;
+@media screen and (max-width: 690px) {
+  .navbar {
+    background: transparent !important;
+    backdrop-filter: blur(15px);
+    width: 100%;
+    ul,
+    a {
+      display: none;
+    }
+
+    ul.dropdown-menu {
+      display: flex !important;
+      right: 10px;
+      top: 15px;
+
+      li a {
+        display: flex !important;
+      }
+    }
+  }
+
+  .mobile {
+    display: inline !important;
+    position: absolute;
+    left: 10px;
   }
 }

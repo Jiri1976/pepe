@@ -35,7 +35,6 @@ import { ShiftsStore } from '../../stores/shifts-store/shifts.store';
 export class InfoButtonComponent {
   readonly shiftsStore = inject(ShiftsStore);
   card = computed(() => this.shiftsStore.currentCard());
-  //   destination = input<string>();
   right = input<number>();
   bottom = input<number>();
 

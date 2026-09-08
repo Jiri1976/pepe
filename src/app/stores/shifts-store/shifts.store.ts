@@ -57,7 +57,7 @@ import { handleApiResponse } from '../handle-api-response.operator';
 import { AuthStore } from '../auth-store/auth.store';
 import { withToaster } from '../custome-features/withToaster/with-toaster.feature';
 import { SignalRStore } from '../signalr-store/signalr.store';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { sortShifts, cardIsInStore } from './shifts.helpers';
 import { withCalendar } from '../custome-features/withCalendar/with-calendar.feature';
 
@@ -95,6 +95,14 @@ export const ShiftsStore = signalStore(
     };
   }),
   withComputed((store) => {
+    const pathname = signal(store._router.url);
+
+    store._router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        pathname.set(store._router.url);
+      }
+    });
+
     const uniqueUsers = computed(() => {
       const cards = store.cards() ?? [];
       const unique: UniqueUser[] = [];
@@ -262,6 +270,7 @@ export const ShiftsStore = signalStore(
       currentUsersTotalHours,
       oneConcurrentErrors,
       dailyShiftsCount,
+      pathname,
     };
   }),
   withMethods((store) => {

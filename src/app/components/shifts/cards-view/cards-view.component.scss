@@ -12,7 +12,8 @@
     .user {
       width: 750px;
       height: 50px;
-      background: var(--main-dark);
+      background: rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
       border-radius: 7px;
       display: flex;
       flex-direction: row;
@@ -20,7 +21,7 @@
       align-items: center;
       font-size: 1.5rem;
       font-weight: 700;
-      color: var(--white);
+      color: var(--main-dark);
     }
 
     .clip-slider {

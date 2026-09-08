@@ -19,7 +19,8 @@ import { Component } from '@angular/core';
         align-items: center;
       }
 
-      :host ::ng-deep .info-button:active {
+      :host ::ng-deep .info-button:active,
+      :host ::ng-deep .prev-next:active {
         transform: scale(0.7);
       }
     `,

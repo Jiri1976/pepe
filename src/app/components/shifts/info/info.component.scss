@@ -12,14 +12,15 @@
   left: 0;
   margin: 0;
   transition: 0.3s;
-  background: var(--main-dark);
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
   transform: translateY(150%);
 
   h2,
   h4,
   h5 {
-    color: var(--white);
-    font-weight: 600;
+    color: var(--main-dark);
+    font-weight: 700;
     text-align: right !important;
     margin-right: 20px;
   }
@@ -67,7 +68,7 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    border: 1px solid var(--white);
+    border: none;
     background: var(--main-dark);
     color: var(--white);
     margin: 0 20px;
@@ -75,7 +76,7 @@
     border-radius: 7px;
     height: 30px;
     width: 150px;
-    transition: 0.3s ease-in-out;
+    transition: 0.3s;
 
     h6 {
       margin: 0;
@@ -84,6 +85,7 @@
 
   .shift-row:hover {
     cursor: pointer;
+    box-shadow: 0 0 20px var(--main-dark);
   }
 
   .shift-row.active {
@@ -119,6 +121,7 @@
     font-weight: 600;
     border-radius: 7px;
     margin: 0 10px;
+    border: none;
 
     i {
       font-size: 1.3rem;
@@ -138,11 +141,20 @@
 
   .deleteCardBtn {
     background: var(--main-red);
+    border: none;
+  }
+
+  .deleteCardBtn:hover {
+    box-shadow: 0 0 20px var(--main-red);
   }
 
   .pdfBtn {
     background: var(--main-dark);
-    border: 1px solid var(--white);
+    border: none;
+  }
+
+  .pdfBtn:hover {
+    box-shadow: 0 0 20px var(--main-dark);
   }
 }
 

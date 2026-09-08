@@ -3,7 +3,6 @@ import {
   inject,
   CUSTOM_ELEMENTS_SCHEMA,
   effect,
-  signal,
 } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
@@ -39,7 +38,6 @@ export class ShiftsComponent {
   readonly shiftsStore = inject(ShiftsStore);
   private dialog = inject(Dialog);
   private router = inject(Router);
-  pathname = signal(window.location.pathname);
 
   ngOnInit(): void {
     this.shiftsStore.closeInfo();
@@ -57,6 +55,7 @@ export class ShiftsComponent {
   });
 
   onSelectDestination(destination: string) {
+    this.shiftsStore.closeInfo();
     this.shiftsStore.setDestination(destination);
   }
 
@@ -64,6 +63,7 @@ export class ShiftsComponent {
     let _monthYear = MONTHS_NUM[date.getMonth()] + date.getFullYear();
     this.shiftsStore.setMonthYear(_monthYear);
     this.shiftsStore.closeCalendar();
+    this.shiftsStore.closeInfo();
   }
 
   onToggleCalendar(event: MouseEvent) {
@@ -87,27 +87,25 @@ export class ShiftsComponent {
   }
 
   toDaily() {
-    this.pathname.update(() => '/shifts/daily');
     this.router.navigate(['shifts/daily']);
   }
 
   toShifts() {
-    this.pathname.update(() => '/shifts');
     this.router.navigate(['shifts']);
   }
 
   reload() {
-    if (this.pathname() === '/shifts') {
+    if (this.shiftsStore.pathname() === '/shifts') {
       this.shiftsStore.getCards();
-    } else if (this.pathname() === '/shifts/daily') {
+    } else if (this.shiftsStore.pathname() === '/shifts/daily') {
       this.shiftsStore.getShiftsForToday();
     }
   }
 
   addShift() {
-    if (this.pathname() === '/shifts') {
+    if (this.shiftsStore.pathname() === '/shifts') {
       this.shiftsStore.addShift();
-    } else if (this.pathname() === '/shifts/daily') {
+    } else if (this.shiftsStore.pathname() === '/shifts/daily') {
       if (this.shiftsStore.oneConcurrentErrors()) {
         return;
       }

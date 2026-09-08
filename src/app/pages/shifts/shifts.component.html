@@ -18,7 +18,7 @@
       icon="bi-plus"
       class="save"
     />
-    @if (pathname() === "/shifts") {
+    @if (shiftsStore.pathname() === "/shifts") {
       <app-nav-button
         (click)="onToggleCalendar($event)"
         icon="bi-calendar"
@@ -43,7 +43,7 @@
       [hidden]="hideForMaster"
       [inactive]="shiftsStore.destination() !== 'OVA'"
     />
-    @if (pathname() === "/shifts") {
+    @if (shiftsStore.pathname() === "/shifts") {
       <app-nav-button
         [hidden]="hideForMaster"
         (click)="shiftsStore.pdfCards().length !== 0 && shiftsStore.allToPdf()"
@@ -55,12 +55,12 @@
     <app-nav-button
       (click)="toDaily()"
       icon="bi-hourglass"
-      [inactive]="pathname() === '/shifts'"
+      [inactive]="shiftsStore.pathname() === '/shifts'"
     />
     <app-nav-button
       (click)="toShifts()"
       icon="bi-house"
-      [inactive]="pathname() === '/shifts/daily'"
+      [inactive]="shiftsStore.pathname() === '/shifts/daily'"
     />
   </app-navigation>
 </div>

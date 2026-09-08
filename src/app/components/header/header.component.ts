@@ -1,29 +1,26 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
-import { HideElementDirective } from '../../directives/hide-element.directive';
+import { Component, computed, inject, signal } from '@angular/core';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { Dialog } from '@angular/cdk/dialog';
 import { NotificationMessagesComponent } from '../notification-messages/notification-messages.component';
-import { ClickOutsideDirective } from '../../directives/click-outside.directive';
 import { AuthStore } from '../../stores/auth-store/auth.store';
 import { SignalRStore } from '../../stores/signalr-store/signalr.store';
 
 @Component({
   selector: 'app-header',
-  imports: [RouterLink, HideElementDirective, ClickOutsideDirective],
+  imports: [RouterLink, RouterLinkActive, RouterLink],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent {
   readonly authStore = inject(AuthStore);
   readonly signalRStore = inject(SignalRStore);
   private dialog = inject(Dialog);
-  private router = inject(Router);
+  user = computed(() => this.authStore.user());
   notifications = computed(() => this.signalRStore.notifications());
   isShown = signal(false);
-  initialized = signal(false);
 
-  ngOnInit(): void {
-    this.initialized.set(true);
+  ngOnInit() {
+    this.isShown.set(false);
   }
 
   onOpenNotifications() {
@@ -31,19 +28,11 @@ export class HeaderComponent implements OnInit {
   }
 
   onLogout() {
+    this.isShown.update((isShown) => false);
     this.authStore.logOut();
   }
 
   toggle() {
     this.isShown.update((isShown) => !isShown);
-  }
-
-  navigate(url: string) {
-    this.close();
-    this.router.navigateByUrl(url);
-  }
-
-  close() {
-    this.isShown.set(false);
   }
 }
