@@ -706,3 +706,22 @@ app-d-picker.saved .p-inputtext {
       0% 0%;
   }
 }
+
+@media screen and (max-width: 690px) {
+  app-field {
+    .field {
+      .field-wrapper {
+        border: 1px solid var(--white) !important;
+
+        .bi {
+          color: var(--white) !important;
+        }
+
+        input {
+          color: var(--white) !important;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+}
