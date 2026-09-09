@@ -136,7 +136,7 @@ import { Navigation } from './main-navigation';
 
       @media screen and (max-width: 599px) {
         .container {
-          margin-top: 100px;
+          height: 100%;
         }
 
         .container .row {
@@ -150,6 +150,13 @@ import { Navigation } from './main-navigation';
 
         .container .row .category:hover {
           box-shadow: 0 5px 12px rgba(0, 0, 0, 0.1);
+        }
+      }
+
+      @media (orientation: landscape) and (max-width: 690px) {
+        .container {
+          margin-top: 70px;
+          height: 100%;
         }
       }
     `,

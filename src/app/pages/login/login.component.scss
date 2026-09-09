@@ -1,58 +1,98 @@
 .wrapper {
-    overflow: hidden !important;
+  overflow: hidden !important;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .main {
-    margin-top: 180px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 100vh;
+  margin-top: -180px;
 }
 
 .side-image {
-    background-image: url('/main.jpg');
-    background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
-    border-radius: 10px 0 0 10px;
+  background-image: url("/main.jpg");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  border-radius: 10px 0 0 10px;
 }
 
 .row {
-    width: 500px;
-    height: 300px;
-    border-radius: 10px;
-    box-shadow: 5px 5px 10px 1px rgba(0, 0, 0, 0.2);
+  width: 500px;
+  height: 300px;
+  border-radius: 10px;
+  box-shadow: 5px 5px 10px 1px rgba(0, 0, 0, 0.2);
 }
 
 .right {
-    padding: 0 20px;
+  padding: 0 20px;
 }
 
 .input-box {
-    width: 330px;
-    box-sizing: border-box;
+  width: 330px;
+  box-sizing: border-box;
 
-    app-field {
-        width: 95%;
-    }
+  app-field {
+    width: 95%;
+  }
 }
 
 .submit {
-    outline: none;
-    height: 40px;
-    background: var(--main-dark);
-    border-radius: 35px;
-    transition: 0.4s;
-    color: var(--white);
+  outline: none;
+  height: 40px;
+  background: var(--main-dark);
+  border-radius: 35px;
+  transition: 0.4s;
+  color: var(--white);
 }
 
 .submit:disabled {
-    opacity: 1;
+  opacity: 1;
 }
 
 @media only screen and (max-width: 768px) {
-    .side-image {
-        display: none;
-    }
+  .side-image {
+    display: none;
+  }
 
-    .row {
-        width: 80%;
-    }
+  .row {
+    width: 80%;
+  }
+}
+
+@media screen and (max-width: 690px) {
+  .right {
+    background-image: url("/main.jpg");
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    border-radius: 7px;
+  }
+
+  .main {
+    margin-top: 0;
+  }
+
+  .input-box {
+    backdrop-filter: blur(5px);
+    background: transparent;
+    padding: 10px;
+    border-radius: 10px;
+  }
+
+  .submit {
+    background: var(--white);
+    color: var(--main-dark);
+  }
+
+  .spinner-border {
+    color: var(--main-dark) !important;
+  }
 }
