@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
   selector: 'app-paging',
   standalone: true,
   template: `
-    <div>
+    <div class="paging-container">
       <ng-content />
     </div>
   `,
@@ -13,7 +13,7 @@ import { Component } from '@angular/core';
       :host {
         position: fixed;
         right: 10px;
-        bottom: 10px;
+        bottom: 5px;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -22,6 +22,17 @@ import { Component } from '@angular/core';
       :host ::ng-deep .info-button:active,
       :host ::ng-deep .prev-next:active {
         transform: scale(0.7);
+      }
+
+      @media screen and (max-width: 690px) {
+        :host {
+          bottom: 10px;
+        }
+
+        .paging-container {
+          display: flex;
+          flex-direction: column;
+        }
       }
     `,
   ],

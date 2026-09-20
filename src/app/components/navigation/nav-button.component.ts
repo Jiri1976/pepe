@@ -8,76 +8,99 @@ import { Component, computed, input } from '@angular/core';
     @if (!hidden()) {
       <li [ngClass]="classes()">
         <a>
-            @if (!loading()) {
+          @if (!loading()) {
             <i class="bi" [class]="icon()"></i>
             <p>{{ label() }}</p>
-            } @else {
+          } @else {
             <div class="spinner-border" role="status">
               <span class="visually-hidden">Loading...</span>
             </div>
-            }
+          }
         </a>
       </li>
-    }    
+    }
   `,
-  styles: [`
-    :host li {
-      margin: 10px 0;
-      list-style: none;
-      box-shadow: none !important;
-      color: var(--white);
-      background-color: var(--main-dark);
-      border-radius: 52% 48% 33% 67%/38% 45% 55% 62%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      transition:
-        border-radius 0.5s ease,
-        transform 0.4s ease;
-      will-change: transform, border-radius;
-    }
+  styles: [
+    `
+      :host li {
+        margin: 10px 0;
+        list-style: none;
+        box-shadow: none !important;
+        color: var(--white);
+        background-color: var(--main-dark);
+        border-radius: 52% 48% 33% 67%/38% 45% 55% 62%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        transition:
+          border-radius 0.5s ease,
+          transform 0.4s ease;
+        will-change: transform, border-radius;
+      }
 
-    :host li.inactive { background-color: var(--main-disabled); }
-       :host li.save { background-color: var(--main-green); }
-    :host li.delete { background-color: var(--main-red); }
+      :host li.inactive {
+        background-color: var(--main-disabled);
+      }
+      :host li.save {
+        background-color: var(--main-green);
+      }
+      :host li.delete {
+        background-color: var(--main-red);
+      }
 
-    :host li.disabled { 
-      pointer-events: none;
-      background-color: var(--main-disabled);
-    }
+      :host li.disabled {
+        pointer-events: none;
+        background-color: var(--main-disabled);
+      }
 
-    :host li:hover {
-      cursor: pointer;
-      transform: skew(6deg, 0deg) scale(1.05);
-    }
+      :host li:hover {
+        cursor: pointer;
+        transform: skew(6deg, 0deg) scale(1.05);
+      }
 
-    :host a {
-      width: 40px;
-      height: 40px;
-      display: flex;
-      flex-direction: column;
-      align-items: center !important;
-      justify-content: center !important;
-      text-decoration: none;
-    }
+      :host a {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        flex-direction: column;
+        align-items: center !important;
+        justify-content: center !important;
+        text-decoration: none;
+      }
 
-    :host a .bi {
-      font-size: 1.5rem;
-      margin-top: 2px;
-    }
+      :host a .bi {
+        font-size: 1.5rem;
+        margin-top: 2px;
+      }
 
-    :host a p {
-      margin: 0;
-      font-size: 0.8rem;
-      font-weight: 600;
-    }
+      :host a p {
+        margin: 0;
+        font-size: 0.8rem;
+        font-weight: 600;
+      }
 
-    :host a .spinner-border {
-      --bs-spinner-width: 1.4rem;
-      --bs-spinner-height: 1.4rem;
-    }
-    `],
+      :host a .spinner-border {
+        --bs-spinner-width: 1.4rem;
+        --bs-spinner-height: 1.4rem;
+      }
+
+      @media screen and (max-width: 690px) {
+        :host a {
+          width: 35px;
+          height: 35px;
+        }
+      }
+
+      @media screen and (min-height: 360px) {
+        :host#last-one {
+          position: absolute;
+          bottom: 0px;
+          left: 10px;
+        }
+      }
+    `,
+  ],
 })
 export class NavButtonComponent {
   inactive = input(false);
@@ -91,6 +114,6 @@ export class NavButtonComponent {
   classes = computed(() => ({
     inactive: this.inactive(),
     disabled: this.disabled(),
-    [`${this.class()}`]: true
+    [`${this.class()}`]: true,
   }));
 }

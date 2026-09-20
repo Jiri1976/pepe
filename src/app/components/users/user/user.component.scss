@@ -7,6 +7,7 @@
   filter: drop-shadow(0 0 2em rgba(#000, 0.5));
   padding: 2em 2em 2em;
   border-radius: 7px;
+  overflow-y: auto;
 }
 
 form {
@@ -14,7 +15,6 @@ form {
 
   .row {
     width: 100%;
-    margin-bottom: 10px;
 
     .col-4 {
       .avatar {
@@ -77,6 +77,9 @@ form {
       p-fieldset {
         height: 100px;
         color: var(--main-dark) !important;
+        flex-direction: column !important;
+        margin-top: 5px !important;
+        padding: 0 1rem !important;
       }
     }
 
@@ -164,6 +167,117 @@ form {
 
     .btn.disabled {
       opacity: 1;
+    }
+  }
+}
+
+@media screen and (max-width: 995px) {
+  :host-context(cdk-dialog-container) {
+    width: 80%;
+    margin: auto;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .row.positions,
+    .row.active-box {
+      margin-top: 0 !important;
+    }
+  }
+}
+
+@media screen and (max-width: 690px) {
+  :host-context(cdk-dialog-container) {
+    width: auto;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    padding: 0 !important;
+
+    .row.first {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin-top: 2rem;
+
+      .col-8 {
+        width: 100%;
+
+        .card {
+          margin-top: 1rem;
+          align-items: center;
+          .row {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            padding: 0 !important;
+            margin: 1rem 0 !important;
+
+            .col-6 {
+              width: 100%;
+            }
+
+            .col-10 {
+              offset: 0 !important;
+              padding: 0 !important;
+              margin: 0 !important;
+            }
+          }
+        }
+      }
+    }
+
+    .row.positions {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin-top: -1rem !important;
+
+      .col-6 {
+        width: 90%;
+      }
+    }
+
+    .row.active-box {
+      margin-top: -1rem !important;
+      margin-left: 0 !important;
+    }
+
+    .row.buttons {
+      margin-top: 0rem !important;
+      width: 100%;
+
+      .col-4 {
+        width: 100%;
+        flex-direction: row;
+        justify-content: center !important;
+        margin: 0.5rem 0 !important;
+
+        button {
+          width: 100%;
+        }
+
+        button.delete {
+          margin-bottom: 2rem;
+        }
+      }
+    }
+
+    .btn-group label {
+      font-size: 12px !important;
     }
   }
 }

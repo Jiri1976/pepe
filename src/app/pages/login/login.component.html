@@ -7,7 +7,7 @@
       >
         <div class="input-box">
           <form class="d-flex flex-column align-items-center">
-            <app-field [displayErrors]="false">
+            <app-field class="login" [displayErrors]="false">
               <i class="bi bi-envelope"></i>
               <input
                 type="text"
@@ -18,7 +18,7 @@
                 (keydown.enter)="onSubmit()"
               />
             </app-field>
-            <app-field [displayErrors]="false" class="mt-4">
+            <app-field [displayErrors]="false" class="login mt-4">
               <i class="bi bi-lock"></i>
               <input
                 type="password"

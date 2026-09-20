@@ -707,8 +707,41 @@ app-d-picker.saved .p-inputtext {
   }
 }
 
-@media screen and (max-width: 690px) {
+app-field.login {
+  .field {
+    .field-wrapper.errorField {
+      border: 1px solid rgba(0, 0, 0, 0.2) !important;
+
+      .bi {
+        color: rgba(0, 0, 0, 0.4) !important;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 995px) {
   app-field {
+    .field {
+      .field-wrapper {
+        .counter {
+          display: none !important;
+        }
+      }
+    }
+  }
+
+  .p-fieldset {
+    flex-direction: column;
+
+    .p-fieldset-content-container {
+      flex-direction: column;
+      margin-top: -20px;
+    }
+  }
+}
+
+@media screen and (max-width: 690px) {
+  app-field.login {
     .field {
       .field-wrapper {
         border: 1px solid var(--white) !important;
@@ -722,6 +755,28 @@ app-d-picker.saved .p-inputtext {
           font-weight: 600;
         }
       }
+
+      .field-wrapper.errorField {
+        border: 1px solid var(--white) !important;
+
+        .bi {
+          color: var(--white) !important;
+        }
+      }
     }
+  }
+
+  .p-fieldset {
+    flex-direction: column;
+
+    .p-fieldset-content-container {
+      flex-direction: column;
+      margin-top: -20px;
+    }
+  }
+
+  .cdk-overlay-pane {
+    height: 90% !important;
+    overflow-y: auto !important;
   }
 }

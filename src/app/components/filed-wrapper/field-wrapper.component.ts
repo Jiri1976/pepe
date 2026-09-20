@@ -90,8 +90,8 @@ import { FormField } from '@angular/forms/signals';
 
       :host ::ng-deep .counter {
         position: absolute;
-        right: 10px;
-        bottom: -14px;
+        right: 0px;
+        bottom: -15px;
         font-size: 0.65rem;
         color: var(--main-disabled);
       }
