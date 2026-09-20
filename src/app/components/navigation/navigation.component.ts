@@ -6,31 +6,44 @@ import { Component, ContentChild, ElementRef } from '@angular/core';
   template: `
     <div class="menu">
       <ul>
-          <ng-content></ng-content>
+        <ng-content></ng-content>
       </ul>
     </div>
-    `,
-  styles: [`
-  .menu {
-    left: 10px;
-    bottom: 10px;
-    position: fixed;
-    width: 55px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: var(--white);
-    border: 1px solid var(--main-border-color);
-    border-radius: 7px;
-    box-shadow: inset 0 0 8px 1px var(--main-border-color);
+  `,
+  styles: [
+    `
+      .menu {
+        left: 5px;
+        bottom: 5px;
+        position: fixed;
+        width: 55px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
 
-    ul {
-        margin: 0;
-        padding: 0;
-    }
-}
-    `],
+        ul {
+          margin: 0;
+          padding: 0;
+        }
+      }
+
+      @media screen and (max-width: 690px) {
+        .menu {
+          left: 0px;
+        }
+      }
+
+      @media screen and (max-height: 360px) {
+        ul {
+          overflow-y: auto;
+          height: 250px;
+          scroll-behavior: smooth;
+          scrollbar-width: none;
+        }
+      }
+    `,
+  ],
 })
 export class NavigationComponent {
   @ContentChild('toggleBtn', { static: true })

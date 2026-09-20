@@ -1,7 +1,13 @@
-<div class="row line mt-1" (click)="editUser()" [class]="!user().isActive ? 'disabled' : 'active'">
-    <div [class]="`col-4 ${user().isActive}`">{{ user().name }}</div>
-    <div [class]="`col-5 ${user().isActive}`">{{ user().surname }}</div>
-    <div [class]="`col-3 role ${user().role} ${user().isActive}`">{{
-        user().role.substring(0,1) }}
-    </div>
+<div
+  class="row line mt-1"
+  (click)="editUser()"
+  [class]="
+    !user().isActive ? `disabled ${user().role}` : `active ${user().role}`
+  "
+>
+  <div [class]="`col-5 ${user().isActive}`">{{ user().name }}</div>
+  <div [class]="`col-6 ${user().isActive}`">{{ user().surname }}</div>
+  <div [class]="`col-1 role ${user().role} ${user().isActive}`">
+    {{ user().role.substring(0, 1) }}
+  </div>
 </div>

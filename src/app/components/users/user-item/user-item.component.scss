@@ -1,73 +1,111 @@
 .line {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  color: var(--main-dark);
+  height: 40px;
+  border: 1px solid var(--main-border-color);
+  margin: 10px auto;
+  transition: ease 0.3s all;
+  cursor: pointer;
+  border-radius: 7px;
+  box-shadow: inset 0 0 1px 1px var(--main-border-color);
+
+  .col-5,
+  .col-6,
+  .col-1 {
+    font-weight: 600;
+    padding: 8px 6px 6px 10px;
+  }
+
+  .col-5,
+  .col-6 {
+    text-align: left;
+  }
+
+  .col-5.false,
+  .col-6.false,
+  .col-1.false {
+    color: var(--main-disabled);
+  }
+
+  .col-1 {
+    text-align: right;
+  }
+
+  .role {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    color: var(--main-dark);
-    height: 40px;
-    border: 1px solid var(--main-border-color);
-    margin: 10px auto;
-    transition: ease 0.3s all;
-    cursor: pointer;
+    color: var(--white);
+    height: 30px;
+    width: 30px;
+    padding: 0;
     border-radius: 7px;
-    box-shadow: inset 0 0 1px 1px var(--main-border-color);
+  }
 
-    .col-4,
-    .col-5,
-    .col-3 {
-        font-weight: 600;
-        padding: 8px 6px 6px 10px;
-    }
+  .role.Admin {
+    background-color: var(--main-red);
+  }
 
-    .col-4,
-    .col-5 {
-        text-align: left;
-    }
+  .role.Master {
+    background-color: var(--main-green);
+  }
 
-    .col-4.false,
-    .col-5.false,
-    .col-3.false {
-        color: var(--main-disabled);
-    }
+  .role.User {
+    background-color: var(--main-dark);
+  }
 
-    .col-3 {
-        text-align: right;
-    }
-
-    .role {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        color: var(--white);
-        height: 30px;
-        width: 30px;
-        padding: 0;
-        border-radius: 7px;
-    }
-
-    .role.Admin {
-        background-color: var(--main-red);
-    }
-
-    .role.Master {
-        background-color: var(--main-green);
-    }
-
-    .role.User {
-        background-color: var(--main-dark);
-    }
-
-    .role.User.false {
-        background-color: var(--main-disabled);
-        color: var(--white);
-    }
+  .role.User.false {
+    background-color: var(--main-disabled);
+    color: var(--white);
+  }
 }
 
 .line.active:hover {
-    box-shadow: 0 3px 10px 2px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 3px 10px 2px rgba(0, 0, 0, 0.2);
 }
 
 .line.disabled:hover {
-    box-shadow: var(--main-disabled) 0px 5px 15px;
+  box-shadow: var(--main-disabled) 0px 5px 15px;
+}
+
+@media screen and (max-width: 690px) {
+  .row .col-1 {
+    display: none;
+  }
+
+  .line {
+    border: none;
+    box-shadow: none;
+    color: var(--white);
+  }
+
+  .line.User {
+    background-color: var(--main-dark);
+  }
+
+  .line.Master {
+    background-color: var(--main-green);
+  }
+
+  .line.Admin {
+    background-color: var(--main-red);
+  }
+
+  .line.disabled {
+    background-color: var(--main-disabled);
+    .col-5.false,
+    .col-6.false,
+    .col-1.false {
+      color: var(--main-dark) !important;
+    }
+  }
+
+  .line.active:hover,
+  .line.disabled:hover {
+    box-shadow: none;
+  }
 }

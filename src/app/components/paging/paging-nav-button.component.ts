@@ -37,6 +37,12 @@ import { Component, input } from '@angular/core';
         color: var(--white);
         box-shadow: none;
       }
+
+      @media screen and (max-width: 995px) {
+        .page-nav-button {
+          display: none;
+        }
+      }
     `,
   ],
 })

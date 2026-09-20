@@ -1,55 +1,137 @@
 <div class="box">
-    @if (!store.isLoading()) {
-
+  @if (!store.isLoading()) {
     <div class="users" animate.enter="fade-in" animate.leave="fade-out">
-        <div class="row">
-            @if(store.filteredUsers().length > 0) {
-            @for(user of store.filteredUsers(); track $index; let i = $index) {
+      <div class="row">
+        @if (store.filteredUsers().length > 0) {
+          @for (user of store.filteredUsers(); track $index; let i = $index) {
             <app-user-item [user]="user" />
-            }
+          }
 
-            @for(i of store.fakeArray(); track $index) {
+          @for (i of store.fakeArray(); track $index) {
             <app-empty-block />
-            }
-            } @else {
-            <h4 class="mt-5">Žádní uživatelé v databázi.</h4>
-            }
-        </div>
-    </div>
-    <app-destination-button [destination]="store.filter()" [right]="width() / 2 - 70" [bottom]="10" />
-    } @else {
-    <div class="skeleton" animate.leave="fade-out">
-        @for (i of [1,2,3,4,5,6,7,8,9,10]; track i) {
-        <div class="row blind mt-1"></div>
+          }
+        } @else {
+          <h4 class="mt-5">Žádní uživatelé v databázi.</h4>
         }
+      </div>
     </div>
-    }
+  } @else {
+    <div class="users" animate.enter="fade-in" animate.leave="fade-out">
+      <div class="skeleton" animate.leave="fade-out">
+        @for (i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; track i) {
+          <div class="row blind mt-1"></div>
+        }
+      </div>
+    </div>
+  }
 
-    @let filter = store.filter;
-    @let role = store.role;
+  <app-destination-button
+    [destination]="store.filter()"
+    [right]="width() / 2 - 70"
+    [bottom]="10"
+  />
 
-    <app-navigation animate.enter="fade-in" animate.leave="fade-out">
-        <app-nav-button (click)="createUser()" icon="bi-person-add" />
-        <app-nav-button [loading]="store.isLoading()" (click)="store.getUsers()" icon="bi-arrow-clockwise" />
-        <app-nav-button [inactive]="filter() !== 'F-M'" (click)="store.setFilter('F-M')" label="F-M" />
-        <app-nav-button [inactive]="filter() !== 'OVA'" (click)="store.setFilter('OVA')" label="OVA" />
-        <app-nav-button [inactive]="role() !== 'User'" (click)="store.setRole('User')" label="U" />
-        <app-nav-button [inactive]="role() !== 'Master'" (click)="store.setRole('Master')" label="M" />
-        <app-nav-button [inactive]="role() !== 'Admin'" (click)="store.setRole('Admin')" label="A" />
-        <app-nav-button [inactive]="filter() !== 'All' || role() !== ''" (click)="store.setFilter('All')" label="VŠE" />
-    </app-navigation>
+  @let filter = store.filter;
+  @let role = store.role;
 
-    @if (store.filteredUsers().length > 0) {
+  <app-navigation animate.enter="fade-in" animate.leave="fade-out">
+    <app-nav-button
+      id="toggle-menu"
+      (click)="hideMenu()"
+      icon="bi-x"
+      style="--i: 0"
+      [hidden]="!menuShown()"
+    />
+    <app-nav-button
+      (click)="createUser()"
+      icon="bi-person-add"
+      style="--i: 1"
+      [hidden]="!menuShown()"
+    />
+    <app-nav-button
+      [loading]="store.isLoading()"
+      (click)="store.getUsers()"
+      icon="bi-arrow-clockwise"
+      [hidden]="!menuShown()"
+      style="--i: 2"
+    />
+    <app-nav-button
+      [inactive]="filter() !== 'F-M'"
+      (click)="store.setFilter('F-M')"
+      label="F-M"
+      [hidden]="!menuShown()"
+      style="--i: 3"
+    />
+    <app-nav-button
+      [inactive]="filter() !== 'OVA'"
+      (click)="store.setFilter('OVA')"
+      label="OVA"
+      [hidden]="!menuShown()"
+      style="--i: 4"
+    />
+    <app-nav-button
+      [inactive]="role() !== 'User'"
+      (click)="store.setRole('User')"
+      label="U"
+      [hidden]="!menuShown()"
+      style="--i: 5"
+    />
+    <app-nav-button
+      [inactive]="role() !== 'Master'"
+      (click)="store.setRole('Master')"
+      label="M"
+      [hidden]="!menuShown()"
+      style="--i: 6"
+    />
+    <app-nav-button
+      [inactive]="role() !== 'Admin'"
+      (click)="store.setRole('Admin')"
+      label="A"
+      [hidden]="!menuShown()"
+      style="--i: 7"
+    />
+    <app-nav-button
+      [inactive]="filter() !== 'All' || role() !== ''"
+      (click)="store.setFilter('All')"
+      label="VŠE"
+      [hidden]="!menuShown()"
+      style="--i: 8"
+    />
+
+    <app-nav-button
+      id="last-one"
+      [hidden]="menuShown()"
+      (click)="showMenu()"
+      icon="bi-list"
+      style="--i: 9"
+    />
+  </app-navigation>
+
+  @if (store.filteredUsers().length > 0) {
     <app-paging animate.enter="fade-in" animate.leave="fade-out">
-        <app-prev-next-button icon="bi-caret-left" [disabled]="!store.hasPreviousPage()"
-            (click)="store.hasPreviousPage() && store.setCurrentPage(store.currentPage() - 1)" />
-        @for (page of store.buttonArray(); track $index) {
-        <app-page-nav-button [active]="store.currentPage() === $index + 1" (click)="store.setCurrentPage($index + 1)">
-            {{ $index + 1 }}
+      <app-prev-next-button
+        icon="bi-caret-left"
+        [disabled]="!store.hasPreviousPage()"
+        (click)="
+          store.hasPreviousPage() &&
+            store.setCurrentPage(store.currentPage() - 1)
+        "
+      />
+      @for (page of store.buttonArray(); track $index) {
+        <app-page-nav-button
+          [active]="store.currentPage() === $index + 1"
+          (click)="store.setCurrentPage($index + 1)"
+        >
+          {{ $index + 1 }}
         </app-page-nav-button>
-        }
-        <app-prev-next-button icon="bi-caret-right" [disabled]="!store.hasNextPage()"
-            (click)="store.hasNextPage() && store.setCurrentPage(store.currentPage() + 1)" />
+      }
+      <app-prev-next-button
+        icon="bi-caret-right"
+        [disabled]="!store.hasNextPage()"
+        (click)="
+          store.hasNextPage() && store.setCurrentPage(store.currentPage() + 1)
+        "
+      />
     </app-paging>
-    }
+  }
 </div>

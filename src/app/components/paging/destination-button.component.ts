@@ -32,6 +32,12 @@ import { Component, computed, input, signal } from '@angular/core';
       .destination-button:hover {
         cursor: default;
       }
+
+      @media screen and (max-width: 995px) {
+        .destination-button {
+          display: none;
+        }
+      }
     `,
   ],
 })
