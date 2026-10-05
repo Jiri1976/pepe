@@ -28,6 +28,25 @@ import { Component, ContentChild, ElementRef } from '@angular/core';
         }
       }
 
+      @media screen and (max-width: 690px) and (max-height: 640px) {
+        :host#plans {
+          .menu {
+            ul {
+              overflow-y: auto;
+              height: calc(100vh - 150px);
+              scroll-behavior: smooth;
+              scrollbar-width: none;
+              display: flex;
+              flex-direction: column;
+            }
+          }
+        }
+
+        .menu {
+          left: 0px;
+        }
+      }
+
       @media screen and (max-width: 690px) {
         .menu {
           left: 0px;
@@ -37,7 +56,7 @@ import { Component, ContentChild, ElementRef } from '@angular/core';
       @media screen and (max-height: 360px) {
         ul {
           overflow-y: auto;
-          height: 250px;
+          height: calc(100vh - 70px);
           scroll-behavior: smooth;
           scrollbar-width: none;
         }

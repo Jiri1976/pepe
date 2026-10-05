@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, HostListener, inject, signal } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
@@ -34,6 +34,16 @@ export class PlansComponent {
   readonly authStore = inject(AuthStore);
   readonly propStore = inject(ProposalStore);
   private dialog = inject(Dialog);
+  menuShown = signal(true);
+  width = signal(window.innerWidth);
+
+  @HostListener('window:resize')
+  onWindowResize() {
+    this.width.set(window.innerWidth);
+    if (this.width() > 690) {
+      this.menuShown.set(true);
+    }
+  }
 
   onSelectMonth(date: Date) {
     if (!this.propStore.isUnchanged()) {
@@ -80,5 +90,13 @@ export class PlansComponent {
 
   onOpenAI() {
     this.propStore.openConstraints();
+  }
+
+  hideMenu() {
+    this.menuShown.set(false);
+  }
+
+  showMenu() {
+    this.menuShown.set(true);
   }
 }
