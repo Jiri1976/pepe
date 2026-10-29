@@ -1,61 +1,61 @@
 :host {
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  text-align: center;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .shift {
-    font-size: 1.3rem;
-    padding: 0px !important;
-    width: 35px !important;
-    height: 35px !important;
-    border-radius: 7px;
+  font-size: 1.3rem;
+  padding: 0px !important;
+  width: 33px !important;
+  max-width: 33px;
+  height: 33px !important;
 }
 
 .shift.whole {
-    background: var(--main-green);
+  background: var(--main-green);
 }
 
 .shift.dest {
-    font-size: 0.8rem;
-    background: var(--black);
-    font-weight: 600;
+  font-size: 0.8rem;
+  background: var(--black);
+  font-weight: 600;
 }
 
 .shift.morning {
-    background: var(--main-purple);
+  background: var(--main-purple);
 }
 
 .shift.afternoon {
-    background: var(--main-red);
+  background: var(--proposal-green);
 }
 
 .shift.custom {
-    background: var(--main-disabled);
+  background: var(--main-disabled);
 
-    .upper {
-        font-size: 0.8rem;
-        margin-top: 8px;
-    }
+  .upper {
+    font-size: 0.8rem;
+    margin-top: 8px;
+  }
 
-    .lower {
-        font-size: 0.8rem;
-        margin-bottom: 5px;
-    }
+  .lower {
+    font-size: 0.8rem;
+    margin-bottom: 5px;
+  }
 }
 
 .shift.morning,
 .shift.afternoon {
+  .upper {
+    top: 4px;
+    font-size: 1rem;
+  }
 
-    .upper {
-        top: 4px;
-        font-size: 1rem;
-    }
-
-    .lower {
-        bottom: 3px;
-        font-size: 1rem;
-    }
+  .lower {
+    bottom: 3px;
+    font-size: 1rem;
+  }
 }

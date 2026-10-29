@@ -1,8 +1,10 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { HeaderComponent } from './components/header/header.component';
-import { RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { IsAuthenticated } from './directives/is-authenticated.directive';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -12,11 +14,23 @@ import { IsAuthenticated } from './directives/is-authenticated.directive';
 })
 export class AppComponent implements OnInit {
   private readonly document = inject(DOCUMENT);
+  private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
+  private isPlansRoute = false;
 
   ngOnInit(): void {
+    this.router.events
+      .pipe(
+        filter(
+          (event): event is NavigationEnd => event instanceof NavigationEnd,
+        ),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((event) => this.onRouteChanged(event.urlAfterRedirects));
+
     const splash = this.document.getElementById('app-bootstrap-loader');
     if (!splash) {
-      this.unlockPageScroll();
+      this.applyPageScrollPolicy();
       return;
     }
 
@@ -41,7 +55,7 @@ export class AppComponent implements OnInit {
         splash.classList.add('is-exiting');
         window.setTimeout(() => {
           splash.remove();
-          this.unlockPageScroll();
+          this.applyPageScrollPolicy();
         }, exitMs);
       }, remaining);
     };
@@ -85,8 +99,20 @@ export class AppComponent implements OnInit {
     return Number.isFinite(value) ? value : fallbackMs;
   }
 
-  private unlockPageScroll(): void {
+  private onRouteChanged(url: string): void {
+    const isPlansRoute = /^\/plans(?:\/|$)/.test(url);
+    if (isPlansRoute) {
+      this.document.body.style.overflow = 'hidden';
+    } else if (this.isPlansRoute) {
+      this.document.body.style.overflow = 'auto';
+    }
+
+    this.isPlansRoute = isPlansRoute;
+  }
+
+  private applyPageScrollPolicy(): void {
+    this.isPlansRoute = /^\/plans(?:\/|$)/.test(this.router.url);
     this.document.documentElement.style.overflow = 'auto';
-    this.document.body.style.overflow = 'auto';
+    this.document.body.style.overflow = this.isPlansRoute ? 'hidden' : 'auto';
   }
 }
