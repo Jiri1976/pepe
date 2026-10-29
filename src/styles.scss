@@ -780,3 +780,43 @@ app-field.login {
     overflow-y: auto !important;
   }
 }
+
+/* TABLE */
+.p-datatable-thead > tr > th#first,
+.p-datatable-tbody > tr > td.first {
+  width: 35px !important;
+  max-width: 35px !important;
+  min-width: 35px !important;
+  padding: 0 !important;
+}
+
+.p-datatable-thead > tr > th#head {
+  background-color: var(--main-dark) !important;
+  color: var(--white) !important;
+}
+
+.p-datatable-tbody > tr > td.Pizza,
+.p-datatable-tbody > tr > td.Cook,
+.p-datatable-tbody > tr > td.Helper,
+.p-datatable-tbody > tr > td.Driver {
+  font-weight: 600 !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+
+.p-datatable-tbody > tr > td.Pizza {
+  background-color: var(--proposal-green) !important;
+  color: var(--white) !important;
+}
+
+.p-datatable-tbody > tr > td.Cook {
+  background-color: var(--proposal-lime) !important;
+  color: var(--main-dark) !important;
+}
+
+.p-datatable-tbody > tr > td.Helper {
+  background-color: var(--proposal-yellow) !important;
+  color: var(--main-dark) !important;
+}

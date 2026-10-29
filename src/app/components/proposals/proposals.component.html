@@ -6,106 +6,100 @@
 
     @if (propStore.hasUsers()) {
       <div class="wrapper">
-        @let countOfDays = propStore.currentCard()?.countOfDays ?? 0;
+        <div class="p-table-wrapper" [class.height-unlimited]="!scrollHeight()">
+          <p-table
+            [value]="tableUsers()"
+            [scrollable]="true"
+            [scrollHeight]="scrollHeight()"
+            [tableStyle]="{ width: tableWidth(), 'table-layout': 'fixed' }"
+            style="position: relative"
+            (onRowReorder)="onRowReorder($event)"
+          >
+            <ng-template #header>
+              <tr>
+                @if (
+                  authStore.user()?.role === "Admin" &&
+                  !propStore.isPassedCard()
+                ) {
+                  <th pFrozenColumn id="first"></th>
+                }
 
-        <div
-          class="table d-flex flex-column"
-          proposalTableStyle
-          [countOfDays]="countOfDays"
-          [isUnsavedPassedCard]="propStore.isUnsavedPassedCard()"
-          animate.enter="fade-in"
-        >
-          <div class="table-head d-flex flex-row">
-            <div
-              class="user-name fw-bold overflow-hidden d-flex flex-column justify-content-center align-items-center text-white"
-            >
-              {{ propStore.currentCard()?.monthYearName }}
-            </div>
-
-            @for (
-              shift of propStore.currentCard()?.users?.[0]?.shifts ?? [];
-              track $index
-            ) {
-              <th>
-                <div
-                  class="cell d-flex flex-column justify-content-center text-dark"
-                  [setBackground]="isWeekend(shift.proposalDate)"
-                >
-                  <div class="fs-6 text-center fw-bold">
-                    {{ shift.proposalDate.split(".")[0] }}
-                  </div>
-                  <div class="cell-week-day text-center fw-bold">
-                    {{ dayOfWeek(`${shift.proposalDate}`) }}
-                  </div>
-                </div>
-              </th>
-            }
-
-            @if (propStore.isPassedCard()) {
-              <th>
-                <div class="cell-lastone-passed"></div>
-              </th>
-            } @else {
-              <th>
-                <div class="cell-lastone"></div>
-              </th>
-            }
-          </div>
-
-          <div class="body" cdkDropListGroup #dashboard [style]="bodyStyles()">
-            <div cdkDropList (cdkDropListDropped)="drop($event)">
-              @for (
-                user of propStore.currentCard()?.users ?? [];
-                track $index;
-                let i = $index
-              ) {
-                <div
-                  class="table-row d-flex flex-row"
-                  cdkDrag
-                  [cdkDragDisabled]="
-                    authStore.user()?.role !== 'Admin' ||
-                    propStore.isPassedCard()
-                  "
-                  [cdkDragPreviewContainer]="'parent'"
-                  [cdkDragBoundary]="dashboard"
-                >
-                  <div
-                    class="user-name-cell fw-bold d-flex flex-row justify-content-between align-items-center"
-                    cdkDragHandle
-                    [setProposalUserBackground]="user.position"
+                <th pFrozenColumn id="head">
+                  {{ propStore.currentCard()?.monthYearName }}
+                </th>
+                @for (
+                  shift of propStore.currentCard()?.users?.[0]?.shifts ?? [];
+                  track $index
+                ) {
+                  <th
+                    class="day {{
+                      isWeekend(shift.proposalDate) ? 'is-weekend' : ''
+                    }}"
                   >
-                    {{ `${user.name} ${user.surname.substring(0, 1)}.` }}
-                    <app-proposal-pit [user]="user" />
-                  </div>
+                    {{ shift.proposalDate.split(".")[0] }}
+                    <br />
+                    {{ dayOfWeek(`${shift.proposalDate}`) }}
+                  </th>
+                }
 
-                  @for (shift of user.shifts; track $index; let j = $index) {
-                    <th
-                      class="drop-zone d-flex flex-column justify-content-center align-items-center"
-                      [setBackground]="isWeekend(shift.proposalDate)"
-                      [disabledClass]="isPassedTime(shift.proposalDate)"
-                      (click)="
-                        !isPassedTime(shift.proposalDate) &&
-                          onCreateUpdateProposal(shift)
-                      "
-                    >
-                      <app-proposal-shift [shift]="shift" />
-                    </th>
-                  }
+                @if (!propStore.isPassedCard()) {
+                  <th class="last"></th>
+                }
+              </tr>
+            </ng-template>
+            <ng-template #body let-customer let-index="rowIndex">
+              <tr
+                [pReorderableRow]="index"
+                [pReorderableRowDisabled]="
+                  authStore.user()?.role !== 'Admin' || propStore.isPassedCard()
+                "
+              >
+                @if (
+                  authStore.user()?.role === "Admin" &&
+                  !propStore.isPassedCard()
+                ) {
+                  <td pFrozenColumn class="first">
+                    <svg
+                      data-p-icon="bars"
+                      pReorderableRowHandle
+                      class="cursor-grab text-surface-400"
+                    ></svg>
+                  </td>
+                }
 
-                  @if (!propStore.isPassedCard()) {
-                    <th
-                      class="drop-zone last text-white d-flex flex-column justify-content-center align-items-center"
-                      (click)="remove(user, i)"
-                    >
-                      <i class="bi bi-x-circle"></i>
-                    </th>
-                  }
-                </div>
-                <div *cdkDragPlaceholder></div>
-              }
-            </div>
-            <div cdkDropList></div>
-          </div>
+                <td pFrozenColumn class="user-head {{ customer.position }}">
+                  <span class="user-head-label">
+                    {{
+                      `${customer.name} ${customer.surname.substring(0, 1)}.`
+                    }}
+                  </span>
+                  <app-proposal-pit [user]="customer" />
+                </td>
+
+                @for (shift of customer.shifts; track $index) {
+                  <td
+                    class="day {{
+                      isWeekend(shift.proposalDate) ? 'is-weekend' : ''
+                    }} {{
+                      isPassedTime(shift.proposalDate) ? 'is-passed' : ''
+                    }}"
+                    (click)="
+                      !isPassedTime(shift.proposalDate) &&
+                        onCreateUpdateProposal(shift)
+                    "
+                  >
+                    <app-proposal-shift [shift]="shift" />
+                  </td>
+                }
+
+                @if (!propStore.isPassedCard()) {
+                  <td class="last" (click)="remove(customer, index)">
+                    <i class="bi bi-x-circle"></i>
+                  </td>
+                }
+              </tr>
+            </ng-template>
+          </p-table>
         </div>
       </div>
     }

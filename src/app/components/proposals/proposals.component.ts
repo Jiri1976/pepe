@@ -1,96 +1,71 @@
 import {
   Component,
   computed,
-  ElementRef,
   HostListener,
   inject,
   signal,
-  viewChild,
 } from '@angular/core';
-import { ProposalsService } from '../../services/proposals.service';
 import { ProposalSkeletonComponent } from './proposal-skeleton/proposal-skeleton.component';
-import {
-  CdkDrag,
-  CdkDragHandle,
-  CdkDragPlaceholder,
-  CdkDragDrop,
-  CdkDropList,
-  CdkDropListGroup,
-} from '@angular/cdk/drag-drop';
 import { ProposalShiftComponent } from './proposal-shift/proposal-shift.component';
-import { DisabledClassDirective } from '../../directives/disabled-class.directive';
-import { SetBackgroundDirective } from '../../directives/set-background.directive';
-import { ProposalTableStyleDirective } from '../../directives/proposal-table-style.directive';
 import { AuthStore } from '../../stores/auth-store/auth.store';
 import { ProposalStore } from '../../stores/proposal-store/proposal.store';
-import { ProposalUserBackgroundDirective } from '../../directives/proposal-user-background.directive';
 import { ProposalUser, ProposalShift } from '../../models/proposals.interface';
 import { ProposalPitComponent } from './proposal-pit/proposal-pit.component';
+import { TableModule } from 'primeng/table';
+import { Bars } from '@primeicons/angular/bars';
+import { TagModule } from 'primeng/tag';
 
 @Component({
   selector: 'app-proposals',
   imports: [
+    TableModule,
     ProposalSkeletonComponent,
-    ProposalShiftComponent,
-    DisabledClassDirective,
-    SetBackgroundDirective,
-    ProposalUserBackgroundDirective,
-    ProposalTableStyleDirective,
-    CdkDropList,
-    CdkDropListGroup,
-    CdkDrag,
-    CdkDragPlaceholder,
-    CdkDragHandle,
+    Bars,
+    TagModule,
     ProposalPitComponent,
+    ProposalShiftComponent,
   ],
   templateUrl: './proposals.component.html',
-  styleUrl: './proposals.component.scss',
+  styleUrls: ['./proposals.component.scss'],
 })
 export class ProposalsComponent {
   readonly authStore = inject(AuthStore);
   readonly propStore = inject(ProposalStore);
-  dashboard = viewChild.required<ElementRef>('dashboard');
-  proposalsService = inject(ProposalsService);
   height = signal<number>(window.innerHeight);
+  tableWidth = computed(() => {
+    const shifts = this.propStore.currentCard()?.users?.[0]?.shifts ?? [];
+    const isEditable = !this.propStore.isPassedCard();
+    const hasReorderColumn =
+      isEditable && this.authStore.user()?.role === 'Admin';
+    const fixedWidth =
+      150 + (hasReorderColumn ? 35 : 0) + (isEditable ? 35 : 0);
+    return `${fixedWidth + shifts.length * 35}px`;
+  });
+  tableUsers = computed(() => [...(this.propStore.currentCard()?.users ?? [])]);
 
   @HostListener('window:resize')
   onWindowResize() {
     this.height.set(window.innerHeight);
   }
 
-  bodyStyles = computed(() => {
+  scrollHeight = computed(() => {
     if (this.propStore.currentCard()?.users) {
       if (this.height() < 700) {
-        return {
-          maxHeight: '500px',
-          'overflow-y': 'auto',
-        };
+        return '500px';
       } else if (this.height() > 700 && this.height() < 920) {
         if (
           this.propStore.currentCard() &&
           this.propStore.currentCard()!.users.length > 13
         ) {
-          return {
-            maxHeight: '580px',
-            'overflow-y': 'auto',
-          };
+          return '580px';
         } else {
-          return {
-            maxHeight: '',
-            'overflow-y': 'hidden',
-          };
+          return '';
         }
       } else {
-        return {
-          maxHeight: '',
-          'overflow-y': 'hidden',
-        };
+        return '';
       }
     } else {
-      return {
-        maxHeight: '',
-        'overflow-y': 'hidden',
-      };
+      return '';
     }
   });
 
@@ -131,10 +106,6 @@ export class ProposalsComponent {
         s.from !== 'OVA',
     );
     this.propStore.removeFromActive(user, index, userShifts);
-  }
-
-  drop(event: CdkDragDrop<number, any>) {
-    this.propStore.updatePositions(event.previousIndex, event.currentIndex);
   }
 
   isWeekend(date: string) {
@@ -179,5 +150,9 @@ export class ProposalsComponent {
       return false;
     }
     return true;
+  }
+
+  onRowReorder(event: any) {
+    this.propStore.updatePositions(event.dragIndex, event.dropIndex);
   }
 }
