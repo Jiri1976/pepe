@@ -5,7 +5,6 @@ import {
   ElementRef,
   inject,
   OnInit,
-  signal,
   viewChild,
 } from '@angular/core';
 import { ProposalStore } from '../../../stores/proposal-store/proposal.store';
@@ -21,7 +20,7 @@ import { ConstraintSkeletonComponent } from './constraint-skeleton/constraint-sk
 export class ConstraintsComponent implements OnInit, AfterViewInit {
   readonly propStore = inject(ProposalStore);
   scrollContainer = viewChild<ElementRef<HTMLDivElement>>('scrollContainer');
-  isBubbling = signal(false);
+
   readonly pizza = computed(() =>
     this.propStore
       .currentCard()
@@ -64,21 +63,14 @@ export class ConstraintsComponent implements OnInit, AfterViewInit {
     if (this.propStore.invalidScheduleGeneratorRequest()) {
       return;
     }
-
-    this.isBubbling.set(true);
-
-    setTimeout(() => {
-      this.isBubbling.set(false);
-      this.propStore.setMonthYearScheduleGeneratorRequest();
-      this.propStore.requestGenerateSchedule();
-    }, 300);
+    this.propStore.setMonthYearScheduleGeneratorRequest();
+    this.propStore.requestGenerateSchedule();
   }
 
   save() {
     if (this.propStore.invalidScheduleGeneratorRequest()) {
       return;
     }
-
     this.propStore.requestSaveGenerator();
   }
 }

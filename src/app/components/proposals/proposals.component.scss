@@ -74,6 +74,26 @@
         overflow: hidden;
       }
 
+      ::ng-deep .p-datatable-thead > tr > th#head {
+        background-color: var(--main-dark) !important;
+        color: var(--white) !important;
+      }
+
+      ::ng-deep .p-datatable-tbody > tr > td.Pizza {
+        background-color: var(--proposal-green) !important;
+        color: var(--white) !important;
+      }
+
+      ::ng-deep .p-datatable-tbody > tr > td.Cook {
+        background-color: var(--proposal-lime) !important;
+        color: var(--main-dark) !important;
+      }
+
+      ::ng-deep .p-datatable-tbody > tr > td.Helper {
+        background-color: var(--proposal-yellow) !important;
+        color: var(--main-dark) !important;
+      }
+
       ::ng-deep .p-datatable-tbody > tr > td.user-head {
         display: flex;
         align-items: center;
@@ -188,5 +208,12 @@
         }
       }
     }
+  }
+}
+
+@media screen and (max-width: 690px) {
+  h4 {
+    font-size: 0.9rem;
+    margin-left: 30px;
   }
 }

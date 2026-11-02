@@ -111,8 +111,7 @@
       <button class="blind" type="button"></button>
     } @else {
       <button
-        class="submit bubble"
-        [class.animate]="isBubbling()"
+        class="submit"
         type="button"
         (click)="generate()"
         [disabled]="propStore.invalidScheduleGeneratorRequest()"

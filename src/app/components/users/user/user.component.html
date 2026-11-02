@@ -258,8 +258,7 @@
     <div class="col-4 d-flex justify-content-center align-items-center">
       <button
         type="button"
-        class="submit d-flex justify-content-center align-items-center p-0 text-white bubble"
-        [class.animate]="isBubbling()"
+        class="submit d-flex justify-content-center align-items-center p-0 text-white"
         [class.loading]="usersStore.isSaving()"
         (click)="onSubmit()"
         [disabled]="form().invalid() || isUnchanged() || usersStore.isSaving()"

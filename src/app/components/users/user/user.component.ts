@@ -90,7 +90,6 @@ export class UserComponent {
   selectedImageName = signal<string | null>(this.user()?.imageName ?? null);
   selectedImage = signal<string | null>(null);
   apiUrl = environment.apiUrl;
-  isBubbling = signal(false);
 
   readonly isUnchanged = computed(() => {
     const original = this.originalUser();
@@ -261,50 +260,46 @@ export class UserComponent {
     if (this.form().invalid() || this.isUnchanged()) {
       return;
     }
-    this.isBubbling.set(true);
 
-    setTimeout(() => {
-      this.isBubbling.set(false);
-      const v = this.form().value();
-      let _user = { ...this.user()! };
-      _user.nick = `${v.name[0]}${v.surname[0]}`;
-      _user.name = v.name;
-      _user.surname = v.surname;
-      _user.email = v.email;
-      _user.password = v.password;
-      _user.role = v.role;
-      _user.destinations = this.computedDestinations();
-      _user.isActive = v.isActive;
+    const v = this.form().value();
+    let _user = { ...this.user()! };
+    _user.nick = `${v.name[0]}${v.surname[0]}`;
+    _user.name = v.name;
+    _user.surname = v.surname;
+    _user.email = v.email;
+    _user.password = v.password;
+    _user.role = v.role;
+    _user.destinations = this.computedDestinations();
+    _user.isActive = v.isActive;
 
-      const imageIntent = this.imageChangeIntent();
+    const imageIntent = this.imageChangeIntent();
 
-      if (imageIntent === 'added') {
-        _user.image = null;
-        _user.imageFile = this.selectedFile()!;
-        _user.imageName = undefined;
+    if (imageIntent === 'added') {
+      _user.image = null;
+      _user.imageFile = this.selectedFile()!;
+      _user.imageName = undefined;
+    }
+
+    if (imageIntent === 'removed') {
+      _user.image = null;
+      _user.imageFile = undefined;
+      _user.imageName = undefined;
+      this.usersStore.removeImage(_user);
+    }
+
+    if (imageIntent === 'unchanged') {
+      _user.imageFile = undefined;
+    }
+
+    if (this.user()!.id === 0) {
+      this.usersStore.createUser(_user);
+    } else {
+      if (this.user()?.role === 'Admin' || this.user()?.role === 'Master') {
+        _user.role = this.user()!.role;
+        _user.isActive = true;
       }
-
-      if (imageIntent === 'removed') {
-        _user.image = null;
-        _user.imageFile = undefined;
-        _user.imageName = undefined;
-        this.usersStore.removeImage(_user);
-      }
-
-      if (imageIntent === 'unchanged') {
-        _user.imageFile = undefined;
-      }
-
-      if (this.user()!.id === 0) {
-        this.usersStore.createUser(_user);
-      } else {
-        if (this.user()?.role === 'Admin' || this.user()?.role === 'Master') {
-          _user.role = this.user()!.role;
-          _user.isActive = true;
-        }
-        this.usersStore.updateUser(_user);
-      }
-    }, 300);
+      this.usersStore.updateUser(_user);
+    }
   }
 
   refreshPositions(
