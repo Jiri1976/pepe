@@ -31,8 +31,6 @@ import {
   toggleIsSaving,
   toggleIsDeleting,
 } from '../custome-features/withLoading/with-loading.updaters';
-import { ConfirmationStore } from '../custome-features/withConfirmation/confirmation.store';
-import { CONFIRM_ACTIONS } from '../custome-features/withConfirmation/confirmation.actions';
 import { withApiMethods } from '../custome-features/withApiMethods/with-api-methods.feature';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { switchMap, tap } from 'rxjs';
@@ -112,7 +110,6 @@ export const UsersStore = signalStore(
   }),
   withMethods((store) => {
     const toaster = createToaster(store);
-    const confirmationStore = inject(ConfirmationStore);
 
     const uploadUsers = rxMethod<void>((input$) =>
       input$.pipe(
@@ -201,10 +198,6 @@ export const UsersStore = signalStore(
       ),
     );
 
-    confirmationStore.registerHandler(CONFIRM_ACTIONS.DELETE_USER, () => {
-      deleteUser();
-    });
-
     return {
       getUsers: () => uploadUsers(),
       selectUser: (user: User) => {
@@ -222,12 +215,6 @@ export const UsersStore = signalStore(
       deleteUser: () => deleteUser(),
       removeImage: (user: User) => patchState(store, { selectedUser: user }),
       updateUser: (user: User) => updateUser(user),
-      requestDeleteUser: () => {
-        confirmationStore.openConfirmation(
-          CONFIRM_ACTIONS.DELETE_USER,
-          'Opravdu chceš smazat uživatele?',
-        );
-      },
       setUserBlock: (userBlock: 'user' | 'proposal' | 'shift') =>
         patchState(store, { userBlock }),
     };

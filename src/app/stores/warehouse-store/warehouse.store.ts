@@ -19,9 +19,6 @@ import {
   setNotLoading,
   toggleIsDeletingCard,
 } from '../custome-features/withLoading/with-loading.updaters';
-import { withConfirmation } from '../custome-features/withConfirmation/with-confirmation.feature';
-import { ConfirmationStore } from '../custome-features/withConfirmation/confirmation.store';
-import { CONFIRM_ACTIONS } from '../custome-features/withConfirmation/confirmation.actions';
 import { MONTHS_NUM } from '../../helpers/common-constants.helper';
 import { initialWarehouseSlice } from './warehouse.slice';
 import { WarehouseService } from '../../services/warehouse.service';
@@ -52,7 +49,6 @@ export const WarehouseStore = signalStore(
   {
     providedIn: 'root',
   },
-  withConfirmation(),
   withState(initialWarehouseSlice),
   withLoading(),
   withToaster(),
@@ -165,7 +161,6 @@ export const WarehouseStore = signalStore(
   }),
   withMethods((store) => {
     const toaster = createToaster(store);
-    const confirmationStore = inject(ConfirmationStore);
 
     const getWarehouseCards = rxMethod<void>((input$) =>
       input$.pipe(
@@ -420,27 +415,6 @@ export const WarehouseStore = signalStore(
       getWarehouseCards();
     };
 
-    confirmationStore.registerHandler(
-      CONFIRM_ACTIONS.DELETE_WAREHOUSE_CARDS,
-      () => {
-        deleteCards();
-      },
-    );
-
-    confirmationStore.registerHandler(
-      CONFIRM_ACTIONS.DELETE_WAREHOUSE_CARD,
-      () => {
-        deleteCard();
-      },
-    );
-
-    confirmationStore.registerHandler(
-      CONFIRM_ACTIONS.DELETE_WAREHOUSE_ITEM,
-      (warehouseItem) => {
-        deleteWarehouseItem(warehouseItem as WarehouseItem);
-      },
-    );
-
     return {
       setDestination: (destination: string) => setDestination(destination),
       setCards: (cards: WarehouseCard[]) => patchState(store, { cards }),
@@ -470,25 +444,10 @@ export const WarehouseStore = signalStore(
         patchState(store, { selectedUnit }),
       getWarehouseItems: () => getWarehouseItems(),
       addNewItem: () => addNewItem(),
-      requestDeleteCards: () => {
-        confirmationStore.openConfirmation(
-          CONFIRM_ACTIONS.DELETE_WAREHOUSE_CARDS,
-          `Opravdu smazat karty za ${store.cards()[0].monthYearName.toLowerCase()}?`,
-        );
-      },
-      requestDeleteCard: () => {
-        confirmationStore.openConfirmation(
-          CONFIRM_ACTIONS.DELETE_WAREHOUSE_CARD,
-          `Opravdu smazat kartu za ${store.selectedCard()?.monthYearName.toLowerCase()}?`,
-        );
-      },
-      requestDeleteWarehouseItem: (warehouseItem: WarehouseItem) => {
-        confirmationStore.openConfirmation(
-          CONFIRM_ACTIONS.DELETE_WAREHOUSE_ITEM,
-          `Opravdu smazat položku ${warehouseItem.name}?`,
-          warehouseItem,
-        );
-      },
+      deleteCards: () => deleteCards(),
+      deleteWarehouseItem: (warehouseItem: WarehouseItem) =>
+        deleteWarehouseItem(warehouseItem),
+      deleteCard: () => deleteCard(),
     };
   }),
   withHooks({

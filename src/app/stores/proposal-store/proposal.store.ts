@@ -43,9 +43,6 @@ import {
   updateWhenGenerated,
 } from './proposals.updaters';
 import { deepEqual, sortInactiveUsers } from './proposal.helpers';
-import { withConfirmation } from '../custome-features/withConfirmation/with-confirmation.feature';
-import { ConfirmationStore } from '../custome-features/withConfirmation/confirmation.store';
-import { CONFIRM_ACTIONS } from '../custome-features/withConfirmation/confirmation.actions';
 import { UpdateProposalComponent } from '../../components/proposals/update-proposal/update-proposal.component';
 import {
   createToaster,
@@ -76,7 +73,6 @@ export const ProposalStore = signalStore(
   {
     providedIn: 'root',
   },
-  withConfirmation(),
   withState(initialProposalSlice),
   withLoading(),
   withToaster(),
@@ -289,7 +285,6 @@ export const ProposalStore = signalStore(
   }),
   withMethods((store) => {
     const toaster = createToaster(store);
-    const confirmationStore = inject(ConfirmationStore);
 
     const uploadSchedulesShifts = rxMethod<void>((input$) =>
       input$.pipe(
@@ -420,7 +415,6 @@ export const ProposalStore = signalStore(
                 onSuccess: (generatedCard: ProposalCard[]) => {
                   patchState(store, generatingClose());
                   patchState(store, updateWhenGenerated(generatedCard[0]));
-                  store.dialog.closeAll();
                 },
                 onError: () => patchState(store, generatingClose()),
               }),
@@ -452,7 +446,6 @@ export const ProposalStore = signalStore(
 
     const selectProposal = (selectedProposal: ProposalShift) => {
       patchState(store, setSelectedProposal(selectedProposal));
-      store.dialog.open(UpdateProposalComponent, { disableClose: false });
     };
 
     const updateConstraint = (constraint: ScheduleConstraint) => {
@@ -477,37 +470,6 @@ export const ProposalStore = signalStore(
         },
       });
     };
-
-    confirmationStore.registerHandler(
-      CONFIRM_ACTIONS.DELETE_PROPOSAL_CARD,
-      () => {
-        deleteCard();
-      },
-    );
-
-    confirmationStore.registerHandler(CONFIRM_ACTIONS.RESET_PROPOSALS, () => {
-      uploadSchedulesShifts();
-    });
-
-    confirmationStore.registerHandler(
-      CONFIRM_ACTIONS.SELECT_MONTH,
-      (monthYear: unknown) => {
-        patchState(store, setMonthYear(monthYear as Date));
-        uploadSchedulesShifts();
-      },
-    );
-
-    confirmationStore.registerHandler(CONFIRM_ACTIONS.GET_PDF, () => {
-      getPdf();
-    });
-
-    confirmationStore.registerHandler(CONFIRM_ACTIONS.GENERATE_SCHEDULE, () => {
-      generateSchedule();
-    });
-
-    confirmationStore.registerHandler(CONFIRM_ACTIONS.SAVE_GENERATOR, () => {
-      saveGenerator();
-    });
 
     return {
       setDestination: (destination: string) =>
@@ -551,43 +513,6 @@ export const ProposalStore = signalStore(
         ),
       resetToOriginal: () =>
         patchState(store, { schedules: structuredClone(store._original()) }),
-      requestDeleteProposalCard: (text: string) => {
-        confirmationStore.openConfirmation(
-          CONFIRM_ACTIONS.DELETE_PROPOSAL_CARD,
-          text,
-        );
-      },
-      requestResetProposals: () => {
-        confirmationStore.openConfirmation(
-          CONFIRM_ACTIONS.RESET_PROPOSALS,
-          'Nejsou uloženy změny, chceš pokračovat?',
-        );
-      },
-      requestSetMonth: (monthYear: Date) => {
-        confirmationStore.openConfirmation(
-          CONFIRM_ACTIONS.SELECT_MONTH,
-          'Nejsou uloženy změny, chceš pokračovat?',
-          monthYear,
-        );
-      },
-      requestGetPdf: () => {
-        confirmationStore.openConfirmation(
-          CONFIRM_ACTIONS.GET_PDF,
-          'Nejsou uloženy změny, chceš pokračovat?',
-        );
-      },
-      requestGenerateSchedule: () => {
-        confirmationStore.openConfirmation(
-          CONFIRM_ACTIONS.GENERATE_SCHEDULE,
-          'Opravdu chceš generovat rozvrh?',
-        );
-      },
-      requestSaveGenerator: () => {
-        confirmationStore.openConfirmation(
-          CONFIRM_ACTIONS.SAVE_GENERATOR,
-          'Opravdu uložit plánovací podmínky?',
-        );
-      },
       selectProposal: (selectedProposal: ProposalShift) =>
         selectProposal(selectedProposal),
       deleteProposal: () =>
@@ -612,7 +537,10 @@ export const ProposalStore = signalStore(
           },
         });
       },
+      deleteProposalCard: () => deleteCard(),
       loadConstraints: () => loadConstraints(),
+      generateSchedule: () => generateSchedule(),
+      saveGenerator: () => saveGenerator(),
     };
   }),
   withHooks({

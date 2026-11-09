@@ -14,6 +14,9 @@ import { DestinationButtonComponent } from '../../paging/destination-button.comp
 import { PagingComponent } from '../../paging/paging.component';
 import { PrevNextButtonComponent } from '../../paging/prev-next-button.component';
 import { WarehouseInputComponent } from '../warehouse-input/warehouse-input.component';
+import { Dialog } from '@angular/cdk/dialog';
+import { ConfirmationComponent } from '../../confirmation/confirmation.component';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-warehouse-units',
@@ -36,6 +39,7 @@ export class WarehouseUnitsComponent implements OnInit, OnDestroy {
   readonly activeSlide = signal(0);
   readonly revealedSlide = signal(0);
   readonly revealFromTopRight = signal(false);
+  private dialog = inject(Dialog);
   private firstFrame?: number;
   private secondFrame?: number;
 
@@ -98,5 +102,21 @@ export class WarehouseUnitsComponent implements OnInit, OnDestroy {
     if (this.warehouseStore.sliceIndex() === this.cards().length - 1) return;
 
     this.warehouseStore.slideTo(this.warehouseStore.sliceIndex() + 1);
+  }
+
+  async deleteCard() {
+    const dialogRef = this.dialog.open<boolean>(ConfirmationComponent, {
+      disableClose: false,
+      data: {
+        text: `Opravdu smazat kartu za ${this.warehouseStore.selectedCard()?.monthYearName.toLowerCase()}?`,
+      },
+    });
+    const result = await firstValueFrom(dialogRef.closed);
+
+    if (result !== true) {
+      return;
+    }
+
+    this.warehouseStore.deleteCard();
   }
 }

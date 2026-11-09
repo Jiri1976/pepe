@@ -83,12 +83,7 @@
       <app-nav-button
         [hidden]="hideForMaster"
         class="delete"
-        (click)="
-          propStore.atLeastOneSavedShift() &&
-            propStore.requestDeleteProposalCard(
-              `Odstranit plán směn pro ${propStore.destination()} - ${propStore.currentCard()!.monthYearName.toLowerCase()}?`
-            )
-        "
+        (click)="propStore.atLeastOneSavedShift() && deleteProposalCard()"
         icon="bi-trash"
         [disabled]="!propStore.atLeastOneSavedShift()"
       />

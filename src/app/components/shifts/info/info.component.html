@@ -93,7 +93,7 @@
     @if (authStore.user()?.role === "Admin") {
       <button
         class="deleteCardBtn common-btn deleteCardBtn text-white fw-bold d-flex flex-row align-items-center justify-content-center"
-        (click)="shiftsStore.requestDeleteCard()"
+        (click)="deleteCard()"
         [disabled]="
           !(shiftsStore.currentCard() && shiftsStore.currentCard()!.id > 0)
         "

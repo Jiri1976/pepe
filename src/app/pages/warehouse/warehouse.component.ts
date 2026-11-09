@@ -18,6 +18,8 @@ import { AuthStore } from '../../stores/auth-store/auth.store';
 import { Dialog } from '@angular/cdk/dialog';
 import { ItemsListComponent } from '../../components/warehouse/items-list/items-list.component';
 import { CalendarComponent } from '../../components/calendar/calendar.component';
+import { ConfirmationComponent } from '../../components/confirmation/confirmation.component';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-warehouse',
@@ -84,5 +86,21 @@ export class WarehouseComponent implements OnDestroy {
 
   onShowBoard() {
     this.router.navigate(['warehouse']);
+  }
+
+  async deleteCards() {
+    const dialogRef = this.dialog.open<boolean>(ConfirmationComponent, {
+      disableClose: false,
+      data: {
+        text: `Opravdu smazat karty za ${this.store.cards()[0].monthYearName.toLowerCase()}?`,
+      },
+    });
+    const result = await firstValueFrom(dialogRef.closed);
+
+    if (result !== true) {
+      return;
+    }
+
+    this.store.deleteCards();
   }
 }

@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject } from '@angular/core';
+import { Dialog } from '@angular/cdk/dialog';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
@@ -13,9 +14,14 @@ import { ShiftsStore } from '../../../stores/shifts-store/shifts.store';
 import { FormField, FieldState, form } from '@angular/forms/signals';
 import { buildShift } from '../../../stores/shifts-store/shifts.helpers';
 import { DPickerComponent } from '../../d-picker/d-picker.component';
-import { HideElementDirective } from "../../../directives/hide-element.directive";
-import { DatePickerComponent } from "../../date-picker/date-picker.component";
-import { getPosition, timeToString } from '../../../helpers/common-functions.helper';
+import { HideElementDirective } from '../../../directives/hide-element.directive';
+import { DatePickerComponent } from '../../date-picker/date-picker.component';
+import {
+  getPosition,
+  timeToString,
+} from '../../../helpers/common-functions.helper';
+import { ConfirmationComponent } from '../../confirmation/confirmation.component';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-shift-form',
@@ -33,12 +39,13 @@ import { getPosition, timeToString } from '../../../helpers/common-functions.hel
     FormField,
     DPickerComponent,
     HideElementDirective,
-    DatePickerComponent
+    DatePickerComponent,
   ],
   templateUrl: './shift-form.component.html',
-  styleUrl: './shift-form.component.scss'
+  styleUrl: './shift-form.component.scss',
 })
 export class ShiftFormComponent {
+  private dialog = inject(Dialog);
   readonly shiftsStore = inject(ShiftsStore);
   readonly authStore = inject(AuthStore);
   readonly MAX_PERSO = 100;
@@ -49,8 +56,10 @@ export class ShiftFormComponent {
   card = this.shiftsStore.currentCard;
   monthYear = this.shiftsStore.monthYear;
   minDate = this.getMinDate(this.shiftsStore.monthYear());
-  maxDate = this.shiftsStore.isPastCard() ? this.getMaxDate(this.shiftsStore.monthYear()) : new Date();
-  readonly form = form(this.shiftsStore.shiftModel, s => {
+  maxDate = this.shiftsStore.isPastCard()
+    ? this.getMaxDate(this.shiftsStore.monthYear())
+    : new Date();
+  readonly form = form(this.shiftsStore.shiftModel, (s) => {
     buildShift(s);
   });
 
@@ -68,8 +77,18 @@ export class ShiftFormComponent {
     );
   });
 
-  onDelete() {
-    this.shiftsStore.requestDeleteShift();
+  async onDelete() {
+    const dialogRef = this.dialog.open<boolean>(ConfirmationComponent, {
+      disableClose: false,
+      data: { text: 'Opravdu chceš smazat tuto směnu?' },
+    });
+    const result = await firstValueFrom(dialogRef.closed);
+
+    if (result !== true) {
+      return;
+    }
+
+    this.shiftsStore.deleteShift();
   }
 
   onHideForm() {
@@ -105,20 +124,20 @@ export class ShiftFormComponent {
     const formattedFrom = new Intl.DateTimeFormat('en-US', {
       hour: 'numeric',
       minute: 'numeric',
-      hour12: false
+      hour12: false,
     }).format(v.from!);
 
     const formattedTo = new Intl.DateTimeFormat('en-US', {
       hour: 'numeric',
       minute: 'numeric',
-      hour12: false
+      hour12: false,
     }).format(v.to!);
 
     return {
       date: v.date,
       from: formattedFrom,
       to: formattedTo,
-      perso: v.perso
+      perso: v.perso,
     };
   });
 
@@ -130,26 +149,33 @@ export class ShiftFormComponent {
       date: s.date,
       from: s.from,
       to: s.to,
-      perso: s.perso
+      perso: s.perso,
     };
   });
 
   private getMinDate(monthYear: string) {
-    return new Date(parseInt(monthYear.substring(2, 6)), parseInt(monthYear.substring(0, 2)) - 1, 1);
+    return new Date(
+      parseInt(monthYear.substring(2, 6)),
+      parseInt(monthYear.substring(0, 2)) - 1,
+      1,
+    );
   }
 
   private getMaxDate(monthYear: string) {
-    return new Date(parseInt(monthYear.substring(2, 6)), parseInt(monthYear.substring(0, 2)), 0);
+    return new Date(
+      parseInt(monthYear.substring(2, 6)),
+      parseInt(monthYear.substring(0, 2)),
+      0,
+    );
   }
 
-  protected showPersoError = computed(() =>
-    this.form.perso().invalid());
+  protected showPersoError = computed(() => this.form.perso().invalid());
 
   protected showTimeFromError = computed(() =>
-    this.setShowError(this.form.from()));
+    this.setShowError(this.form.from()),
+  );
 
-  protected showTimeToError = computed(() =>
-    this.setShowError(this.form.to()));
+  protected showTimeToError = computed(() => this.setShowError(this.form.to()));
 
   private setShowError(field: FieldState<Date | string | null>) {
     return field.invalid() || field.dirty();

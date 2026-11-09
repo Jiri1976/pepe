@@ -20,8 +20,6 @@ import {
   toggleIsPdfLoading,
   toggleIsDeleting,
 } from '../custome-features/withLoading/with-loading.updaters';
-import { withConfirmation } from '../custome-features/withConfirmation/with-confirmation.feature';
-import { ConfirmationStore } from '../custome-features/withConfirmation/confirmation.store';
 import { initialShiftsSlice } from './shifts.slice';
 import { ShiftService } from '../../services/shift.service';
 import {
@@ -45,7 +43,6 @@ import {
   initializeMonthYear,
   setTime,
 } from '../../helpers/common-functions.helper';
-import { CONFIRM_ACTIONS } from '../custome-features/withConfirmation/confirmation.actions';
 import {
   Shift,
   ShiftCard,
@@ -65,7 +62,6 @@ export const ShiftsStore = signalStore(
   {
     providedIn: 'root',
   },
-  withConfirmation(),
   withState(initialShiftsSlice),
   withLoading(),
   withToaster(),
@@ -275,7 +271,6 @@ export const ShiftsStore = signalStore(
   }),
   withMethods((store) => {
     const toaster = createToaster(store);
-    const confirmationStore = inject(ConfirmationStore);
 
     const getCards = rxMethod<void>((input$) =>
       input$.pipe(
@@ -527,24 +522,6 @@ export const ShiftsStore = signalStore(
       }
     };
 
-    confirmationStore.registerHandler(CONFIRM_ACTIONS.DELETE_SHIFT_CARD, () => {
-      deleteCard();
-    });
-
-    confirmationStore.registerHandler(CONFIRM_ACTIONS.DELETE_SHIFT, () => {
-      deleteShift();
-    });
-
-    confirmationStore.registerHandler(
-      CONFIRM_ACTIONS.DELETE_DAILY_SHIFT,
-      (payload: unknown) => {
-        if (!payload || typeof payload !== 'object') {
-          return;
-        }
-        deleteDailyShift(payload as Shift);
-      },
-    );
-
     return {
       setDestination: (destination: string) => setDestination(destination),
       setCards: (cards: ShiftCard[]) => patchState(store, { cards }),
@@ -566,25 +543,6 @@ export const ShiftsStore = signalStore(
       toPdfCard: () => toPdfCard(),
       setSelectedCardPosition: (position: string) =>
         patchState(store, setSelectedCardPosition(position)),
-      requestDeleteCard: () => {
-        confirmationStore.openConfirmation(
-          CONFIRM_ACTIONS.DELETE_SHIFT_CARD,
-          'Opravdu chceš smazat kartu?',
-        );
-      },
-      requestDeleteShift: () => {
-        confirmationStore.openConfirmation(
-          CONFIRM_ACTIONS.DELETE_SHIFT,
-          'Opravdu chceš smazat směnu?',
-        );
-      },
-      requestDeleteDailyShift: (shift: Shift, message: string) => {
-        confirmationStore.openConfirmation(
-          CONFIRM_ACTIONS.DELETE_DAILY_SHIFT,
-          message,
-          shift,
-        );
-      },
       addShift: () => {
         const initial = store.initialShift();
         patchState(
@@ -643,6 +601,9 @@ export const ShiftsStore = signalStore(
       toggleInfo: () => patchState(store, { activeInfo: !store.activeInfo() }),
       closeInfo: () => patchState(store, { activeInfo: false }),
       openInfo: () => patchState(store, { activeInfo: true }),
+      deleteShift: () => deleteShift(),
+      deleteCard: () => deleteCard(),
+      deleteDailyShift: (shift: Shift) => deleteDailyShift(shift),
     };
   }),
   withHooks({

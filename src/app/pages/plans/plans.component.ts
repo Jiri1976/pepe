@@ -1,4 +1,5 @@
 import { Component, HostListener, inject, signal } from '@angular/core';
+import { ConfirmationComponent } from '../../components/confirmation/confirmation.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
@@ -12,6 +13,7 @@ import { Dialog } from '@angular/cdk/dialog';
 import { InactiveUsersComponent } from '../../components/proposals/inactive-users/inactive-users.component';
 import { DestinationButtonComponent } from '../../components/paging/destination-button.component';
 import { CalendarComponent } from '../../components/calendar/calendar.component';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-plans',
@@ -31,9 +33,9 @@ import { CalendarComponent } from '../../components/calendar/calendar.component'
   styleUrl: './plans.component.scss',
 })
 export class PlansComponent {
+  private dialog = inject(Dialog);
   readonly authStore = inject(AuthStore);
   readonly propStore = inject(ProposalStore);
-  private dialog = inject(Dialog);
   menuShown = signal(true);
   width = signal(window.innerWidth);
 
@@ -45,9 +47,19 @@ export class PlansComponent {
     }
   }
 
-  onSelectMonth(date: Date) {
+  async onSelectMonth(date: Date) {
     if (!this.propStore.isUnchanged()) {
-      this.propStore.requestSetMonth(date);
+      const dialogRef = this.dialog.open<boolean>(ConfirmationComponent, {
+        disableClose: false,
+        data: { text: 'Nejsou uloženy změny, chceš pokračovat?' },
+      });
+      const result = await firstValueFrom(dialogRef.closed);
+
+      if (result !== true) {
+        return;
+      }
+
+      this.propStore.setMonthYear(date);
     } else {
       this.propStore.setMonthYear(date);
     }
@@ -72,20 +84,53 @@ export class PlansComponent {
     this.propStore.setDestination(destination);
   }
 
-  onReset() {
+  async onReset() {
     if (!this.propStore.isUnchanged()) {
-      this.propStore.requestResetProposals();
+      const dialogRef = this.dialog.open<boolean>(ConfirmationComponent, {
+        disableClose: false,
+        data: { text: 'Nejsou uloženy změny, chceš pokračovat?' },
+      });
+      const result = await firstValueFrom(dialogRef.closed);
+
+      if (result !== true) {
+        return;
+      }
+      this.propStore.uploadSchedulesShifts();
     } else {
       this.propStore.uploadSchedulesShifts();
     }
   }
 
-  onOpenPDF() {
+  async onOpenPDF() {
     if (!this.propStore.isUnchanged()) {
-      this.propStore.requestGetPdf();
+      const dialogRef = this.dialog.open<boolean>(ConfirmationComponent, {
+        disableClose: false,
+        data: { text: 'Nejsou uloženy změny, chceš pokračovat?' },
+      });
+      const result = await firstValueFrom(dialogRef.closed);
+
+      if (result !== true) {
+        return;
+      }
+      this.propStore.getPdf();
     } else {
       this.propStore.getPdf();
     }
+  }
+
+  async deleteProposalCard() {
+    const dialogRef = this.dialog.open<boolean>(ConfirmationComponent, {
+      disableClose: false,
+      data: {
+        text: `Odstranit plán směn pro ${this.propStore.destination()} - ${this.propStore.currentCard()!.monthYearName.toLowerCase()}?`,
+      },
+    });
+    const result = await firstValueFrom(dialogRef.closed);
+
+    if (result !== true) {
+      return;
+    }
+    this.propStore.deleteProposalCard();
   }
 
   onOpenAI() {

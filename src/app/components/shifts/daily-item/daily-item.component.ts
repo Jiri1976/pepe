@@ -6,6 +6,7 @@ import {
   input,
   signal,
 } from '@angular/core';
+import { Dialog } from '@angular/cdk/dialog';
 import { User } from '../../../models/users.interface';
 import { buildShift } from '../../../stores/shifts-store/shifts.helpers';
 import { ShiftsStore } from '../../../stores/shifts-store/shifts.store';
@@ -19,6 +20,8 @@ import {
 import { DPickerComponent } from '../../d-picker/d-picker.component';
 import { Shift, ShiftModel } from '../../../models/shifts.interface';
 import { TitleCasePipe } from '@angular/common';
+import { ConfirmationComponent } from '../../confirmation/confirmation.component';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-daily-item',
@@ -27,6 +30,7 @@ import { TitleCasePipe } from '@angular/common';
   styleUrl: './daily-item.component.scss',
 })
 export class DailyItemComponent {
+  private dialog = inject(Dialog);
   readonly shiftsStore = inject(ShiftsStore);
   private timeToString = timeToString;
   getPosition = getPosition;
@@ -129,7 +133,7 @@ export class DailyItemComponent {
     this.updateShift();
   }
 
-  removeShift(index: number) {
+  async removeShift(index: number) {
     if (
       this.shiftsStore.todaysShifts().shifts[index].id === 0 &&
       this.shiftsStore.todaysShifts().shifts[index].confirmed === undefined
@@ -149,7 +153,18 @@ export class DailyItemComponent {
         );
       const message = `Smazat rozpis pro ${user?.name} ${user?.surname} - ${getPosition(this.shiftsStore.todaysShifts().shifts[index].position).toLowerCase()}?`;
       this.shiftsStore.setSelectedDailyIndex(this.index());
-      this.shiftsStore.requestDeleteDailyShift(this.shift(), message);
+
+      const dialogRef = this.dialog.open<boolean>(ConfirmationComponent, {
+        disableClose: false,
+        data: { text: message },
+      });
+      const result = await firstValueFrom(dialogRef.closed);
+
+      if (result !== true) {
+        return;
+      }
+
+      this.shiftsStore.deleteDailyShift(this.shift());
     }
     return;
   }

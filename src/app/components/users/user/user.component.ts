@@ -25,6 +25,9 @@ import { environment } from '../../../../environments/environment';
 import { FieldWrapperComponent } from '../../filed-wrapper/field-wrapper.component';
 import { FieldStyleDirective } from '../../../directives/field-styling.directive';
 import { maxLenValidator } from '../../../helpers/common-functions.helper';
+import { Dialog } from '@angular/cdk/dialog';
+import { ConfirmationComponent } from '../../confirmation/confirmation.component';
+import { firstValueFrom } from 'rxjs';
 
 const DESTINATIONS = ['F-M', 'OVA'] as const;
 const POSITIONS = ['Driver', 'Cook', 'Helper', 'Pizza'] as const;
@@ -80,6 +83,7 @@ function atLeastOnePositionSelected(destinations: Positions) {
   styleUrl: './user.component.scss',
 })
 export class UserComponent {
+  private dialog = inject(Dialog);
   readonly usersStore = inject(UsersStore);
   USER_MAX_NAME = 15;
   USER_MAX_SURNAME = 20;
@@ -332,8 +336,18 @@ export class UserComponent {
     return user;
   }
 
-  onDelete() {
-    this.usersStore.requestDeleteUser();
+  async onDelete() {
+    const dialogRef = this.dialog.open<boolean>(ConfirmationComponent, {
+      disableClose: false,
+      data: { text: 'Opravdu chceš smazat uživatele?' },
+    });
+    const result = await firstValueFrom(dialogRef.closed);
+
+    if (result !== true) {
+      return;
+    }
+
+    this.usersStore.deleteUser();
   }
 
   createPositions(): Positions {

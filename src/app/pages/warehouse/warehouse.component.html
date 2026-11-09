@@ -40,7 +40,7 @@
         [loading]="store.isPdfLoading()"
       />
       <app-nav-button
-        (click)="store.somethingForDeleting() && store.requestDeleteCards()"
+        (click)="store.somethingForDeleting() && ngOnDestroy()"
         [hidden]="hideForMaster"
         [disabled]="!store.somethingForDeleting()"
         icon="bi-trash"

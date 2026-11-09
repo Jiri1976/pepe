@@ -10,6 +10,9 @@ import {
 import { ProposalStore } from '../../../stores/proposal-store/proposal.store';
 import { UserConstraintComponent } from './user-constraint/user-constraint.component';
 import { ConstraintSkeletonComponent } from './constraint-skeleton/constraint-skeleton.component';
+import { Dialog } from '@angular/cdk/dialog';
+import { ConfirmationComponent } from '../../confirmation/confirmation.component';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-constraints',
@@ -18,6 +21,7 @@ import { ConstraintSkeletonComponent } from './constraint-skeleton/constraint-sk
   styleUrls: ['./constraints.component.scss'],
 })
 export class ConstraintsComponent implements OnInit, AfterViewInit {
+  private dialog = inject(Dialog);
   readonly propStore = inject(ProposalStore);
   scrollContainer = viewChild<ElementRef<HTMLDivElement>>('scrollContainer');
 
@@ -59,18 +63,38 @@ export class ConstraintsComponent implements OnInit, AfterViewInit {
     this.propStore.loadConstraints();
   }
 
-  generate() {
+  async generate() {
     if (this.propStore.invalidScheduleGeneratorRequest()) {
       return;
     }
     this.propStore.setMonthYearScheduleGeneratorRequest();
-    this.propStore.requestGenerateSchedule();
+
+    const dialogRef = this.dialog.open<boolean>(ConfirmationComponent, {
+      disableClose: false,
+      data: { text: 'Opravdu chceš generovat rozvrh?' },
+    });
+    const result = await firstValueFrom(dialogRef.closed);
+
+    if (result !== true) {
+      return;
+    }
+
+    this.propStore.generateSchedule();
   }
 
-  save() {
+  async save() {
     if (this.propStore.invalidScheduleGeneratorRequest()) {
       return;
     }
-    this.propStore.requestSaveGenerator();
+    const dialogRef = this.dialog.open<boolean>(ConfirmationComponent, {
+      disableClose: false,
+      data: { text: 'Opravdu uložit plánovací podmínky?' },
+    });
+    const result = await firstValueFrom(dialogRef.closed);
+
+    if (result !== true) {
+      return;
+    }
+    this.propStore.saveGenerator();
   }
 }
