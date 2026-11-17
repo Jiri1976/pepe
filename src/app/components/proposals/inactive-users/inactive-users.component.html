@@ -1,6 +1,12 @@
-<div class="select-user" [style]="sectionStyles()">
-  <h4>
-    @switch (this.store.selectedInactive()) {
+<section class="select-user" [style]="sectionStyles()" aria-labelledby="inactive-users-title">
+  <header class="dialog-header">
+    <div class="header-icon" aria-hidden="true">
+      <i class="bi bi-person-plus"></i>
+    </div>
+    <div class="heading-copy">
+      <span class="eyebrow">Přidat pracovníka</span>
+      <h2 id="inactive-users-title">
+        @switch (store.selectedInactive()) {
       @case ("Helper") {
         POMOCKY
       }
@@ -13,20 +19,26 @@
       @case ("Pizza") {
         PIZZAŘI
       }
-    }
-  </h4>
+        }
+      </h2>
+    </div>
+  </header>
 
-  <div #scrollContainer class="users-list">
+  <div #scrollContainer class="users-list" role="list" aria-label="Nezařazení uživatelé">
     @for (user of users(); track $index) {
-      <div class="user" (click)="onSelectUser(user)">
-        <div class="line">{{ user.name }} {{ user.surname }}</div>
-      </div>
+      <button class="user" type="button" role="listitem" (click)="onSelectUser(user)">
+        <span class="user-avatar" aria-hidden="true">
+          {{ user.name.charAt(0) }}{{ user.surname.charAt(0) }}
+        </span>
+        <span class="line">{{ user.name }} {{ user.surname }}</span>
+        <i class="bi bi-plus-lg add-icon" aria-hidden="true"></i>
+      </button>
     }
   </div>
 
-  <div class="close">
-    <button class="closeBtn" (click)="onClose()">
-      <i class="bi bi-x-circle"></i>&nbsp;Zavřít
+  <footer class="close">
+    <button class="closeBtn" type="button" (click)="onClose()">
+      <i class="bi bi-x-lg" aria-hidden="true"></i> Zavřít
     </button>
-  </div>
-</div>
+  </footer>
+</section>

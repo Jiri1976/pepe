@@ -1,20 +1,36 @@
-<div class="select-user" [style]="sectionStyles()">
+<section class="select-user" [style]="sectionStyles()" aria-labelledby="select-user-title">
   @let uniqueUsers = store.uniqueUsers();
 
-  <div #scrollContainer class="users-list">
+  <header class="dialog-header">
+    <div class="header-icon" aria-hidden="true">
+      <i class="bi bi-people"></i>
+    </div>
+    <div class="heading-copy">
+      <span class="eyebrow">Přehled směn</span>
+      <h2 id="select-user-title">Vybrat pracovníka</h2>
+    </div>
+  </header>
+
+  <div #scrollContainer class="users-list" role="list" aria-label="Pracovníci">
     @for (user of uniqueUsers; track user.userId) {
-      <div
-        class="user d-flex justify-content-center w-100 flex-column align-items-center"
+      <button
+        class="user"
+        type="button"
+        role="listitem"
         (click)="onSelectUser(user.userId)"
       >
-        <p>{{ user.userName }} {{ user.userSurname }}</p>
-      </div>
+        <span class="user-avatar" aria-hidden="true">
+          {{ user.userName.charAt(0) }}{{ user.userSurname.charAt(0) }}
+        </span>
+        <span class="user-name">{{ user.userName }} {{ user.userSurname }}</span>
+        <i class="bi bi-arrow-right-short select-icon" aria-hidden="true"></i>
+      </button>
     }
   </div>
 
-  <div class="close d-flex justify-content-center w-100">
-    <button class="closeBtn" (click)="onClose()">
-      <i class="bi bi-x-circle"></i>&nbsp;Zavřít
+  <footer class="close">
+    <button class="closeBtn" type="button" (click)="onClose()">
+      <i class="bi bi-x-lg" aria-hidden="true"></i> Zavřít
     </button>
-  </div>
-</div>
+  </footer>
+</section>

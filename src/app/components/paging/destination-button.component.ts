@@ -1,10 +1,10 @@
-import { Component, computed, input, signal } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 
 @Component({
   selector: 'app-destination-button',
   standalone: true,
   template: `
-    <button class="destination-button" [style]="bodyStyles()">
+    <span class="destination-button" [style]="bodyStyles()">
       {{
         destination() === 'F-M'
           ? 'Frýdek-Místek'
@@ -12,25 +12,34 @@ import { Component, computed, input, signal } from '@angular/core';
             ? 'Ostrava'
             : 'Všichni'
       }}
-    </button>
+    </span>
   `,
   styles: [
     `
-      .destination-button {
-        width: 140px;
-        height: 35px;
-        letter-spacing: 1px;
-        border: none;
-        background-color: var(--main-dark);
-        font-weight: 600;
-        transition: 0.3s;
-        margin: 5px;
-        border-radius: 7px;
-        color: var(--white);
+      :host {
+        display: inline-flex;
+        z-index: 20;
       }
 
-      .destination-button:hover {
-        cursor: default;
+      .destination-button {
+        display: inline-flex;
+        min-width: 126px;
+        min-height: 40px;
+        align-items: center;
+        justify-content: center;
+        margin: 5px;
+        padding: 0 14px;
+        border: 1px solid #fed7aa;
+        border-radius: 11px;
+        background: #fff7ed;
+        box-shadow: 0 4px 12px rgba(41, 37, 36, 0.08);
+        color: #9a3412;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 11px;
+        font-weight: 650;
+        letter-spacing: 0.01em;
+        line-height: 1;
+        white-space: nowrap;
       }
 
       @media screen and (max-width: 995px) {
@@ -47,7 +56,7 @@ export class DestinationButtonComponent {
   bottom = input<number>();
 
   bodyStyles = computed(() => {
-    if (this.right() && this.bottom()) {
+    if (this.right() !== undefined && this.bottom() !== undefined) {
       return {
         position: 'absolute',
         right: `${this.right()}px`,

@@ -1,63 +1,66 @@
-<div class="d-flex flex-column">
-  <div class="d-flex justify-content-center align-items-center">
-    <h4></h4>
-  </div>
+<section class="constraint-card" aria-hidden="true">
+  <header class="constraint-user-header">
+    <span class="skeleton avatar"></span>
+    <div class="user-copy">
+      <span class="skeleton eyebrow"></span>
+      <span class="skeleton user-name"></span>
+    </div>
+    <span class="skeleton position-badge"></span>
+  </header>
 
-  <div class="row" style="width: 400px; margin: 5px auto">
-    <div class="column"></div>
-    <div class="input"></div>
-  </div>
+  <div class="constraint-settings">
+    <div class="setting-row">
+      <span class="skeleton setting-label"></span>
+      <span class="skeleton count-input"></span>
+    </div>
+    <div class="setting-row">
+      <span class="skeleton setting-label"></span>
+      <span class="skeleton checkbox"></span>
+    </div>
+    <div class="setting-row">
+      <span class="skeleton setting-label"></span>
+      <span class="skeleton checkbox"></span>
+    </div>
 
-  <div class="row" style="width: 400px; margin: 5px auto">
-    <div class="column"></div>
-    <div class="checkbox"></div>
-  </div>
-
-  <div class="row" style="width: 400px; margin: 5px auto">
-    <div class="column"></div>
-    <div class="checkbox"></div>
-  </div>
-
-  <div
-    class="d-flex flex-column justify-content-center align-items-center mx-auto mt-3 mb-3"
-  >
-    <div class="column"></div>
-    <div class="row">
-      <div class="select-button"></div>
-      <div class="checkbox"></div>
+    <div class="weekdays-panel">
+      <div class="weekdays-heading">
+        <div>
+          <span class="skeleton weekday-title"></span>
+          <span class="skeleton weekday-hint"></span>
+        </div>
+        <span class="skeleton whole-week"></span>
+      </div>
+      <div class="weekday-options">
+        @for (day of weekDays; track day) {
+          <span class="skeleton weekday-button"></span>
+        }
+      </div>
     </div>
   </div>
 
-  <div
-    class="d-flex flex-row justify-content-center align-items-center w-100 mx-auto gap-3 mt-3"
-  >
-    <div
-      class="col-3 d-flex flex-column justify-content-center align-items-center mx-auto"
-    >
-      <div class="short"></div>
-      <div class="datepicker"></div>
+  <section class="calendar-scroll-section" aria-label="Načítání kalendářů">
+    <div class="horizontal-scroll-wrapper">
+      <div class="horizontal-scroll">
+        @for (calendar of calendars; track calendar) {
+          <div class="calendar-option">
+            <span class="skeleton calendar-label"></span>
+            <div class="calendar-placeholder">
+              <div class="calendar-weekdays">
+                @for (day of weekDays; track day) {
+                  <span class="skeleton calendar-day-label"></span>
+                }
+              </div>
+              @for (row of calendarRows; track row) {
+                <div class="calendar-week">
+                  @for (day of weekDays; track day) {
+                    <span class="skeleton calendar-day"></span>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
     </div>
-
-    <div
-      class="col-3 d-flex flex-column justify-content-center align-items-center mx-auto"
-    >
-      <div class="short"></div>
-      <div class="datepicker"></div>
-    </div>
-
-    <div
-      class="col-3 d-flex flex-column justify-content-center align-items-center mx-auto"
-    >
-      <div class="short"></div>
-      <div class="datepicker"></div>
-    </div>
-
-    <div
-      class="col-3 d-flex flex-column justify-content-center align-items-center mx-auto"
-    >
-      <div class="short"></div>
-      <div class="datepicker"></div>
-    </div>
-  </div>
-  <br />
-</div>
+  </section>
+</section>

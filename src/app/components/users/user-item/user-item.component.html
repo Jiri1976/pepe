@@ -1,13 +1,28 @@
-<div
-  class="row line mt-1"
+<button
+  type="button"
+  class="user-card"
+  [class.inactive]="!user().isActive"
+  [attr.aria-label]="'Upravit uživatele ' + user().name + ' ' + user().surname"
   (click)="editUser()"
-  [class]="
-    !user().isActive ? `disabled ${user().role}` : `active ${user().role}`
-  "
 >
-  <div [class]="`col-5 ${user().isActive}`">{{ user().name }}</div>
-  <div [class]="`col-6 ${user().isActive}`">{{ user().surname }}</div>
-  <div [class]="`col-1 role ${user().role} ${user().isActive}`">
-    {{ user().role.substring(0, 1) }}
-  </div>
-</div>
+  <span class="user-avatar" aria-hidden="true">
+    {{ user().name.charAt(0) }}{{ user().surname.charAt(0) }}
+  </span>
+
+  <span class="user-details">
+    <span class="user-name">{{ user().name }} {{ user().surname }}</span>
+    <span class="user-email">{{ user().email }}</span>
+  </span>
+
+  <span class="user-badges">
+    <span class="role-badge" [class]="'role-badge ' + user().role">
+      {{ user().role }}
+    </span>
+    <span class="status-badge" [class.inactive-status]="!user().isActive">
+      <span class="status-dot"></span>
+      {{ user().isActive ? "Aktivní" : "Neaktivní" }}
+    </span>
+  </span>
+
+  <i class="bi bi-chevron-right card-chevron" aria-hidden="true"></i>
+</button>

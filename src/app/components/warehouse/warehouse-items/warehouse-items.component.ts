@@ -1,12 +1,18 @@
 import { Component, computed, HostListener, inject, OnInit, signal } from '@angular/core';
 import { WidgetComponent } from "../widget/widget.component";
-import { CdkDragDrop, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop';
+import {
+  CdkDrag,
+  CdkDragDrop,
+  CdkDragPlaceholder,
+  CdkDropList,
+  moveItemInArray,
+} from '@angular/cdk/drag-drop';
 import { WarehouseStore } from '../../../stores/warehouse-store/warehouse.store';
 import { WarehouseItem } from '../../../models/warehouses.interface';
 
 @Component({
   selector: 'app-warehouse-items',
-  imports: [WidgetComponent, CdkDropList],
+  imports: [WidgetComponent, CdkDrag, CdkDragPlaceholder, CdkDropList],
   templateUrl: './warehouse-items.component.html',
   styleUrl: './warehouse-items.component.scss'
 })

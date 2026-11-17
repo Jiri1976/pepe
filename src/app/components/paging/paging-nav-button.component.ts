@@ -4,38 +4,61 @@ import { Component, input } from '@angular/core';
   selector: 'app-page-nav-button',
   standalone: true,
   template: `
-    <button [class.active]="active()" class="page-nav-button">
+    <button
+      type="button"
+      [class.active]="active()"
+      class="page-nav-button"
+      [attr.aria-current]="active() ? 'page' : null"
+    >
       <ng-content />
     </button>
   `,
   styles: [
     `
-      button {
-        border-radius: 7px;
-        box-shadow: inset 0 0 1px 1px var(--main-border-color);
-        width: 38px;
-        height: 38px;
-        border: 1px solid var(--main-border-color);
-        background-color: var(--white);
-        font-weight: 400;
+      :host {
+        display: inline-flex;
+      }
+
+      .page-nav-button {
+        display: grid;
+        width: 40px;
+        height: 40px;
+        place-items: center;
         margin: 0 3px;
+        border: 1px solid #e7e5e4;
+        border-radius: 12px;
+        background: #fff;
+        color: #57534e;
+        font-family: "Montserrat", sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition:
+          transform 150ms ease,
+          border-color 150ms ease,
+          background 150ms ease,
+          color 150ms ease,
+          box-shadow 150ms ease;
       }
 
-      button:hover {
-        background-color: var(--main-dark);
-        box-shadow: none;
-        color: var(--white);
+      .page-nav-button:hover:not(.active) {
+        transform: translateY(-1px);
+        border-color: #d6d3d1;
+        background: #f5f5f4;
+        color: #292524;
+        box-shadow: 0 4px 10px rgba(41, 37, 36, 0.08);
       }
 
-      button.active {
-        width: 35px;
-        height: 35px;
-        border: 1px solid var(--main-border-color);
-        font-weight: 400;
-        transition: 0.3s;
-        background-color: var(--main-dark);
-        color: var(--white);
-        box-shadow: none;
+      .page-nav-button.active {
+        border-color: #292524;
+        background: #292524;
+        color: #fff;
+        box-shadow: 0 3px 8px rgba(41, 37, 36, 0.18);
+      }
+
+      .page-nav-button:focus-visible {
+        outline: 3px solid rgba(249, 115, 22, 0.3);
+        outline-offset: 2px;
       }
 
       @media screen and (max-width: 995px) {

@@ -1,61 +1,70 @@
 :host {
-  text-align: center;
   display: flex;
   min-width: 0;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .shift {
-  font-size: 1.3rem;
-  padding: 0px !important;
-  width: 33px !important;
+  display: flex;
+  width: 33px;
   max-width: 33px;
-  height: 33px !important;
+  height: 33px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: 2px;
+  color: var(--main-dark);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
 }
 
 .shift.whole {
-  background: var(--main-green);
+  //background: #dcfce7;
 }
 
 .shift.dest {
-  font-size: 0.8rem;
-  background: var(--black);
-  font-weight: 600;
+  //background: #f4f4f0;
+  color: var(--main-dark);
+  font-size: 10px;
 }
 
 .shift.morning {
-  background: var(--main-purple);
+  //background: #f5f3ff;
 }
 
 .shift.afternoon {
-  background: var(--proposal-green);
+  //background: #f0fdf4;
 }
 
 .shift.custom {
-  background: var(--main-disabled);
+  //background: #f4f4f0;
+  color: var(--main-dark);
 
-  .upper {
-    font-size: 0.8rem;
-    margin-top: 8px;
+  .upper,
+  .lower {
+    font-size: 10px;
+    font-weight: 700;
   }
 
-  .lower {
-    font-size: 0.8rem;
-    margin-bottom: 5px;
+  .upper {
+    margin-bottom: 3px;
   }
 }
 
 .shift.morning,
 .shift.afternoon {
-  .upper {
-    top: 4px;
-    font-size: 1rem;
+  .upper,
+  .lower {
+    font-size: 10px;
+    font-weight: 700;
   }
 
-  .lower {
-    bottom: 3px;
-    font-size: 1rem;
+  .upper {
+    margin-bottom: 3px;
   }
 }

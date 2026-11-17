@@ -19,22 +19,45 @@
     <div class="users" animate.enter="fade-in" animate.leave="fade-out">
       <div class="skeleton" animate.leave="fade-out">
         @for (i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; track i) {
-          <div class="row blind mt-1"></div>
+          <div class="user-skeleton" aria-hidden="true">
+            <span class="skeleton-avatar"></span>
+            <span class="skeleton-details">
+              <span class="skeleton-name"></span>
+              <span class="skeleton-email"></span>
+            </span>
+            <span class="skeleton-badges">
+              <span class="skeleton-role"></span>
+              <span class="skeleton-status"></span>
+            </span>
+            <span class="skeleton-chevron"></span>
+          </div>
         }
       </div>
     </div>
   }
 
-  <app-destination-button
-    [destination]="store.filter()"
-    [right]="width() / 2 - 70"
-    [bottom]="10"
-  />
-
   @let filter = store.filter;
   @let role = store.role;
 
-  <app-navigation animate.enter="fade-in" animate.leave="fade-out">
+  @if (width() <= 690) {
+    <button
+      class="mobile-filter-toggle"
+      type="button"
+      [attr.aria-expanded]="menuShown()"
+      [attr.aria-label]="menuShown() ? 'Zavřít uživatelské filtry' : 'Otevřít uživatelské filtry'"
+      (click)="showMenu()"
+    >
+      <i class="bi" [class.bi-sliders]="!menuShown()" [class.bi-x-lg]="menuShown()" aria-hidden="true"></i>
+      <span>{{ menuShown() ? "Zavřít" : "Filtry" }}</span>
+    </button>
+  }
+
+  <app-navigation
+    id="users-filter-navigation"
+    [class.filters-open]="menuShown()"
+    animate.enter="fast-in"
+    animate.leave="fast-out"
+  >
     <app-nav-button
       id="toggle-menu"
       (click)="hideMenu()"
@@ -98,13 +121,6 @@
       style="--i: 8"
     />
 
-    <app-nav-button
-      id="last-one"
-      [hidden]="menuShown()"
-      (click)="showMenu()"
-      icon="bi-list"
-      style="--i: 9"
-    />
   </app-navigation>
 
   @if (store.filteredUsers().length > 0) {

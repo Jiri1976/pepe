@@ -1,218 +1,155 @@
-<div class="form-div">
+<section class="shift-editor">
   @let shift = selectedShift();
-  <form>
-    <div class="row">
-      <div
-        class="title d-flex justify-content-center align-items-center flex-row w-100"
-      >
-        <h1>
-          {{ shift.id === 0 ? "Nová směna" : "Upravit směnu" }} -
-          {{ card()!.userName }}
-          {{ card()!.userSurname.charAt(0).toUpperCase() }}. -
-          {{ getPosition(card()!.userPosition) }}
-        </h1>
-      </div>
+
+  <header class="editor-header">
+    <div class="header-icon" aria-hidden="true">
+      <i class="bi bi-calendar2-week"></i>
     </div>
-    <div class="row">
-      <div class="col-6">
-        <div class="label mt-2">
-          <label for="username" class="font-semibold w-6rem">Datum</label>
-        </div>
-        <div>
-          <div class="card flex justify-content-center">
-            <div class="calendarDivShift" (click)="datePicker.open()">
-              <app-date-picker
-                #datePicker
-                [minDate]="minDate"
-                [maxDate]="maxDate"
-                [formField]="form.date"
-                [date]="shift.date"
-              />
-            </div>
-          </div>
-        </div>
-        <div class="label mt-2">
-          <label for="username" class="font-semibold w-6rem">Začátek</label>
-        </div>
-        <div>
-          <div class="card flex justify-content-center timefromDiv">
-            <app-d-picker
-              [formField]="form.from"
-              [proposalDate]="form.date().value()"
-            />
-          </div>
+    <div class="header-copy">
+      <span class="eyebrow">Správa směny</span>
+      <h2>{{ shift.id === 0 ? "Nová směna" : "Upravit směnu" }}</h2>
+      <p>
+        {{ card()!.userName }} {{ card()!.userSurname.charAt(0).toUpperCase() }}.
+        <span aria-hidden="true">·</span> {{ getPosition(card()!.userPosition) }}
+      </p>
+    </div>
+  </header>
 
-          @if (showTimeFromError()) {
-            <div class="error">
-              @for (error of form.from().errors(); track error.kind) {
-                <p>{{ error.message }}</p>
-              }
-            </div>
-          }
-        </div>
-        <div class="label mt-2">
-          <label for="username" class="font-semibold w-6rem">Konec</label>
+  <form autocomplete="off" (submit)="$event.preventDefault(); onSave()">
+    <div class="shift-form-grid">
+      <section class="schedule-fields" aria-label="Čas směny">
+        <label class="field-label" for="shift-date-picker">Datum</label>
+        <div class="date-field calendarDivShift" (click)="datePicker.open()">
+                <app-date-picker
+                  #datePicker
+                  panelStyleClass="shift-form-calendar-panel"
+                  [minDate]="minDate"
+            [maxDate]="maxDate"
+            [formField]="form.date"
+            [date]="shift.date"
+          />
         </div>
 
-        <div>
-          <div class="card flex justify-content-center timetoDiv">
-            <app-d-picker
-              [formField]="form.to"
-              [proposalDate]="form.date().value()"
-            />
+        <label class="field-label" for="shift-start-time">Začátek</label>
+        <div class="time-field">
+          <app-d-picker
+            [formField]="form.from"
+            [proposalDate]="form.date().value()"
+          />
+        </div>
+        @if (showTimeFromError()) {
+          <div class="error" role="alert">
+            @for (error of form.from().errors(); track error.kind) {
+              <p>{{ error.message }}</p>
+            }
           </div>
-          @if (showTimeToError()) {
-            <div class="error">
-              @for (error of form.to().errors(); track error.kind) {
-                <p>{{ error.message }}</p>
-              }
-            </div>
-          }
+        }
+
+        <label class="field-label" for="shift-end-time">Konec</label>
+        <div class="time-field">
+          <app-d-picker
+            [formField]="form.to"
+            [proposalDate]="form.date().value()"
+          />
         </div>
-      </div>
-      <div class="col-6">
-        <div class="label mt-2">
-          <label for="float-input" class="fw-bold">Perso</label>
-        </div>
-        <div class="persoDiv">
+        @if (showTimeToError()) {
+          <div class="error" role="alert">
+            @for (error of form.to().errors(); track error.kind) {
+              <p>{{ error.message }}</p>
+            }
+          </div>
+        }
+      </section>
+
+      <section class="notes-field">
+        <label class="field-label" for="shift-notes">Perso</label>
+        <div class="textarea-wrap">
           <textarea
-            id="float-input"
+            id="shift-notes"
             [class.invalid]="form.perso().invalid()"
-            rows="7"
-            cols="34"
+            rows="8"
             [value]="form.perso().value()"
             (input)="onPersoInput($event)"
             (blur)="form.perso().markAsTouched()"
-          >
-          </textarea>
+          ></textarea>
           <div
             class="counter"
             [class.counterError]="form.perso().value().length > MAX_PERSO"
           >
-            {{ form.perso().value().length }}/ {{ MAX_PERSO }}
+            {{ form.perso().value().length }}/{{ MAX_PERSO }}
           </div>
-
-          @if (showPersoError()) {
-            <div class="error">
-              @for (error of form.perso().errors(); track error.kind) {
-                <p class="perso">{{ error.message }}</p>
-              }
-            </div>
-          }
         </div>
-      </div>
+        @if (showPersoError()) {
+          <div class="error notes-error" role="alert">
+            @for (error of form.perso().errors(); track error.kind) {
+              <p>{{ error.message }}</p>
+            }
+          </div>
+        }
+      </section>
     </div>
 
     @if (shift && shift.id > 0) {
-      <div class="row" hide>
-        <div class="col-6">
-          <div class="label mt-2">
-            <label class="font-semibold w-6rem">Zapsal</label>
-          </div>
-          <div>
-            <div class="card flex justify-content-center">
-              <input [placeholder]="shift.createdBy" disabled />
-            </div>
-          </div>
+      <section class="audit-details" aria-label="Informace o změně">
+        <div class="audit-item">
+          <span>Zapsal</span>
+          <strong>{{ shift.createdBy }}</strong>
         </div>
-        <div class="col-6">
-          <div class="label mt-2">
-            <label class="font-semibold w-6rem">Zapsáno</label>
-          </div>
-          <div>
-            <div class="card flex justify-content-center">
-              <input [placeholder]="getTime(shift.createdAt!)" disabled />
-            </div>
-          </div>
+        <div class="audit-item">
+          <span>Zapsáno</span>
+          <strong>{{ getTime(shift.createdAt!) }}</strong>
         </div>
-      </div>
-
-      @if (shift.updatedBy !== null) {
-        <div class="row" hide>
-          <div class="col-6">
-            <div class="label">
-              <label class="font-semibold w-6rem">Upravil</label>
-            </div>
-            <div>
-              <div class="card flex justify-content-center">
-                <input [placeholder]="shift.updatedBy" disabled />
-              </div>
-            </div>
+        @if (shift.updatedBy !== null) {
+          <div class="audit-item">
+            <span>Upravil</span>
+            <strong>{{ shift.updatedBy }}</strong>
           </div>
-          <div class="col-6">
-            <div class="label">
-              <label class="font-semibold w-6rem">Upraveno</label>
-            </div>
-            <div>
-              <div class="card flex justify-content-center">
-                <input [placeholder]="getTime(shift.updatedAt!)" disabled />
-              </div>
-            </div>
+          <div class="audit-item">
+            <span>Upraveno</span>
+            <strong>{{ getTime(shift.updatedAt!) }}</strong>
           </div>
-        </div>
-      }
+        }
+      </section>
     }
 
-    <div class="row">
-      <div class="col-6 inline">
-        @if (shift.id === 0) {
+    <footer class="editor-actions">
+      <div class="secondary-actions">
+        <button type="button" class="cancel" (click)="onHideForm()">
+          <i class="bi bi-arrow-left" aria-hidden="true"></i> Zpět
+        </button>
+        @if (shift.id > 0) {
           <button
             type="button"
-            class="cancel d-flex flex-row justify-content-center align-items-center mx-auto"
-            (click)="onHideForm()"
-          >
-            <i class="bi bi-caret-left"></i>&nbsp;Zpět
-          </button>
-        } @else {
-          <button
-            type="button"
-            class="cancel me-1 d-flex flex-row justify-content-center align-items-center"
-            (click)="onHideForm()"
-          >
-            <i class="bi bi-caret-left"></i>&nbsp;Zpět
-          </button>
-          <button
-            type="button"
-            class="delete ms-1 d-flex flex-row justify-content-center align-items-center"
+            class="delete"
+            [disabled]="shiftsStore.isDeleting()"
             (click)="!shiftsStore.isDeleting() && onDelete()"
           >
             @if (!shiftsStore.isDeleting()) {
-              <i class="bi bi-trash"></i>&nbsp;Smazat
+              <i class="bi bi-trash3" aria-hidden="true"></i> Smazat
             } @else {
-              <span
-                class="spinner-border spinner-border-sm text-white me-1"
-              ></span>
-              Odstraňuji...
+              <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+              Mažu...
             }
           </button>
         }
       </div>
-      <div class="col-6">
-        @if (!shiftsStore.isSaving()) {
-          <button
-            type="submit"
-            id="addBtn"
-            class="btn d-flex flex-row justify-content-center align-items-center mx-auto"
-            (click)="onSave()"
-            [disabled]="form().invalid() || (isUnchanged() && shift.id > 0)"
-          >
-            <i class="bi bi-pencil-square"></i>&nbsp;{{
-              shift.id === 0 ? "Zapsat" : "Upravit"
-            }}
-          </button>
-        } @else {
-          <button
-            class="btn loading d-flex flex-row justify-content-center align-items-center mx-auto"
-            id="loadingBtn"
-            type="button"
-          >
-            <span
-              class="spinner-border spinner-border-sm text-white me-1"
-            ></span>
-            {{ shift.id > 0 ? "Ukládám..." : "Upravuji..." }}
-          </button>
-        }
-      </div>
-    </div>
+
+      @if (!shiftsStore.isSaving()) {
+        <button
+          type="submit"
+          id="addBtn"
+          class="submit"
+          [disabled]="form().invalid() || (isUnchanged() && shift.id > 0)"
+        >
+          <i class="bi bi-check2" aria-hidden="true"></i>
+          {{ shift.id === 0 ? "Zapsat směnu" : "Uložit změny" }}
+        </button>
+      } @else {
+        <button class="submit loading" id="loadingBtn" type="button" disabled>
+          <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+          {{ shift.id > 0 ? "Ukládám..." : "Zapisuji..." }}
+        </button>
+      }
+    </footer>
   </form>
-</div>
+</section>

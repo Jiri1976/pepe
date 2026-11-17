@@ -174,9 +174,14 @@ export const ProposalStore = signalStore(
       const card = store
         .schedules()
         .find((c) => c.destination === store.destination());
+
+      if (!card?.monthYear) {
+        return false;
+      }
+
       let today = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
       let _monthYear =
-        card!.monthYear.length === 5 ? '0' + card!.monthYear : card!.monthYear;
+        card.monthYear.length === 5 ? '0' + card.monthYear : card.monthYear;
 
       let day = new Date(
         parseInt(_monthYear.substring(2, 6)),
@@ -446,6 +451,11 @@ export const ProposalStore = signalStore(
 
     const selectProposal = (selectedProposal: ProposalShift) => {
       patchState(store, setSelectedProposal(selectedProposal));
+      store._dialog.open(UpdateProposalComponent, {
+        disableClose: false,
+        autoFocus: false,
+        restoreFocus: false,
+      });
     };
 
     const updateConstraint = (constraint: ScheduleConstraint) => {

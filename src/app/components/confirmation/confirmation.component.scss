@@ -1,61 +1,149 @@
 :host {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: block;
+  width: min(440px, calc(100vw - 32px));
   box-sizing: border-box;
-  border-radius: 7px;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 24px 70px rgba(28, 25, 23, 0.22);
+}
 
-  .container {
-    display: flex;
-    flex-direction: column;
+.confirmation-card {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  align-items: start;
+  gap: 16px;
+  padding: 26px;
+  border: 1px solid #e8e5e4;
+  border-radius: inherit;
+  background: #fff;
+}
+
+.confirmation-icon {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  border-radius: 14px;
+  background: #fff1e8;
+  color: #c2410c;
+
+  .bi {
+    font-size: 20px;
+  }
+}
+
+.confirmation-content {
+  min-width: 0;
+
+  .eyebrow {
+    display: block;
+    margin-bottom: 5px;
+    color: #ea580c;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    margin: 0;
+    color: #292524;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+
+  p {
+    margin: 8px 0 0;
+    color: #78716c;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+  }
+}
+
+.buttons {
+  display: flex;
+  grid-column: 1 / -1;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 8px;
+
+  button {
+    display: inline-flex;
+    min-height: 40px;
     align-items: center;
-    position: relative;
-    min-width: 350px;
-    height: 175px;
-    padding: 10px 20px;
-    background: #000;
-    border-radius: inherit;
-    color: var(--white);
+    justify-content: center;
+    gap: 8px;
+    padding: 0 14px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    font-family: "Montserrat", sans-serif;
+    font-size: 11px;
+    font-weight: 650;
+    cursor: pointer;
+    transition: background 150ms ease, border-color 150ms ease, color 150ms ease, transform 150ms ease;
 
-    h4 {
-      font-weight: bold;
+    &:hover {
+      transform: translateY(-1px);
+    }
+
+    &:focus-visible {
+      outline: 3px solid rgba(249, 115, 22, 0.3);
+      outline-offset: 2px;
     }
 
     .bi {
-      font-size: 20px;
+      font-size: 13px;
     }
+  }
 
-    .message {
-      font-weight: bold;
+  .cancel {
+    border-color: #e7e5e4;
+    background: #fff;
+    color: #57534e;
+
+    &:hover {
+      background: #f5f5f4;
+      color: #292524;
     }
+  }
 
-    .buttons {
-      position: absolute;
-      bottom: 20px;
-      display: flex;
+  .confirm {
+    border-color: #292524;
+    background: #292524;
+    color: #fff;
 
-      button {
-        width: 130px;
-        height: 35px;
-        font-weight: 600;
-        border: none;
-        color: var(--white);
-        margin: 0 5px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 7px;
-        letter-spacing: 1px;
-        font-size: 14px;
-      }
+    &:hover {
+      border-color: #44403c;
+      background: #44403c;
+    }
+  }
+}
 
-      button.confirm {
-        background-color: var(--main-green);
-      }
+@media (max-width: 420px) {
+  .confirmation-card {
+    grid-template-columns: 40px minmax(0, 1fr);
+    gap: 12px;
+    padding: 20px;
+  }
 
-      button.cancel {
-        background-color: var(--main-red);
-      }
+  .confirmation-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+  }
+
+  .confirmation-content h2 {
+    font-size: 16px;
+  }
+
+  .buttons {
+    flex-direction: column-reverse;
+
+    button {
+      width: 100%;
     }
   }
 }

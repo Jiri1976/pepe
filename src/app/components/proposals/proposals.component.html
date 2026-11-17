@@ -6,8 +6,9 @@
 
     @if (propStore.hasUsers()) {
       <div class="wrapper">
-        <div class="p-table-wrapper" [class.height-unlimited]="!scrollHeight()">
+        <div class="p-table-wrapper proposal-table-card" [class.height-unlimited]="!scrollHeight()">
           <p-table
+            class="proposal-table"
             [value]="tableUsers()"
             [scrollable]="true"
             [scrollHeight]="scrollHeight()"
@@ -64,7 +65,7 @@
                     <svg
                       data-p-icon="bars"
                       pReorderableRowHandle
-                      class="cursor-grab text-surface-400"
+                      class="reorder-handle cursor-grab"
                     ></svg>
                   </td>
                 }
@@ -95,8 +96,15 @@
                 }
 
                 @if (!propStore.isPassedCard()) {
-                  <td class="last" (click)="remove(customer, index)">
-                    <i class="bi bi-x-circle"></i>
+                  <td class="last">
+                    <button
+                      type="button"
+                      class="remove-user"
+                      [attr.aria-label]="'Odebrat ' + customer.name + ' ' + customer.surname"
+                      (click)="remove(customer, index)"
+                    >
+                      <i class="bi bi-x-lg" aria-hidden="true"></i>
+                    </button>
                   </td>
                 }
               </tr>

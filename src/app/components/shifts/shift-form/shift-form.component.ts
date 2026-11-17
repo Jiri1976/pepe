@@ -14,7 +14,6 @@ import { ShiftsStore } from '../../../stores/shifts-store/shifts.store';
 import { FormField, FieldState, form } from '@angular/forms/signals';
 import { buildShift } from '../../../stores/shifts-store/shifts.helpers';
 import { DPickerComponent } from '../../d-picker/d-picker.component';
-import { HideElementDirective } from '../../../directives/hide-element.directive';
 import { DatePickerComponent } from '../../date-picker/date-picker.component';
 import {
   getPosition,
@@ -38,7 +37,6 @@ import { firstValueFrom } from 'rxjs';
     OverlayModule,
     FormField,
     DPickerComponent,
-    HideElementDirective,
     DatePickerComponent,
   ],
   templateUrl: './shift-form.component.html',

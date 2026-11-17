@@ -1,4 +1,4 @@
-import { Component, HostListener, inject, signal } from '@angular/core';
+import { Component, computed, HostListener, inject, signal } from '@angular/core';
 import { ConfirmationComponent } from '../../components/confirmation/confirmation.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
@@ -14,6 +14,7 @@ import { InactiveUsersComponent } from '../../components/proposals/inactive-user
 import { DestinationButtonComponent } from '../../components/paging/destination-button.component';
 import { CalendarComponent } from '../../components/calendar/calendar.component';
 import { firstValueFrom } from 'rxjs';
+import { MobileNavigationService } from '../../services/mobile-navigation.service';
 
 @Component({
   selector: 'app-plans',
@@ -34,16 +35,25 @@ import { firstValueFrom } from 'rxjs';
 })
 export class PlansComponent {
   private dialog = inject(Dialog);
+  private readonly mobileNavigation = inject(MobileNavigationService);
   readonly authStore = inject(AuthStore);
   readonly propStore = inject(ProposalStore);
-  menuShown = signal(true);
   width = signal(window.innerWidth);
+  menuShown = computed(
+    () =>
+      this.width() > 690 ||
+      this.mobileNavigation.activeMenu() === 'plan-actions',
+  );
+
+  ngOnInit() {
+    this.mobileNavigation.close();
+  }
 
   @HostListener('window:resize')
   onWindowResize() {
     this.width.set(window.innerWidth);
     if (this.width() > 690) {
-      this.menuShown.set(true);
+      this.mobileNavigation.close();
     }
   }
 
@@ -138,10 +148,10 @@ export class PlansComponent {
   }
 
   hideMenu() {
-    this.menuShown.set(false);
+    this.mobileNavigation.close();
   }
 
   showMenu() {
-    this.menuShown.set(true);
+    this.mobileNavigation.toggle('plan-actions');
   }
 }

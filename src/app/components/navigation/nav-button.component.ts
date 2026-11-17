@@ -4,10 +4,18 @@ import { Component, computed, input } from '@angular/core';
 @Component({
   selector: 'app-nav-button',
   imports: [CommonModule],
+  host: {
+    '[style.display]': 'hidden() ? "none" : null',
+  },
   template: `
     @if (!hidden()) {
       <li [ngClass]="classes()">
-        <a>
+        <button
+          type="button"
+          [disabled]="disabled()"
+          [attr.aria-label]="label() || icon() || 'Akce'"
+          [attr.title]="label() || null"
+        >
           @if (!loading()) {
             <i class="bi" [class]="icon()"></i>
             <p>{{ label() }}</p>
@@ -16,79 +24,124 @@ import { Component, computed, input } from '@angular/core';
               <span class="visually-hidden">Loading...</span>
             </div>
           }
-        </a>
+        </button>
       </li>
     }
   `,
   styles: [
     `
       :host li {
-        margin: 10px 0;
+        margin: 7px 0;
         list-style: none;
-        box-shadow: none !important;
-        color: var(--white);
-        background-color: var(--main-dark);
-        border-radius: 52% 48% 33% 67%/38% 45% 55% 62%;
+        background: transparent;
+      }
+
+      :host li > button {
         display: flex;
+        width: 48px;
+        height: 48px;
         flex-direction: column;
-        justify-content: center;
         align-items: center;
-        transition:
-          border-radius 0.5s ease,
-          transform 0.4s ease;
-        will-change: transform, border-radius;
-      }
-
-      :host li.inactive {
-        background-color: var(--main-disabled);
-      }
-      :host li.save {
-        background-color: var(--main-green);
-      }
-      :host li.delete {
-        background-color: var(--main-red);
-      }
-
-      :host li.disabled {
-        pointer-events: none;
-        background-color: var(--main-disabled);
-      }
-
-      :host li:hover {
+        justify-content: center;
+        gap: 1px;
+        padding: 3px;
+        border: 1px solid #e7e5e4;
+        border-radius: 15px;
+        background: rgba(255, 255, 255, 0.96);
+        box-shadow: 0 4px 12px rgba(41, 37, 36, 0.1);
+        color: #57534e;
         cursor: pointer;
-        transform: skew(6deg, 0deg) scale(1.05);
+        transition:
+          transform 150ms ease,
+          border-color 150ms ease,
+          background 150ms ease,
+          color 150ms ease,
+          box-shadow 150ms ease;
       }
 
-      :host a {
-        width: 40px;
-        height: 40px;
-        display: flex;
-        flex-direction: column;
-        align-items: center !important;
-        justify-content: center !important;
-        text-decoration: none;
+      :host li.inactive > button {
+        border-color: #e8e5e1;
+        background: #f5f5f4;
+        color: #a8a29e;
+        box-shadow: none;
       }
 
-      :host a .bi {
-        font-size: 1.5rem;
-        margin-top: 2px;
+      :host li.save {
+        --nav-accent: #15803d;
       }
 
-      :host a p {
+      :host li.delete {
+        --nav-accent: #be123c;
+      }
+
+      :host li.save > button,
+      :host li.delete > button {
+        border-color: color-mix(in srgb, var(--nav-accent) 20%, white);
+        color: var(--nav-accent);
+      }
+
+      :host li > button:hover:not(:disabled) {
+        transform: translateY(-2px);
+        border-color: #d6d3d1;
+        background: #fff;
+        box-shadow: 0 7px 16px rgba(41, 37, 36, 0.15);
+        color: #292524;
+      }
+
+      :host li.save > button:hover:not(:disabled),
+      :host li.delete > button:hover:not(:disabled) {
+        border-color: var(--nav-accent);
+        background: var(--nav-accent);
+        color: #fff;
+      }
+
+      :host li > button:focus-visible {
+        outline: 3px solid rgba(249, 115, 22, 0.3);
+        outline-offset: 2px;
+      }
+
+      :host li > button:disabled {
+        border-color: #e7e5e4;
+        background: #f5f5f4;
+        box-shadow: none;
+        color: #c4c0bc;
+        cursor: not-allowed;
+      }
+
+      :host li > button .bi {
+        font-size: 1.2rem;
+        line-height: 1;
+      }
+
+      :host li > button p {
         margin: 0;
-        font-size: 0.8rem;
-        font-weight: 600;
+        font-size: 9px;
+        font-weight: 650;
+        line-height: 1.1;
       }
 
-      :host a .spinner-border {
-        --bs-spinner-width: 1.4rem;
-        --bs-spinner-height: 1.4rem;
+      :host li > button .spinner-border {
+        --bs-spinner-width: 1.2rem;
+        --bs-spinner-height: 1.2rem;
       }
 
       @media screen and (max-width: 690px) {
-        :host a {
-          width: 35px;
-          height: 35px;
+        :host li {
+          margin: 5px 0;
+        }
+
+        :host li > button {
+          width: 42px;
+          height: 42px;
+          border-radius: 13px;
+        }
+
+        :host li > button .bi {
+          font-size: 1.1rem;
+        }
+
+        :host li > button p {
+          font-size: 8px;
         }
       }
 

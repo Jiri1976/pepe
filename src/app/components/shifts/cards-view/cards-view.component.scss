@@ -1,87 +1,117 @@
+:host {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
 .box {
-  margin-top: 130px;
+  width: 100%;
+  min-width: 0;
+  min-height: calc(100dvh - 120px);
+  margin-top: 104px;
+  padding: 16px 70px 32px;
+}
 
-  .shift-card {
-    grid-column: 1;
-    grid-row: 1;
-    min-width: 750px;
-    height: 650px;
-    align-self: center;
-    justify-self: center;
+.shift-card {
+  width: min(820px, calc(100vw - 120px));
+  min-width: 0;
+  align-self: center;
+  gap: 12px;
+}
 
-    .user {
-      width: 750px;
-      height: 50px;
-      background: rgba(0, 0, 0, 0.1);
-      backdrop-filter: blur(10px);
-      border-radius: 7px;
-      display: flex;
-      flex-direction: row;
-      justify-content: center;
-      align-items: center;
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--main-dark);
-    }
+.user {
+  display: flex;
+  width: 100%;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 18px;
+  border: 1px solid #fed7aa;
+  border-radius: 15px;
+  background: #fff7ed;
+  box-shadow: 0 4px 12px rgba(41, 37, 36, 0.08);
+  color: #9a3412;
+  font-family: "Montserrat", sans-serif;
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  text-align: center;
+}
 
-    .clip-slider {
-      position: relative;
-      width: 750px;
-      isolation: isolate;
-      overflow: hidden;
-      border-radius: 7px;
-      height: 650px;
-    }
+.clip-slider {
+  position: relative;
+  width: 100%;
+  height: min(650px, calc(100dvh - 205px));
+  min-height: 300px;
+  overflow: hidden;
+  isolation: isolate;
+  border: 1px solid #e8e5e4;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 8px 26px rgba(41, 37, 36, 0.07);
+}
 
-    .clip-slide {
-      min-width: 100% !important;
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-      padding: 20px;
-      overflow: hidden;
-      border-radius: 7px;
-      background: var(--white);
-      clip-path: circle(0% at 0% 100%);
-      transition: none;
-      will-change: clip-path;
-      justify-content: center;
-      display: flex;
-      flex-direction: column;
-    }
+.clip-slide {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  min-width: 100% !important;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
+  overflow: hidden;
+  padding: 16px;
+  border-radius: inherit;
+  background: #fff;
+  clip-path: circle(0% at 0% 100%);
+  transition: none;
+  will-change: clip-path;
+}
 
-    .clip-slide.is-active {
-      z-index: 2;
-    }
+.clip-slide app-shift-skeleton {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  flex: 0 1 100%;
+  box-sizing: border-box;
+}
 
-    .clip-slide.from-left-bottom {
-      clip-path: circle(0% at 0% 100%);
-    }
+.clip-slide.is-active {
+  z-index: 2;
+}
 
-    .clip-slide.from-top-right {
-      clip-path: circle(0% at 100% 0%);
-    }
+.clip-slide.from-left-bottom {
+  clip-path: circle(0% at 0% 100%);
+}
 
-    .clip-slide.is-revealed.from-left-bottom {
-      animation: reveal-from-left-bottom 700ms ease forwards;
-    }
+.clip-slide.from-top-right {
+  clip-path: circle(0% at 100% 0%);
+}
 
-    .clip-slide.is-revealed.from-top-right {
-      animation: reveal-from-top-right 700ms ease forwards;
-    }
-  }
+.clip-slide.is-revealed.from-left-bottom {
+  animation: reveal-from-left-bottom 700ms ease forwards;
+}
 
-  h4 {
-    color: var(--main-dark);
-    margin-top: 60px;
-  }
+.clip-slide.is-revealed.from-top-right {
+  animation: reveal-from-top-right 700ms ease forwards;
+}
+
+h4 {
+  margin-top: 60px;
+  color: #57534e;
+  font-size: 14px;
+  font-weight: 650;
 }
 
 @keyframes reveal-from-left-bottom {
   from {
     clip-path: circle(0% at 0% 100%);
   }
-
   to {
     clip-path: circle(160% at 0% 100%);
   }
@@ -91,8 +121,42 @@
   from {
     clip-path: circle(0% at 100% 0%);
   }
-
   to {
     clip-path: circle(160% at 100% 0%);
+  }
+}
+
+@media (max-width: 690px) {
+  .box {
+    min-height: calc(100dvh - 86px);
+    margin-top: 76px;
+    padding: 12px;
+  }
+
+  .shift-card {
+    width: 100%;
+  }
+
+  .user {
+    min-height: 48px;
+    border-radius: 12px;
+    font-size: 13px;
+  }
+
+  .clip-slider {
+    height: calc(100dvh - 164px);
+    min-height: 280px;
+    border-radius: 13px;
+  }
+
+  .clip-slide {
+    padding: 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clip-slide.is-revealed.from-left-bottom,
+  .clip-slide.is-revealed.from-top-right {
+    animation-duration: 1ms;
   }
 }

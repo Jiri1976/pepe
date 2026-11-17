@@ -1,63 +1,67 @@
-<div class="d-flex flex-column">
-  <div class="d-flex justify-content-center align-items-center">
-    <h4 class="fw-bold w-100 text-center">
-      {{ user().name.toUpperCase() }} {{ user().surname.toUpperCase() }}
-    </h4>
-  </div>
+<section class="constraint-card">
+  <header class="constraint-user-header">
+    <span class="user-avatar" aria-hidden="true">
+      {{ user().name.charAt(0) }}{{ user().surname.charAt(0) }}
+    </span>
+    <div>
+      <span class="eyebrow">Nastavení dostupnosti</span>
+      <h4>{{ user().name }} {{ user().surname }}</h4>
+    </div>
+    <span class="position-badge">{{ position() }}</span>
+  </header>
 
-  <div
-    class="d-flex justify-content-between align-items-center w-50 mx-auto mt-3"
-  >
-    <label for="{{ 'number-' + user().id }}"
-      >Počet směn (max
-      {{ daysInMonth(propStore.currentCard()!.monthYear) }}):</label
-    >
-    <input
-      type="text"
-      inputmode="numeric"
-      [id]="'number-' + user().id"
-      (keydown)="onKeydown($event)"
-      (input)="onTargetShiftsInput($event)"
-      [class.invalid]="invalidCountOfDays()"
-      [ngModel]="model().targetShifts"
-    />
-  </div>
+  <div class="constraint-settings">
+    <div class="setting-row target-shifts">
+      <label for="{{ 'number-' + user().id }}"
+        >Počet směn <span>(max {{ daysInMonth(propStore.currentCard()!.monthYear) }})</span></label
+      >
+      <input
+        type="text"
+        inputmode="numeric"
+        [id]="'number-' + user().id"
+        (keydown)="onKeydown($event)"
+        (input)="onTargetShiftsInput($event)"
+        [class.invalid]="invalidCountOfDays()"
+        [ngModel]="model().targetShifts"
+      />
+    </div>
 
-  <div
-    class="d-flex justify-content-between align-items-center w-50 mx-auto mt-3"
-  >
-    <label [class.disable]="morning" for="{{ 'morning-' + user().id }}"
-      >Pouze ranní</label
-    >
-    <p-checkbox
-      [id]="'morning-' + user().id"
-      [(ngModel)]="morning"
-      [binary]="true"
-      (onChange)="onlyMorning()"
-    />
-  </div>
+    <div class="setting-row toggle-row">
+      <label [class.disable]="morning" for="{{ 'morning-' + user().id }}">Pouze ranní směny</label>
+      <p-checkbox
+        [id]="'morning-' + user().id"
+        [(ngModel)]="morning"
+        [binary]="true"
+        (onChange)="onlyMorning()"
+      />
+    </div>
 
-  <div
-    class="d-flex justify-content-between align-items-center w-50 mx-auto mt-3"
-  >
-    <label [class.disable]="afternoon" for="{{ 'afternoon-' + user().id }}"
-      >Pouze odpolední</label
-    >
-    <p-checkbox
-      [id]="'afternoon-' + user().id"
-      [(ngModel)]="afternoon"
-      [binary]="true"
-      (onChange)="onlyAfternoon()"
-    />
-  </div>
+    <div class="setting-row toggle-row">
+      <label [class.disable]="afternoon" for="{{ 'afternoon-' + user().id }}">Pouze odpolední směny</label>
+      <p-checkbox
+        [id]="'afternoon-' + user().id"
+        [(ngModel)]="afternoon"
+        [binary]="true"
+        (onChange)="onlyAfternoon()"
+      />
+    </div>
 
-  <div
-    class="d-flex flex-column justify-content-center align-items-center w-50 mx-auto mt-3 mb-3"
-  >
-    <label for="{{ 'buttons-' + user().id }}"> Může v tyto dny:</label>
-    <div
-      class="d-flex flex-row justify-content-center align-items-center w-100 mx-auto gap-3 mt-3"
-    >
+    <div class="weekdays-panel">
+      <div class="weekdays-heading">
+        <div>
+          <h5>Dostupné dny</h5>
+          <span>Vyberte dny, kdy může pracovat</span>
+        </div>
+        <label class="whole-week-option" for="{{ 'whole-week-' + user().id }}">
+          <p-checkbox
+            [id]="'whole-week-' + user().id"
+            [(ngModel)]="wholeWeek"
+            [binary]="true"
+            (onChange)="wholeWeekAvailable()"
+          />
+          Celý týden
+        </label>
+      </div>
       <p-selectbutton
         [options]="weekDays"
         [(ngModel)]="value"
@@ -67,27 +71,13 @@
         [id]="'buttons-' + user().id"
         (onChange)="onSelectDay($event)"
       />
-      <p-checkbox
-        id="whole-week"
-        [(ngModel)]="wholeWeek"
-        [binary]="true"
-        (onChange)="wholeWeekAvailable()"
-      />
     </div>
-  </div> 
+  </div>
 
-  <section
-    class="scroll-container"
-    style="display: flex; flex-direction: column; width: 900px; margin: 0 auto"
-  >
+  <section class="calendar-scroll-section" aria-label="Výběr dostupnosti podle data">
     <div class="horizontal-scroll-wrapper">
-      <div
-        class="horizontal-scroll"
-        style="display: flex; flex-direction: row"
-      >
-    <div
-      class="d-flex flex-column justify-content-center align-items-center"
-    >
+      <div class="horizontal-scroll">
+    <div class="calendar-option">
       <label for="{{ 'datepicker-' + user().id }}">Volno</label>
       <p-datepicker
         [defaultDate]="getDateFromMonthYear(propStore.currentCard()!.monthYear)"
@@ -103,9 +93,7 @@
       />
     </div>
 
-    <div
-      class="d-flex flex-column justify-content-center align-items-center"
-    >
+    <div class="calendar-option">
       <label
         [class.disabled]="morning"
         for="{{ 'morning-datepicker-' + user().id }}"
@@ -126,9 +114,7 @@
       />
     </div>
 
-    <div
-      class="d-flex flex-column justify-content-center align-items-center"
-    >
+    <div class="calendar-option">
       <label
         [class.disabled]="afternoon"
         for="{{ 'afternoon-datepicker-' + user().id }}"
@@ -149,9 +135,7 @@
       />
     </div>
 
-    <div
-      class="d-flex flex-column justify-content-center align-items-center"
-    >
+    <div class="calendar-option">
       <label for="{{ 'datepicker-' + user().id }}">Celý den</label>
       <p-datepicker
         [defaultDate]="getDateFromMonthYear(propStore.currentCard()!.monthYear)"
@@ -167,9 +151,7 @@
       />
     </div>
 
-    <div
-      class="d-flex flex-column justify-content-center align-items-center"
-    >
+    <div class="calendar-option">
       <label for="{{ 'opposite-datepicker-' + user().id }}">{{
         destination() === "F-M" ? "OVA" : "F-M"
       }}</label>
@@ -207,9 +189,8 @@
           </span>
         </ng-template>
       </p-datepicker>
-    </div>  
+    </div>
     </div>
     </div>
   </section>
-  <br />
-</div>
+</section>

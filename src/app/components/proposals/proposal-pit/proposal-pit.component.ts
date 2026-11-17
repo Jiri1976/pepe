@@ -1,10 +1,9 @@
 import { Component, input } from '@angular/core';
 import { ProposalUser } from '../../../models/proposals.interface';
-import { ProposalPitBackgroundDirective } from '../../../directives/proposal-pit-background.directive';
 
 @Component({
   selector: 'app-proposal-pit',
-  imports: [ProposalPitBackgroundDirective],
+  imports: [],
   templateUrl: './proposal-pit.component.html',
   styleUrl: './proposal-pit.component.scss',
 })

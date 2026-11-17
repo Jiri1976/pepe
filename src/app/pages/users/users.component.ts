@@ -1,4 +1,4 @@
-import { Component, HostListener, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, HostListener, inject, OnInit, signal } from '@angular/core';
 import { UserItemComponent } from '../../components/users/user-item/user-item.component';
 import { EmptyBlockComponent } from '../../components/users/empty-block/empty-block.component';
 import { UsersStore } from '../../stores/user-store/users.store';
@@ -8,7 +8,7 @@ import { INITIAL_USER } from '../../models/users.interface';
 import { PagingComponent } from '../../components/paging/paging.component';
 import { PrevNextButtonComponent } from '../../components/paging/prev-next-button.component';
 import { PagingNavButtonComponent } from '../../components/paging/paging-nav-button.component';
-import { DestinationButtonComponent } from '../../components/paging/destination-button.component';
+import { MobileNavigationService } from '../../services/mobile-navigation.service';
 
 @Component({
   selector: 'app-users',
@@ -20,25 +20,30 @@ import { DestinationButtonComponent } from '../../components/paging/destination-
     PagingComponent,
     PrevNextButtonComponent,
     PagingNavButtonComponent,
-    DestinationButtonComponent,
   ],
   templateUrl: './users.component.html',
   styleUrl: './users.component.scss',
 })
 export class UsersComponent implements OnInit {
   readonly store = inject(UsersStore);
-  menuShown = signal(true);
+  private readonly mobileNavigation = inject(MobileNavigationService);
   width = signal(window.innerWidth);
+  menuShown = computed(
+    () =>
+      this.width() > 690 ||
+      this.mobileNavigation.activeMenu() === 'user-filters',
+  );
 
   @HostListener('window:resize')
   onWindowResize() {
     this.width.set(window.innerWidth);
     if (this.width() > 690) {
-      this.menuShown.set(true);
+      this.mobileNavigation.close();
     }
   }
 
   ngOnInit() {
+    this.mobileNavigation.close();
     this.store.getUsers();
   }
 
@@ -47,10 +52,10 @@ export class UsersComponent implements OnInit {
   }
 
   hideMenu() {
-    this.menuShown.set(false);
+    this.mobileNavigation.close();
   }
 
   showMenu() {
-    this.menuShown.set(true);
+    this.mobileNavigation.toggle('user-filters');
   }
 }

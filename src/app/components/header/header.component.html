@@ -1,110 +1,139 @@
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
-  <ul>
-    @if (user()?.role === "Admin") {
+<nav class="site-header" [class.plans-page]="isPlansPage()" aria-label="Hlavní navigace">
+  <div class="desktop-navigation">
+    <ul class="nav-links nav-links-left">
+      @if (user()?.role === "Admin") {
+        <li><a routerLink="/users" routerLinkActive="active">Uživatelé</a></li>
+      }
+      <li><a routerLink="/plans" routerLinkActive="active">Rozpis směn</a></li>
       <li>
-        <a routerLink="/users" routerLinkActive="active">Uživatelé</a>
+        <a
+          routerLink="/shifts"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: user()?.role === 'Admin' }"
+          >Směny</a
+        >
       </li>
-    }
+    </ul>
 
-    <li>
-      <a routerLink="/plans" routerLinkActive="active">Rozpis směn</a>
-    </li>
-    <li>
+    <a class="brand" routerLink="/main" aria-label="Domů">
+      <img src="/pizza.ico" alt="" width="38" height="38" />
+    </a>
+
+    <ul class="nav-links nav-links-right">
+      <li><a routerLink="/warehouse" routerLinkActive="active">Sklad</a></li>
+      @if (user()?.role === "Admin") {
+        <li>
+          <a
+            routerLink="/shifts/daily"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            >Dnes</a
+          >
+        </li>
+      }
+      <li><button class="logout-link" type="button" (click)="onLogout()">Odhlásit</button></li>
+    </ul>
+  </div>
+
+  <button
+    class="mobile-menu-toggle"
+    type="button"
+    aria-label="Otevřít navigaci"
+    [attr.aria-expanded]="isShown()"
+    (click)="toggle()"
+  >
+    <img src="/pizza.ico" alt="" width="36" height="36" />
+    <i class="bi" [class.bi-list]="!isShown()" [class.bi-x-lg]="isShown()"></i>
+  </button>
+
+  @if (isPlansPage()) {
+    <button
+      class="mobile-plan-actions-toggle"
+      type="button"
+      aria-label="Zobrazit akce plánovače směn"
+      [attr.aria-expanded]="planActionsOpen()"
+      (click)="togglePlanActions()"
+    >
+      <i class="bi" [class.bi-sliders]="!planActionsOpen()" [class.bi-x-lg]="planActionsOpen()" aria-hidden="true"></i>
+      <span>{{ planActionsOpen() ? "Zavřít" : "Akce" }}</span>
+    </button>
+  }
+
+  @if (isShiftsPage()) {
+    <button
+      class="mobile-shift-actions-toggle"
+      type="button"
+      aria-label="Zobrazit akce směn"
+      [attr.aria-expanded]="shiftActionsOpen()"
+      (click)="toggleShiftActions()"
+    >
+      <i class="bi" [class.bi-sliders]="!shiftActionsOpen()" [class.bi-x-lg]="shiftActionsOpen()" aria-hidden="true"></i>
+      <span>{{ shiftActionsOpen() ? "Zavřít" : "Akce" }}</span>
+    </button>
+  }
+
+  @if (isWarehousePage()) {
+    <button
+      class="mobile-warehouse-actions-toggle"
+      type="button"
+      aria-label="Zobrazit akce skladu"
+      [attr.aria-expanded]="warehouseActionsOpen()"
+      (click)="toggleWarehouseActions()"
+    >
+      <i class="bi" [class.bi-sliders]="!warehouseActionsOpen()" [class.bi-x-lg]="warehouseActionsOpen()" aria-hidden="true"></i>
+      <span>{{ warehouseActionsOpen() ? "Zavřít" : "Akce" }}</span>
+    </button>
+  }
+
+  @if (isShown()) {
+    <div class="mobile-menu" animate.enter="enter-animation">
+      <a routerLink="/main" routerLinkActive="active" (click)="closeMobileNavigation()">
+        <i class="bi bi-house"></i>Domů
+      </a>
+      @if (user()?.role === "Admin") {
+        <a routerLink="/users" routerLinkActive="active" (click)="closeMobileNavigation()">
+          <i class="bi bi-people"></i>Uživatelé
+        </a>
+      }
+      <a routerLink="/plans" routerLinkActive="active" (click)="closeMobileNavigation()">
+        <i class="bi bi-calendar3"></i>Rozpis směn
+      </a>
       <a
         routerLink="/shifts"
         routerLinkActive="active"
-        [routerLinkActiveOptions]="{
-          exact: user()?.role === 'Admin' ? true : false,
-        }"
-        >Směny</a
+        [routerLinkActiveOptions]="{ exact: true }"
+        (click)="closeMobileNavigation()"
       >
-    </li>
-  </ul>
-
-  <a routerLink="main">
-    <img src="/pizza.ico" alt="Pizza icon" width="35" height="35" />
-  </a>
-  <ul>
-    <li>
-      <a routerLink="/warehouse" routerLinkActive="active">Sklad</a>
-    </li>
-
-    @if (user()?.role === "Admin") {
-      <li>
+        <i class="bi bi-clock-history"></i>Směny
+      </a>
+      @if (user()?.role === "Admin") {
         <a
           routerLink="/shifts/daily"
           routerLinkActive="active"
           [routerLinkActiveOptions]="{ exact: true }"
-          >Dnes</a
+          (click)="closeMobileNavigation()"
         >
-      </li>
-    }
-
-    <li><a (click)="onLogout()">Odhlásit</a></li>
-  </ul>
-
-  <div class="mobile" (click)="toggle()">
-    <img src="/pizza.ico" alt="Pizza icon" width="35" height="35" />
-  </div>
-
-  @if (isShown()) {
-    <ul class="dropdown-menu text-center" animate.enter="enter-animation">
-      <li
-        routerLink="/main"
-        routerLinkActive="active"
-        (click)="isShown.update((isShown) => false);"
-      >
-        <a class="dropdown-item">Domů</a>
-      </li>
-      @if (user()?.role === "Admin") {
-        <li
-          routerLink="/users"
-          routerLinkActive="active"
-          (click)="isShown.update((isShown) => false);"
-        >
-          <a class="dropdown-item">Uživatelé</a>
-        </li>
+          <i class="bi bi-calendar-check"></i>Dnes
+        </a>
       }
-      <li
-        routerLink="/plans"
-        routerLinkActive="active"
-        (click)="isShown.update((isShown) => false);"
-      >
-        <a class="dropdown-item">Rozpis směn</a>
-      </li>
-      <li
-        routerLink="/shifts"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: true }"
-        (click)="isShown.update((isShown) => false);"
-      >
-        <a class="dropdown-item">Směny</a>
-      </li>
-      <li
-        routerLink="/shifts/daily"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: true }"
-        (click)="isShown.update((isShown) => false);"
-      >
-        <a class="dropdown-item">Dnes</a>
-      </li>
-      <li
-        routerLink="/warehouse"
-        routerLinkActive="active"
-        (click)="isShown.update((isShown) => false);"
-      >
-        <a class="dropdown-item">Sklad</a>
-      </li>
-      <li><a class="dropdown-item" (click)="onLogout()">Odhlásit se</a></li>
-    </ul>
+      <a routerLink="/warehouse" routerLinkActive="active" (click)="closeMobileNavigation()">
+        <i class="bi bi-box-seam"></i>Sklad
+      </a>
+      <button type="button" class="mobile-logout" (click)="onLogout()">
+        <i class="bi bi-box-arrow-right"></i>Odhlásit se
+      </button>
+    </div>
   }
 
   @if (notifications().length > 0) {
-    <div class="bellnoti" (click)="onOpenNotifications()">
-      <div class="bell">
-        <i class="bi bi-bell"></i>
-      </div>
-      <div class="noti">{{ notifications().length }}</div>
-    </div>
+    <button
+      class="notification-button"
+      type="button"
+      [attr.aria-label]="'Oznámení: ' + notifications().length"
+      (click)="onOpenNotifications()"
+    >
+      <i class="bi bi-bell"></i>
+      <span class="notification-count">{{ notifications().length }}</span>
+    </button>
   }
 </nav>

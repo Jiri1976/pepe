@@ -1,47 +1,30 @@
-<div class="skeleton">
-  <table class="table table-striped">
-    <thead class="table-dark">
-      <tr>
-        <th
-          class="user-name"
-          style="width: 5% !important; text-align: right"
-        ></th>
-        <th
-          class="user-name"
-          style="width: 15% !important; text-align: center"
-        ></th>
-        <th
-          class="user-name"
-          style="width: 15% !important; text-align: center"
-        ></th>
-        <th
-          class="user-name"
-          style="width: 15% !important; text-align: center"
-        ></th>
-        <th
-          class="user-name"
-          style="width: 10% !important; text-align: center"
-        ></th>
-        <th
-          class="user-name"
-          style="width: 35% !important; text-align: center"
-        ></th>
-      </tr>
-    </thead>
-    <tbody class="table-group-divider">
-      @for (e of empty; track $index) {
+<div class="skeleton-card" aria-hidden="true">
+  <div class="skeleton-table-scroll">
+    <table class="skeleton-table">
+      <colgroup>
+        <col class="col-index" />
+        <col class="col-date" />
+        <col class="col-time" />
+        <col class="col-time" />
+        <col class="col-hours" />
+        <col class="col-perso" />
+      </colgroup>
+      <thead>
         <tr>
-          <th
-            scope="row"
-            style="width: 5% !important; text-align: right !important"
-          ></th>
-          <td style="width: 15% !important; text-align: center !important"></td>
-          <td style="width: 15% !important; text-align: center !important"></td>
-          <td style="width: 15% !important; text-align: center !important"></td>
-          <td style="width: 10% !important; text-align: center !important"></td>
-          <td class="perso" style="width: 35% !important"></td>
+          @for (column of [1, 2, 3, 4, 5, 6]; track column) {
+            <th><span class="skeleton-bar"></span></th>
+          }
         </tr>
-      }
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        @for (row of empty; track $index) {
+          <tr>
+            @for (column of [1, 2, 3, 4, 5, 6]; track column) {
+              <td><span class="skeleton-bar"></span></td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
 </div>

@@ -1,32 +1,135 @@
 :host {
-  width: 200px;
-  height: 200px;
-  border: 1px solid #e2e8f0;
-  border-radius: 7px;
-  position: absolute;
-  top: 80px;
-  left: 10px !important;
-  box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -2px rgba(0, 0, 0, 0.1);
-  z-index: 9999;
+  position: fixed;
+  top: 82px;
+  left: 72px;
+  z-index: 1100;
+  display: block;
+  width: 220px;
+  padding: 8px;
+  border: 1px solid #e8e5e4;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 14px 36px rgba(41, 37, 36, 0.14);
+}
 
-  p-datepicker {
+p-datepicker.standalone {
+  display: block;
+  width: 100%;
+
+  ::ng-deep .p-datepicker-panel,
+  ::ng-deep .p-datepicker-panel.p-component {
     width: 100%;
-    height: calc(100% - 48px);
+    min-width: 0;
+    align-items: stretch;
+    padding: 4px;
+    border: 0;
+    border-radius: 11px;
+    background: #fff;
+    box-shadow: none;
+    color: #292524;
+    font-family: "Montserrat", sans-serif;
+  }
 
-    .p-datepicker-panel.p-component {
-      width: 100%;
-      height: 100%;
-    }
+  ::ng-deep .p-datepicker-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 3px 10px;
+    border: 0;
+    border-bottom: 1px solid #f0eeec;
+    background: #fff;
+  }
 
-    .p-inputtext {
-      display: none !important;
-    }
+  ::ng-deep .p-datepicker-title {
+    gap: 5px;
+    color: #292524;
+    font-size: 13px;
+    font-weight: 650;
+  }
 
-    .p-datepicker .p-datepicker-panel {
-      width: 100%;
-      height: 100%;
+  ::ng-deep .p-datepicker-select-year,
+  ::ng-deep .p-datepicker-select-month {
+    color: #292524;
+    font-size: 12px;
+    font-weight: 650;
+  }
+
+  ::ng-deep .p-datepicker-prev-button,
+  ::ng-deep .p-datepicker-next-button {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    color: #78716c;
+
+    &:hover {
+      background: #f5f5f4;
+      color: #292524;
     }
+  }
+
+  ::ng-deep .p-datepicker-month-view {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
+    padding-top: 9px;
+  }
+
+  ::ng-deep .p-datepicker-month {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    min-height: 34px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 3px;
+    border-radius: 9px;
+    color: #57534e;
+    font-family: "Montserrat", sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: background 140ms ease, color 140ms ease;
+
+    &:hover {
+      background: #f5f5f4;
+      color: #292524;
+    }
+  }
+
+  ::ng-deep .p-datepicker-month.p-datepicker-month-selected {
+    background: #fff1e8 !important;
+    color: #c2410c !important;
+    font-weight: 650;
+  }
+
+  ::ng-deep .p-datepicker-year.p-datepicker-year-selected {
+    border-radius: 9px;
+    background: #fff1e8 !important;
+    color: #c2410c !important;
+    font-weight: 650;
+  }
+
+  ::ng-deep .p-datepicker-month:focus-visible,
+  ::ng-deep .p-datepicker-prev-button:focus-visible,
+  ::ng-deep .p-datepicker-next-button:focus-visible {
+    outline: 2px solid rgba(249, 115, 22, 0.45);
+    outline-offset: 2px;
+  }
+}
+
+@media (max-width: 690px) {
+  :host {
+    top: 68px;
+    left: 58px;
+    width: 210px;
+    padding: 7px;
+    border-radius: 14px;
+  }
+}
+
+@media (max-width: 400px) {
+  :host {
+    left: 54px;
+    width: min(210px, calc(100vw - 66px));
   }
 }

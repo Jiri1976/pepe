@@ -1,23 +1,42 @@
-<div class="box d-flex flex-column justify-content-center align-items-center position-relative" animate.enter="fade-in"
-    animate.leave="fade-out">
-    <h3 class="mb-5">Datum:&nbsp;{{ todayDate }}</h3>
+<main class="daily-page" animate.enter="fade-in" animate.leave="fade-out">
+  @let currentShiftCount = shiftsStore.todaysShifts().shifts.length;
+  <header class="daily-header">
+    <div class="header-icon" aria-hidden="true">
+      <i class="bi bi-calendar2-check"></i>
+    </div>
+    <div class="header-copy">
+      <span class="eyebrow">Provozní přehled</span>
+      <h1>Dnešní směny</h1>
+      <p>{{ todayDate }}</p>
+    </div>
     @if (!shiftsStore.isLoading()) {
-    <br />
+      <span class="shift-count">
+        {{ currentShiftCount }}
+        {{ currentShiftCount === 1 ? "směna" : "směn" }}
+      </span>
+    }
+  </header>
+
+  @if (!shiftsStore.isLoading()) {
     @let shiftsForToday = shiftsStore.todaysShifts();
     @if (shiftsForToday.shifts!.length > 0) {
-    <div [style]="bodyStyles()">
-        @for(shift of shiftsForToday.shifts; track $index) {
-        <app-daily-item [index]="$index" [shift]="shift" />
+      <section class="daily-shifts-list" aria-label="Seznam dnešních směn" [style]="bodyStyles()">
+        @for (shift of shiftsForToday.shifts; track $index) {
+          <app-daily-item [index]="$index" [shift]="shift" />
         }
-    </div>
+      </section>
     } @else {
-    <h4 class="fw-bold">Žádné směny nebo rozpis pro dnešní den</h4>
+      <section class="empty-state">
+        <span class="empty-icon" aria-hidden="true"><i class="bi bi-calendar2-x"></i></span>
+        <h2>Žádné směny k zobrazení</h2>
+        <p>Pro dnešní den není evidována žádná směna ani rozpis.</p>
+      </section>
     }
-    } @else {
-    <div [style]="bodyStyles()">
-        @for(i of [1,2,3,4]; track i) {
+  } @else {
+    <section class="daily-shifts-list loading-list" [style]="bodyStyles()" aria-label="Načítání směn">
+      @for (i of [1, 2, 3, 4]; track i) {
         <app-daily-skeleton />
-        }
-    </div>
-    }
-</div>
+      }
+    </section>
+  }
+</main>

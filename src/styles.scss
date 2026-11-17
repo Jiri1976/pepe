@@ -88,8 +88,8 @@ p-datepicker.standalone {
       }
 
       .p-datepicker-month.p-datepicker-month-selected {
-        background: var(--main-dark) !important;
-        color: var((--white)) !important;
+        background: #fff1e8 !important;
+        color: #c2410c !important;
         font-weight: 700 !important;
         font-size: 1rem;
       }
@@ -113,8 +113,8 @@ p-datepicker.standalone {
 
     .p-datepicker-month-view {
       .p-datepicker-month.p-datepicker-month-selected {
-        background: var(--main-dark) !important;
-        color: var(--white);
+        background: #fff1e8 !important;
+        color: #c2410c !important;
       }
 
       span {
@@ -148,16 +148,47 @@ p-datepicker.standalone {
       }
 
       span.p-datepicker-year.p-datepicker-year-selected {
-        background: var(--main-dark) !important;
-        color: var(--white) !important;
+        background: #fff1e8 !important;
+        color: #c2410c !important;
       }
     }
   }
 }
 
 .calendarDivShift {
+  p-datepicker input.p-inputtext,
+  p-datepicker input.p-inputtext:enabled:hover,
+  p-datepicker input.p-inputtext:enabled:focus,
+  p-datepicker input.p-inputtext.ng-valid,
+  p-datepicker input.p-inputtext.ng-valid:focus {
+    border: 1px solid #e7e5e4 !important;
+    outline: none !important;
+    box-shadow: none !important;
+    --p-inputtext-focus-border-color: #e7e5e4;
+    --p-inputtext-focus-ring-color: transparent;
+  }
+
+  .shift-date-input,
+  .shift-date-input:enabled:hover,
+  .shift-date-input:enabled:focus,
+  .shift-date-input.ng-valid,
+  .shift-date-input.ng-valid:focus,
+  .shift-date-input.ng-valid:enabled:hover {
+    border: 1px solid #e7e5e4 !important;
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
   p-datepicker {
     font-weight: 700;
+
+    .p-inputtext,
+    .p-inputtext:enabled:hover,
+    .p-inputtext:enabled:focus {
+      border-color: #e7e5e4 !important;
+      outline: none !important;
+      box-shadow: none !important;
+    }
 
     .p-datepicker-panel.p-component {
       border: 1px solid var(--main-border-color);
@@ -167,8 +198,8 @@ p-datepicker.standalone {
         font-weight: 700;
 
         .p-datepicker-month.p-datepicker-month-selected {
-          background: var(--main-dark) !important;
-          color: var(--white) !important;
+          background: #fff1e8 !important;
+          color: #c2410c !important;
           font-weight: 700;
         }
       }
@@ -218,8 +249,8 @@ p-datepicker.standalone {
 
             p-button:hover {
               .p-button-text {
-                background: var(--main-dark);
-                color: var(--white) !important;
+                background: #fff1e8;
+                color: #c2410c !important;
                 border: none;
               }
             }
@@ -227,8 +258,8 @@ p-datepicker.standalone {
 
           .p-datepicker-day-view {
             .p-datepicker-day-selected {
-              background: var(--main-dark) !important;
-              color: var(--white) !important;
+              background: #fff1e8 !important;
+              color: #c2410c !important;
               font-weight: 700;
             }
           }
@@ -237,8 +268,8 @@ p-datepicker.standalone {
 
       .p-datepicker-year-view {
         span.p-datepicker-year.p-datepicker-year-selected {
-          background: var(--main-dark) !important;
-          color: var(--white) !important;
+          background: #fff1e8 !important;
+          color: #c2410c !important;
         }
       }
     }
@@ -252,6 +283,47 @@ p-datepicker.standalone {
 .p-datepicker-month,
 .p-datepicker-select-year {
   color: var(--main-dark) !important;
+}
+
+.shift-form-calendar-panel {
+  .p-datepicker-day-selected,
+  .p-datepicker-day.p-datepicker-day-selected,
+  .p-datepicker-month-selected,
+  .p-datepicker-year-selected {
+    border-radius: 9px !important;
+    background: #fff1e8 !important;
+    color: #c2410c !important;
+    font-weight: 650 !important;
+  }
+}
+
+.calendarDivShift p-datepicker input.p-inputtext,
+.calendarDivShift p-datepicker input.p-inputtext:enabled:hover,
+.calendarDivShift p-datepicker input.p-inputtext.ng-valid {
+  border: 1px solid #e7e5e4 !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.calendarDivShift.date-focused p-datepicker input.p-inputtext,
+.calendarDivShift.calendar-open p-datepicker input.p-inputtext,
+.calendarDivShift p-datepicker input.p-inputtext:focus,
+.calendarDivShift p-datepicker input.p-inputtext:focus-visible,
+.calendarDivShift p-datepicker .shift-date-input,
+.calendarDivShift p-datepicker .shift-date-input:focus,
+.calendarDivShift p-datepicker .shift-date-input:focus-visible {
+  border: 1px solid #fb923c !important;
+  outline: 3px solid rgba(249, 115, 22, 0.18) !important;
+  outline-offset: 1px;
+  box-shadow: none !important;
+}
+
+.shift-form-calendar-panel,
+.shift-form-calendar-panel.p-datepicker-panel {
+  width: 320px !important;
+  min-width: 0 !important;
+  max-width: calc(100vw - 24px) !important;
+  box-sizing: border-box;
 }
 
 .timefromDiv {
@@ -433,56 +505,6 @@ p-toast {
   z-index: 9999;
 }
 
-.p-fieldset {
-  border-radius: 7px !important;
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-
-  .p-fieldset-legend {
-    color: var(--main-dark);
-    font-size: 1rem;
-    position: relative;
-    top: -18px;
-    width: 60px;
-  }
-
-  .p-fieldset-content-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin-top: 15px;
-
-    .p-fieldset-content {
-      .options {
-        .items-center {
-          p-checkbox {
-            margin-left: 20px;
-            margin-right: 15px;
-
-            div {
-              .p-checkbox-box {
-                border: 1px solid var(--main-dark);
-              }
-            }
-          }
-
-          label {
-            color: var(--main-dark);
-            font-weight: 500;
-            letter-spacing: 1px;
-          }
-        }
-      }
-    }
-  }
-}
-
-.p-fieldset.p-component {
-  border: 1px solid var(--main-dark) !important;
-}
-
 p-checkbox {
   .p-checkbox-box {
     border-radius: 5px !important;
@@ -566,52 +588,9 @@ app-field.login {
       }
     }
   }
-
-  .p-fieldset {
-    flex-direction: column;
-
-    .p-fieldset-content-container {
-      flex-direction: column;
-      margin-top: -20px;
-    }
-  }
 }
 
 @media screen and (max-width: 690px) {
-  app-field.login {
-    .field {
-      .field-wrapper {
-        border: 1px solid var(--white) !important;
-
-        .bi {
-          color: var(--white) !important;
-        }
-
-        input {
-          color: var(--white) !important;
-          font-weight: 600;
-        }
-      }
-
-      .field-wrapper.errorField {
-        border: 1px solid var(--white) !important;
-
-        .bi {
-          color: var(--white) !important;
-        }
-      }
-    }
-  }
-
-  .p-fieldset {
-    flex-direction: column;
-
-    .p-fieldset-content-container {
-      flex-direction: column;
-      margin-top: -20px;
-    }
-  }
-
   .cdk-overlay-pane {
     height: 90% !important;
     overflow-y: auto !important;

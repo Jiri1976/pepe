@@ -1,125 +1,131 @@
-<div class="info" [class.is-active]="shiftsStore.activeInfo()">
-  <h2>{{ card().userName }}&nbsp;{{ card().userSurname }}</h2>
-  <h4>
-    {{ convertMonthYear(card().monthYear) }}
-  </h4>
-  <br />
-  <h5>
-    Celkem: &nbsp;
-    @if (shiftsStore.currentTotalHours()) {
-      {{ shiftsStore.currentTotalHours() }}
-    } @else {
-      00:00
-    }
-    hodin
-  </h5>
-  <div
-    class="shift-avatar justify-content-center d-flex align-items-center rounded-circle"
-  >
+<section class="info" [class.is-active]="shiftsStore.activeInfo()" aria-label="Informace o pracovníkovi">
+  <div class="info-content">
+    <div class="profile-summary">
+      <div class="shift-avatar">
     @if (card().imageUrl) {
       <img
         [src]="`${this.apiUrl}/images/${card().imageUrl}`"
-        alt="Selected"
-        class="rounded-circle"
+        [alt]="card().userName + ' ' + card().userSurname"
       />
     } @else {
-      <img class="blank rounded-circle" src="person.png" alt="No image" />
-    }
+          <img class="blank" src="person.png" alt="" />
+        }
+      </div>
+
+      <div class="profile-copy">
+        <span class="eyebrow">Přehled směn</span>
+        <h2>{{ card().userName }} {{ card().userSurname }}</h2>
+        <p>{{ convertMonthYear(card().monthYear) }}</p>
+      </div>
+
+      <div class="total-hours">
+        <span>Celkem hodin</span>
+        <strong>{{ shiftsStore.currentTotalHours() || "00:00" }}</strong>
+      </div>
+    </div>
   </div>
 
-  <div class="buttons" [class.master]="authStore.user()?.role === 'Master'">
+  <div class="buttons" [class.master]="authStore.user()?.role === 'Master'" aria-label="Pozice">
     @for (position of shiftsStore.currentPositions(); track $index) {
       @switch (position) {
         @case ("Helper") {
-          <div
+          <button
+            type="button"
             class="shift-row"
             [class.active]="position === shiftsStore.selectedCardPosition()"
-            [class.inactive]="shiftsStore.currentPositions().length === 1"
-            (click)="
-              shiftsStore.currentPositions().length > 1 &&
-                shiftsStore.setSelectedCardPosition(position)
-            "
+            [disabled]="shiftsStore.currentPositions().length === 1"
+            [attr.aria-pressed]="position === shiftsStore.selectedCardPosition()"
+            (click)="shiftsStore.setSelectedCardPosition(position)"
           >
-            <h6 class="fw-bold">Pomocka</h6>
-            <h6>{{ shiftsStore.currentUsersTotalHours()[position] }}</h6>
-          </div>
+            <span>Pomocník</span>
+            <strong>{{ shiftsStore.currentUsersTotalHours()[position] }}</strong>
+          </button>
         }
         @case ("Driver") {
-          <div
+          <button
+            type="button"
             class="shift-row"
             [class.active]="position === shiftsStore.selectedCardPosition()"
-            [class.inactive]="shiftsStore.currentPositions().length === 1"
-            (click)="
-              shiftsStore.currentPositions().length > 1 &&
-                shiftsStore.setSelectedCardPosition(position)
-            "
+            [disabled]="shiftsStore.currentPositions().length === 1"
+            [attr.aria-pressed]="position === shiftsStore.selectedCardPosition()"
+            (click)="shiftsStore.setSelectedCardPosition(position)"
           >
-            <h6 class="fw-bold">Řidič</h6>
-            <h6>{{ shiftsStore.currentUsersTotalHours()[position] }}</h6>
-          </div>
+            <span>Řidič</span>
+            <strong>{{ shiftsStore.currentUsersTotalHours()[position] }}</strong>
+          </button>
         }
         @case ("Cook") {
-          <div
+          <button
+            type="button"
             class="shift-row"
             [class.active]="position === shiftsStore.selectedCardPosition()"
-            [class.inactive]="shiftsStore.currentPositions().length === 1"
-            (click)="
-              shiftsStore.currentPositions().length > 1 &&
-                shiftsStore.setSelectedCardPosition(position)
-            "
+            [disabled]="shiftsStore.currentPositions().length === 1"
+            [attr.aria-pressed]="position === shiftsStore.selectedCardPosition()"
+            (click)="shiftsStore.setSelectedCardPosition(position)"
           >
-            <h6 class="fw-bold">Kuchař</h6>
-            <h6>{{ shiftsStore.currentUsersTotalHours()[position] }}</h6>
-          </div>
+            <span>Kuchař</span>
+            <strong>{{ shiftsStore.currentUsersTotalHours()[position] }}</strong>
+          </button>
         }
         @case ("Pizza") {
-          <div
+          <button
+            type="button"
             class="shift-row"
             [class.active]="position === shiftsStore.selectedCardPosition()"
-            [class.inactive]="shiftsStore.currentPositions().length === 1"
-            (click)="
-              shiftsStore.currentPositions().length > 1 &&
-                shiftsStore.setSelectedCardPosition(position)
-            "
+            [disabled]="shiftsStore.currentPositions().length === 1"
+            [attr.aria-pressed]="position === shiftsStore.selectedCardPosition()"
+            (click)="shiftsStore.setSelectedCardPosition(position)"
           >
-            <h6 class="fw-bold">Pizzař</h6>
-            <h6>{{ shiftsStore.currentUsersTotalHours()[position] }}</h6>
-          </div>
+            <span>Pizzař</span>
+            <strong>{{ shiftsStore.currentUsersTotalHours()[position] }}</strong>
+          </button>
         }
       }
     }
   </div>
+
   <div class="actions" [class.master]="authStore.user()?.role === 'Master'">
-    @if (authStore.user()?.role === "Admin") {
-      <button
-        class="deleteCardBtn common-btn deleteCardBtn text-white fw-bold d-flex flex-row align-items-center justify-content-center"
-        (click)="deleteCard()"
-        [disabled]="
-          !(shiftsStore.currentCard() && shiftsStore.currentCard()!.id > 0)
-        "
-      >
-        <i class="bi bi-trash fw-bold"></i>&nbsp;Smazat kartu
-      </button>
-      <button
-        class="pdfBtn common-btn text-white fw-bold d-flex flex-row align-items-center justify-content-center"
-        (click)="shiftsStore.toPdfCard()"
-        [disabled]="
-          !(
-            shiftsStore.currentCard() &&
-            shiftsStore.currentCard()!.id > 0 &&
-            shiftsStore.currentCard()!.shifts.length > 0
-          )
-        "
-      >
-        @if (!shiftsStore.pdfButtonLoading()) {
-          <i class="bi bi-filetype-pdf"></i>&nbsp;PDF
-        } @else {
-          <div class="spinner-border" role="status">
-            <span class="visually-hidden"></span>
-          </div>
-          &nbsp;Pracuji ...
-        }
-      </button>
-    }
+    <div class="action-buttons">
+      @if (authStore.user()?.role === "Admin") {
+        <button
+          type="button"
+          class="deleteCardBtn common-btn"
+          (click)="deleteCard()"
+          [disabled]="
+            !(shiftsStore.currentCard() && shiftsStore.currentCard()!.id > 0)
+          "
+        >
+          <i class="bi bi-trash3" aria-hidden="true"></i> Smazat kartu
+        </button>
+        <button
+          type="button"
+          class="pdfBtn common-btn"
+          (click)="shiftsStore.toPdfCard()"
+          [disabled]="
+            !(
+              shiftsStore.currentCard() &&
+              shiftsStore.currentCard()!.id > 0 &&
+              shiftsStore.currentCard()!.shifts.length > 0
+            )
+          "
+        >
+          @if (!shiftsStore.pdfButtonLoading()) {
+            <i class="bi bi-filetype-pdf" aria-hidden="true"></i> PDF
+          } @else {
+            <span class="spinner-border" role="status" aria-label="Pracuji"></span>
+            Pracuji...
+          }
+        </button>
+      }
+    </div>
+    <button
+      type="button"
+      class="close-info"
+      aria-label="Zavřít informace"
+      title="Zavřít"
+      (click)="shiftsStore.closeInfo()"
+    >
+      <i class="bi bi-x-lg" aria-hidden="true"></i>
+    </button>
   </div>
-</div>
+</section>

@@ -6,6 +6,7 @@
   margin-top: 110px;
   width: 100%;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -15,7 +16,8 @@
   height: 100%;
   grid-column: 1;
   grid-row: 1;
-  width: 40%;
+  width: min(640px, calc(100% - 32px));
+  min-width: 0;
   margin: 0 auto;
   position: relative;
 
@@ -35,27 +37,93 @@
     display: flex;
     justify-content: center;
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
     width: 100%;
+    min-width: 0;
     position: relative;
     height: 100%;
 
-    .blind {
-      display: flex;
-      justify-content: center;
-      align-items: center;
+    .user-skeleton {
+      display: grid;
       width: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
+      min-width: 0;
+      box-sizing: border-box;
+      grid-template-columns: 44px minmax(0, 1fr) auto 8px;
       align-items: center;
-      height: 40px !important;
-      margin: 10px 0;
-      text-align: center;
+      gap: 14px;
+      min-height: 72px;
+      margin: 0 0 10px;
+      padding: 12px 16px;
+      border: 1px solid #e8e5e4;
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: 0 3px 12px rgba(41, 37, 36, 0.035);
+    }
+
+    .skeleton-avatar,
+    .skeleton-name,
+    .skeleton-email,
+    .skeleton-role,
+    .skeleton-status,
+    .skeleton-chevron {
+      display: block;
       background: linear-gradient(90deg, #eee 25%, #fff 50%, #eee 75%);
       background-size: 400% 100%;
       animation: shimmer 2s infinite linear;
-      border-radius: 7px;
+    }
+
+    .skeleton-avatar {
+      width: 44px;
+      height: 44px;
+      flex: 0 0 44px;
+      border-radius: 13px;
+    }
+
+    .skeleton-details {
+      display: flex;
+      min-width: 0;
+      flex: 1 1 auto;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .skeleton-name {
+      width: min(180px, 70%);
+      height: 12px;
+      border-radius: 6px;
+    }
+
+    .skeleton-email {
+      width: min(130px, 50%);
+      height: 9px;
+      border-radius: 5px;
+    }
+
+    .skeleton-badges {
+      display: flex;
+      flex: 0 0 auto;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .skeleton-role,
+    .skeleton-status {
+      height: 25px;
+      border-radius: 999px;
+    }
+
+    .skeleton-role {
+      width: 52px;
+    }
+
+    .skeleton-status {
+      width: 64px;
+    }
+
+    .skeleton-chevron {
+      width: 8px;
+      height: 12px;
+      border-radius: 5px;
     }
   }
 }
@@ -76,7 +144,7 @@ app-nav-button#toggle-menu {
 
 @media screen and (max-width: 995px) {
   .users {
-    width: 70%;
+    width: min(640px, calc(100% - 32px));
   }
 }
 
@@ -87,5 +155,176 @@ app-nav-button#toggle-menu {
 
   app-nav-button#toggle-menu {
     display: block !important;
+  }
+
+  .mobile-filter-toggle {
+    position: fixed;
+    top: 20px;
+    right: 34px;
+    z-index: 1001;
+    display: inline-flex;
+    min-height: 38px;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 0 11px;
+    border: 1px solid #fed7aa;
+    border-radius: 10px;
+    background: #fff7ed;
+    color: #9a3412;
+    font-family: "Montserrat", sans-serif;
+    font-size: 10px;
+    font-weight: 650;
+    box-shadow: 0 4px 12px rgba(41, 37, 36, 0.1);
+    cursor: pointer;
+
+    .bi {
+      font-size: 14px;
+    }
+
+    &:focus-visible {
+      outline: 3px solid rgba(249, 115, 22, 0.28);
+      outline-offset: 2px;
+    }
+  }
+
+  :host ::ng-deep app-navigation#users-filter-navigation:not(.filters-open) {
+    display: none !important;
+  }
+
+  :host ::ng-deep app-navigation#users-filter-navigation.filters-open .menu {
+    top: 78px;
+    right: 12px;
+    bottom: auto;
+    left: auto;
+    display: block;
+    width: min(286px, calc(100vw - 24px));
+    padding: 0;
+    border: 0;
+  }
+
+  :host ::ng-deep app-navigation#users-filter-navigation.filters-open .menu ul {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+    margin: 0;
+    padding: 10px;
+    border: 1px solid #e8e5e4;
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: 0 14px 36px rgba(41, 37, 36, 0.15);
+    backdrop-filter: blur(16px);
+  }
+
+  :host ::ng-deep app-navigation#users-filter-navigation app-nav-button {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+  }
+
+  :host ::ng-deep app-navigation#users-filter-navigation app-nav-button li {
+    width: 100%;
+    margin: 0 !important;
+  }
+
+  :host
+    ::ng-deep
+    app-navigation#users-filter-navigation
+    app-nav-button
+    li
+    > button {
+    width: 100%;
+    min-height: 40px;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 9px;
+    padding: 0 10px;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: none;
+    color: #57534e;
+  }
+
+  :host
+    ::ng-deep
+    app-navigation#users-filter-navigation
+    app-nav-button
+    li
+    > button:hover:not(:disabled) {
+    transform: none;
+    border-color: #fed7aa;
+    background: #fff7ed;
+    color: #9a3412;
+    box-shadow: none;
+  }
+
+  :host
+    ::ng-deep
+    app-navigation#users-filter-navigation
+    app-nav-button
+    li.inactive
+    > button {
+    border-color: #efeeec;
+    background: #f7f6f5;
+    color: #a8a29e;
+  }
+
+  :host
+    ::ng-deep
+    app-navigation#users-filter-navigation
+    app-nav-button#toggle-menu {
+    grid-column: 1 / -1;
+  }
+
+  :host
+    ::ng-deep
+    app-navigation#users-filter-navigation
+    app-nav-button#toggle-menu
+    li
+    > button {
+    justify-content: center;
+    border-color: #fed7aa;
+    background: #fff1e8;
+    color: #c2410c;
+  }
+
+  .users {
+    .skeleton .user-skeleton {
+      grid-template-columns: 40px minmax(0, 1fr) auto;
+      min-height: 68px;
+      gap: 10px;
+      padding: 10px 12px;
+    }
+
+    .skeleton-avatar {
+      width: 40px;
+      height: 40px;
+      flex-basis: 40px;
+      border-radius: 12px;
+    }
+
+    .skeleton-badges {
+      align-items: flex-end;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .skeleton-role,
+    .skeleton-status {
+      height: 21px;
+    }
+
+    .skeleton-role {
+      width: 40px;
+    }
+
+    .skeleton-status {
+      width: 55px;
+    }
+
+    .skeleton-chevron {
+      display: none;
+    }
   }
 }

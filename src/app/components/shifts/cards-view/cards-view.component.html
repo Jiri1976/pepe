@@ -8,7 +8,7 @@
       <div
         class="shift-card d-flex flex-column justify-content-center align-items-center"
       >
-        <div class="user">
+        <div class="user" (click)="shiftsStore.toggleInfo()">
           {{ shiftsStore.currentCard()?.userName }}
           {{ shiftsStore.currentCard()?.userSurname }}
         </div>
@@ -38,7 +38,6 @@
           [disabled]="shiftsStore.sliceIndex() === 0"
           (click)="movePrevious()"
         />
-        <app-info-button (click)="shiftsStore.toggleInfo()" />
         <app-prev-next-button
           icon="bi-caret-right"
           [disabled]="

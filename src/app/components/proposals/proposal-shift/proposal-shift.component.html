@@ -1,29 +1,28 @@
-<div>
-    @switch (shiftType) {
-    @case ('whole') {
-    <div class="shift whole fw-bold d-flex flex-column justify-content-center align-items-center text-white">X</div>
-    }
-    @case ('destination') {
-    <div class="shift dest fw-bold d-flex flex-column justify-content-center align-items-center text-white">{{
-        shift().from }}</div>
-    }
-    @case ('morning') {
-    <div class="shift morning d-flex flex-column justify-content-center align-items-center text-white">
-        <div class="upper fw-bold position-relative">11</div>
-        <div class="lower fw-bold position-relative">17</div>
+@switch (shiftType) {
+  @case ('whole') {
+    <div class="shift whole" aria-label="Celá směna">X</div>
+  }
+  @case ('destination') {
+    <div class="shift dest" [attr.aria-label]="'Pobočka ' + shift().from">
+      {{ shift().from }}
     </div>
-    }
-    @case ('afternoon') {
-    <div class="shift afternoon d-flex flex-column justify-content-center align-items-center text-white">
-        <div class="upper fw-bold position-relative">17</div>
-        <div class="lower fw-bold position-relative">{{ shift().to!.substring(0,2) }}</div>
+  }
+  @case ('morning') {
+    <div class="shift morning" aria-label="Ranní směna">
+      <span class="upper">11</span>
+      <span class="lower">17</span>
     </div>
-    }
-    @case ('custom') {
-    <div class="shift custom d-flex flex-column justify-content-center align-items-center text-white">
-        <div class="upper fw-bold position-relative">{{ shift().from }}</div>
-        <div class="lower fw-bold position-relative">{{ shift().to }}</div>
+  }
+  @case ('afternoon') {
+    <div class="shift afternoon" aria-label="Odpolední směna">
+      <span class="upper">17</span>
+      <span class="lower">{{ shift().to!.substring(0, 2) }}</span>
     </div>
-    }
-    }
-</div>
+  }
+  @case ('custom') {
+    <div class="shift custom" [attr.aria-label]="shift().from + ' až ' + shift().to">
+      <span class="upper">{{ shift().from }}</span>
+      <span class="lower">{{ shift().to }}</span>
+    </div>
+  }
+}

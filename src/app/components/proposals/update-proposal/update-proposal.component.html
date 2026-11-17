@@ -1,107 +1,118 @@
-<div class="wrapper">
-  <form autocomplete="off" id="form">
-    @let proposal = store.selectedProposal();
-    <div
-      class="title rounded d-flex flex-row justify-content-center align-items-center"
-    >
-      <h1 class="text-white fw-bold m-0 fs-6">
-        {{
-          `${proposal?.userName} ${proposal?.userSurname?.substring(0, 1)}.
-                -
-                ${position()}
-                -
-                ${proposal?.proposalDate}`
-        }}
-      </h1>
-    </div>
+<section class="proposal-editor">
+  @let proposal = store.selectedProposal();
 
-    <div class="row mt-1 mb-4 d-flex justify-content-center">
-      <button
-        type="button"
-        class="btn whole fw-bold d-flex flex-column justify-content-center align-items-center text-white"
-        (click)="onUpdate('W')"
-      >
-        X
-      </button>
-      <div
-        class="morning d-flex flex-column justify-content-center align-items-center text-white"
-        (click)="onUpdate('M')"
-      >
-        <div class="upper fw-bold position-relative fs-6">11</div>
-        <div class="lower fw-bold position-relative fs-6">17</div>
-      </div>
-      <div
-        class="afternoon d-flex flex-column justify-content-center align-items-center text-white"
-        (click)="onUpdate('A')"
-      >
-        <div class="upper fw-bold position-relative fs-6">17</div>
-        <div class="lower fw-bold position-relative fs-6">
-          {{ isFridayOrSaturday(proposal?.proposalDate!) ? "23" : "22" }}
-        </div>
+  <header class="editor-header">
+    <div class="header-icon" aria-hidden="true">
+      <i class="bi bi-calendar2-check"></i>
+    </div>
+    <div class="header-copy">
+      <span class="eyebrow">Upravit rozpis</span>
+      <h2>
+        {{ proposal?.userName }} {{ proposal?.userSurname?.substring(0, 1) }}.
+      </h2>
+      <p>{{ position() }} <span aria-hidden="true">·</span> {{ proposal?.proposalDate }}</p>
+    </div>
+  </header>
+
+  <form autocomplete="off" id="form" (submit)="$event.preventDefault(); onUpdate()">
+    <section class="quick-edit" aria-labelledby="quick-edit-title">
+      <div class="section-heading">
+        <h3 id="quick-edit-title">Rychlá volba směny</h3>
+        <span>Vyberte přednastavený čas nebo zadejte vlastní</span>
       </div>
 
-      <button
-        type="button"
-        class="btn delete d-flex flex-column justify-content-center align-items-center text-white"
-        (click)="onDelete()"
-      >
-        <i class="bi bi-trash fw-bold"></i>
-      </button>
-    </div>
-
-    <div class="row proposal-times">
-      <div class="from position-absolute">
-        <app-d-picker
-          [formField]="form.timeFrom"
-          [proposalDate]="proposal!.proposalDate"
-          id="timeFrom"
-        />
-      </div>
-      <div class="to position-absolute">
-        <app-d-picker
-          [formField]="form.timeTo"
-          [proposalDate]="proposal!.proposalDate"
-        />
-      </div>
-    </div>
-
-    <div class="error">
-      @if (showTimeFromError()) {
-        @for (error of form.timeFrom().errors(); track error.kind) {
-          <p>{{ error.message }}</p>
-        }
-      }
-      @if (showTimeToError()) {
-        @for (error of form.timeTo().errors(); track error.kind) {
-          <p>{{ error.message }}</p>
-        }
-      }
-
-      @if (errorMessage()) {
-        <p>{{ errorMessage() }}</p>
-      }
-    </div>
-
-    <div class="row mt-5 pt-4">
-      <div class="col-6 d-flex justify-content-end">
+      <div class="preset-actions">
         <button
           type="button"
-          class="btn cancel rounded text-white"
-          (click)="onClose()"
+          class="preset whole"
+          aria-label="Celá směna"
+          (click)="onUpdate('W')"
         >
-          <i class="bi bi-caret-left"></i>&nbsp;Zpět
+          <strong>X</strong>
+          <span>Celá</span>
         </button>
-      </div>
-      <div class="col-6">
         <button
-          type="submit"
-          class="btn submit rounded text-white"
-          (click)="onUpdate()"
-          [disabled]="form().invalid()"
+          type="button"
+          class="preset morning"
+          aria-label="Ranní směna od 11 do 17 hodin"
+          (click)="onUpdate('M')"
         >
-          <i class="bi bi-pencil-square"></i>&nbsp;Upravit
+          <strong>11–17</strong>
+          <span>Ranní</span>
+        </button>
+        <button
+          type="button"
+          class="preset afternoon"
+          [attr.aria-label]="'Odpolední směna od 17 do ' + (isFridayOrSaturday(proposal?.proposalDate!) ? '23' : '22') + ' hodin'"
+          (click)="onUpdate('A')"
+        >
+          <strong>17–{{ isFridayOrSaturday(proposal?.proposalDate!) ? "23" : "22" }}</strong>
+          <span>Odpolední</span>
+        </button>
+        <button
+          type="button"
+          class="preset delete"
+          aria-label="Odstranit směnu"
+          (click)="onDelete()"
+        >
+          <i class="bi bi-trash3" aria-hidden="true"></i>
+          <span>Odstranit</span>
         </button>
       </div>
-    </div>
+    </section>
+
+    <section class="custom-time-section" aria-labelledby="custom-time-title">
+      <div class="section-heading">
+        <h3 id="custom-time-title">Vlastní čas</h3>
+        <span>Nastavte začátek a konec směny</span>
+      </div>
+      <div class="proposal-times">
+        <label class="time-field">
+          <span>Začátek</span>
+          <app-d-picker
+            [formField]="form.timeFrom"
+            [proposalDate]="proposal!.proposalDate"
+            id="timeFrom"
+          />
+        </label>
+        <span class="time-separator" aria-hidden="true">
+          <i class="bi bi-arrow-right"></i>
+        </span>
+        <label class="time-field">
+          <span>Konec</span>
+          <app-d-picker
+            [formField]="form.timeTo"
+            [proposalDate]="proposal!.proposalDate"
+          />
+        </label>
+      </div>
+    </section>
+
+    @if (showTimeFromError() || showTimeToError() || errorMessage()) {
+      <div class="error" role="alert">
+        @if (showTimeFromError()) {
+          @for (error of form.timeFrom().errors(); track error.kind) {
+            <p>{{ error.message }}</p>
+          }
+        }
+        @if (showTimeToError()) {
+          @for (error of form.timeTo().errors(); track error.kind) {
+            <p>{{ error.message }}</p>
+          }
+        }
+        @if (errorMessage()) {
+          <p>{{ errorMessage() }}</p>
+        }
+      </div>
+    }
+
+    <footer class="editor-actions">
+      <button type="button" class="cancel" (click)="onClose()">
+        <i class="bi bi-arrow-left" aria-hidden="true"></i> Zpět
+      </button>
+      <button type="submit" class="submit" [disabled]="form().invalid()">
+        <i class="bi bi-check2" aria-hidden="true"></i> Uložit směnu
+      </button>
+    </footer>
   </form>
-</div>
+</section>

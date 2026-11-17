@@ -151,6 +151,91 @@ import { WarehouseItem } from '../../../models/warehouses.interface';
                     }
                 }
             }
+
+            .container {
+                display: flex;
+                width: 100%;
+                min-width: 0;
+                min-height: 100%;
+                align-items: center;
+                gap: 8px;
+                box-sizing: border-box;
+                padding: 8px 10px;
+                overflow: visible;
+                border: 1px solid #e8e5e4;
+                border-radius: 12px;
+                background: #fff;
+                box-shadow: none;
+
+                form {
+                    min-width: 0;
+                    flex: 1 1 auto;
+                    margin: 0;
+                }
+
+                form > div {
+                    width: 100%;
+                }
+
+                input {
+                    width: 100%;
+                    height: 38px;
+                    box-sizing: border-box;
+                    padding: 0 11px;
+                    border: 1px solid #e7e5e4 !important;
+                    border-radius: 9px;
+                    background: #fafaf9;
+                    color: #292524;
+                    font-family: "Montserrat", sans-serif;
+                    font-size: 11px;
+                    font-weight: 500;
+
+                    &:focus {
+                        border-color: #fb923c !important;
+                        outline: 3px solid rgba(249, 115, 22, 0.14) !important;
+                    }
+                }
+
+                .save-button,
+                .delete-button {
+                    display: grid;
+                    width: 34px;
+                    height: 34px;
+                    flex: 0 0 34px;
+                    place-items: center;
+                    margin: 0;
+                    padding: 0;
+                    border: 1px solid transparent;
+                    border-radius: 9px;
+                    outline: none;
+                }
+
+                .save-button {
+                    border-color: #fed7aa;
+                    background: #fff1e8;
+                    color: #c2410c;
+
+                    &:hover:not(:disabled) {
+                        background: #ea580c;
+                        color: #fff;
+                    }
+
+                    &:disabled {
+                        opacity: 0.45;
+                    }
+                }
+
+                .delete-button {
+                    border-color: #fecdd3;
+                    background: #fff1f2;
+                    color: #be123c;
+
+                    &:hover {
+                        background: #be123c;
+                        color: #fff;
+                    }
+                }
+            }
           }
     `]
 })

@@ -1,3 +1,6 @@
-<div class="circle-pit" [setProposalPitBackground]="user().position">
+<div
+  class="circle-pit"
+  [attr.aria-label]="user().shifts.filter(s => s.from !== null).length + ' směn'"
+>
   {{ user().shifts.filter(s => s.from !== null).length }}
 </div>

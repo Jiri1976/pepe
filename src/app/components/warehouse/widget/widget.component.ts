@@ -1,6 +1,5 @@
 import { Component, inject, input, signal } from '@angular/core';
 import { WidgetUpdateComponent } from '../widget-update/widget-update.component';
-import { CdkDrag, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
 import { WidgetAddComponent } from '../widget-add/widget-add.component';
 import { WarehouseStore } from '../../../stores/warehouse-store/warehouse.store';
 import { WarehouseItem } from '../../../models/warehouses.interface';
@@ -12,31 +11,30 @@ import { Dialog } from '@angular/cdk/dialog';
   selector: 'app-widget',
   imports: [
     WidgetUpdateComponent,
-    CdkDrag,
-    CdkDragPlaceholder,
     WidgetAddComponent,
   ],
   template: `
-    <div
-      class="container drag-item d-flex flex-row align-items-center justify-content-between position-relative"
-      cdkDrag
-    >
+    <article class="container widget-card">
       @if (item().id > 0) {
-        <p>{{ item().name }}</p>
-        <div
-          class="buttons d-flex flex-row align-items-center justify-content-between"
-        >
+        <span class="drag-grip" aria-hidden="true"><i class="bi bi-grip-vertical"></i></span>
+        <span class="item-position">{{ index() + 1 }}</span>
+        <p class="item-name">{{ item().name }}</p>
+        <div class="widget-actions">
           <button
-            class="settings-button d-flex flex-column justify-content-center align-items-center"
+            type="button"
+            class="settings-button"
+            [attr.aria-label]="'Upravit položku ' + item().name"
             (click)="onUpdate()"
           >
-            <i class="bi bi-pencil-square"></i>
+            <i class="bi bi-pencil-square" aria-hidden="true"></i>
           </button>
           <button
-            class="delete-button d-flex flex-column justify-content-center align-items-center"
+            type="button"
+            class="delete-button"
+            [attr.aria-label]="'Smazat položku ' + item().name"
             (click)="onDelete()"
           >
-            <i class="bi bi-trash"></i>
+            <i class="bi bi-trash3" aria-hidden="true"></i>
           </button>
         </div>
       } @else {
@@ -55,52 +53,161 @@ import { Dialog } from '@angular/cdk/dialog';
           animate.leave="fast-out"
         />
       }
-      <div *cdkDragPlaceholder></div>
-    </div>
+    </article>
   `,
   styles: [
     `
       :host {
         display: block;
+        width: 100%;
+        min-width: 0;
       }
 
       .container {
-        height: 40px;
-        width: 400px;
-        padding: 10px 20px;
+        position: relative;
+        display: flex;
+        width: 100%;
+        min-width: 0;
+        min-height: 62px;
+        align-items: center;
+        gap: 12px;
+        box-sizing: border-box;
+        padding: 10px 12px;
         overflow: hidden;
-        background: var(--white);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        border: none;
-        margin: 5px 20px;
+        border: 1px solid #e8e5e4;
+        border-radius: 13px;
+        background: #fff;
+        box-shadow: 0 3px 12px rgba(41, 37, 36, 0.035);
         cursor: move;
-        border-radius: 7px;
+        transition: border-color 150ms ease, box-shadow 150ms ease;
 
-        p {
+        &:hover {
+          border-color: #d6d3d1;
+          box-shadow: 0 6px 16px rgba(41, 37, 36, 0.08);
+        }
+
+        .drag-grip {
+          display: grid;
+          width: 20px;
+          height: 28px;
+          flex: 0 0 20px;
+          place-items: center;
+          color: #a8a29e;
+          cursor: grab;
+
+          .bi {
+            font-size: 16px;
+          }
+        }
+
+        .item-position {
+          display: grid;
+          width: 30px;
+          height: 30px;
+          flex: 0 0 30px;
+          place-items: center;
+          border-radius: 9px;
+          background: #fff1e8;
+          color: #c2410c;
+          font-size: 10px;
+          font-weight: 700;
+        }
+
+        .item-name {
+          min-width: 0;
+          flex: 1 1 auto;
           margin: 0;
-          color: var(--main-dark) !important;
-          font-weight: 500;
+          overflow: hidden;
+          color: #292524 !important;
+          font-family: "Montserrat", sans-serif;
+          font-size: 12px;
+          font-weight: 600;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .widget-actions {
+          display: flex;
+          flex: 0 0 auto;
+          align-items: center;
+          gap: 6px;
         }
 
         .settings-button,
         .delete-button {
-          border: none;
-          background: var(--white);
-          border-radius: 50%;
-          height: 28px;
-          width: 28px;
-          color: var(--main-dark);
-          transition: all 0.3s ease-in-out;
+          display: grid;
+          width: 34px;
+          height: 34px;
+          place-items: center;
+          border: 1px solid transparent;
+          border-radius: 10px;
+          cursor: pointer;
+          transition: background 140ms ease, color 140ms ease, border-color 140ms ease;
+
+          &:focus-visible {
+            outline: 3px solid rgba(249, 115, 22, 0.25);
+            outline-offset: 2px;
+          }
+
+          .bi {
+            font-size: 13px;
+          }
         }
 
-        .settings-button:hover {
-          background: var(--main-dark);
-          color: var(--white);
+        .settings-button {
+          border-color: #e7e5e4;
+          background: #fff;
+          color: #57534e;
+
+          &:hover {
+            border-color: #fed7aa;
+            background: #fff1e8;
+            color: #c2410c;
+          }
         }
 
-        .delete-button:hover {
-          background: var(--main-red);
-          color: var(--white);
+        .delete-button {
+          border-color: #fecdd3;
+          background: #fff1f2;
+          color: #be123c;
+
+          &:hover {
+            background: #be123c;
+            color: #fff;
+          }
+        }
+
+        @media (max-width: 480px) {
+          min-height: 56px;
+          gap: 7px;
+          padding: 8px;
+
+          .drag-grip {
+            width: 15px;
+            flex-basis: 15px;
+          }
+
+          .item-position {
+            width: 26px;
+            height: 26px;
+            flex-basis: 26px;
+            font-size: 9px;
+          }
+
+          .item-name {
+            font-size: 10px;
+          }
+
+          .widget-actions {
+            gap: 4px;
+          }
+
+          .settings-button,
+          .delete-button {
+            width: 29px;
+            height: 29px;
+            border-radius: 8px;
+          }
         }
       }
     `,

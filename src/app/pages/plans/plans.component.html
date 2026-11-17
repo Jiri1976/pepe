@@ -9,8 +9,9 @@
   />
 
   <app-navigation
-    animate.enter="fade-in"
-    animate.leave="fade-out"
+    [class.filters-open]="menuShown()"
+    animate.enter="fast-in"
+    animate.leave="fast-out"
     #nav
     id="plans"
   >
@@ -96,12 +97,6 @@
       />
     }
 
-    <app-nav-button
-      id="last-one"
-      [hidden]="menuShown()"
-      (click)="showMenu()"
-      icon="bi-list"
-    />
   </app-navigation>
 
   <app-proposals />

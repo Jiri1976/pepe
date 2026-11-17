@@ -42,8 +42,8 @@ export class InactiveUsersComponent implements OnDestroy {
   });
 
   sectionStyles = computed(() => ({
-    width: '25rem',
-    maxHeight: 'min(550px, calc(100vh - 6rem))',
+    width: '100%',
+    maxHeight: 'inherit',
   }));
 
   constructor() {

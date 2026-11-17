@@ -1,7 +1,20 @@
 <div class="sidenav position-fixed h-100">
   @let hideForMaster = authStore.user()?.role !== "Admin";
 
-  <app-navigation animate.enter="fade-in" animate.leave="fade-out" #nav>
+  <app-navigation
+    id="shifts-action-navigation"
+    [class.filters-open]="menuShown()"
+    animate.enter="fast-in"
+    animate.leave="fast-out"
+    #nav
+  >
+    <app-nav-button
+      id="toggle-menu"
+      icon="bi-x-lg"
+      [hidden]="!menuShown()"
+      (click)="hideMenu()"
+    />
+    @if (menuShown()) {
     <app-nav-button
       [hidden]="hideForMaster"
       (click)="addShift()"
@@ -62,6 +75,7 @@
       icon="bi-house"
       [inactive]="shiftsStore.pathname() === '/shifts/daily'"
     />
+    }
   </app-navigation>
 </div>
 

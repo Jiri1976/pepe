@@ -5,7 +5,6 @@ import { ShiftsStore } from '../../../stores/shifts-store/shifts.store';
 import { PrevNextButtonComponent } from '../../paging/prev-next-button.component';
 import { ShiftSkeletonComponent } from '../shift-skeleton/shift-skeleton.component';
 import { ShiftCardComponent } from '../shift-card/shift-card.component';
-import { InfoButtonComponent } from '../../paging/info-button.component';
 
 @Component({
   selector: 'app-cards-view',
@@ -14,7 +13,6 @@ import { InfoButtonComponent } from '../../paging/info-button.component';
     PrevNextButtonComponent,
     ShiftSkeletonComponent,
     ShiftCardComponent,
-    InfoButtonComponent,
   ],
   templateUrl: './cards-view.component.html',
   styleUrls: ['./cards-view.component.scss'],

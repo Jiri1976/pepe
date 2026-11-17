@@ -1,32 +1,50 @@
-<div class="container d-flex flex-column align-items-center w-100">
+<main class="items-page">
+  <header class="items-header">
+    <div class="header-icon" aria-hidden="true"><i class="bi bi-boxes"></i></div>
+    <div class="header-copy">
+      <span class="eyebrow">Sklad</span>
+      <h1>Položky skladu</h1>
+      <p>Spravujte názvy a pořadí skladových položek.</p>
+    </div>
     @if (!store.isLoading()) {
-    <div class="block" animate.enter="fade-in" [style]="bodyStyles()">
-        @if (items()!.length > 0) {
-        <div class="widget-wrapper d-flex flex-column justify-content-center" cdkDropList [cdkDropListData]="items()"
-            (cdkDropListDropped)="drop($event)">
-            @for(item of items(); track item.id) {
-            <div cdkDrag>
-                <app-widget [item]="item" [index]="$index" />
-            </div>
-            }
-        </div>
-        }
-    </div>
-
-    @if (items().length === 0) {
-    <div class="empty-item d-flex flex-column align-items-center justify-content-center position-absolute"
-        animate.enter="fade-in">
-        <h4 class="fw-bold">Žádné uložené položky.</h4>
-    </div>
+      <span class="items-count">{{ items().length }} položek</span>
     }
+  </header>
 
+  @if (!store.isLoading()) {
+    @if (items().length > 0) {
+      <section
+        class="widget-wrapper"
+        cdkDropList
+        [cdkDropListData]="items()"
+        (cdkDropListDropped)="drop($event)"
+        [style]="bodyStyles()"
+        aria-label="Seznam skladových položek"
+      >
+        @for (item of items(); track item.id; let i = $index) {
+          <div class="drag-item" cdkDrag>
+            <app-widget [item]="item" [index]="i" />
+            <div class="drag-placeholder" *cdkDragPlaceholder></div>
+          </div>
+        }
+      </section>
     } @else {
-    <div class="skeleton d-flex flex-column align-items-center justify-content-center position-absolute"
-        animate.enter="fade-out">
-        @for(i of [1,2,3,4,5,6,7,8]; track i) {
-        <div class="empty-widget d-flex flex-column align-items-center justify-content-center">
-        </div>
-        }
-    </div>
+      <section class="empty-state">
+        <span class="empty-icon" aria-hidden="true"><i class="bi bi-box-seam"></i></span>
+        <h2>Žádné uložené položky</h2>
+        <p>Přidejte položku pomocí tlačítka plus v nabídce skladu.</p>
+      </section>
     }
-</div>
+  } @else {
+    <section class="items-skeleton" aria-label="Načítání položek">
+      @for (i of [1, 2, 3, 4, 5, 6, 7, 8]; track i) {
+        <div class="skeleton-widget" aria-hidden="true">
+          <span class="skeleton-handle"></span>
+          <span class="skeleton-name"></span>
+          <span class="skeleton-action"></span>
+          <span class="skeleton-action"></span>
+        </div>
+      }
+    </section>
+  }
+</main>

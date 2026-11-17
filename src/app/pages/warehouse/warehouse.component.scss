@@ -3,3 +3,95 @@
   height: 100%;
   z-index: 9999;
 }
+
+app-nav-button#toggle-menu {
+  display: none;
+}
+
+@media (max-width: 690px) {
+  .sidenav {
+    z-index: 998;
+  }
+
+  app-nav-button#toggle-menu {
+    display: block !important;
+  }
+
+  :host ::ng-deep app-navigation#warehouse-action-navigation:not(.filters-open) {
+    display: none !important;
+  }
+
+  :host ::ng-deep app-navigation#warehouse-action-navigation.filters-open .menu {
+    top: 78px;
+    right: 12px;
+    bottom: auto;
+    left: auto;
+    z-index: 1100;
+    display: block;
+    width: min(286px, calc(100vw - 24px));
+    padding: 0;
+  }
+
+  :host ::ng-deep app-navigation#warehouse-action-navigation.filters-open .menu ul {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+    margin: 0;
+    padding: 10px;
+    border: 1px solid #e8e5e4;
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: 0 14px 36px rgba(41, 37, 36, 0.15);
+    backdrop-filter: blur(16px);
+  }
+
+  :host ::ng-deep app-navigation#warehouse-action-navigation app-nav-button {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+  }
+
+  :host ::ng-deep app-navigation#warehouse-action-navigation app-nav-button li {
+    width: 100%;
+    margin: 0 !important;
+  }
+
+  :host ::ng-deep app-navigation#warehouse-action-navigation app-nav-button li > button {
+    width: 100%;
+    min-height: 40px;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 9px;
+    padding: 0 10px;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: none;
+    color: #57534e;
+  }
+
+  :host ::ng-deep app-navigation#warehouse-action-navigation app-nav-button li > button:hover:not(:disabled) {
+    transform: none;
+    border-color: #fed7aa;
+    background: #fff7ed;
+    color: #9a3412;
+    box-shadow: none;
+  }
+
+  :host ::ng-deep app-navigation#warehouse-action-navigation app-nav-button li.inactive > button {
+    border-color: #efeeec;
+    background: #f7f6f5;
+    color: #a8a29e;
+  }
+
+  :host ::ng-deep app-navigation#warehouse-action-navigation app-nav-button#toggle-menu {
+    grid-column: 1 / -1;
+  }
+
+  :host ::ng-deep app-navigation#warehouse-action-navigation app-nav-button#toggle-menu li > button {
+    justify-content: center;
+    border-color: #fed7aa;
+    background: #fff1e8;
+    color: #c2410c;
+  }
+}

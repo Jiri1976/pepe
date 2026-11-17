@@ -1,51 +1,70 @@
-<div class="block">
-    @if (!warehouseStore.isLoading()) {
-    <div class="wrapper d-flex justify-content-center" animate.enter="fade-in" animate.leave="fade-out">
-        @if (cards().length > 0) {
-        <div class="table">
+<main class="overview-page">
+  @if (!warehouseStore.isLoading()) {
+    @if (cards().length > 0) {
+      <section class="overview-card" aria-label="Přehled skladu po dnech">
+        <div class="overview-scroll" [style]="bodyStyles()">
+          <div class="warehouse-table">
             <div class="table-head d-flex">
-                <div class="first-head-cell d-flex flex-row align-items-center justify-content-between">
-                    {{cards()[0].monthYearName}}
+              <div class="first-head-cell d-flex align-items-center">
+                <i class="bi bi-box-seam" aria-hidden="true"></i>
+                {{ cards()[0].monthYearName }}
+              </div>
+              @for (unit of cards()[0].units; track $index) {
+                <div
+                  class="day-head-cell"
+                  [class.today-head-cell]="isToday(unit.date)"
+                  [attr.aria-current]="isToday(unit.date) ? 'date' : null"
+                >
+                  {{ $index + 1 }}
                 </div>
-                @for (unit of cards()[0].units; track $index) {
-                <div class="d-flex flex-column align-items-center justify-content-center"
-                    [class]="isToday(unit.date) ? 'today-head-cell' : 'head-cell'">{{$index + 1}}.</div>
-                }
+              }
             </div>
-            <div class="body" [style]="bodyStyles()">
-                @for(card of cards(); track $index; let x = $index) {
-                <div class="table-row d-flex flex-row">
-                    <div class="first-table-cell">{{ overviewItems()[x] }}</div>
-                    @for (day of days(); track $index; let y = $index) {
-                    <div class="cell">
-                        @if (overviewCard()!.lines[x].days[y].amount === 'L') {
-                        <div class="spinner d-flex flex-column align-items-center justify-content-center">
-                            <div class="spinner-border text-secondary" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </div>
+
+            <div class="overview-body">
+              @for (card of cards(); track $index; let x = $index) {
+                <div class="table-row d-flex">
+                  <div class="first-table-cell" [title]="overviewItems()[x]">
+                    {{ overviewItems()[x] }}
+                  </div>
+                  @for (day of days(); track $index; let y = $index) {
+                    <div class="overview-cell" [class.today-cell]="isToday(card.units[y].date)">
+                      @if (overviewCard()!.lines[x].days[y].amount === 'L') {
+                        <div class="cell-loading" role="status" aria-label="Ukládání">
+                          <span class="spinner-border"></span>
                         </div>
-                        } @else {
-                        <input [value]="overviewCard()!.lines[x].days[y].amount"
-                            (keydown.enter)="onChangeInput(x, y, $event)"
-                            [disabled]="warehouseStore.isSaving() || isDisabled(card.units[y].date)"
-                            [class.input-success]="highlightedInputs.has(x + '-' + y)"
-                            [class.master]="isToday(card.units[y].date)" />
-                        }
+                      } @else {
+                        <input
+                          type="text"
+                          inputmode="numeric"
+                          [attr.aria-label]="overviewItems()[x] + ', ' + card.units[y].date"
+                          [value]="overviewCard()!.lines[x].days[y].amount"
+                          (keydown.enter)="onChangeInput(x, y, $event)"
+                          [disabled]="warehouseStore.isSaving() || isDisabled(card.units[y].date)"
+                          [class.input-success]="highlightedInputs.has(x + '-' + y)"
+                          [class.today-input]="isToday(card.units[y].date)"
+                        />
+                      }
                     </div>
-                    }
+                  }
                 </div>
-                }
+              }
             </div>
+          </div>
         </div>
-        } @else {
-        <div class="empty-item position-absolute d-flex flex-column align-items-center justify-content-center"
-            animate.enter="fade-in">
-            <h4 class="fw-bold">Nenalezeny data v databázi.</h4>
-        </div>
-        }
-        <app-destination-button [destination]="warehouseStore.destination()" [right]="10" [bottom]="10" />
-    </div>
+      </section>
     } @else {
-    <app-skeleton-overview />
+      <section class="empty-state" animate.enter="fade-in">
+        <span class="empty-icon" aria-hidden="true"><i class="bi bi-box-seam"></i></span>
+        <h2>Nenalezena skladová data</h2>
+        <p>Pro vybraný měsíc zatím nejsou v databázi žádné záznamy.</p>
+      </section>
     }
-</div>
+    <app-destination-button
+      [destination]="warehouseStore.destination()"
+      [right]="10"
+      [bottom]="10"
+    />
+  } @else {
+    <app-skeleton-overview />
+  }
+</main>

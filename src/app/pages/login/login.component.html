@@ -6,13 +6,20 @@
         class="col-md-6 right d-flex justify-content-center align-items-center position-relative"
       >
         <div class="input-box">
-          <form class="d-flex flex-column align-items-center">
+          <div class="login-heading">
+            <span class="brand-mark"><img src="/pizza.ico" alt="" /></span>
+            <span class="eyebrow">PEPE · SPRÁVA SMĚN</span>
+            <h1>Přihlášení</h1>
+            <p>Přihlaste se ke svému účtu a pokračujte.</p>
+          </div>
+          <form class="d-flex flex-column align-items-center" (submit)="$event.preventDefault(); onSubmit()">
             <app-field class="login" [displayErrors]="false">
               <i class="bi bi-envelope"></i>
               <input
                 type="text"
                 class="input"
                 id="email"
+                placeholder="Email"
                 autocomplete="off"
                 [formField]="form.email"
                 (keydown.enter)="onSubmit()"
@@ -24,15 +31,16 @@
                 type="password"
                 class="input"
                 id="pass"
+                placeholder="Heslo"
                 autocomplete="off"
                 [formField]="form.password"
                 (keydown.enter)="onSubmit()"
               />
             </app-field>
             <button
-              type="button"
-              class="submit mt-4 fw-bold w-75 border-0"
-              (click)="onSubmit()"
+              type="submit"
+              class="submit mt-4"
+              [class.loading]="store.isLoading()"
               [disabled]="form().invalid() || store.isLoading()"
             >
               @if (!store.isLoading()) {

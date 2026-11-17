@@ -61,19 +61,19 @@ export class WarehouseInputComponent {
   backgroundStyles = computed(() => {
     if (this.diffValue() === -999999) {
       return {
-        background: 'var(--main-border-color)',
-        border: '1px solid var(--main-border-color)',
-        color: 'var(--main-border-color)',
+        background: '#f5f5f4',
+        border: '1px solid #e7e5e4',
+        color: '#a8a29e',
       };
     }
     return {
       border:
         this.diffValue() < 0
-          ? '1px solid var(--orange-primary)'
-          : '1px solid var(--proposal-lime)',
+          ? '1px solid #fed7aa'
+          : '1px solid #bbf7d0',
       background:
-        this.diffValue() < 0 ? 'var(--orange-primary)' : 'var(--proposal-lime)',
-      color: this.diffValue() < 0 ? 'var(--white)' : 'var(--main-dark)',
+        this.diffValue() < 0 ? '#fff1e8' : '#f0fdf4',
+      color: this.diffValue() < 0 ? '#c2410c' : '#15803d',
     };
   });
 

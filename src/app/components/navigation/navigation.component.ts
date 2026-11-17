@@ -29,7 +29,7 @@ import { Component, ContentChild, ElementRef } from '@angular/core';
       }
 
       @media screen and (max-width: 690px) and (max-height: 640px) {
-        :host#plans {
+        :host#plans:not(.filters-open) {
           .menu {
             ul {
               overflow-y: auto;

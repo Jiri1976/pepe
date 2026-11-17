@@ -1,101 +1,60 @@
 <div class="card-wrapper">
-  <div class="user-card-table d-flex flex-column justify-content-center">
+  <div class="user-card-table">
     @let currentCard = card();
     @if (currentCard && currentCard.shifts.length > 0) {
-      <table class="table">
-        <thead class="table-dark d-table w-100 fw-bold">
-          <tr class="fw-bold align-items-middle">
-            <th
-              class="fw-bold align-items-middle"
-              style="width: 5% !important; text-align: right"
-            >
-              #
-            </th>
-            <th
-              class="fw-bold align-items-middle"
-              style="width: 15% !important; text-align: center"
-            >
-              Datum
-            </th>
-            <th
-              class="fw-bold align-items-middle"
-              style="width: 15% !important; text-align: center"
-            >
-              Začátek
-            </th>
-            <th
-              class="fw-bold align-items-middle"
-              style="width: 15% !important; text-align: center"
-            >
-              Konec
-            </th>
-            <th
-              class="fw-bold align-items-middle"
-              style="width: 15% !important; text-align: center"
-            >
-              Hodiny
-            </th>
-            <th
-              class="fw-bold align-items-middle"
-              style="width: 35% !important; text-align: center"
-            >
-              Perso
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (shift of currentCard.shifts; track $index) {
-            <tr
-              class="d-table w-100"
-              (click)="
-                ((isPastCard() === false &&
-                  authStore.user()?.role === 'Master') ||
-                  authStore.user()?.role === 'Admin') &&
-                  onUpdate(shift)
-              "
-            >
-              <td
-                scope="row"
-                style="
-                  width: 5% !important;
-                  text-align: right !important;
-                  font-weight: bold;
+      <div class="table-scroll">
+        <table class="shift-table">
+          <colgroup>
+            <col class="col-index" />
+            <col class="col-date" />
+            <col class="col-time" />
+            <col class="col-time" />
+            <col class="col-hours" />
+            <col class="col-perso" />
+          </colgroup>
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Datum</th>
+              <th scope="col">Začátek</th>
+              <th scope="col">Konec</th>
+              <th scope="col">Hodiny</th>
+              <th scope="col">Perso</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (shift of currentCard.shifts; track $index) {
+              <tr
+                class="shift-row"
+                [class.editable]="
+                  (isPastCard() === false && authStore.user()?.role === 'Master') ||
+                  authStore.user()?.role === 'Admin'
+                "
+                (click)="
+                  ((isPastCard() === false &&
+                    authStore.user()?.role === 'Master') ||
+                    authStore.user()?.role === 'Admin') &&
+                    onUpdate(shift)
                 "
               >
-                {{ $index + 1 }}.
-              </td>
-              <td style="width: 15% !important; text-align: center !important">
-                {{ shift.date }}
-              </td>
-              <td style="width: 15% !important; text-align: center !important">
-                {{ shift.from }}
-              </td>
-              <td style="width: 15% !important; text-align: center !important">
-                {{ shift.to }}
-              </td>
-              <td style="width: 15% !important; text-align: center !important">
-                {{ shift.hours }}
-              </td>
-              <td
-                class="perso text-center"
-                style="width: 35% !important; vertical-align: middle !important"
-              >
-                {{ shift.perso }}
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
+                <td class="row-index">{{ $index + 1 }}.</td>
+                <td>{{ shift.date }}</td>
+                <td>{{ shift.from }}</td>
+                <td>{{ shift.to }}</td>
+                <td>{{ shift.hours }}</td>
+                <td class="perso">{{ shift.perso }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
     } @else {
-      <div
-        class="empty-shifts w-100 d-flex flex-column justify-content-center align-items-center"
-      >
-        <h4 class="fw-bold">
-          {{ currentCard?.userName }} {{ currentCard?.userSurname }}
-        </h4>
-        <h4 class="fw-bold mt-2">
-          nemá uložené směny na pozici {{ getCardPosition() }}
-        </h4>
+      <div class="empty-shifts">
+        <span class="empty-icon" aria-hidden="true">
+          <i class="bi bi-calendar2-x"></i>
+        </span>
+        <h3>{{ currentCard?.userName }} {{ currentCard?.userSurname }}</h3>
+        <p>Nemá uložené směny na pozici {{ getCardPosition() }}.</p>
       </div>
     }
   </div>

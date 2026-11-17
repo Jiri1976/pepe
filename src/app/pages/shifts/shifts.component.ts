@@ -1,8 +1,11 @@
 import {
   Component,
+  computed,
+  HostListener,
   inject,
   CUSTOM_ELEMENTS_SCHEMA,
   effect,
+  signal,
 } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
@@ -17,6 +20,7 @@ import { ShiftFormComponent } from '../../components/shifts/shift-form/shift-for
 import { SelectUserComponent } from '../../components/shifts/select-user/select-user.component';
 import { Router, RouterOutlet } from '@angular/router';
 import { CalendarComponent } from '../../components/calendar/calendar.component';
+import { MobileNavigationService } from '../../services/mobile-navigation.service';
 
 @Component({
   selector: 'app-plans',
@@ -36,11 +40,27 @@ import { CalendarComponent } from '../../components/calendar/calendar.component'
 export class ShiftsComponent {
   readonly authStore = inject(AuthStore);
   readonly shiftsStore = inject(ShiftsStore);
+  private readonly mobileNavigation = inject(MobileNavigationService);
   private dialog = inject(Dialog);
   private router = inject(Router);
+  width = signal(window.innerWidth);
+  menuShown = computed(
+    () =>
+      this.width() > 690 ||
+      this.mobileNavigation.activeMenu() === 'shift-actions',
+  );
 
   ngOnInit(): void {
     this.shiftsStore.closeInfo();
+    this.mobileNavigation.close();
+  }
+
+  @HostListener('window:resize')
+  onWindowResize() {
+    this.width.set(window.innerWidth);
+    if (this.width() > 690) {
+      this.mobileNavigation.close();
+    }
   }
 
   openAddSiftDialogEffect = effect(() => {
@@ -48,7 +68,10 @@ export class ShiftsComponent {
     if (this.dialog.openDialogs.length > 0) return;
 
     this.dialog
-      .open(ShiftFormComponent, { disableClose: false })
+      .open(ShiftFormComponent, {
+        disableClose: false,
+        panelClass: 'shift-form-dialog',
+      })
       .closed.subscribe(() => {
         this.shiftsStore.clearAddShiftDialogRequest();
       });
@@ -117,5 +140,9 @@ export class ShiftsComponent {
       }
       this.shiftsStore.addNewDailyShift();
     }
+  }
+
+  hideMenu() {
+    this.mobileNavigation.close();
   }
 }
