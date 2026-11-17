@@ -1,6 +1,6 @@
 {
   "name": "pepe",
-  "version": "26.03.11",
+  "version": "17.11.26",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
